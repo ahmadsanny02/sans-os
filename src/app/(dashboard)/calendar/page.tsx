@@ -90,35 +90,39 @@ export default function CalendarPage() {
 
         {/* Month selector controls */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={handlePrevMonth}
-            className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-semibold hover:bg-muted transition-all text-muted-foreground hover:text-foreground"
-            aria-label="Previous Month"
-          >
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Previous
-          </button>
+          <div className="flex items-center gap-1 bg-secondary/30 border border-border/60 p-1.5 rounded-xl shadow-inner backdrop-blur-sm">
+            <button
+              onClick={handlePrevMonth}
+              className="inline-flex h-8 w-8 sm:w-auto sm:px-3 items-center justify-center rounded-lg hover:bg-background/80 hover:text-foreground text-muted-foreground transition-all duration-200 active:scale-95 text-xs font-medium"
+              aria-label="Previous Month"
+            >
+              <ChevronLeft className="h-4 w-4 sm:mr-1 shrink-0" />
+              <span className="hidden sm:inline">Previous</span>
+            </button>
 
-          <span className="text-sm font-bold text-foreground px-2 min-w-[120px] text-center">
-            {format(currentMonth, "MMMM yyyy")}
-          </span>
+            <span className="text-xs font-bold text-foreground px-3 min-w-[100px] text-center select-none">
+              {format(currentMonth, "MMMM yyyy")}
+            </span>
 
-          <button
-            onClick={handleNextMonth}
-            className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-semibold hover:bg-muted transition-all text-muted-foreground hover:text-foreground"
-            aria-label="Next Month"
-          >
-            Next
-            <ChevronRight className="ml-1 h-4 w-4" />
-          </button>
+            <button
+              onClick={handleNextMonth}
+              className="inline-flex h-8 w-8 sm:w-auto sm:px-3 items-center justify-center rounded-lg hover:bg-background/80 hover:text-foreground text-muted-foreground transition-all duration-200 active:scale-95 text-xs font-medium"
+              aria-label="Next Month"
+            >
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight className="h-4 w-4 sm:ml-1 shrink-0" />
+            </button>
+          </div>
 
-          <button
-            onClick={handleGoToToday}
-            className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-card px-4 text-xs font-semibold hover:bg-muted transition-all text-muted-foreground hover:text-foreground ml-2"
-            aria-label="Go to Today"
-          >
-            Today
-          </button>
+          <div className="bg-secondary/30 border border-border/60 p-1.5 rounded-xl backdrop-blur-sm">
+            <button
+              onClick={handleGoToToday}
+              className="inline-flex h-8 px-3.5 items-center justify-center rounded-lg bg-background text-foreground shadow-sm border border-border/40 hover:bg-background/80 transition-all duration-200 active:scale-95 text-xs font-semibold"
+              aria-label="Go to Today"
+            >
+              Today
+            </button>
+          </div>
         </div>
       </div>
 

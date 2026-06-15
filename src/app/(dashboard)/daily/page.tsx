@@ -50,19 +50,19 @@ export default function DailyPage() {
         </div>
 
         {/* Date Shift Buttons */}
-        <div className="flex items-center gap-2 self-start sm:self-center">
+        <div className="flex items-center gap-1 bg-secondary/30 border border-border/60 p-1.5 rounded-xl shadow-inner backdrop-blur-md self-start sm:self-center">
           <button
             onClick={handlePrevDay}
-            className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-semibold hover:bg-muted active:scale-95 transition-all text-muted-foreground hover:text-foreground"
+            className="inline-flex h-8 w-8 sm:w-auto sm:px-3 items-center justify-center rounded-lg hover:bg-background/80 hover:text-foreground text-muted-foreground transition-all duration-200 active:scale-95 text-xs font-medium"
             aria-label="Previous day"
           >
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Previous Day
+            <ChevronLeft className="h-4 w-4 sm:mr-1 shrink-0" />
+            <span className="hidden sm:inline">Previous Day</span>
           </button>
           
           <button
             onClick={handleGoToToday}
-            className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-semibold hover:bg-muted active:scale-95 transition-all text-muted-foreground hover:text-foreground"
+            className="inline-flex h-8 px-3 items-center justify-center rounded-lg bg-background text-foreground shadow-sm border border-border/40 hover:bg-background/80 transition-all duration-200 active:scale-95 text-xs font-semibold"
             aria-label="Go to today"
           >
             Today
@@ -70,11 +70,11 @@ export default function DailyPage() {
 
           <button
             onClick={handleNextDay}
-            className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-semibold hover:bg-muted active:scale-95 transition-all text-muted-foreground hover:text-foreground"
+            className="inline-flex h-8 w-8 sm:w-auto sm:px-3 items-center justify-center rounded-lg hover:bg-background/80 hover:text-foreground text-muted-foreground transition-all duration-200 active:scale-95 text-xs font-medium"
             aria-label="Next day"
           >
-            Next Day
-            <ChevronRight className="ml-1 h-4 w-4" />
+            <span className="hidden sm:inline">Next Day</span>
+            <ChevronRight className="h-4 w-4 sm:ml-1 shrink-0" />
           </button>
         </div>
       </div>

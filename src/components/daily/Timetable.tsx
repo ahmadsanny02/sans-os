@@ -44,6 +44,16 @@ const COLORS: Record<string, { bg: string; text: string; border: string; bullet:
   },
 }
 
+// Category-based colors mapping
+const CATEGORY_COLORS: Record<string, string> = {
+  General: "blue",
+  Work: "blue",
+  Health: "green",
+  Learning: "purple",
+  Finance: "amber",
+  Leisure: "red",
+}
+
 function calculateDuration(start: string, end: string): string {
   try {
     const [startH, startM] = start.split(":").map(Number)
@@ -72,7 +82,6 @@ export function Timetable() {
   const [startTime, setStartTime] = useState("08:00")
   const [endTime, setEndTime] = useState("09:00")
   const [category, setCategory] = useState("General")
-  const [color, setColor] = useState("blue")
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [scheduleType, setScheduleType] = useState<"fixed" | "custom">("custom")
 
@@ -102,7 +111,7 @@ export function Timetable() {
         endTime,
         title,
         category,
-        color,
+        color: CATEGORY_COLORS[category] || "blue",
         date: scheduleType === "fixed" ? undefined : activeDate,
       })
       setTitle("")
@@ -203,19 +212,24 @@ export function Timetable() {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label htmlFor="blockCategory" className="text-xs font-bold text-muted-foreground">
                 Category
               </label>
-              <input
+              <select
                 id="blockCategory"
-                type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                placeholder="e.g., Coding, Health, Leisure..."
-                className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
-              />
+                className="w-full rounded-lg border border-border bg-background px-3.5 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+              >
+                <option value="General">General</option>
+                <option value="Work">Work</option>
+                <option value="Health">Health</option>
+                <option value="Learning">Learning</option>
+                <option value="Finance">Finance</option>
+                <option value="Leisure">Leisure</option>
+              </select>
             </div>
 
             <div className="space-y-1.5">
@@ -231,26 +245,6 @@ export function Timetable() {
                 <option value="custom">This Day Only (Custom)</option>
                 <option value="fixed">Every Day (Fixed)</option>
               </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground">Color Theme</label>
-              <div className="flex gap-2.5 pt-1.5">
-                {Object.keys(COLORS).map((c) => {
-                  const info = COLORS[c]
-                  return (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setColor(c)}
-                      className={`h-6 w-6 rounded-full ${info.bullet} ring-offset-2 transition-all hover:scale-110 ${
-                        color === c ? "ring-2 ring-foreground" : ""
-                      }`}
-                      aria-label={`Select ${c} color`}
-                    />
-                  )
-                })}
-              </div>
             </div>
           </div>
 
