@@ -4,12 +4,11 @@ import React, { useEffect } from "react"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 import { PrioritiesList } from "@/components/daily/PrioritiesList"
 import { Timetable } from "@/components/daily/Timetable"
-import { CalendarDatePicker } from "@/components/daily/CalendarDatePicker"
 import { DailyTodos } from "@/components/daily/DailyTodos"
 import { DailyReflections } from "@/components/daily/DailyReflections"
 import { DailyPics } from "@/components/daily/DailyPics"
 import { format, parseISO, addDays, subDays } from "date-fns"
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react"
+import { ChevronLeft, ChevronRight, Clock, Calendar } from "lucide-react"
 
 export default function DailyPage() {
   const activeDate = useWorkspaceStore((state) => state.activeDate)
@@ -49,7 +48,10 @@ export default function DailyPage() {
           </h1>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span className="font-medium">Active Date:</span>
-            <CalendarDatePicker selectedDate={activeDate} onDateChange={setActiveDate} />
+            <div className="flex items-center gap-2 rounded-xl border border-border bg-card/50 px-3.5 py-1.5 text-sm font-semibold text-foreground shadow-sm">
+              <Calendar className="h-4 w-4 text-violet-500" />
+              <span>{format(baseDate, "MMMM d, yyyy")}</span>
+            </div>
           </div>
         </div>
 
