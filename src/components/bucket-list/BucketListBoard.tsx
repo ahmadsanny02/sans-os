@@ -21,7 +21,6 @@ import {
   CheckCircle2,
   Circle,
   Edit2,
-  X,
   Compass,
   Heart,
 } from "lucide-react"
@@ -461,15 +460,8 @@ export function BucketListBoard() {
       {editingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-xl backdrop-blur-md space-y-4 animate-in zoom-in-95 duration-200">
-            {/* Close */}
-            <button
-              onClick={() => setEditingItem(null)}
-              className="absolute right-4.5 top-4.5 p-1 rounded-lg hover:bg-secondary text-muted-foreground transition-all"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border/40 pb-2">
+          
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border/40 py-2">
               <Compass className="h-5 w-5 text-violet-500" />
               Edit Bucket List Goal
             </h3>
