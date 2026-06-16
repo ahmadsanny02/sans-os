@@ -8,7 +8,8 @@ import { DailyTodos } from "@/components/daily/DailyTodos"
 import { DailyReflections } from "@/components/daily/DailyReflections"
 import { DailyPics } from "@/components/daily/DailyPics"
 import { format, parseISO, addDays, subDays } from "date-fns"
-import { ChevronLeft, ChevronRight, Clock, Calendar } from "lucide-react"
+import { Clock, Calendar } from "lucide-react"
+import { HeaderPage } from "@/components/ui/HeaderPage"
 
 export default function DailyPage() {
   const activeDate = useWorkspaceStore((state) => state.activeDate)
@@ -39,51 +40,25 @@ export default function DailyPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 py-4">
-      {/* Date Navigation Header */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md pt-2 pb-6 border-b border-border/60 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-            <Clock className="h-7 w-7 text-violet-500 shrink-0" />
-            Daily Flow
-          </h1>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <HeaderPage
+        title="Daily Flow"
+        icon={<Clock className="h-7 w-7 text-violet-500 shrink-0" />}
+        description={
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <span className="font-medium">Active Date:</span>
             <div className="flex items-center gap-2 rounded-xl border border-border bg-card/50 px-3.5 py-1.5 text-sm font-semibold text-foreground shadow-sm">
               <Calendar className="h-4 w-4 text-violet-500" />
               <span>{format(baseDate, "MMMM d, yyyy")}</span>
             </div>
           </div>
-        </div>
-
-        {/* Date Shift Buttons */}
-        <div className="flex items-center gap-1 bg-secondary/30 border border-border/60 p-1.5 rounded-xl shadow-inner backdrop-blur-md self-start sm:self-center">
-          <button
-            onClick={handlePrevDay}
-            className="inline-flex h-8 w-8 sm:w-auto sm:px-3 items-center justify-center rounded-lg hover:bg-background/80 hover:text-foreground text-muted-foreground transition-all duration-200 active:scale-95 text-xs font-medium"
-            aria-label="Previous day"
-          >
-            <ChevronLeft className="h-4 w-4 sm:mr-1 shrink-0" />
-            <span className="hidden sm:inline">Previous Day</span>
-          </button>
-
-          <button
-            onClick={handleGoToToday}
-            className="inline-flex h-8 px-3 items-center justify-center rounded-lg bg-background text-foreground shadow-sm border border-border/40 hover:bg-background/80 transition-all duration-200 active:scale-95 text-xs font-semibold"
-            aria-label="Go to today"
-          >
-            Today
-          </button>
-
-          <button
-            onClick={handleNextDay}
-            className="inline-flex h-8 w-8 sm:w-auto sm:px-3 items-center justify-center rounded-lg hover:bg-background/80 hover:text-foreground text-muted-foreground transition-all duration-200 active:scale-95 text-xs font-medium"
-            aria-label="Next day"
-          >
-            <span className="hidden sm:inline">Next Day</span>
-            <ChevronRight className="h-4 w-4 sm:ml-1 shrink-0" />
-          </button>
-        </div>
-      </div>
+        }
+        showNavigation
+        onPrevious={handlePrevDay}
+        onNext={handleNextDay}
+        onToday={handleGoToToday}
+        prevLabel="Previous Day"
+        nextLabel="Next Day"
+      />
 
       {/* Main Content */}
       <div className="grid gap-8 lg:grid-cols-12">

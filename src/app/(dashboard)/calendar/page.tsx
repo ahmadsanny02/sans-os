@@ -11,7 +11,8 @@ import {
   TimetableBlock,
 } from "@/hooks/useDaily"
 import { format, parseISO, addMonths, subMonths } from "date-fns"
-import { ChevronLeft, ChevronRight, Calendar, Clock, Check, Loader2, ListTodo } from "lucide-react"
+import { Calendar, Clock, Check, Loader2, ListTodo } from "lucide-react"
+import { HeaderPage } from "@/components/ui/HeaderPage"
 
 // Color scheme mapping for timetable blocks
 const TIMETABLE_COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
@@ -104,55 +105,23 @@ export default function CalendarPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 py-4">
-      {/* Calendar Header */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md pt-2 pb-6 border-b border-border/60 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-            <Calendar className="h-7 w-7 text-violet-500 shrink-0" />
-            Calendar View
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Monthly schedule and tasks visualizer
-          </p>
-        </div>
-
-        {/* Month selector controls */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-secondary/30 border border-border/60 p-1.5 rounded-xl shadow-inner backdrop-blur-sm">
-            <button
-              onClick={handlePrevMonth}
-              className="inline-flex h-8 w-8 sm:w-auto sm:px-3 items-center justify-center rounded-lg hover:bg-background/80 hover:text-foreground text-muted-foreground transition-all duration-200 active:scale-95 text-xs font-medium"
-              aria-label="Previous Month"
-            >
-              <ChevronLeft className="h-4 w-4 sm:mr-1 shrink-0" />
-              <span className="hidden sm:inline">Previous</span>
-            </button>
-
-            <span className="text-xs font-bold text-foreground px-3 min-w-[100px] text-center select-none">
-              {format(currentMonth, "MMMM yyyy")}
-            </span>
-
-            <button
-              onClick={handleNextMonth}
-              className="inline-flex h-8 w-8 sm:w-auto sm:px-3 items-center justify-center rounded-lg hover:bg-background/80 hover:text-foreground text-muted-foreground transition-all duration-200 active:scale-95 text-xs font-medium"
-              aria-label="Next Month"
-            >
-              <span className="hidden sm:inline">Next</span>
-              <ChevronRight className="h-4 w-4 sm:ml-1 shrink-0" />
-            </button>
-          </div>
-
-          <div className="bg-secondary/30 border border-border/60 p-1.5 rounded-xl backdrop-blur-sm">
-            <button
-              onClick={handleGoToToday}
-              className="inline-flex h-8 px-3.5 items-center justify-center rounded-lg bg-background text-foreground shadow-sm border border-border/40 hover:bg-background/80 transition-all duration-200 active:scale-95 text-xs font-semibold"
-              aria-label="Go to Today"
-            >
-              Today
-            </button>
-          </div>
-        </div>
-      </div>
+      <HeaderPage
+        title="Calendar View"
+        icon={<Calendar className="h-7 w-7 text-violet-500 shrink-0" />}
+        description="Monthly schedule and tasks visualizer"
+        showNavigation
+        onPrevious={handlePrevMonth}
+        onNext={handleNextMonth}
+        onToday={handleGoToToday}
+        prevLabel="Previous"
+        nextLabel="Next"
+        middleContent={
+          <span className="text-xs font-bold text-foreground px-3 min-w-[100px] text-center select-none">
+            {format(currentMonth, "MMMM yyyy")}
+          </span>
+        }
+        extraActions={<div />}
+      />
 
       {/* Main Grid Content */}
       <div className="grid gap-8 lg:grid-cols-12">

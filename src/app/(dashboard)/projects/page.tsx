@@ -3,6 +3,7 @@
 import React, { useEffect } from "react"
 import { ProjectBoard } from "@/components/projects/ProjectBoard"
 import { Briefcase } from "lucide-react"
+import { HeaderPage } from "@/components/ui/HeaderPage"
 
 export default function ProjectsPage() {
   // Update document title for client-side SEO
@@ -12,21 +13,15 @@ export default function ProjectsPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 py-4">
-      {/* Date Navigation Header */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md pt-2 pb-6 border-b border-border/60 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-            <Briefcase className="h-7 w-7 text-violet-500 shrink-0" />
-            Projects & Tasks
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage your high-level goals and track deliverables
-          </p>
-        </div>
-      </div>
+      <HeaderPage
+        title="Projects & Tasks"
+        icon={<Briefcase className="h-7 w-7 text-violet-500 shrink-0" />}
+        description="Manage your high-level goals and track deliverables"
+      />
 
       {/* Main Grid Content */}
       <ProjectBoard />
     </div>
   )
 }
+
