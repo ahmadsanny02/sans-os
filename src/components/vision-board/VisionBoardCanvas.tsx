@@ -326,6 +326,8 @@ export function VisionBoardCanvas() {
                   position: "absolute",
                   left: item.xOffset,
                   top: item.yOffset,
+                  x: 0,
+                  y: 0,
                   width: item.width,
                   height: item.height,
                   cursor: "grab",
