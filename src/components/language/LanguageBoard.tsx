@@ -7,21 +7,21 @@ import {
   useUpdateVocabularyMutation,
   useDeleteVocabularyMutation,
   VocabularyLog,
+  useWritingQuery,
 } from "@/hooks/useLanguage"
 import {
   Plus,
   Trash2,
-  Star,
   Loader2,
   Search,
   BookOpen,
-  Sparkles,
   AlertCircle,
   Eye,
   EyeOff,
   Lightbulb,
   Check,
   PencilLine,
+  CheckCircle2,
 } from "lucide-react"
 import { GridCardSkeleton } from "@/components/ui/Skeletons"
 import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
@@ -42,6 +42,7 @@ const POS_THEMES: Record<string, { bg: string; text: string; border: string }> =
 
 export function LanguageBoard() {
   const { data: vocabList = [], isLoading, isError } = useVocabularyQuery()
+  const { data: writingList = [] } = useWritingQuery()
   const createVocabMutation = useCreateVocabularyMutation()
   const updateVocabularyMutation = useUpdateVocabularyMutation()
   const deleteVocabMutation = useDeleteVocabularyMutation()
@@ -129,10 +130,8 @@ export function LanguageBoard() {
 
   // Calculate statistics metrics
   const totalWords = vocabList.length
-  const averageMastery = totalWords > 0
-    ? Number((vocabList.reduce((acc, curr) => acc + curr.masteryLevel, 0) / totalWords).toFixed(1))
-    : 0
-  const strongWordsCount = vocabList.filter((v) => v.masteryLevel >= 4 || v.memorized).length
+  const memorizedCount = vocabList.filter((v) => v.memorized).length
+  const memorizedPercentage = totalWords > 0 ? Math.round((memorizedCount / totalWords) * 100) : 0
 
   // Filter list
   const filteredVocab = vocabList.filter((v) => {
@@ -187,6 +186,7 @@ export function LanguageBoard() {
                     totalWords
                   )}
                 </h4>
+                <p className="text-[10px] text-muted-foreground font-semibold">Words registered</p>
               </div>
               <div className="rounded-xl bg-violet-500/10 p-3 text-violet-500">
                 <BookOpen className="h-6 w-6" />
@@ -196,37 +196,39 @@ export function LanguageBoard() {
             {/* Metric 2 */}
             <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
               <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Average Mastery</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Memorized Words</span>
                 <h4 className="text-3xl font-black text-foreground flex items-baseline gap-1">
                   {isLoading ? (
                     <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
                   ) : (
                     <>
-                      {averageMastery}
-                      <span className="text-sm font-bold text-muted-foreground">/ 5.0</span>
+                      {memorizedCount}
+                      <span className="text-sm font-bold text-muted-foreground">/ {totalWords}</span>
                     </>
                   )}
                 </h4>
+                <p className="text-[10px] text-muted-foreground font-semibold">{memorizedPercentage}% of total</p>
               </div>
-              <div className="rounded-xl bg-amber-500/10 p-3 text-amber-500">
-                <Star className="h-6 w-6 fill-amber-500" />
+              <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-500">
+                <CheckCircle2 className="h-6 w-6" />
               </div>
             </div>
 
             {/* Metric 3 */}
             <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
               <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Mastered/Memorized</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Writing Practices</span>
                 <h4 className="text-3xl font-black text-foreground">
                   {isLoading ? (
                     <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
                   ) : (
-                    strongWordsCount
+                    writingList.length
                   )}
                 </h4>
+                <p className="text-[10px] text-muted-foreground font-semibold">Sentences constructed</p>
               </div>
-              <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-500">
-                <Sparkles className="h-6 w-6" />
+              <div className="rounded-xl bg-amber-500/10 p-3 text-amber-500">
+                <PencilLine className="h-6 w-6" />
               </div>
             </div>
           </div>
