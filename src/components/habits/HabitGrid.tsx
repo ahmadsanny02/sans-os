@@ -68,24 +68,8 @@ export function HabitGrid() {
     toggleLogMutation.mutate({ habitId, date })
   }
 
-  // Loading indicator helper
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
-  if (isError || !data) {
-    return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-        Error loading habits. Please check database configuration.
-      </div>
-    )
-  }
-
-  const { habits: listHabits, logs } = data
+  const listHabits = data?.habits || []
+  const logs = data?.logs || []
 
   // Helper check-in check
   const isLogged = (habitId: string, dateStr: string): boolean => {
@@ -186,7 +170,22 @@ export function HabitGrid() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border/60">
-            {listHabits.length === 0 ? (
+            {isLoading ? (
+              <tr>
+                <td colSpan={monthDays.length + 1} className="py-24 text-center text-sm text-muted-foreground bg-card">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+                    <span>Loading habits checklist...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : isError || !data ? (
+              <tr>
+                <td colSpan={monthDays.length + 1} className="py-24 text-center text-sm text-destructive bg-card font-semibold">
+                  Error loading habits. Please check database configuration.
+                </td>
+              </tr>
+            ) : listHabits.length === 0 ? (
               <tr>
                 <td colSpan={monthDays.length + 1} className="py-12 text-center text-sm text-muted-foreground bg-card">
                   No habits registered yet. Add a new habit above.

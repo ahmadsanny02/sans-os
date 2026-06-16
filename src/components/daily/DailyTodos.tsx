@@ -45,22 +45,6 @@ export function DailyTodos() {
     deleteTodoMutation.mutate(id)
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-        Error loading checklist. Please check connection.
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -74,7 +58,7 @@ export function DailyTodos() {
           </p>
         </div>
         <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border">
-          {todos.filter((t) => t.completed).length}/{todos.length} Done
+          {isLoading ? "..." : `${todos.filter((t) => t.completed).length}/${todos.length} Done`}
         </span>
       </div>
 
@@ -83,15 +67,15 @@ export function DailyTodos() {
           <input
             type="text"
             required
-            disabled={createTodoMutation.isPending}
+            disabled={isLoading || createTodoMutation.isPending}
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
-            placeholder="Add new task..."
+            placeholder={isLoading ? "Loading..." : "Add new task..."}
             className="flex-1 rounded-xl border border-border bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 disabled:bg-secondary/40 disabled:placeholder-muted-foreground"
           />
           <button
             type="submit"
-            disabled={createTodoMutation.isPending || !newText.trim()}
+            disabled={isLoading || createTodoMutation.isPending || !newText.trim()}
             className="inline-flex items-center justify-center rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50"
             aria-label="Add new todo item"
           >
@@ -112,7 +96,15 @@ export function DailyTodos() {
       </form>
 
       <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
-        {todos.length === 0 ? (
+        {isLoading ? (
+          <div className="flex h-32 items-center justify-center rounded-xl border border-border bg-card/20 backdrop-blur-md">
+            <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+          </div>
+        ) : isError ? (
+          <div className="flex h-32 items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
+            Error loading checklist. Please check connection.
+          </div>
+        ) : todos.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
             No tasks added for today. Add one above!
           </div>

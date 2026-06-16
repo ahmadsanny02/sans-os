@@ -42,14 +42,6 @@ export function DailyReflections() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-72 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
   const tabs = [
     { id: "journal" as TabType, label: "My Journal", icon: BookOpen, color: "text-blue-500" },
     { id: "gratitude" as TabType, label: "Daily Gratitude", icon: Heart, color: "text-rose-500" },
@@ -71,7 +63,7 @@ export function DailyReflections() {
 
         <button
           onClick={handleSave}
-          disabled={saveLogMutation.isPending}
+          disabled={isLoading || saveLogMutation.isPending}
           className="inline-flex items-center gap-2 rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50 active:scale-95"
         >
           {saveLogMutation.isPending ? (
@@ -114,43 +106,51 @@ export function DailyReflections() {
 
       {/* Tab content area */}
       <div className="rounded-2xl border border-border bg-card p-4 min-h-[180px] flex flex-col justify-stretch relative">
-        {activeTab === "journal" && (
-          <div className="flex-1 flex flex-col">
-            <label htmlFor="journal-input" className="sr-only">My Journal</label>
-            <textarea
-              id="journal-input"
-              value={journal}
-              onChange={(e) => setJournal(e.target.value)}
-              placeholder="Write about your day: what went well, what challenges you faced, and any reflections..."
-              className="flex-1 w-full bg-transparent resize-none outline-none text-sm text-foreground placeholder:text-muted-foreground/60 leading-relaxed min-h-[150px]"
-            />
+        {isLoading ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-card/40 rounded-2xl">
+            <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
           </div>
-        )}
+        ) : (
+          <>
+            {activeTab === "journal" && (
+              <div className="flex-1 flex flex-col">
+                <label htmlFor="journal-input" className="sr-only">My Journal</label>
+                <textarea
+                  id="journal-input"
+                  value={journal}
+                  onChange={(e) => setJournal(e.target.value)}
+                  placeholder="Write about your day: what went well, what challenges you faced, and any reflections..."
+                  className="flex-1 w-full bg-transparent resize-none outline-none text-sm text-foreground placeholder:text-muted-foreground/60 leading-relaxed min-h-[150px]"
+                />
+              </div>
+            )}
 
-        {activeTab === "gratitude" && (
-          <div className="flex-1 flex flex-col">
-            <label htmlFor="gratitude-input" className="sr-only">Daily Gratitude</label>
-            <textarea
-              id="gratitude-input"
-              value={gratitude}
-              onChange={(e) => setGratitude(e.target.value)}
-              placeholder="What are 3 things you are grateful for today? Cultivate a positive mindset..."
-              className="flex-1 w-full bg-transparent resize-none outline-none text-sm text-foreground placeholder:text-muted-foreground/60 leading-relaxed min-h-[150px]"
-            />
-          </div>
-        )}
+            {activeTab === "gratitude" && (
+              <div className="flex-1 flex flex-col">
+                <label htmlFor="gratitude-input" className="sr-only">Daily Gratitude</label>
+                <textarea
+                  id="gratitude-input"
+                  value={gratitude}
+                  onChange={(e) => setGratitude(e.target.value)}
+                  placeholder="What are 3 things you are grateful for today? Cultivate a positive mindset..."
+                  className="flex-1 w-full bg-transparent resize-none outline-none text-sm text-foreground placeholder:text-muted-foreground/60 leading-relaxed min-h-[150px]"
+                />
+              </div>
+            )}
 
-        {activeTab === "notes" && (
-          <div className="flex-1 flex flex-col">
-            <label htmlFor="notes-input" className="sr-only">Daily Notes</label>
-            <textarea
-              id="notes-input"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Capture quick scratchpad notes, tasks, ideas, links, or lists..."
-              className="flex-1 w-full bg-transparent resize-none outline-none text-sm text-foreground placeholder:text-muted-foreground/60 leading-relaxed min-h-[150px]"
-            />
-          </div>
+            {activeTab === "notes" && (
+              <div className="flex-1 flex flex-col">
+                <label htmlFor="notes-input" className="sr-only">Daily Notes</label>
+                <textarea
+                  id="notes-input"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Capture quick scratchpad notes, tasks, ideas, links, or lists..."
+                  className="flex-1 w-full bg-transparent resize-none outline-none text-sm text-foreground placeholder:text-muted-foreground/60 leading-relaxed min-h-[150px]"
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

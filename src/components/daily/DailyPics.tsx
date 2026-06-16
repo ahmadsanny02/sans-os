@@ -75,14 +75,6 @@ export function DailyPics() {
     fileInputRef.current?.click()
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-56 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-4">
       <div>
@@ -96,7 +88,12 @@ export function DailyPics() {
       </div>
 
       <div className="relative rounded-2xl border border-border bg-card p-2 shadow-sm hover:border-sidebar-primary/20 transition-all group overflow-hidden h-72 flex flex-col items-center justify-center">
-        {picUrl ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+            <span className="text-xs text-muted-foreground">Loading image...</span>
+          </div>
+        ) : picUrl ? (
           <div className="relative w-full h-full rounded-xl overflow-hidden bg-secondary/10 flex items-center justify-center">
             {/* The Pic of the Day Image */}
             {/* eslint-disable-next-line @next/next/no-img-element */}

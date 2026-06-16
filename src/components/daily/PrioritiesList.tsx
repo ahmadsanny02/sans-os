@@ -53,22 +53,6 @@ export function PrioritiesList() {
     deletePriorityMutation.mutate(id)
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-        Error loading priorities. Please check connection.
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -81,7 +65,7 @@ export function PrioritiesList() {
           </p>
         </div>
         <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border">
-          {listPriorities.length}/5
+          {isLoading ? "..." : `${listPriorities.length}/5`}
         </span>
       </div>
 
@@ -91,11 +75,13 @@ export function PrioritiesList() {
           <input
             type="text"
             required
-            disabled={listPriorities.length >= 5 || createPriorityMutation.isPending}
+            disabled={isLoading || listPriorities.length >= 5 || createPriorityMutation.isPending}
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
             placeholder={
-              listPriorities.length >= 5
+              isLoading
+                ? "Loading..."
+                : listPriorities.length >= 5
                 ? "Top 5 limit reached for today"
                 : "Add new priority task..."
             }
@@ -103,7 +89,7 @@ export function PrioritiesList() {
           />
           <button
             type="submit"
-            disabled={listPriorities.length >= 5 || createPriorityMutation.isPending || !newText.trim()}
+            disabled={isLoading || listPriorities.length >= 5 || createPriorityMutation.isPending || !newText.trim()}
             className="inline-flex items-center justify-center rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50"
             aria-label="Add task button"
           >
@@ -125,7 +111,15 @@ export function PrioritiesList() {
 
       {/* Priorities List */}
       <div className="space-y-3">
-        {listPriorities.length === 0 ? (
+        {isLoading ? (
+          <div className="flex h-32 items-center justify-center rounded-xl border border-border bg-card/20 backdrop-blur-sm">
+            <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+          </div>
+        ) : isError ? (
+          <div className="flex h-32 items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
+            Error loading priorities. Please check connection.
+          </div>
+        ) : listPriorities.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
             No priorities added for today. Add your first item below!
           </div>

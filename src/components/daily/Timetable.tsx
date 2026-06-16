@@ -158,21 +158,7 @@ export function Timetable() {
     deleteBlockMutation.mutate(id)
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
 
-  if (isError) {
-    return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-        Error loading timetable. Please check database configuration.
-      </div>
-    )
-  }
 
   return (
     <div className="space-y-6">
@@ -316,7 +302,15 @@ export function Timetable() {
 
       {/* Timeline List Card */}
       <div className="relative border border-border bg-card rounded-2xl p-6 shadow-sm dark:bg-card/50">
-        {activeDayBlocks.length === 0 ? (
+        {isLoading ? (
+          <div className="py-12 flex items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+          </div>
+        ) : isError ? (
+          <div className="py-12 text-center text-sm text-destructive font-semibold">
+            Error loading timetable. Please check database configuration.
+          </div>
+        ) : activeDayBlocks.length === 0 ? (
           <div className="py-12 text-center text-sm text-muted-foreground flex flex-col items-center justify-center gap-2">
             <CalendarRange className="h-10 w-10 text-muted-foreground/50" />
             <span>No events scheduled for this day of week.</span>
