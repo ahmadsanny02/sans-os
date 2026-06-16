@@ -69,9 +69,31 @@ export default function CalendarPage() {
   const { data: timetableList = [], isLoading: isLoadingTimetable } = useTimetableQuery()
   const togglePriorityMutation = useTogglePriorityMutation(selectedDate)
 
+  // Get current date and time in user's local timezone to compare ongoing/future blocks
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, "0")
+  const day = String(now.getDate()).padStart(2, "0")
+  const realTodayStr = `${year}-${month}-${day}`
+
+  const currentHour = String(now.getHours()).padStart(2, "0")
+  const currentMin = String(now.getMinutes()).padStart(2, "0")
+  const currentTimeStr = `${currentHour}:${currentMin}`
+
+  const isSelectedDateToday = selectedDate === realTodayStr
+
   // Filter timetable blocks: show everyday fixed OR custom date-matching blocks
+  // If the selected date is today, show only ongoing or future blocks
   const activeTimetableBlocks = timetableList
-    .filter((block) => block.dayOfWeek === -1 || block.date === selectedDate)
+    .filter((block) => {
+      const isForDay = block.dayOfWeek === -1 || block.date === selectedDate
+      if (!isForDay) return false
+
+      if (isSelectedDateToday) {
+        return block.endTime >= currentTimeStr
+      }
+      return true
+    })
     .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
   const selectedDateFormatted = format(parseISO(selectedDate), "EEEE, MMMM d, yyyy")
