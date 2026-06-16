@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { priorities } from "@/types/schema"
+import { priorities, timetableBlocks } from "@/types/schema"
 import { eq, and, lt, asc, sql, gte, lte } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -71,7 +71,48 @@ export async function GET(request: Request): Promise<NextResponse> {
       .where(and(eq(priorities.userId, user.id), eq(priorities.date, dateParam)))
       .orderBy(asc(priorities.orderIndex))
 
-    return NextResponse.json(dailyPriorities)
+    // Self-healing: Find custom timetable blocks for this user and date that are not in priorities
+    const customBlocks = await db
+      .select()
+      .from(timetableBlocks)
+      .where(
+        and(
+          eq(timetableBlocks.userId, user.id),
+          eq(timetableBlocks.date, dateParam)
+        )
+      )
+
+    const currentPriorities = [...dailyPriorities]
+    let hasInsertedNew = false
+
+    for (const block of customBlocks) {
+      const exists = currentPriorities.some((p) => p.text === block.title)
+      if (!exists && currentPriorities.length < 5) {
+        try {
+          const [newPriority] = await db
+            .insert(priorities)
+            .values({
+              userId: user.id,
+              date: dateParam,
+              text: block.title,
+              orderIndex: currentPriorities.length,
+              completed: false,
+              rolloverCount: 0,
+            })
+            .returning()
+          currentPriorities.push(newPriority)
+          hasInsertedNew = true
+        } catch (err) {
+          console.error("Failed to self-heal auto-insert priority:", err)
+        }
+      }
+    }
+
+    if (hasInsertedNew) {
+      currentPriorities.sort((a, b) => a.orderIndex - b.orderIndex)
+    }
+
+    return NextResponse.json(currentPriorities)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })

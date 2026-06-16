@@ -189,6 +189,7 @@ export function useCreateTimetableBlockMutation() {
       queryClient.invalidateQueries({ queryKey: ["timetable"] })
       if (variables.date) {
         queryClient.invalidateQueries({ queryKey: ["priorities", variables.date] })
+        queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
       }
     },
   })
