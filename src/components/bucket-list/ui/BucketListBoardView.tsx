@@ -1,15 +1,8 @@
 "use client"
 
-import React, { useState } from "react"
-import {
-  useBucketListQuery,
-  useCreateBucketItemMutation,
-  useUpdateBucketItemMutation,
-  useDeleteBucketItemMutation,
-  BucketItem,
-} from "@/hooks/useBucketList"
-import { useQueryClient } from "@tanstack/react-query"
-import { format } from "date-fns"
+import React from "react"
+import { BucketItem } from "@/hooks/useBucketList"
+import { formatDate } from "@/hooks/useBucketListPage"
 import {
   Plus,
   Trash2,
@@ -23,11 +16,10 @@ import {
   Edit2,
   Compass,
   Heart,
+  X,
 } from "lucide-react"
 import { ImageCardSkeleton } from "@/components/ui/Skeletons"
-import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
-// PRESET BEAUTIFUL IMAGES FOR CONVENIENCE
 const BUCKET_PRESETS = [
   { name: "Mount Fuji", url: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&auto=format&fit=crop&q=80" },
   { name: "Aurora Borealis", url: "https://images.unsplash.com/photo-1483347756197-71ef80e95f73?w=600&auto=format&fit=crop&q=80" },
@@ -36,150 +28,81 @@ const BUCKET_PRESETS = [
   { name: "Deep Ocean Dive", url: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80" },
 ]
 
-export function BucketListBoard() {
-  const queryClient = useQueryClient()
-  const { data: bucketItems = [], isLoading, isError } = useBucketListQuery()
-  const createItemMutation = useCreateBucketItemMutation()
-  const updateItemMutation = useUpdateBucketItemMutation()
-  const deleteItemMutation = useDeleteBucketItemMutation()
+interface BucketListBoardViewProps {
+  isLoading: boolean
+  isError: boolean
+  showAddForm: boolean
+  setShowAddForm: (show: boolean) => void
+  editingItem: BucketItem | null
+  setEditingItem: (item: BucketItem | null) => void
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+  selectedFilter: string
+  setSelectedFilter: (filter: string) => void
+  addTitle: string
+  setAddTitle: (val: string) => void
+  addImageUrl: string
+  setAddImageUrl: (val: string) => void
+  addError: string | null
+  editTitle: string
+  setEditTitle: (val: string) => void
+  editImageUrl: string
+  setEditImageUrl: (val: string) => void
+  editCompleted: boolean
+  setEditCompleted: (val: boolean) => void
+  editError: string | null
+  handleAddItem: (e: React.FormEvent) => Promise<void>
+  handleOpenEdit: (item: BucketItem) => void
+  handleUpdateItem: (e: React.FormEvent) => Promise<void>
+  handleDeleteItem: (id: string, titleStr: string) => Promise<void>
+  handleToggleCompleted: (item: BucketItem) => Promise<void>
+  totalCount: number
+  completedCount: number
+  activeCount: number
+  completionRate: number
+  filteredItems: BucketItem[]
+  isPendingCreate: boolean
+  isPendingUpdate: boolean
+  isPendingDelete: boolean
+}
 
-  // Controls state
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [editingItem, setEditingItem] = useState<BucketItem | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedFilter, setSelectedFilter] = useState("All") // All, Active, Achieved
-
-  // Form states (Add)
-  const [addTitle, setAddTitle] = useState("")
-  const [addImageUrl, setAddImageUrl] = useState("")
-  const [addError, setAddError] = useState<string | null>(null)
-
-  // Form states (Edit)
-  const [editTitle, setEditTitle] = useState("")
-  const [editImageUrl, setEditImageUrl] = useState("")
-  const [editCompleted, setEditCompleted] = useState(false)
-  const [editError, setEditError] = useState<string | null>(null)
-
-  const handleAddItem = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault()
-    setAddError(null)
-
-    if (!addTitle.trim()) {
-      setAddError("Please fill out the Title field.")
-      return
-    }
-
-    try {
-      await createItemMutation.mutateAsync({
-        title: addTitle.trim(),
-        imageUrl: addImageUrl.trim() || null,
-      })
-      setAddTitle("")
-      setAddImageUrl("")
-      setShowAddForm(false)
-      showSuccessToast("Dream added to bucket list!")
-    } catch {
-      setAddError("Failed to add item to bucket list.")
-    }
-  }
-
-  const handleOpenEdit = (item: BucketItem): void => {
-    setEditingItem(item)
-    setEditTitle(item.title)
-    setEditImageUrl(item.imageUrl || "")
-    setEditCompleted(item.completed)
-    setEditError(null)
-  }
-
-  const handleUpdateItem = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault()
-    setEditError(null)
-
-    if (!editingItem) return
-    if (!editTitle.trim()) {
-      setEditError("Please fill out the Title field.")
-      return
-    }
-
-    try {
-      await updateItemMutation.mutateAsync({
-        id: editingItem.id,
-        title: editTitle.trim(),
-        imageUrl: editImageUrl.trim() || null,
-        completed: editCompleted,
-      })
-      setEditingItem(null)
-      showSuccessToast("Dream updated successfully")
-    } catch {
-      setEditError("Failed to update bucket list item.")
-    }
-  }
-
-  const handleDeleteItem = async (id: string, titleStr: string): Promise<void> => {
-    const isConfirmed = await confirmDestructive(
-      "Delete Bucket Goal",
-      `Are you sure you want to delete "${titleStr}"?`
-    )
-    if (!isConfirmed) return
-    try {
-      await deleteItemMutation.mutateAsync(id)
-      showSuccessToast("Dream deleted successfully")
-    } catch {
-      showError("Delete Error", "Failed to delete item.")
-    }
-  }
-
-  const handleToggleCompleted = async (item: BucketItem): Promise<void> => {
-    // Optimistic cache update for instant UI feedback
-    const nextCompleted = !item.completed
-    const nextCompletedAt = nextCompleted ? new Date().toISOString() : null
-
-    queryClient.setQueryData<BucketItem[]>(["bucket-list"], (old) => {
-      if (!old) return []
-      return old.map((i) =>
-        i.id === item.id ? { ...i, completed: nextCompleted, completedAt: nextCompletedAt } : i
-      )
-    })
-
-    try {
-      await updateItemMutation.mutateAsync({
-        id: item.id,
-        completed: nextCompleted,
-      })
-      showSuccessToast(nextCompleted ? "Goal achieved! Congratulations!" : "Goal set back to active")
-    } catch {
-      // Revert if mutation fails
-      queryClient.invalidateQueries({ queryKey: ["bucket-list"] })
-      showError("Error", "Failed to toggle completion status.")
-    }
-  }
-
-  // Calculate metrics
-  const totalCount = bucketItems.length
-  const completedCount = bucketItems.filter((i) => i.completed).length
-  const activeCount = totalCount - completedCount
-  const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
-
-  // Filter list
-  const filteredItems = bucketItems.filter((item) => {
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus =
-      selectedFilter === "All" ||
-      (selectedFilter === "Active" && !item.completed) ||
-      (selectedFilter === "Achieved" && item.completed)
-    return matchesSearch && matchesStatus
-  })
-
-  function formatDate(dateStr: string | null | undefined): string {
-    if (!dateStr) return ""
-    try {
-      const d = new Date(dateStr)
-      return format(d, "MMM d, yyyy")
-    } catch {
-      return ""
-    }
-  }
-
+export function BucketListBoardView({
+  isLoading,
+  isError,
+  showAddForm,
+  setShowAddForm,
+  editingItem,
+  setEditingItem,
+  searchQuery,
+  setSearchQuery,
+  selectedFilter,
+  setSelectedFilter,
+  addTitle,
+  setAddTitle,
+  addImageUrl,
+  setAddImageUrl,
+  addError,
+  editTitle,
+  setEditTitle,
+  editImageUrl,
+  setEditImageUrl,
+  editCompleted,
+  setEditCompleted,
+  editError,
+  handleAddItem,
+  handleOpenEdit,
+  handleUpdateItem,
+  handleDeleteItem,
+  handleToggleCompleted,
+  totalCount,
+  completedCount,
+  activeCount,
+  completionRate,
+  filteredItems,
+  isPendingCreate,
+  isPendingUpdate,
+  isPendingDelete,
+}: BucketListBoardViewProps) {
   return (
     <div className="space-y-6">
       {/* 1. Statistics / Progress Card */}
@@ -353,10 +276,10 @@ export function BucketListBoard() {
             </button>
             <button
               type="submit"
-              disabled={createItemMutation.isPending}
+              disabled={isPendingCreate}
               className="rounded-lg bg-sidebar-primary px-3.5 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
             >
-              {createItemMutation.isPending ? (
+              {isPendingCreate ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : (
                 "Save Dream"
@@ -440,6 +363,7 @@ export function BucketListBoard() {
                   </button>
                   <button
                     onClick={() => handleDeleteItem(item.id, item.title)}
+                    disabled={isPendingDelete}
                     className="p-1.5 rounded-lg bg-black/60 border border-white/20 text-rose-400 hover:bg-rose-500/30 transition-all active:scale-95"
                     title="Delete Item"
                   >
@@ -452,6 +376,7 @@ export function BucketListBoard() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleToggleCompleted(item)}
+                      disabled={isPendingUpdate}
                       className="text-white hover:scale-105 transition-transform shrink-0"
                     >
                       {item.completed ? (
@@ -488,7 +413,14 @@ export function BucketListBoard() {
       {editingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-xl backdrop-blur-md space-y-4 animate-in zoom-in-95 duration-200">
-          
+            {/* Close button */}
+            <button
+              onClick={() => setEditingItem(null)}
+              className="absolute right-4.5 top-4.5 p-1 rounded-lg hover:bg-secondary text-muted-foreground transition-all"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
             <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border/40 py-2">
               <Compass className="h-5 w-5 text-violet-500" />
               Edit Bucket List Goal
@@ -551,10 +483,10 @@ export function BucketListBoard() {
                 </button>
                 <button
                   type="submit"
-                  disabled={updateItemMutation.isPending}
+                  disabled={isPendingUpdate}
                   className="rounded-lg bg-sidebar-primary px-4 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
                 >
-                  {updateItemMutation.isPending ? (
+                  {isPendingUpdate ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
                     "Save Changes"
