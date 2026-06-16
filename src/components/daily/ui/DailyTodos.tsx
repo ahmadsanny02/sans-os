@@ -1,62 +1,34 @@
 "use client"
 
-import React, { useState } from "react"
-import { useWorkspaceStore } from "@/store/workspaceStore"
-import {
-  useDailyTodosQuery,
-  useCreateDailyTodoMutation,
-  useToggleDailyTodoMutation,
-  useDeleteDailyTodoMutation,
-} from "@/hooks/useDailyLogs"
+import React from "react"
+import { DailyTodo } from "@/hooks/useDailyLogs"
 import { Plus, Trash2, Check, Loader2, ListTodo, AlertCircle } from "lucide-react"
-import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
-export function DailyTodos() {
-  const activeDate = useWorkspaceStore((state) => state.activeDate)
+interface DailyTodosProps {
+  todos: DailyTodo[]
+  isLoading: boolean
+  isError: boolean
+  newText: string
+  setNewText: (t: string) => void
+  errorMsg: string | null
+  handleAddTodo: (e: React.FormEvent) => Promise<void>
+  handleToggleCompleted: (id: string, completed: boolean) => void
+  handleDeleteTodo: (id: string) => Promise<void>
+  isPendingCreate: boolean
+}
 
-  const { data: todos = [], isLoading, isError } = useDailyTodosQuery(activeDate)
-  const createTodoMutation = useCreateDailyTodoMutation()
-  const toggleTodoMutation = useToggleDailyTodoMutation(activeDate)
-  const deleteTodoMutation = useDeleteDailyTodoMutation(activeDate)
-
-  const [newText, setNewText] = useState("")
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
-
-  const handleAddTodo = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault()
-    setErrorMsg(null)
-    if (!newText.trim()) return
-
-    try {
-      await createTodoMutation.mutateAsync({
-        date: activeDate,
-        text: newText,
-      })
-      setNewText("")
-      showSuccessToast("Todo added successfully")
-    } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to add todo")
-    }
-  }
-
-  const handleToggleCompleted = (id: string, completed: boolean): void => {
-    toggleTodoMutation.mutate({ id, completed: !completed })
-  }
-
-  const handleDeleteTodo = async (id: string): Promise<void> => {
-    const isConfirmed = await confirmDestructive(
-      "Delete Todo",
-      "Are you sure you want to delete this todo item?"
-    )
-    if (!isConfirmed) return
-    try {
-      deleteTodoMutation.mutate(id)
-      showSuccessToast("Todo deleted")
-    } catch {
-      showError("Error", "Failed to delete todo.")
-    }
-  }
-
+export function DailyTodos({
+  todos,
+  isLoading,
+  isError,
+  newText,
+  setNewText,
+  errorMsg,
+  handleAddTodo,
+  handleToggleCompleted,
+  handleDeleteTodo,
+  isPendingCreate,
+}: DailyTodosProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -83,7 +55,7 @@ export function DailyTodos() {
           <input
             type="text"
             required
-            disabled={isLoading || createTodoMutation.isPending}
+            disabled={isLoading || isPendingCreate}
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
             placeholder={isLoading ? "Loading..." : "Add new task..."}
@@ -91,11 +63,11 @@ export function DailyTodos() {
           />
           <button
             type="submit"
-            disabled={isLoading || createTodoMutation.isPending || !newText.trim()}
+            disabled={isLoading || isPendingCreate || !newText.trim()}
             className="inline-flex items-center justify-center rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50"
             aria-label="Add new todo item"
           >
-            {createTodoMutation.isPending ? (
+            {isPendingCreate ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Plus className="h-4 w-4" />
@@ -103,12 +75,12 @@ export function DailyTodos() {
           </button>
         </div>
 
-        {errorMsg ? (
+        {errorMsg && (
           <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
             <AlertCircle className="h-3.5 w-3.5" />
             {errorMsg}
           </p>
-        ) : null}
+        )}
       </form>
 
       <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
@@ -139,7 +111,6 @@ export function DailyTodos() {
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <button
                     onClick={() => handleToggleCompleted(todo.id, todo.completed)}
-                    disabled={toggleTodoMutation.isPending}
                     className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 ${
                       todo.completed
                         ? "bg-sidebar-primary border-sidebar-primary text-sidebar-primary-foreground"
@@ -147,9 +118,7 @@ export function DailyTodos() {
                     }`}
                     aria-label="Toggle task completion"
                   >
-                    {todo.completed ? (
-                      <Check className="h-3.5 w-3.5 stroke-[3]" />
-                    ) : null}
+                    {todo.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                   </button>
 
                   <span
@@ -163,7 +132,6 @@ export function DailyTodos() {
 
                 <button
                   onClick={() => handleDeleteTodo(todo.id)}
-                  disabled={deleteTodoMutation.isPending}
                   className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                   aria-label="Delete todo item"
                 >

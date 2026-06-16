@@ -1,70 +1,34 @@
 "use client"
 
-import React, { useState } from "react"
-import { useWorkspaceStore } from "@/store/workspaceStore"
-import {
-  usePrioritiesQuery,
-  useCreatePriorityMutation,
-  useTogglePriorityMutation,
-  useDeletePriorityMutation,
-} from "@/hooks/useDaily"
+import React from "react"
+import { Priority } from "@/hooks/useDaily"
 import { Plus, Trash2, Check, Loader2, RefreshCw, AlertCircle } from "lucide-react"
-import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
-export function PrioritiesList() {
-  const activeDate = useWorkspaceStore((state) => state.activeDate)
+interface PrioritiesListProps {
+  listPriorities: Priority[]
+  isLoading: boolean
+  isError: boolean
+  newText: string
+  setNewText: (t: string) => void
+  errorMsg: string | null
+  handleAddPriority: (e: React.FormEvent) => Promise<void>
+  handleToggleCompleted: (id: string, completed: boolean) => void
+  handleDeletePriority: (id: string) => Promise<void>
+  isPendingCreate: boolean
+}
 
-  // React Query Hooks
-  const { data: listPriorities = [], isLoading, isError } = usePrioritiesQuery(activeDate)
-  const createPriorityMutation = useCreatePriorityMutation()
-  const togglePriorityMutation = useTogglePriorityMutation(activeDate)
-  const deletePriorityMutation = useDeletePriorityMutation(activeDate)
-
-  // Add priority form state
-  const [newText, setNewText] = useState("")
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
-
-  const handleAddPriority = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault()
-    setErrorMsg(null)
-    if (!newText.trim()) return
-
-    if (listPriorities.length >= 5) {
-      setErrorMsg("You can only have a maximum of 5 priorities per day.")
-      return
-    }
-
-    try {
-      await createPriorityMutation.mutateAsync({
-        date: activeDate,
-        text: newText,
-        orderIndex: listPriorities.length,
-      })
-      setNewText("")
-      showSuccessToast("Priority added")
-    } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to add priority")
-    }
-  }
-
-  const handleToggleCompleted = (id: string, completed: boolean): void => {
-    togglePriorityMutation.mutate({ id, completed: !completed })
-  }
-
-  const handleDeletePriority = async (id: string): Promise<void> => {
-    const isConfirmed = await confirmDestructive(
-      "Delete Priority",
-      "Are you sure you want to delete this priority?"
-    )
-    if (!isConfirmed) return
-    try {
-      deletePriorityMutation.mutate(id)
-      showSuccessToast("Priority deleted")
-    } catch {
-      showError("Error", "Failed to delete priority.")
-    }
-  }
-
+export function PrioritiesList({
+  listPriorities,
+  isLoading,
+  isError,
+  newText,
+  setNewText,
+  errorMsg,
+  handleAddPriority,
+  handleToggleCompleted,
+  handleDeletePriority,
+  isPendingCreate,
+}: PrioritiesListProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -85,13 +49,13 @@ export function PrioritiesList() {
         </span>
       </div>
 
-       {/* Add Priority Input Form */}
+      {/* Add Priority Input Form */}
       <form onSubmit={handleAddPriority} className="space-y-2.5">
         <div className="flex gap-2">
           <input
             type="text"
             required
-            disabled={isLoading || listPriorities.length >= 5 || createPriorityMutation.isPending}
+            disabled={isLoading || listPriorities.length >= 5 || isPendingCreate}
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
             placeholder={
@@ -105,11 +69,11 @@ export function PrioritiesList() {
           />
           <button
             type="submit"
-            disabled={isLoading || listPriorities.length >= 5 || createPriorityMutation.isPending || !newText.trim()}
+            disabled={isLoading || listPriorities.length >= 5 || isPendingCreate || !newText.trim()}
             className="inline-flex items-center justify-center rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50"
             aria-label="Add task button"
           >
-            {createPriorityMutation.isPending ? (
+            {isPendingCreate ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Plus className="h-4 w-4" />
@@ -117,12 +81,12 @@ export function PrioritiesList() {
           </button>
         </div>
 
-        {errorMsg ? (
+        {errorMsg && (
           <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
             <AlertCircle className="h-3.5 w-3.5" />
             {errorMsg}
           </p>
-        ) : null}
+        )}
       </form>
 
       {/* Priorities List */}
@@ -154,17 +118,14 @@ export function PrioritiesList() {
                 <div className="flex items-center gap-3.5 flex-1 min-w-0">
                   <button
                     onClick={() => handleToggleCompleted(priority.id, priority.completed)}
-                    disabled={togglePriorityMutation.isPending}
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 cursor-pointer disabled:cursor-not-allowed ${
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 cursor-pointer ${
                       priority.completed
                         ? "bg-sidebar-primary border-sidebar-primary text-sidebar-primary-foreground"
                         : "border-border hover:border-sidebar-primary/50 hover:bg-sidebar-primary/10"
                     }`}
                     aria-label="Toggle task completed"
                   >
-                    {priority.completed ? (
-                      <Check className="h-3.5 w-3.5 stroke-[3]" />
-                    ) : null}
+                    {priority.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                   </button>
 
                   <div className="flex flex-col min-w-0 pr-2">
@@ -175,18 +136,17 @@ export function PrioritiesList() {
                     >
                       {priority.text}
                     </span>
-                    {priority.rolloverCount > 0 && !priority.completed ? (
+                    {priority.rolloverCount > 0 && !priority.completed && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-500 mt-0.5">
                         <RefreshCw className="h-3 w-3 animate-spin-slow" />
                         Rolled over {priority.rolloverCount}x
                       </span>
-                    ) : null}
+                    )}
                   </div>
                 </div>
 
                 <button
                   onClick={() => handleDeletePriority(priority.id)}
-                  disabled={deletePriorityMutation.isPending}
                   className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                   aria-label="Delete priority"
                 >

@@ -1,82 +1,28 @@
 "use client"
 
-import React, { useState, useRef } from "react"
-import { useWorkspaceStore } from "@/store/workspaceStore"
-import { useDailyLogQuery, useSaveDailyLogMutation } from "@/hooks/useDailyLogs"
+import React, { useRef } from "react"
 import { Image as ImageIcon, Camera, Trash2, Loader2, UploadCloud, AlertCircle } from "lucide-react"
-import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
-export function DailyPics() {
-  const activeDate = useWorkspaceStore((state) => state.activeDate)
+interface DailyPicsProps {
+  isLoading: boolean
+  isUploading: boolean
+  errorMsg: string | null
+  picUrl: string | undefined
+  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>
+  handleDelete: () => Promise<void>
+  isPendingSave: boolean
+}
+
+export function DailyPics({
+  isLoading,
+  isUploading,
+  errorMsg,
+  picUrl,
+  handleFileChange,
+  handleDelete,
+  isPendingSave,
+}: DailyPicsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const { data: log, isLoading } = useDailyLogQuery(activeDate)
-  const saveLogMutation = useSaveDailyLogMutation()
-
-  const [isUploading, setIsUploading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
-
-  const picUrl = log?.picUrl
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setIsUploading(true)
-    setErrorMsg(null)
-
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-      formData.append("date", activeDate)
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!res.ok) {
-        const errData = await res.json()
-        throw new Error(errData.error || "Failed to upload image")
-      }
-
-      const data = await res.json()
-
-      // Save the uploaded pic URL in the daily log
-      await saveLogMutation.mutateAsync({
-        date: activeDate,
-        picUrl: data.url,
-      })
-    } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to upload image")
-    } finally {
-      setIsUploading(false)
-      // Reset input value so user can upload the same file again if desired
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""
-      }
-    }
-  }
-
-  const handleDelete = async (): Promise<void> => {
-    const isConfirmed = await confirmDestructive(
-      "Remove Photo",
-      "Are you sure you want to remove today's photo?"
-    )
-    if (!isConfirmed) return
-    setErrorMsg(null)
-    try {
-      await saveLogMutation.mutateAsync({
-        date: activeDate,
-        picUrl: "", // setting to empty string to clear the value
-      })
-      showSuccessToast("Photo removed successfully")
-    } catch (err) {
-      console.error(err)
-      setErrorMsg("Failed to remove photo")
-      showError("Error", "Failed to remove photo")
-    }
-  }
 
   const triggerFileInput = (): void => {
     fileInputRef.current?.click()
@@ -99,7 +45,6 @@ export function DailyPics() {
           <div className="w-full h-full bg-muted/20 animate-pulse rounded-xl" />
         ) : picUrl ? (
           <div className="relative w-full h-full rounded-xl overflow-hidden bg-secondary/10 flex items-center justify-center">
-            {/* The Pic of the Day Image */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={picUrl}
@@ -110,7 +55,7 @@ export function DailyPics() {
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
               <button
                 onClick={triggerFileInput}
-                disabled={isUploading || saveLogMutation.isPending}
+                disabled={isUploading || isPendingSave}
                 className="p-2.5 rounded-full bg-card/90 text-foreground hover:bg-card hover:scale-105 transition-all shadow-md"
                 title="Change Photo"
               >
@@ -118,7 +63,7 @@ export function DailyPics() {
               </button>
               <button
                 onClick={handleDelete}
-                disabled={isUploading || saveLogMutation.isPending}
+                disabled={isUploading || isPendingSave}
                 className="p-2.5 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:scale-105 transition-all shadow-md"
                 title="Remove Photo"
               >
@@ -131,7 +76,7 @@ export function DailyPics() {
             onClick={triggerFileInput}
             className="w-full h-full rounded-xl border-2 border-dashed border-border hover:border-sidebar-primary/40 cursor-pointer flex flex-col items-center justify-center p-6 text-center transition-all bg-secondary/10 hover:bg-secondary/25"
           >
-            {isUploading || saveLogMutation.isPending ? (
+            {isUploading || isPendingSave ? (
               <Loader2 className="h-10 w-10 animate-spin text-sidebar-primary mb-3" />
             ) : (
               <ImageIcon className="h-10 w-10 text-muted-foreground group-hover:text-sidebar-primary transition-colors mb-3" />

@@ -1,91 +1,20 @@
 "use client"
 
-import React, { useState } from "react"
-import { useWorkspaceStore } from "@/store/workspaceStore"
-import {
-  useTimetableQuery,
-  useCreateTimetableBlockMutation,
-  useDeleteTimetableBlockMutation,
-} from "@/hooks/useDaily"
-import { parseISO } from "date-fns"
+import React from "react"
+import { TimetableBlock } from "@/hooks/useDaily"
 import { Plus, Trash2, Clock, Loader2, CalendarRange, AlertCircle } from "lucide-react"
-import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
-// Color options mapping for timetable blocks
 const COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
-  blue: {
-    bg: "bg-blue-500/10",
-    text: "text-blue-500 dark:text-blue-400",
-    border: "border-blue-500/20",
-    bullet: "bg-blue-500",
-  },
-  green: {
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-500 dark:text-emerald-400",
-    border: "border-emerald-500/20",
-    bullet: "bg-emerald-500",
-  },
-  purple: {
-    bg: "bg-purple-500/10",
-    text: "text-purple-500 dark:text-purple-400",
-    border: "border-purple-500/20",
-    bullet: "bg-purple-500",
-  },
-  amber: {
-    bg: "bg-amber-500/10",
-    text: "text-amber-500 dark:text-amber-400",
-    border: "border-amber-500/20",
-    bullet: "bg-amber-500",
-  },
-  red: {
-    bg: "bg-rose-500/10",
-    text: "text-rose-500 dark:text-rose-400",
-    border: "border-rose-500/20",
-    bullet: "bg-rose-500",
-  },
-  pink: {
-    bg: "bg-pink-500/10",
-    text: "text-pink-500 dark:text-pink-400",
-    border: "border-pink-500/20",
-    bullet: "bg-pink-500",
-  },
-  teal: {
-    bg: "bg-teal-500/10",
-    text: "text-teal-500 dark:text-teal-400",
-    border: "border-teal-500/20",
-    bullet: "bg-teal-500",
-  },
-  orange: {
-    bg: "bg-orange-500/10",
-    text: "text-orange-500 dark:text-orange-400",
-    border: "border-orange-500/20",
-    bullet: "bg-orange-500",
-  },
-  indigo: {
-    bg: "bg-indigo-500/10",
-    text: "text-indigo-500 dark:text-indigo-400",
-    border: "border-indigo-500/20",
-    bullet: "bg-indigo-500",
-  },
-  slate: {
-    bg: "bg-slate-500/10",
-    text: "text-slate-500 dark:text-slate-400",
-    border: "border-slate-500/20",
-    bullet: "bg-slate-500",
-  },
-}
-
-// Category-based colors mapping
-const CATEGORY_COLORS: Record<string, string> = {
-  Personal: "teal",
-  Work: "blue",
-  Business: "indigo",
-  Playing: "pink",
-  Social: "purple",
-  Education: "orange",
-  Project: "red",
-  Family: "green",
-  General: "slate",
+  blue: { bg: "bg-blue-500/10", text: "text-blue-500 dark:text-blue-400", border: "border-blue-500/20", bullet: "bg-blue-500" },
+  green: { bg: "bg-emerald-500/10", text: "text-emerald-500 dark:text-emerald-400", border: "border-emerald-500/20", bullet: "bg-emerald-500" },
+  purple: { bg: "bg-purple-500/10", text: "text-purple-500 dark:text-purple-400", border: "border-purple-500/20", bullet: "bg-purple-500" },
+  amber: { bg: "bg-amber-500/10", text: "text-amber-500 dark:text-amber-400", border: "border-amber-500/20", bullet: "bg-amber-500" },
+  red: { bg: "bg-rose-500/10", text: "text-rose-500 dark:text-rose-400", border: "border-rose-500/20", bullet: "bg-rose-500" },
+  pink: { bg: "bg-pink-500/10", text: "text-pink-500 dark:text-pink-400", border: "border-pink-500/20", bullet: "bg-pink-500" },
+  teal: { bg: "bg-teal-500/10", text: "text-teal-500 dark:text-teal-400", border: "border-teal-500/20", bullet: "bg-teal-500" },
+  orange: { bg: "bg-orange-500/10", text: "text-orange-500 dark:text-orange-400", border: "border-orange-500/20", bullet: "bg-orange-500" },
+  indigo: { bg: "bg-indigo-500/10", text: "text-indigo-500 dark:text-indigo-400", border: "border-indigo-500/20", bullet: "bg-indigo-500" },
+  slate: { bg: "bg-slate-500/10", text: "text-slate-500 dark:text-slate-400", border: "border-slate-500/20", bullet: "bg-slate-500" },
 }
 
 function calculateDuration(start: string, end: string): string {
@@ -93,7 +22,7 @@ function calculateDuration(start: string, end: string): string {
     const [startH, startM] = start.split(":").map(Number)
     const [endH, endM] = end.split(":").map(Number)
     let diffMins = endH * 60 + endM - (startH * 60 + startM)
-    if (diffMins < 0) diffMins += 24 * 60 // wrap around
+    if (diffMins < 0) diffMins += 24 * 60
     const hours = Math.floor(diffMins / 60)
     const mins = diffMins % 60
     return `${hours > 0 ? `${hours}h ` : ""}${mins > 0 ? `${mins}m` : ""}`.trim() || "0m"
@@ -102,76 +31,49 @@ function calculateDuration(start: string, end: string): string {
   }
 }
 
-export function Timetable() {
-  const activeDate = useWorkspaceStore((state) => state.activeDate)
+interface TimetableProps {
+  isLoading: boolean
+  isError: boolean
+  showAddForm: boolean
+  setShowAddForm: (show: boolean) => void
+  title: string
+  setTitle: (t: string) => void
+  startTime: string
+  setStartTime: (t: string) => void
+  endTime: string
+  setEndTime: (t: string) => void
+  category: string
+  setCategory: (c: string) => void
+  scheduleType: "fixed" | "custom"
+  setScheduleType: (t: "fixed" | "custom") => void
+  errorMsg: string | null
+  handleAddBlock: (e: React.FormEvent) => Promise<void>
+  handleDeleteBlock: (id: string) => Promise<void>
+  activeDayBlocks: TimetableBlock[]
+  isPendingCreate: boolean
+}
 
-  // Fetch all timetable blocks
-  const { data: timetableList = [], isLoading, isError } = useTimetableQuery()
-  const createBlockMutation = useCreateTimetableBlockMutation()
-  const deleteBlockMutation = useDeleteTimetableBlockMutation()
-
-  // Form states
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [title, setTitle] = useState("")
-  const [startTime, setStartTime] = useState("08:00")
-  const [endTime, setEndTime] = useState("09:00")
-  const [category, setCategory] = useState("General")
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [scheduleType, setScheduleType] = useState<"fixed" | "custom">("custom")
-
-  // Compute active day of the week (0 = Sunday, 1 = Monday, etc.)
-  const activeDayOfWeek = parseISO(activeDate).getDay()
-
-  // Filter and sort blocks for current day: show everyday fixed OR blocks matching activeDate
-  const activeDayBlocks = timetableList
-    .filter((block) => block.dayOfWeek === -1 || block.date === activeDate)
-    .sort((a, b) => a.startTime.localeCompare(b.startTime))
-
-  const handleAddBlock = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault()
-    setErrorMsg(null)
-    if (!title.trim() || !startTime || !endTime) return
-
-    // Simple time check validation
-    if (startTime >= endTime) {
-      setErrorMsg("End time must be after start time.")
-      return
-    }
-
-    try {
-      await createBlockMutation.mutateAsync({
-        dayOfWeek: scheduleType === "fixed" ? -1 : activeDayOfWeek,
-        startTime,
-        endTime,
-        title,
-        category,
-        color: CATEGORY_COLORS[category] || "blue",
-        date: scheduleType === "fixed" ? undefined : activeDate,
-      })
-      setTitle("")
-      setShowAddForm(false)
-      showSuccessToast("Schedule block added")
-    } catch {
-      setErrorMsg("Failed to save timetable block.")
-    }
-  }
-
-  const handleDeleteBlock = async (id: string): Promise<void> => {
-    const isConfirmed = await confirmDestructive(
-      "Delete Schedule Block",
-      "Are you sure you want to delete this time block?"
-    )
-    if (!isConfirmed) return
-    try {
-      deleteBlockMutation.mutate(id)
-      showSuccessToast("Schedule block deleted")
-    } catch {
-      showError("Error", "Failed to delete schedule block.")
-    }
-  }
-
-
-
+export function Timetable({
+  isLoading,
+  isError,
+  showAddForm,
+  setShowAddForm,
+  title,
+  setTitle,
+  startTime,
+  setStartTime,
+  endTime,
+  setEndTime,
+  category,
+  setCategory,
+  scheduleType,
+  setScheduleType,
+  errorMsg,
+  handleAddBlock,
+  handleDeleteBlock,
+  activeDayBlocks,
+  isPendingCreate,
+}: TimetableProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -193,7 +95,7 @@ export function Timetable() {
       </div>
 
       {/* Add Block Form Card */}
-      {showAddForm ? (
+      {showAddForm && (
         <form
           onSubmit={handleAddBlock}
           className="rounded-xl border border-border bg-card/60 p-4 shadow-sm backdrop-blur-md space-y-4 animate-in slide-in-from-top-4 duration-200"
@@ -282,12 +184,12 @@ export function Timetable() {
             </div>
           </div>
 
-          {errorMsg ? (
+          {errorMsg && (
             <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
               <AlertCircle className="h-3.5 w-3.5" />
               {errorMsg}
             </p>
-          ) : null}
+          )}
 
           <div className="flex justify-end gap-2 border-t border-border/40 pt-3">
             <button
@@ -299,10 +201,10 @@ export function Timetable() {
             </button>
             <button
               type="submit"
-              disabled={createBlockMutation.isPending}
+              disabled={isPendingCreate}
               className="rounded-lg bg-sidebar-primary px-3 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
             >
-              {createBlockMutation.isPending ? (
+              {isPendingCreate ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : (
                 "Save Block"
@@ -310,7 +212,7 @@ export function Timetable() {
             </button>
           </div>
         </form>
-      ) : null}
+      )}
 
       {/* Timeline List Card */}
       <div className="relative border border-border bg-card rounded-2xl p-6 shadow-sm dark:bg-card/50">
@@ -353,11 +255,11 @@ export function Timetable() {
                         <span>
                           {block.startTime} - {block.endTime}
                         </span>
-                        {duration ? (
+                        {duration && (
                           <span className="rounded-full bg-background/50 px-2 py-0.5 text-[10px]">
                             {duration}
                           </span>
-                        ) : null}
+                        )}
                         {block.dayOfWeek === -1 && (
                           <span className="rounded-full bg-sidebar-primary/10 text-sidebar-primary dark:bg-sidebar-primary/20 dark:text-violet-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
                             Every Day
@@ -369,16 +271,15 @@ export function Timetable() {
                         {block.title}
                       </h4>
                       
-                      {block.category ? (
+                      {block.category && (
                         <span className={`inline-block text-[10px] font-bold tracking-wide uppercase ${theme.text}`}>
                           {block.category}
                         </span>
-                      ) : null}
+                      )}
                     </div>
 
                     <button
                       onClick={() => handleDeleteBlock(block.id)}
-                      disabled={deleteBlockMutation.isPending}
                       className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
                       aria-label="Delete schedule block"
                     >

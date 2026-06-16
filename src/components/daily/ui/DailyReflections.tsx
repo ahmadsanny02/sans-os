@@ -1,48 +1,37 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
-import { useWorkspaceStore } from "@/store/workspaceStore"
-import { useDailyLogQuery, useSaveDailyLogMutation } from "@/hooks/useDailyLogs"
-import { BookOpen, Heart, FileText, Save, Loader2, Check } from "lucide-react"
-import { showError, showSuccessToast } from "@/lib/sweetalert"
+import React from "react"
+import { BookOpen, Heart, FileText, Save, Loader2 } from "lucide-react"
 
 type TabType = "journal" | "gratitude" | "notes"
 
-export function DailyReflections() {
-  const activeDate = useWorkspaceStore((state) => state.activeDate)
+interface DailyReflectionsProps {
+  isLoading: boolean
+  activeTab: TabType
+  setActiveTab: (tab: TabType) => void
+  journal: string
+  setJournal: (s: string) => void
+  notes: string
+  setNotes: (s: string) => void
+  gratitude: string
+  setGratitude: (s: string) => void
+  handleSave: () => Promise<void>
+  isPendingSave: boolean
+}
 
-  const { data: log, isLoading } = useDailyLogQuery(activeDate)
-  const saveLogMutation = useSaveDailyLogMutation()
-
-  const [activeTab, setActiveTab] = useState<TabType>("journal")
-  const [journal, setJournal] = useState("")
-  const [notes, setNotes] = useState("")
-  const [gratitude, setGratitude] = useState("")
-  const [saveSuccess] = useState(false)
-
-  // Sync with fetched daily logs
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setJournal(log?.journal || "")
-    setNotes(log?.notes || "")
-    setGratitude(log?.gratitude || "")
-  }, [log])
-
-  const handleSave = async (): Promise<void> => {
-    try {
-      await saveLogMutation.mutateAsync({
-        date: activeDate,
-        journal,
-        notes,
-        gratitude,
-      })
-      showSuccessToast("Reflections saved")
-    } catch (err) {
-      console.error("Failed to save reflections", err)
-      showError("Save Failed", "Failed to save your reflections. Please try again.")
-    }
-  }
-
+export function DailyReflections({
+  isLoading,
+  activeTab,
+  setActiveTab,
+  journal,
+  setJournal,
+  notes,
+  setNotes,
+  gratitude,
+  setGratitude,
+  handleSave,
+  isPendingSave,
+}: DailyReflectionsProps) {
   const tabs = [
     { id: "journal" as TabType, label: "My Journal", icon: BookOpen, color: "text-blue-500" },
     { id: "gratitude" as TabType, label: "Daily Gratitude", icon: Heart, color: "text-rose-500" },
@@ -64,16 +53,11 @@ export function DailyReflections() {
 
         <button
           onClick={handleSave}
-          disabled={isLoading || saveLogMutation.isPending}
-          className="inline-flex items-center gap-2 rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50 active:scale-95"
+          disabled={isLoading || isPendingSave}
+          className="inline-flex items-center gap-2 rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50 active:scale-95 animate-in"
         >
-          {saveLogMutation.isPending ? (
+          {isPendingSave ? (
             <Loader2 className="h-4 w-4 animate-spin" />
-          ) : saveSuccess ? (
-            <>
-              <Check className="h-4 w-4 stroke-[3]" />
-              Saved
-            </>
           ) : (
             <>
               <Save className="h-4 w-4" />
