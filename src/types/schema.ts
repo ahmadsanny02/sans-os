@@ -157,3 +157,26 @@ export const bucketList = pgTable("bucket_list", {
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
+
+// 12. Daily To-Dos
+export const dailyTodos = pgTable("daily_todos", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull(),
+  date: text("date").notNull(), // timezone-independent ISO string "YYYY-MM-DD"
+  text: text("text").notNull(),
+  completed: boolean("completed").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+// 13. Daily Logs (Journal, Notes, Gratitude, Pic of the Day)
+export const dailyLogs = pgTable("daily_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull(),
+  date: text("date").notNull(), // timezone-independent ISO string "YYYY-MM-DD"
+  journal: text("journal"),
+  notes: text("notes"),
+  gratitude: text("gratitude"),
+  picUrl: text("pic_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+

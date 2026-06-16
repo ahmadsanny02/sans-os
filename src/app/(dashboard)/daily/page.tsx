@@ -5,6 +5,9 @@ import { useWorkspaceStore } from "@/store/workspaceStore"
 import { PrioritiesList } from "@/components/daily/PrioritiesList"
 import { Timetable } from "@/components/daily/Timetable"
 import { CalendarDatePicker } from "@/components/daily/CalendarDatePicker"
+import { DailyTodos } from "@/components/daily/DailyTodos"
+import { DailyReflections } from "@/components/daily/DailyReflections"
+import { DailyPics } from "@/components/daily/DailyPics"
 import { format, parseISO, addDays, subDays } from "date-fns"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
@@ -89,6 +92,22 @@ export default function DailyPage() {
         {/* Timetable Section */}
         <div className="lg:col-span-7 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
           <Timetable />
+        </div>
+      </div>
+
+      {/* Row 2: To-Dos, Reflections & Pics */}
+      <div className="grid gap-8 lg:grid-cols-12">
+        {/* To-Dos Section */}
+        <div className="lg:col-span-5 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
+          <DailyTodos />
+        </div>
+
+        {/* Reflections & Pics of the Day Section */}
+        <div className="lg:col-span-7 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm space-y-8">
+          <DailyReflections />
+          <div className="border-t border-border/60 pt-6">
+            <DailyPics />
+          </div>
         </div>
       </div>
     </div>
