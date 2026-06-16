@@ -1,15 +1,8 @@
 "use client"
 
-import React, { useState, useRef } from "react"
-import {
-  useVisionBoardQuery,
-  useCreateVisionBoardItemMutation,
-  useUpdateVisionBoardItemMutation,
-  useDeleteVisionBoardItemMutation,
-  VisionBoardItem,
-} from "@/hooks/useVisionBoard"
+import React from "react"
+import { VisionBoardItem } from "@/hooks/useVisionBoard"
 import { motion, PanInfo } from "framer-motion"
-import { useQueryClient } from "@tanstack/react-query"
 import {
   Plus,
   Trash2,
@@ -20,9 +13,7 @@ import {
   Compass,
   Lightbulb,
 } from "lucide-react"
-import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
-// PREDEFINED VISUAL WALLPAPER PRESETS FOR PROMPT WORKSPACE DEMONSTRATIONS
 const IMAGE_PRESETS = [
   { name: "Workspace", url: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=600&auto=format&fit=crop&q=80" },
   { name: "Adventure Peak", url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&auto=format&fit=crop&q=80" },
@@ -31,103 +22,53 @@ const IMAGE_PRESETS = [
   { name: "Focus & Fitness", url: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=80" },
 ]
 
-export function VisionBoardCanvas() {
-  const queryClient = useQueryClient()
-  const { data: boardItems = [], isLoading, isError } = useVisionBoardQuery()
-  const createItemMutation = useCreateVisionBoardItemMutation()
-  const updateItemMutation = useUpdateVisionBoardItemMutation()
-  const deleteItemMutation = useDeleteVisionBoardItemMutation()
+interface VisionBoardCanvasViewProps {
+  boardItems: VisionBoardItem[]
+  isLoading: boolean
+  isError: boolean
+  canvasRef: React.RefObject<HTMLDivElement | null>
+  showAddMenu: boolean
+  setShowAddMenu: (show: boolean) => void
+  itemType: "text" | "image"
+  setItemType: (type: "text" | "image") => void
+  content: string
+  setContent: (val: string) => void
+  width: number
+  setWidth: (val: number) => void
+  height: number
+  setHeight: (val: number) => void
+  errorMsg: string | null
+  handleAddItem: (e: React.FormEvent) => Promise<void>
+  handleApplyPreset: (url: string) => void
+  handleDeleteItem: (id: string, e: React.MouseEvent) => Promise<void>
+  handleDragEnd: (item: VisionBoardItem, info: PanInfo) => void
+  isPendingCreate: boolean
+  isPendingDelete: boolean
+}
 
-  // References
-  const canvasRef = useRef<HTMLDivElement>(null)
-
-  // Floating controls popup state
-  const [showAddMenu, setShowAddMenu] = useState(false)
-  const [itemType, setItemType] = useState<"text" | "image">("text")
-  const [content, setContent] = useState("")
-  const [width, setWidth] = useState(220)
-  const [height, setHeight] = useState(160)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
-
-  const handleAddItem = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault()
-    setErrorMsg(null)
-
-    if (!content.trim()) {
-      setErrorMsg("Please enter content or select a preset.")
-      return
-    }
-
-    try {
-      // Spawn items near the top-center offset of the board
-      await createItemMutation.mutateAsync({
-        type: itemType,
-        content: content.trim(),
-        xOffset: Math.round(50 + Math.random() * 80),
-        yOffset: Math.round(60 + Math.random() * 80),
-        width: Number(width),
-        height: Number(height),
-      })
-      setContent("")
-      setShowAddMenu(false)
-      showSuccessToast("Vision item added to canvas")
-    } catch {
-      setErrorMsg("Failed to add item to board.")
-    }
-  }
-
-  const handleApplyPreset = (url: string): void => {
-    setItemType("image")
-    setContent(url)
-    setWidth(240)
-    setHeight(160)
-  }
-
-  const handleDeleteItem = async (id: string, e: React.MouseEvent): Promise<void> => {
-    e.stopPropagation()
-    const confirmed = await confirmDestructive(
-      "Delete Item?",
-      "Are you sure you want to delete this vision board item?"
-    )
-    if (!confirmed) return
-    try {
-      await deleteItemMutation.mutateAsync(id)
-      showSuccessToast("Item deleted successfully")
-    } catch {
-      await showError("Deletion Failed", "Failed to delete vision item.")
-    }
-  }
-
-  const handleDragEnd = (item: VisionBoardItem, info: PanInfo): void => {
-    const canvasEl = canvasRef.current
-    if (!canvasEl) return
-
-    // Calculate new position relative to the starting coordinates
-    const newX = Math.round(item.xOffset + info.offset.x)
-    const newY = Math.round(item.yOffset + info.offset.y)
-
-    // Boundaries constraints
-    const maxBoundX = Math.max(0, canvasEl.offsetWidth - item.width)
-    const maxBoundY = Math.max(0, 650 - item.height)
-
-    const constrainedX = Math.max(0, Math.min(maxBoundX, newX))
-    const constrainedY = Math.max(0, Math.min(maxBoundY, newY))
-
-    // Optimistically update coordinates in React Query cache instantly
-    queryClient.setQueryData<VisionBoardItem[]>(["vision-board"], (old) => {
-      if (!old) return []
-      return old.map((i) =>
-        i.id === item.id ? { ...i, xOffset: constrainedX, yOffset: constrainedY } : i
-      )
-    })
-
-    updateItemMutation.mutate({
-      id: item.id,
-      xOffset: constrainedX,
-      yOffset: constrainedY,
-    })
-  }
-
+export function VisionBoardCanvasView({
+  boardItems,
+  isLoading,
+  isError,
+  canvasRef,
+  showAddMenu,
+  setShowAddMenu,
+  itemType,
+  setItemType,
+  content,
+  setContent,
+  width,
+  setWidth,
+  height,
+  setHeight,
+  errorMsg,
+  handleAddItem,
+  handleApplyPreset,
+  handleDeleteItem,
+  handleDragEnd,
+  isPendingCreate,
+  isPendingDelete,
+}: VisionBoardCanvasViewProps) {
   return (
     <div className="space-y-6">
       {/* Tools control header bar */}
@@ -282,10 +223,10 @@ export function VisionBoardCanvas() {
               </button>
               <button
                 type="submit"
-                disabled={createItemMutation.isPending}
+                disabled={isPendingCreate}
                 className="rounded-lg bg-sidebar-primary px-3.5 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
               >
-                {createItemMutation.isPending ? (
+                {isPendingCreate ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 ) : (
                   "Pin to Canvas"
@@ -367,6 +308,7 @@ export function VisionBoardCanvas() {
                       <span>Goal Note</span>
                       <button
                         onClick={(e) => handleDeleteItem(item.id, e)}
+                        disabled={isPendingDelete}
                         className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded hover:bg-yellow-500/20 transition-all text-yellow-800 dark:text-yellow-300 shrink-0"
                         aria-label="Delete note"
                       >
@@ -390,6 +332,7 @@ export function VisionBoardCanvas() {
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 select-none z-20">
                       <button
                         onClick={(e) => handleDeleteItem(item.id, e)}
+                        disabled={isPendingDelete}
                         className="p-2 rounded-xl bg-rose-500/90 text-white hover:bg-rose-600 transition-all shadow-md active:scale-95 shrink-0"
                         aria-label="Delete image card"
                       >
