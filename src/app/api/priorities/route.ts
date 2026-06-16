@@ -19,6 +19,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     const dateParam = searchParams.get("date") // format "YYYY-MM-DD"
     const startDateParam = searchParams.get("startDate")
     const endDateParam = searchParams.get("endDate")
+    let today = searchParams.get("today")
 
     if (startDateParam && endDateParam) {
       const rangePriorities = await db
@@ -40,18 +41,26 @@ export async function GET(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Date parameter is required" }, { status: 400 })
     }
 
-    // Auto-rollover: Find incomplete priorities from before the requested date
+    if (!today) {
+      const now = new Date()
+      const year = now.getFullYear()
+      const month = String(now.getMonth() + 1).padStart(2, "0")
+      const day = String(now.getDate()).padStart(2, "0")
+      today = `${year}-${month}-${day}`
+    }
+
+    // Auto-rollover: Find incomplete priorities from before the real today's date and move to real today's date
     await db
       .update(priorities)
       .set({
-        date: dateParam,
+        date: today,
         rolloverCount: sql`${priorities.rolloverCount} + 1`,
       })
       .where(
         and(
           eq(priorities.userId, user.id),
           eq(priorities.completed, false),
-          lt(priorities.date, dateParam)
+          lt(priorities.date, today)
         )
       )
 

@@ -27,13 +27,20 @@ export interface TimetableBlock {
 // --- PRIORITIES ---
 
 async function fetchPriorities(date: string): Promise<Priority[]> {
-  const res = await fetch(`/api/priorities?date=${date}`)
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, "0")
+  const day = String(now.getDate()).padStart(2, "0")
+  const today = `${year}-${month}-${day}`
+
+  const res = await fetch(`/api/priorities?date=${date}&today=${today}`)
   if (!res.ok) {
     const errorData = await res.json()
     throw new Error(errorData.error || "Failed to fetch priorities")
   }
   return res.json()
 }
+
 
 export function usePrioritiesQuery(date: string) {
   return useQuery<Priority[]>({
