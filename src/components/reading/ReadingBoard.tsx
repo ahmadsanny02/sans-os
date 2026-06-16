@@ -57,12 +57,16 @@ export function ReadingBoard() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedStatusFilter, setSelectedStatusFilter] = useState("All")
 
+  const todayStr = new Date().toISOString().split("T")[0]
+
   // Form states (Add)
   const [addTitle, setAddTitle] = useState("")
   const [addAuthor, setAddAuthor] = useState("")
   const [addStatus, setAddStatus] = useState("To Read")
   const [addRating, setAddRating] = useState(3)
   const [addReview, setAddReview] = useState("")
+  const [addFinishedAt, setAddFinishedAt] = useState(todayStr)
+  const [addProgress, setAddProgress] = useState("")
   const [addError, setAddError] = useState<string | null>(null)
 
   // Form states (Edit)
@@ -71,7 +75,12 @@ export function ReadingBoard() {
   const [editStatus, setEditStatus] = useState("To Read")
   const [editRating, setEditRating] = useState(3)
   const [editReview, setEditReview] = useState("")
+  const [editFinishedAt, setEditFinishedAt] = useState(todayStr)
+  const [editProgress, setEditProgress] = useState("")
   const [editError, setEditError] = useState<string | null>(null)
+
+  // Inline progress state mapping book ID -> input value
+  const [progressInputs, setProgressInputs] = useState<Record<string, string>>({})
 
   const handleAddBook = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
@@ -89,12 +98,16 @@ export function ReadingBoard() {
         status: addStatus,
         rating: addStatus === "Completed" ? addRating : null,
         review: addStatus === "Completed" ? addReview.trim() : null,
+        finishedAt: addStatus === "Completed" ? addFinishedAt : null,
+        currentProgress: addStatus === "Reading" ? addProgress.trim() : null,
       })
       setAddTitle("")
       setAddAuthor("")
       setAddStatus("To Read")
       setAddRating(3)
       setAddReview("")
+      setAddFinishedAt(todayStr)
+      setAddProgress("")
       setShowAddForm(false)
     } catch {
       setAddError("Failed to add book to journal.")
@@ -108,6 +121,8 @@ export function ReadingBoard() {
     setEditStatus(book.status)
     setEditRating(book.rating || 3)
     setEditReview(book.review || "")
+    setEditFinishedAt(book.finishedAt ? new Date(book.finishedAt).toISOString().split("T")[0] : todayStr)
+    setEditProgress(book.currentProgress || "")
     setEditError(null)
   }
 
@@ -121,6 +136,11 @@ export function ReadingBoard() {
       return
     }
 
+    if (editStatus === "Completed" && !editFinishedAt) {
+      setEditError("Please select the completion date.")
+      return
+    }
+
     try {
       await updateBookMutation.mutateAsync({
         id: editingBook.id,
@@ -129,6 +149,8 @@ export function ReadingBoard() {
         status: editStatus,
         rating: editStatus === "Completed" ? editRating : null,
         review: editStatus === "Completed" ? editReview.trim() : null,
+        finishedAt: editStatus === "Completed" ? editFinishedAt : null,
+        currentProgress: editStatus === "Reading" ? editProgress.trim() : null,
       })
       setEditingBook(null)
     } catch {
@@ -157,14 +179,32 @@ export function ReadingBoard() {
   }
 
   const handleQuickMarkCompleted = (book: ReadingItem): void => {
-    // Open edit modal directly with status preset to Completed to fill out rating/review
+    // Open edit modal directly with status preset to Completed to fill out rating/review and finished date
     setEditingBook(book)
     setEditTitle(book.title)
     setEditAuthor(book.author)
     setEditStatus("Completed")
     setEditRating(book.rating || 5) // Suggest 5 stars on completion!
     setEditReview(book.review || "")
+    setEditFinishedAt(book.finishedAt ? new Date(book.finishedAt).toISOString().split("T")[0] : todayStr)
+    setEditProgress("")
     setEditError(null)
+  }
+
+  const handleProgressChange = (id: string, value: string): void => {
+    setProgressInputs((prev) => ({ ...prev, [id]: value }))
+  }
+
+  const handleSaveProgress = async (id: string): Promise<void> => {
+    const progressVal = progressInputs[id] !== undefined ? progressInputs[id] : ""
+    try {
+      await updateBookMutation.mutateAsync({
+        id,
+        currentProgress: progressVal.trim(),
+      })
+    } catch {
+      alert("Failed to save progress.")
+    }
   }
 
   // Calculate metrics
@@ -380,6 +420,21 @@ export function ReadingBoard() {
                 </div>
               </div>
 
+              {/* Date Finished */}
+              <div className="space-y-1.5">
+                <label htmlFor="addBookFinishedAt" className="text-xs font-bold text-muted-foreground">
+                  Date Finished *
+                </label>
+                <input
+                  id="addBookFinishedAt"
+                  type="date"
+                  required
+                  value={addFinishedAt}
+                  onChange={(e) => setAddFinishedAt(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                />
+              </div>
+
               <div className="space-y-1.5">
                 <label htmlFor="addBookReview" className="text-xs font-bold text-muted-foreground">
                   Book Review / Key Takeaways
@@ -391,6 +446,25 @@ export function ReadingBoard() {
                   onChange={(e) => setAddReview(e.target.value)}
                   placeholder="Share what you learned or your thoughts on the book..."
                   className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Conditional Progress Input for Reading status */}
+          {addStatus === "Reading" && (
+            <div className="border-t border-border/40 pt-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
+              <div className="space-y-1.5">
+                <label htmlFor="addBookProgress" className="text-xs font-bold text-muted-foreground">
+                  Current Progress (e.g. Page 120, Chapter 5)
+                </label>
+                <input
+                  id="addBookProgress"
+                  type="text"
+                  value={addProgress}
+                  onChange={(e) => setAddProgress(e.target.value)}
+                  placeholder="Where are you in the book?"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
                 />
               </div>
             </div>
@@ -498,6 +572,42 @@ export function ReadingBoard() {
                       by {book.author}
                     </p>
                   </div>
+
+                  {/* Inline Progress Tracker for Reading Books */}
+                  {book.status === "Reading" && (
+                    <div className="mt-4 pt-3 border-t border-border/30 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Current Progress
+                        </span>
+                        {book.currentProgress && (
+                          <span className="text-[10px] font-medium text-sidebar-primary/80">
+                            Last: {book.currentProgress}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="text"
+                          value={progressInputs[book.id] ?? book.currentProgress ?? ""}
+                          placeholder="e.g. Page 120, Chapter 5"
+                          onChange={(e) => handleProgressChange(book.id, e.target.value)}
+                          className="flex-1 rounded-lg border border-border bg-background/50 px-2.5 py-1 text-xs outline-none focus:border-sidebar-primary transition-all"
+                        />
+                        <button
+                          onClick={() => handleSaveProgress(book.id)}
+                          disabled={updateBookMutation.isPending}
+                          className="rounded-lg bg-sidebar-primary px-3 py-1 text-[10px] font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 transition-all shrink-0 active:scale-[0.95] flex items-center justify-center min-w-[40px]"
+                        >
+                          {updateBookMutation.isPending && progressInputs[book.id] !== undefined ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            "Save"
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Conditional Elements: Rating & Review for Completed Books */}
                   {book.status === "Completed" && (
@@ -659,6 +769,19 @@ export function ReadingBoard() {
                     </div>
                   </div>
 
+                  {/* Date Finished */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="editBookFinishedAt" className="text-xs font-bold text-muted-foreground">Date Finished *</label>
+                    <input
+                      id="editBookFinishedAt"
+                      type="date"
+                      required
+                      value={editFinishedAt}
+                      onChange={(e) => setEditFinishedAt(e.target.value)}
+                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                    />
+                  </div>
+
                   <div className="space-y-1.5">
                     <label htmlFor="editBookReview" className="text-xs font-bold text-muted-foreground">Book Review / Key Takeaways</label>
                     <textarea
@@ -668,6 +791,23 @@ export function ReadingBoard() {
                       onChange={(e) => setEditReview(e.target.value)}
                       placeholder="Share what you learned..."
                       className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-sm outline-none focus:border-sidebar-primary"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Conditional Progress Input for Reading status */}
+              {editStatus === "Reading" && (
+                <div className="border-t border-border/40 pt-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
+                  <div className="space-y-1.5">
+                    <label htmlFor="editBookProgress" className="text-xs font-bold text-muted-foreground">Current Progress</label>
+                    <input
+                      id="editBookProgress"
+                      type="text"
+                      value={editProgress}
+                      onChange={(e) => setEditProgress(e.target.value)}
+                      placeholder="e.g. Page 120, Chapter 5"
+                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
                     />
                   </div>
                 </div>

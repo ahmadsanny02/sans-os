@@ -40,14 +40,15 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { title, author, status, rating, review } = body
+    const { title, author, status, rating, review, finishedAt, currentProgress } = body
 
     if (!title || !author || !status) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
     const isCompleted = status === "Completed"
-    const finishedAt = isCompleted ? new Date() : null
+    const finishedAtVal = isCompleted ? (finishedAt ? new Date(finishedAt) : new Date()) : null
+    const currentProgressVal = status === "Reading" ? (currentProgress || null) : null
 
     const [newBook] = await db
       .insert(readingJournal)
@@ -58,7 +59,8 @@ export async function POST(request: Request): Promise<NextResponse> {
         status,
         rating: isCompleted && rating !== undefined ? Number(rating) : null,
         review: isCompleted && review !== undefined ? review : null,
-        finishedAt,
+        finishedAt: finishedAtVal,
+        currentProgress: currentProgressVal,
       })
       .returning()
 
@@ -81,7 +83,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, title, author, status, rating, review } = body
+    const { id, title, author, status, rating, review, finishedAt, currentProgress } = body
 
     if (!id) {
       return NextResponse.json({ error: "Missing book ID" }, { status: 400 })
@@ -101,28 +103,37 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     let finishedAtVal = currentBook.finishedAt
     if (status !== undefined) {
       if (status === "Completed") {
-        // Set finishedAt to now if it wasn't completed before, or keep existing one
-        finishedAtVal = currentBook.status === "Completed" ? currentBook.finishedAt : new Date()
+        finishedAtVal = finishedAt ? new Date(finishedAt) : (currentBook.status === "Completed" ? currentBook.finishedAt : new Date())
       } else {
-        // Reset finishedAt to null if status changed from Completed to something else
         finishedAtVal = null
       }
+    } else if (finishedAt !== undefined) {
+      finishedAtVal = finishedAt ? new Date(finishedAt) : null
     }
 
     const isCompleted = status !== undefined ? status === "Completed" : currentBook.status === "Completed"
+    const isReading = status !== undefined ? status === "Reading" : currentBook.status === "Reading"
 
     const updateValues: Partial<typeof readingJournal.$inferInsert> = {}
     if (title !== undefined) updateValues.title = title
     if (author !== undefined) updateValues.author = author
     if (status !== undefined) updateValues.status = status
     
-    // Set rating/review to null if status is not Completed
+    // Set rating/review/progress based on status transitions
     if (isCompleted) {
       if (rating !== undefined) updateValues.rating = rating !== null ? Number(rating) : null
       if (review !== undefined) updateValues.review = review
+      updateValues.currentProgress = null
     } else {
       updateValues.rating = null
       updateValues.review = null
+      if (isReading) {
+        if (currentProgress !== undefined) {
+          updateValues.currentProgress = currentProgress
+        }
+      } else {
+        updateValues.currentProgress = null
+      }
     }
     updateValues.finishedAt = finishedAtVal
 

@@ -53,6 +53,7 @@ export const readingJournal = pgTable("reading_journal", {
   status: text("status").default("To Read").notNull(), // To Read, Reading, Completed
   rating: integer("rating"), // nullable (1-5)
   review: text("review"), // nullable
+  currentProgress: text("current_progress"), // progress when status is Reading
   finishedAt: timestamp("finished_at"), // set when status goes to Completed
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })

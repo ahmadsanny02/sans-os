@@ -8,6 +8,7 @@ export interface ReadingItem {
   status: string // "To Read", "Reading", "Completed"
   rating: number | null
   review: string | null
+  currentProgress: string | null
   finishedAt: string | null
   createdAt: string
 }
@@ -35,6 +36,8 @@ async function createReadingItem(body: {
   status: string
   rating?: number | null
   review?: string | null
+  finishedAt?: string | null
+  currentProgress?: string | null
 }): Promise<ReadingItem> {
   const res = await fetch("/api/reading", {
     method: "POST",
@@ -55,6 +58,8 @@ export function useCreateReadingMutation() {
     status: string
     rating?: number | null
     review?: string | null
+    finishedAt?: string | null
+    currentProgress?: string | null
   }>({
     mutationFn: createReadingItem,
     onSuccess: () => {
@@ -71,6 +76,8 @@ async function updateReadingItem(body: {
   status?: string
   rating?: number | null
   review?: string | null
+  finishedAt?: string | null
+  currentProgress?: string | null
 }): Promise<ReadingItem> {
   const res = await fetch("/api/reading", {
     method: "PATCH",
@@ -92,6 +99,8 @@ export function useUpdateReadingMutation() {
     status?: string
     rating?: number | null
     review?: string | null
+    finishedAt?: string | null
+    currentProgress?: string | null
   }>({
     mutationFn: updateReadingItem,
     onSuccess: () => {
