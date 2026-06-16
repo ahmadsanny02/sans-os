@@ -1,14 +1,8 @@
 "use client"
 
-import React, { useState } from "react"
-import {
-  useReadingQuery,
-  useCreateReadingMutation,
-  useUpdateReadingMutation,
-  useDeleteReadingMutation,
-  ReadingItem,
-} from "@/hooks/useReading"
-import { format } from "date-fns"
+import React from "react"
+import { ReadingItem } from "@/hooks/useReading"
+import { formatDate } from "@/hooks/useReadingPage"
 import {
   Plus,
   Trash2,
@@ -26,9 +20,7 @@ import {
   X,
 } from "lucide-react"
 import { GridCardSkeleton } from "@/components/ui/Skeletons"
-import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
-// Status badge styling themes
 const STATUS_THEMES: Record<string, { bg: string; text: string; border: string }> = {
   "To Read": {
     bg: "bg-amber-500/10",
@@ -47,192 +39,121 @@ const STATUS_THEMES: Record<string, { bg: string; text: string; border: string }
   },
 }
 
-export function ReadingBoard() {
-  const { data: booksList = [], isLoading, isError } = useReadingQuery()
-  const createBookMutation = useCreateReadingMutation()
-  const updateBookMutation = useUpdateReadingMutation()
-  const deleteBookMutation = useDeleteReadingMutation()
+const STATUS_OPTIONS = ["All", "To Read", "Reading", "Completed"]
 
-  // State controls
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [editingBook, setEditingBook] = useState<ReadingItem | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedStatusFilter, setSelectedStatusFilter] = useState("All")
+interface ReadingBoardViewProps {
+  isLoading: boolean
+  isError: boolean
+  showAddForm: boolean
+  setShowAddForm: (show: boolean) => void
+  editingBook: ReadingItem | null
+  setEditingBook: (book: ReadingItem | null) => void
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+  selectedStatusFilter: string
+  setSelectedStatusFilter: (status: string) => void
+  addTitle: string
+  setAddTitle: (val: string) => void
+  addAuthor: string
+  setAddAuthor: (val: string) => void
+  addStatus: string
+  setAddStatus: (val: string) => void
+  addRating: number
+  setAddRating: (val: number) => void
+  addReview: string
+  setAddReview: (val: string) => void
+  addFinishedAt: string
+  setAddFinishedAt: (val: string) => void
+  addProgress: string
+  setAddProgress: (val: string) => void
+  addError: string | null
+  editTitle: string
+  setEditTitle: (val: string) => void
+  editAuthor: string
+  setEditAuthor: (val: string) => void
+  editStatus: string
+  setEditStatus: (val: string) => void
+  editRating: number
+  setEditRating: (val: number) => void
+  editReview: string
+  setEditReview: (val: string) => void
+  editFinishedAt: string
+  setEditFinishedAt: (val: string) => void
+  editProgress: string
+  setEditProgress: (val: string) => void
+  editError: string | null
+  handleAddBook: (e: React.FormEvent) => Promise<void>
+  handleOpenEdit: (book: ReadingItem) => void
+  handleUpdateBook: (e: React.FormEvent) => Promise<void>
+  handleDeleteBook: (id: string, titleStr: string) => Promise<void>
+  handleQuickStartReading: (id: string) => Promise<void>
+  handleQuickMarkCompleted: (book: ReadingItem) => void
+  totalBooks: number
+  readingCount: number
+  completedCount: number
+  averageRating: number
+  filteredBooks: ReadingItem[]
+  isPendingCreate: boolean
+  isPendingUpdate: boolean
+  isPendingDelete: boolean
+}
 
-  const todayStr = new Date().toISOString().split("T")[0]
-
-  // Form states (Add)
-  const [addTitle, setAddTitle] = useState("")
-  const [addAuthor, setAddAuthor] = useState("")
-  const [addStatus, setAddStatus] = useState("To Read")
-  const [addRating, setAddRating] = useState(3)
-  const [addReview, setAddReview] = useState("")
-  const [addFinishedAt, setAddFinishedAt] = useState(todayStr)
-  const [addProgress, setAddProgress] = useState("")
-  const [addError, setAddError] = useState<string | null>(null)
-
-  // Form states (Edit)
-  const [editTitle, setEditTitle] = useState("")
-  const [editAuthor, setEditAuthor] = useState("")
-  const [editStatus, setEditStatus] = useState("To Read")
-  const [editRating, setEditRating] = useState(3)
-  const [editReview, setEditReview] = useState("")
-  const [editFinishedAt, setEditFinishedAt] = useState(todayStr)
-  const [editProgress, setEditProgress] = useState("")
-  const [editError, setEditError] = useState<string | null>(null)
-
-  const handleAddBook = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault()
-    setAddError(null)
-
-    if (!addTitle.trim() || !addAuthor.trim()) {
-      setAddError("Please fill out Title and Author fields.")
-      return
-    }
-
-    try {
-      await createBookMutation.mutateAsync({
-        title: addTitle.trim(),
-        author: addAuthor.trim(),
-        status: addStatus,
-        rating: addStatus === "Completed" ? addRating : null,
-        review: addStatus === "Completed" ? addReview.trim() : null,
-        finishedAt: addStatus === "Completed" ? addFinishedAt : null,
-        currentProgress: addStatus === "Reading" ? addProgress.trim() : null,
-      })
-      setAddTitle("")
-      setAddAuthor("")
-      setAddStatus("To Read")
-      setAddRating(3)
-      setAddReview("")
-      setAddFinishedAt(todayStr)
-      setAddProgress("")
-      setShowAddForm(false)
-      showSuccessToast("Book added to reading journal")
-    } catch {
-      setAddError("Failed to add book to journal.")
-    }
-  }
-
-  const handleOpenEdit = (book: ReadingItem): void => {
-    setEditingBook(book)
-    setEditTitle(book.title)
-    setEditAuthor(book.author)
-    setEditStatus(book.status)
-    setEditRating(book.rating || 3)
-    setEditReview(book.review || "")
-    setEditFinishedAt(book.finishedAt ? new Date(book.finishedAt).toISOString().split("T")[0] : todayStr)
-    setEditProgress(book.currentProgress || "")
-    setEditError(null)
-  }
-
-  const handleUpdateBook = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault()
-    setEditError(null)
-
-    if (!editingBook) return
-    if (!editTitle.trim() || !editAuthor.trim()) {
-      setEditError("Please fill out Title and Author fields.")
-      return
-    }
-
-    if (editStatus === "Completed" && !editFinishedAt) {
-      setEditError("Please select the completion date.")
-      return
-    }
-
-    try {
-      await updateBookMutation.mutateAsync({
-        id: editingBook.id,
-        title: editTitle.trim(),
-        author: editAuthor.trim(),
-        status: editStatus,
-        rating: editStatus === "Completed" ? editRating : null,
-        review: editStatus === "Completed" ? editReview.trim() : null,
-        finishedAt: editStatus === "Completed" ? editFinishedAt : null,
-        currentProgress: editStatus === "Reading" ? editProgress.trim() : null,
-      })
-      setEditingBook(null)
-      showSuccessToast("Book log updated")
-    } catch {
-      setEditError("Failed to update book log.")
-    }
-  }
-
-  const handleDeleteBook = async (id: string, titleStr: string): Promise<void> => {
-    const confirmed = await confirmDestructive(
-      "Delete Book?",
-      `Are you sure you want to delete the book "${titleStr}"?`
-    )
-    if (!confirmed) return
-    try {
-      await deleteBookMutation.mutateAsync(id)
-      showSuccessToast("Book deleted successfully")
-    } catch {
-      await showError("Deletion Failed", "Failed to delete book log.")
-    }
-  }
-
-  const handleQuickStartReading = async (id: string): Promise<void> => {
-    try {
-      await updateBookMutation.mutateAsync({
-        id,
-        status: "Reading",
-      })
-      showSuccessToast("Status updated to Reading")
-    } catch {
-      await showError("Update Failed", "Failed to update status.")
-    }
-  }
-
-  const handleQuickMarkCompleted = (book: ReadingItem): void => {
-    // Open edit modal directly with status preset to Completed to fill out rating/review and finished date
-    setEditingBook(book)
-    setEditTitle(book.title)
-    setEditAuthor(book.author)
-    setEditStatus("Completed")
-    setEditRating(book.rating || 5) // Suggest 5 stars on completion!
-    setEditReview(book.review || "")
-    setEditFinishedAt(book.finishedAt ? new Date(book.finishedAt).toISOString().split("T")[0] : todayStr)
-    setEditProgress("")
-    setEditError(null)
-  }
-
-  // Calculate metrics
-  const totalBooks = booksList.length
-  const readingCount = booksList.filter((b) => b.status === "Reading").length
-  const completedCount = booksList.filter((b) => b.status === "Completed").length
-
-  const completedWithRating = booksList.filter((b) => b.status === "Completed" && b.rating !== null)
-  const averageRating = completedWithRating.length > 0
-    ? Number((completedWithRating.reduce((acc, curr) => acc + (curr.rating || 0), 0) / completedWithRating.length).toFixed(1))
-    : 0
-
-  // Filter book lists
-  const filteredBooks = booksList.filter((book) => {
-    const matchesSearch =
-      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchQuery.toLowerCase())
-
-    const matchesStatus = selectedStatusFilter === "All" || book.status === selectedStatusFilter
-
-    return matchesSearch && matchesStatus
-  })
-
-  const STATUS_OPTIONS = ["All", "To Read", "Reading", "Completed"]
-
-  function formatDate(dateStr: string | null | undefined): string {
-    if (!dateStr) return ""
-    try {
-      const d = new Date(dateStr)
-      return format(d, "MMM d, yyyy")
-    } catch {
-      return ""
-    }
-  }
-
-
-
+export function ReadingBoardView({
+  isLoading,
+  isError,
+  showAddForm,
+  setShowAddForm,
+  editingBook,
+  setEditingBook,
+  searchQuery,
+  setSearchQuery,
+  selectedStatusFilter,
+  setSelectedStatusFilter,
+  addTitle,
+  setAddTitle,
+  addAuthor,
+  setAddAuthor,
+  addStatus,
+  setAddStatus,
+  addRating,
+  setAddRating,
+  addReview,
+  setAddReview,
+  addFinishedAt,
+  setAddFinishedAt,
+  addProgress,
+  setAddProgress,
+  addError,
+  editTitle,
+  setEditTitle,
+  editAuthor,
+  setEditAuthor,
+  editStatus,
+  setEditStatus,
+  editRating,
+  setEditRating,
+  editReview,
+  setEditReview,
+  editFinishedAt,
+  setEditFinishedAt,
+  editProgress,
+  setEditProgress,
+  editError,
+  handleAddBook,
+  handleOpenEdit,
+  handleUpdateBook,
+  handleDeleteBook,
+  handleQuickStartReading,
+  handleQuickMarkCompleted,
+  totalBooks,
+  readingCount,
+  completedCount,
+  averageRating,
+  filteredBooks,
+  isPendingCreate,
+  isPendingUpdate,
+  isPendingDelete,
+}: ReadingBoardViewProps) {
   return (
     <div className="space-y-6">
       {/* 1. Statistics Cards */}
@@ -409,9 +330,9 @@ export function ReadingBoard() {
                       >
                         <Star
                           className={`h-6 w-6 ${active
-                              ? "text-amber-500 fill-amber-500 hover:scale-110"
-                              : "text-muted-foreground/40 hover:text-amber-500/50"
-                            } transition-all`}
+                            ? "text-amber-500 fill-amber-500 hover:scale-110"
+                            : "text-muted-foreground/40 hover:text-amber-500/50"
+                          } transition-all`}
                         />
                       </button>
                     )
@@ -486,10 +407,10 @@ export function ReadingBoard() {
             </button>
             <button
               type="submit"
-              disabled={createBookMutation.isPending}
+              disabled={isPendingCreate}
               className="rounded-lg bg-sidebar-primary px-3.5 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
             >
-              {createBookMutation.isPending ? (
+              {isPendingCreate ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : (
                 "Save Book"
@@ -509,9 +430,9 @@ export function ReadingBoard() {
                 key={status}
                 onClick={() => setSelectedStatusFilter(status)}
                 className={`px-3.5 py-1 rounded-full text-xs font-bold transition-all border ${isActive
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground border-sidebar-primary shadow-sm"
-                    : "bg-secondary/20 hover:bg-secondary/50 border-border text-muted-foreground"
-                  }`}
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground border-sidebar-primary shadow-sm"
+                  : "bg-secondary/20 hover:bg-secondary/50 border-border text-muted-foreground"
+                }`}
               >
                 {status}
               </button>
@@ -564,6 +485,7 @@ export function ReadingBoard() {
                       </button>
                       <button
                         onClick={() => handleDeleteBook(book.id, book.title)}
+                        disabled={isPendingDelete}
                         className="p-1 rounded hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-all"
                         title="Delete Book"
                       >
@@ -641,7 +563,7 @@ export function ReadingBoard() {
                     {book.status === "To Read" ? (
                       <button
                         onClick={() => handleQuickStartReading(book.id)}
-                        disabled={updateBookMutation.isPending}
+                        disabled={isPendingUpdate}
                         className="w-full flex items-center justify-center gap-1.5 rounded-lg border border-blue-500/30 hover:border-blue-500 bg-blue-500/5 hover:bg-blue-500/15 py-1.5 text-xs font-bold text-blue-500 transition-all active:scale-[0.98]"
                       >
                         <Clock className="h-3.5 w-3.5" />
@@ -650,7 +572,7 @@ export function ReadingBoard() {
                     ) : (
                       <button
                         onClick={() => handleQuickMarkCompleted(book)}
-                        disabled={updateBookMutation.isPending}
+                        disabled={isPendingUpdate}
                         className="w-full flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/30 hover:border-emerald-500 bg-emerald-500/5 hover:bg-emerald-500/15 py-1.5 text-xs font-bold text-emerald-500 transition-all active:scale-[0.98]"
                       >
                         <Sparkles className="h-3.5 w-3.5" />
@@ -743,9 +665,9 @@ export function ReadingBoard() {
                           >
                             <Star
                               className={`h-6 w-6 ${active
-                                  ? "text-amber-500 fill-amber-500 hover:scale-110"
-                                  : "text-muted-foreground/40 hover:text-amber-500/50"
-                                } transition-all`}
+                                ? "text-amber-500 fill-amber-500 hover:scale-110"
+                                : "text-muted-foreground/40 hover:text-amber-500/50"
+                              } transition-all`}
                             />
                           </button>
                         )
@@ -814,10 +736,10 @@ export function ReadingBoard() {
                 </button>
                 <button
                   type="submit"
-                  disabled={updateBookMutation.isPending}
+                  disabled={isPendingUpdate}
                   className="rounded-lg bg-sidebar-primary px-4 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
                 >
-                  {updateBookMutation.isPending ? (
+                  {isPendingUpdate ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
                     "Save Changes"
