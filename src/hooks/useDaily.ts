@@ -185,8 +185,11 @@ export function useCreateTimetableBlockMutation() {
     }
   >({
     mutationFn: createTimetableBlock,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["timetable"] })
+      if (variables.date) {
+        queryClient.invalidateQueries({ queryKey: ["priorities", variables.date] })
+      }
     },
   })
 }
@@ -207,6 +210,7 @@ export function useDeleteTimetableBlockMutation() {
     mutationFn: deleteTimetableBlock,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["timetable"] })
+      queryClient.invalidateQueries({ queryKey: ["priorities"] })
     },
   })
 }

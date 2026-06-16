@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { timetableBlocks } from "@/types/schema"
+import { timetableBlocks, priorities } from "@/types/schema"
 import { eq, and, asc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -60,6 +60,28 @@ export async function POST(request: Request): Promise<NextResponse> {
       })
       .returning()
 
+    // Automatically add to priorities if it is a custom schedule (date is not null)
+    if (date) {
+      try {
+        const existing = await db
+          .select()
+          .from(priorities)
+          .where(and(eq(priorities.userId, user.id), eq(priorities.date, date)))
+
+        if (existing.length < 5) {
+          await db.insert(priorities).values({
+            userId: user.id,
+            date,
+            text: title,
+            orderIndex: existing.length,
+            completed: false,
+          })
+        }
+      } catch (err) {
+        console.error("Failed to auto-insert priority:", err)
+      }
+    }
+
     return NextResponse.json(newBlock)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
@@ -92,6 +114,23 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     if (!deletedBlock) {
       return NextResponse.json({ error: "Block not found" }, { status: 404 })
+    }
+
+    // Automatically remove matching priority if it was a custom schedule
+    if (deletedBlock.date) {
+      try {
+        await db
+          .delete(priorities)
+          .where(
+            and(
+              eq(priorities.userId, user.id),
+              eq(priorities.date, deletedBlock.date),
+              eq(priorities.text, deletedBlock.title)
+            )
+          )
+      } catch (err) {
+        console.error("Failed to auto-delete priority:", err)
+      }
     }
 
     return NextResponse.json({ success: true })
