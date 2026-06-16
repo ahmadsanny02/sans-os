@@ -19,6 +19,10 @@ import {
   useDailyLogQuery,
   useSaveDailyLogMutation,
 } from "@/hooks/useDailyLogs"
+import {
+  useHabitsQuery,
+  useToggleLogMutation,
+} from "@/hooks/useHabits"
 import { format, parseISO, addDays, subDays } from "date-fns"
 import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
@@ -141,6 +145,28 @@ export function useDailyPage() {
     } catch {
       await showError("Error", "Failed to delete todo.")
     }
+  }
+
+  // ==========================================
+  // Habits Sync State & Handlers
+  // ==========================================
+  const { data: habitsData, isLoading: habitsLoading, isError: habitsError } = useHabitsQuery(activeDate, activeDate)
+  const toggleHabitMutation = useToggleLogMutation()
+
+  const todayHabits = (habitsData?.habits || []).map((habit) => {
+    const isCompleted = (habitsData?.logs || []).some(
+      (log) => log.habitId === habit.id && log.date === activeDate
+    )
+    return {
+      id: habit.id,
+      name: habit.name,
+      completed: isCompleted,
+      isHabit: true as const,
+    }
+  })
+
+  const handleToggleHabit = (habitId: string): void => {
+    toggleHabitMutation.mutate({ habitId, date: activeDate })
   }
 
   // ==========================================
@@ -387,6 +413,13 @@ export function useDailyPage() {
     handleFileChange,
     handleDeletePic,
     picSavePending: saveLogMutation.isPending,
+
+    // Habits Checklist Sync
+    habits: todayHabits,
+    habitsLoading,
+    habitsError,
+    handleToggleHabit,
+    isPendingToggleHabit: toggleHabitMutation.isPending,
   }
 }
 

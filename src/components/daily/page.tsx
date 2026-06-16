@@ -63,8 +63,8 @@ export default function DailyComponent() {
         <div className="lg:col-span-6 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
           <DailyTodos
             todos={dailyData.todos}
-            isLoading={dailyData.todosLoading}
-            isError={dailyData.todosError}
+            isLoading={dailyData.todosLoading || dailyData.habitsLoading}
+            isError={dailyData.todosError || dailyData.habitsError}
             newText={dailyData.newTodoText}
             setNewText={dailyData.setNewTodoText}
             errorMsg={dailyData.todoErrorMsg}
@@ -72,6 +72,9 @@ export default function DailyComponent() {
             handleToggleCompleted={dailyData.handleToggleTodo}
             handleDeleteTodo={dailyData.handleDeleteTodo}
             isPendingCreate={dailyData.todoCreatePending}
+            habits={dailyData.habits}
+            handleToggleHabit={dailyData.handleToggleHabit}
+            isPendingToggleHabit={dailyData.isPendingToggleHabit}
           />
         </div>
       </div>
