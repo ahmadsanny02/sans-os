@@ -256,9 +256,31 @@ function TimetableWidget({ activeDate }: { activeDate: string }) {
     )
   }
 
-  // Filter & sort
+  // Get current date and time in user's local timezone to compare ongoing/future blocks
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, "0")
+  const day = String(now.getDate()).padStart(2, "0")
+  const realTodayStr = `${year}-${month}-${day}`
+
+  const currentHour = String(now.getHours()).padStart(2, "0")
+  const currentMin = String(now.getMinutes()).padStart(2, "0")
+  const currentTimeStr = `${currentHour}:${currentMin}`
+
+  const isToday = activeDate === realTodayStr
+
+  // Filter & sort: show everyday fixed OR blocks matching activeDate
+  // If viewing today's date, only show ongoing or future blocks (endTime >= currentTimeStr)
   const activeDayBlocks = timetableList
-    .filter((block) => block.dayOfWeek === -1 || block.date === activeDate)
+    .filter((block) => {
+      const isForDay = block.dayOfWeek === -1 || block.date === activeDate
+      if (!isForDay) return false
+
+      if (isToday) {
+        return block.endTime >= currentTimeStr
+      }
+      return true
+    })
     .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
   return (

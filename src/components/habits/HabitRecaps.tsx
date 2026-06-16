@@ -13,7 +13,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts"
-import { Activity, Award, CalendarDays, Percent, Trophy, Zap, Sparkles } from "lucide-react"
+import { Activity, Award, CalendarDays, Percent } from "lucide-react"
 
 // Types
 interface ChartDataPoint {
@@ -60,55 +60,8 @@ export function HabitRecaps() {
     ? Math.round((completedLogsCount / totalTargetOpportunity) * 100) 
     : 0
 
-  // Calculate best performing habit in-memory
-  const habitCompletionCounts: Record<string, number> = {}
-  monthlyData?.logs.forEach((log) => {
-    if (log.status === "completed") {
-      habitCompletionCounts[log.habitId] = (habitCompletionCounts[log.habitId] || 0) + 1
-    }
-  })
-
-  let bestHabitName = "None"
-  let bestHabitCount = 0
-
-  if (monthlyData?.habits) {
-    for (const habit of monthlyData.habits) {
-      const count = habitCompletionCounts[habit.id] || 0
-      if (count > bestHabitCount) {
-        bestHabitCount = count
-        bestHabitName = habit.name
-      }
-    }
-  }
-
-  // Calculate best performing day of week in-memory
-  const weekdayCompletionCounts: Record<string, number> = {
-    Sun: 0, Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0
-  }
-  monthlyData?.logs.forEach((log) => {
-    if (log.status === "completed") {
-      try {
-        const dayLabel = format(parseISO(log.date), "EEE")
-        if (weekdayCompletionCounts[dayLabel] !== undefined) {
-          weekdayCompletionCounts[dayLabel]++
-        }
-      } catch {
-        // ignore invalid dates
-      }
-    }
-  })
-
-  let bestDayName = "N/A"
-  let bestDayCount = 0
-  Object.entries(weekdayCompletionCounts).forEach(([day, count]) => {
-    if (count > bestDayCount) {
-      bestDayCount = count
-      bestDayName = day
-    }
-  })
-
   return (
-    <div className="grid gap-6 md:grid-cols-4">
+    <div className="grid gap-6 md:grid-cols-3">
       {/* 1. Monthly Statistics Card */}
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-card/50 flex flex-col justify-between">
         <h4 className="text-sm font-bold tracking-wider text-muted-foreground flex items-center gap-2">
@@ -148,41 +101,7 @@ export function HabitRecaps() {
         )}
       </div>
 
-      {/* 2. Monthly Insights Card */}
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-card/50 flex flex-col justify-between">
-        <h4 className="text-sm font-bold tracking-wider text-muted-foreground flex items-center gap-2">
-          <Trophy className="h-4 w-4 text-purple-500" />
-          MONTHLY INSIGHTS
-        </h4>
-        
-        {statsLoading ? (
-          <div className="flex-1 flex items-center justify-center py-6 text-xs text-muted-foreground">
-            Analyzing trends...
-          </div>
-        ) : (
-          <div className="mt-4 space-y-4 flex-1 flex flex-col justify-center">
-            <div className="flex flex-col border-b border-border/40 pb-2">
-              <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-purple-500" /> Best Habit
-              </span>
-              <span className="text-sm font-bold text-foreground mt-1 truncate max-w-[180px]">
-                {bestHabitName} {bestHabitCount > 0 ? `(${bestHabitCount}x)` : ""}
-              </span>
-            </div>
-
-            <div className="flex flex-col pb-2">
-              <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-                <Zap className="h-3.5 w-3.5 text-purple-500" /> Most Active Day
-              </span>
-              <span className="text-sm font-bold text-foreground mt-1">
-                {bestDayCount > 0 ? `${bestDayName} (${bestDayCount} check-ins)` : "N/A"}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* 3. Weekly Consistency Chart */}
+      {/* 2. Weekly Consistency Chart */}
       <div className="col-span-2 rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-card/50">
         <div className="mb-4">
           <h4 className="text-sm font-bold tracking-wider text-muted-foreground flex items-center gap-2">
