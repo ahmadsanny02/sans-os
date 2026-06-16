@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { priorities } from "@/types/schema"
+import { priorities, timetableBlocks } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -29,6 +29,21 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     if (!deletedPriority) {
       return NextResponse.json({ error: "Priority not found" }, { status: 404 })
+    }
+
+    // Automatically remove matching custom timetable block if it exists to keep in sync
+    try {
+      await db
+        .delete(timetableBlocks)
+        .where(
+          and(
+            eq(timetableBlocks.userId, user.id),
+            eq(timetableBlocks.date, deletedPriority.date),
+            eq(timetableBlocks.title, deletedPriority.text)
+          )
+        )
+    } catch (err) {
+      console.error("Failed to auto-delete timetable block matching priority:", err)
     }
 
     return NextResponse.json({ success: true })

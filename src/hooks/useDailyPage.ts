@@ -51,7 +51,7 @@ export function useDailyPage() {
   const { data: listPriorities = [], isLoading: prioritiesLoading, isError: prioritiesError } = usePrioritiesQuery(activeDate)
   const createPriorityMutation = useCreatePriorityMutation()
   const togglePriorityMutation = useTogglePriorityMutation(activeDate)
-  const deletePriorityMutation = useDeletePriorityMutation(activeDate)
+  const deletePriorityMutation = useDeletePriorityMutation()
 
   const [newPriorityText, setNewPriorityText] = useState("")
   const [priorityErrorMsg, setPriorityErrorMsg] = useState<string | null>(null)

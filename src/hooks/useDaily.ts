@@ -122,12 +122,13 @@ async function deletePriority(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeletePriorityMutation(date: string) {
+export function useDeletePriorityMutation() {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string>({
     mutationFn: deletePriority,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["priorities", date] })
+      queryClient.invalidateQueries({ queryKey: ["priorities"] })
+      queryClient.invalidateQueries({ queryKey: ["timetable"] })
     },
   })
 }
