@@ -42,16 +42,49 @@ const COLORS: Record<string, { bg: string; text: string; border: string; bullet:
     border: "border-rose-500/20",
     bullet: "bg-rose-500",
   },
+  pink: {
+    bg: "bg-pink-500/10",
+    text: "text-pink-500 dark:text-pink-400",
+    border: "border-pink-500/20",
+    bullet: "bg-pink-500",
+  },
+  teal: {
+    bg: "bg-teal-500/10",
+    text: "text-teal-500 dark:text-teal-400",
+    border: "border-teal-500/20",
+    bullet: "bg-teal-500",
+  },
+  orange: {
+    bg: "bg-orange-500/10",
+    text: "text-orange-500 dark:text-orange-400",
+    border: "border-orange-500/20",
+    bullet: "bg-orange-500",
+  },
+  indigo: {
+    bg: "bg-indigo-500/10",
+    text: "text-indigo-500 dark:text-indigo-400",
+    border: "border-indigo-500/20",
+    bullet: "bg-indigo-500",
+  },
+  slate: {
+    bg: "bg-slate-500/10",
+    text: "text-slate-500 dark:text-slate-400",
+    border: "border-slate-500/20",
+    bullet: "bg-slate-500",
+  },
 }
 
 // Category-based colors mapping
 const CATEGORY_COLORS: Record<string, string> = {
-  General: "blue",
+  Personal: "teal",
   Work: "blue",
-  Health: "green",
-  Learning: "purple",
-  Finance: "amber",
-  Leisure: "red",
+  Business: "indigo",
+  Playing: "pink",
+  Social: "purple",
+  Education: "orange",
+  Project: "red",
+  Family: "green",
+  General: "slate",
 }
 
 function calculateDuration(start: string, end: string): string {
@@ -223,12 +256,15 @@ export function Timetable() {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full rounded-lg border border-border bg-background px-3.5 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
               >
-                <option value="General">General</option>
+                <option value="Personal">Personal</option>
                 <option value="Work">Work</option>
-                <option value="Health">Health</option>
-                <option value="Learning">Learning</option>
-                <option value="Finance">Finance</option>
-                <option value="Leisure">Leisure</option>
+                <option value="Business">Business</option>
+                <option value="Playing">Playing</option>
+                <option value="Social">Social</option>
+                <option value="Education">Education</option>
+                <option value="Project">Project</option>
+                <option value="Family">Family</option>
+                <option value="General">General</option>
               </select>
             </div>
 
