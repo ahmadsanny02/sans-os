@@ -85,6 +85,44 @@ export function PrioritiesList() {
         </span>
       </div>
 
+       {/* Add Priority Input Form */}
+      <form onSubmit={handleAddPriority} className="space-y-2.5">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            required
+            disabled={listPriorities.length >= 5 || createPriorityMutation.isPending}
+            value={newText}
+            onChange={(e) => setNewText(e.target.value)}
+            placeholder={
+              listPriorities.length >= 5
+                ? "Top 5 limit reached for today"
+                : "Add new priority task..."
+            }
+            className="flex-1 rounded-xl border border-border bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 disabled:bg-secondary/40 disabled:placeholder-muted-foreground"
+          />
+          <button
+            type="submit"
+            disabled={listPriorities.length >= 5 || createPriorityMutation.isPending || !newText.trim()}
+            className="inline-flex items-center justify-center rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50"
+            aria-label="Add task button"
+          >
+            {createPriorityMutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+
+        {errorMsg ? (
+          <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
+            <AlertCircle className="h-3.5 w-3.5" />
+            {errorMsg}
+          </p>
+        ) : null}
+      </form>
+
       {/* Priorities List */}
       <div className="space-y-3">
         {listPriorities.length === 0 ? (
@@ -148,44 +186,6 @@ export function PrioritiesList() {
           </div>
         )}
       </div>
-
-      {/* Add Priority Input Form */}
-      <form onSubmit={handleAddPriority} className="space-y-2.5">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            required
-            disabled={listPriorities.length >= 5 || createPriorityMutation.isPending}
-            value={newText}
-            onChange={(e) => setNewText(e.target.value)}
-            placeholder={
-              listPriorities.length >= 5
-                ? "Top 5 limit reached for today"
-                : "Add new priority task..."
-            }
-            className="flex-1 rounded-xl border border-border bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 disabled:bg-secondary/40 disabled:placeholder-muted-foreground"
-          />
-          <button
-            type="submit"
-            disabled={listPriorities.length >= 5 || createPriorityMutation.isPending || !newText.trim()}
-            className="inline-flex items-center justify-center rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50"
-            aria-label="Add task button"
-          >
-            {createPriorityMutation.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Plus className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-
-        {errorMsg ? (
-          <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
-            <AlertCircle className="h-3.5 w-3.5" />
-            {errorMsg}
-          </p>
-        ) : null}
-      </form>
     </div>
   )
 }

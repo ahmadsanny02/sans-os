@@ -1,0 +1,103 @@
+import { NextResponse } from "next/server"
+import { db } from "@/lib/db"
+import { projects } from "@/types/schema"
+import { eq, and, desc } from "drizzle-orm"
+import { createServerSupabaseClient } from "@/lib/supabase/server"
+
+export async function GET(): Promise<NextResponse> {
+  try {
+    const supabase = await createServerSupabaseClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    // Retrieve projects with their tasks sorted by creation date
+    const userProjects = await db.query.projects.findMany({
+      where: eq(projects.userId, user.id),
+      with: {
+        tasks: true,
+      },
+      orderBy: [desc(projects.createdAt)],
+    })
+
+    return NextResponse.json(userProjects)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Server Error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request): Promise<NextResponse> {
+  try {
+    const supabase = await createServerSupabaseClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { name, description, status, priority, deadline } = body
+
+    if (!name) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    const [newProject] = await db
+      .insert(projects)
+      .values({
+        userId: user.id,
+        name,
+        description: description || null,
+        status: status || "Planning",
+        priority: priority || "Medium",
+        deadline: deadline ? new Date(deadline) : null,
+      })
+      .returning()
+
+    return NextResponse.json(newProject)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Server Error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request): Promise<NextResponse> {
+  try {
+    const supabase = await createServerSupabaseClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get("id")
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing project ID" }, { status: 400 })
+    }
+
+    const [deletedProject] = await db
+      .delete(projects)
+      .where(and(eq(projects.id, id), eq(projects.userId, user.id)))
+      .returning()
+
+    if (!deletedProject) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Server Error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
+  }
+}
