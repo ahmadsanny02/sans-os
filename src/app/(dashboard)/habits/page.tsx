@@ -5,7 +5,7 @@ import { useWorkspaceStore } from "@/store/workspaceStore"
 import { HabitGrid } from "@/components/habits/HabitGrid"
 import { HabitRecaps } from "@/components/habits/HabitRecaps"
 import { format, parseISO, addMonths, subMonths } from "date-fns"
-import { Calendar, ChevronLeft, ChevronRight } from "lucide-react"
+import { Calendar, ChevronLeft, ChevronRight, CheckSquare } from "lucide-react"
 
 export default function HabitsPage() {
   const activeDate = useWorkspaceStore((state) => state.activeDate)
@@ -40,7 +40,8 @@ export default function HabitsPage() {
       {/* Top Navigation Control Row */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md pt-2 pb-6 border-b border-border/60 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+            <CheckSquare className="h-7 w-7 text-violet-500 shrink-0" />
             Habit Tracker
           </h1>
           <p className="text-sm text-muted-foreground flex items-center gap-1.5">

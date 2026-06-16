@@ -9,7 +9,7 @@ import { DailyTodos } from "@/components/daily/DailyTodos"
 import { DailyReflections } from "@/components/daily/DailyReflections"
 import { DailyPics } from "@/components/daily/DailyPics"
 import { format, parseISO, addDays, subDays } from "date-fns"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
 export default function DailyPage() {
   const activeDate = useWorkspaceStore((state) => state.activeDate)
@@ -43,7 +43,8 @@ export default function DailyPage() {
       {/* Date Navigation Header */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md pt-2 pb-6 border-b border-border/60 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+            <Clock className="h-7 w-7 text-violet-500 shrink-0" />
             Daily Flow
           </h1>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
