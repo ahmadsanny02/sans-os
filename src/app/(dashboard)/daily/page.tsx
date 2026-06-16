@@ -44,12 +44,11 @@ export default function DailyPage() {
         title="Daily Flow"
         icon={<Clock className="h-7 w-7 text-violet-500 shrink-0" />}
         description={
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-            <span className="font-medium">Active Date:</span>
-            <div className="flex items-center gap-2 rounded-xl border border-border bg-card/50 px-3.5 py-1.5 text-sm font-semibold text-foreground shadow-sm">
-              <Calendar className="h-4 w-4 text-violet-500" />
-              <span>{format(baseDate, "MMMM d, yyyy")}</span>
-            </div>
+          <div className="flex items-center gap-1.5 mt-1">
+            <Calendar className="h-4 w-4 text-violet-500" />
+            <span>
+              Active Date: <span className="font-semibold text-foreground">{format(baseDate, "MMMM d, yyyy")}</span>
+            </span>
           </div>
         }
         showNavigation
