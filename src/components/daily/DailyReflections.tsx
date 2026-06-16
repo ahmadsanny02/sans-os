@@ -107,8 +107,10 @@ export function DailyReflections() {
       {/* Tab content area */}
       <div className="rounded-2xl border border-border bg-card p-4 min-h-[180px] flex flex-col justify-stretch relative">
         {isLoading ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-card/40 rounded-2xl">
-            <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+          <div className="flex-1 space-y-2.5 pt-1 animate-pulse">
+            <div className="h-4 w-full bg-muted/20 rounded-md" />
+            <div className="h-4 w-5/6 bg-muted/20 rounded-md" />
+            <div className="h-4 w-3/4 bg-muted/20 rounded-md" />
           </div>
         ) : (
           <>

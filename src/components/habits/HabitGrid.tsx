@@ -171,14 +171,18 @@ export function HabitGrid() {
           </thead>
           <tbody className="divide-y divide-border/60">
             {isLoading ? (
-              <tr>
-                <td colSpan={monthDays.length + 1} className="py-24 text-center text-sm text-muted-foreground bg-card">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
-                    <span>Loading habits checklist...</span>
-                  </div>
-                </td>
-              </tr>
+              Array.from({ length: 3 }).map((_, rIdx) => (
+                <tr key={rIdx} className="animate-pulse">
+                  <td className="p-3 text-left">
+                    <div className="h-4 w-24 bg-muted/20 rounded-md" />
+                  </td>
+                  {monthDays.map((_, dIdx) => (
+                    <td key={dIdx} className="p-1">
+                      <div className="h-6 w-6 bg-muted/20 rounded mx-auto" />
+                    </td>
+                  ))}
+                </tr>
+              ))
             ) : isError || !data ? (
               <tr>
                 <td colSpan={monthDays.length + 1} className="py-24 text-center text-sm text-destructive bg-card font-semibold">

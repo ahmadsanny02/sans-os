@@ -26,6 +26,7 @@ import {
   Inbox,
   AlertTriangle,
 } from "lucide-react"
+import { ListSkeleton } from "@/components/ui/Skeletons"
 
 // Priority badge color themes
 const PRIORITY_THEMES: Record<string, { bg: string; text: string; border: string }> = {
@@ -330,8 +331,9 @@ export function ProjectBoard() {
         {/* Project Cards Grid */}
         <div className="space-y-3.5">
           {isLoading ? (
-            <div className="flex h-44 items-center justify-center rounded-xl border border-border bg-card/10">
-              <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+            <div className="space-y-3">
+              <div className="h-24 w-full bg-muted/25 dark:bg-card/15 animate-pulse rounded-2xl border border-border/60" />
+              <div className="h-24 w-full bg-muted/25 dark:bg-card/15 animate-pulse rounded-2xl border border-border/60" />
             </div>
           ) : isError ? (
             <div className="flex h-44 items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 text-xs text-destructive font-semibold">
@@ -436,8 +438,12 @@ export function ProjectBoard() {
       {/* Right Column: Project Tasks Detail Workspace */}
       <div className="lg:col-span-7 xl:col-span-8">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center text-center p-8 border border-border bg-card/25 dark:bg-card/10 rounded-2xl min-h-[400px] shadow-sm select-none">
-            <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
+          <div className="border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 min-h-[400px] shadow-sm space-y-6">
+            <div className="border-b border-border/60 pb-4 space-y-2 animate-pulse">
+              <div className="h-6 w-1/3 bg-muted/70 rounded-md" />
+              <div className="h-4 w-1/2 bg-muted/60 rounded-md" />
+            </div>
+            <ListSkeleton count={4} />
           </div>
         ) : isError ? (
           <div className="flex flex-col items-center justify-center text-center p-8 border border-border bg-card/25 dark:bg-card/10 rounded-2xl min-h-[400px] shadow-sm select-none text-destructive">

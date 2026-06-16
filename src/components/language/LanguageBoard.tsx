@@ -21,6 +21,7 @@ import {
   EyeOff,
   Lightbulb,
 } from "lucide-react"
+import { GridCardSkeleton } from "@/components/ui/Skeletons"
 
 // Part of Speech tag styling themes
 const POS_THEMES: Record<string, { bg: string; text: string; border: string }> = {
@@ -390,8 +391,10 @@ export function LanguageBoard() {
 
       {/* 5. Vocabulary Cards Grid */}
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center rounded-2xl border border-border bg-card/10">
-          <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <GridCardSkeleton key={idx} />
+          ))}
         </div>
       ) : isError ? (
         <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">

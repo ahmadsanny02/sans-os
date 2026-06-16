@@ -303,8 +303,15 @@ export function Timetable() {
       {/* Timeline List Card */}
       <div className="relative border border-border bg-card rounded-2xl p-6 shadow-sm dark:bg-card/50">
         {isLoading ? (
-          <div className="py-12 flex items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+          <div className="relative border-l border-border pl-6 space-y-6">
+            <div className="relative">
+              <span className="absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background bg-muted animate-pulse" />
+              <div className="h-16 w-full bg-muted/20 animate-pulse rounded-xl border border-border/40" />
+            </div>
+            <div className="relative">
+              <span className="absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background bg-muted animate-pulse" />
+              <div className="h-16 w-full bg-muted/20 animate-pulse rounded-xl border border-border/40" />
+            </div>
           </div>
         ) : isError ? (
           <div className="py-12 text-center text-sm text-destructive font-semibold">

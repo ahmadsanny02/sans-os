@@ -89,10 +89,7 @@ export function DailyPics() {
 
       <div className="relative rounded-2xl border border-border bg-card p-2 shadow-sm hover:border-sidebar-primary/20 transition-all group overflow-hidden h-72 flex flex-col items-center justify-center">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center gap-2">
-            <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
-            <span className="text-xs text-muted-foreground">Loading image...</span>
-          </div>
+          <div className="w-full h-full bg-muted/20 animate-pulse rounded-xl" />
         ) : picUrl ? (
           <div className="relative w-full h-full rounded-xl overflow-hidden bg-secondary/10 flex items-center justify-center">
             {/* The Pic of the Day Image */}

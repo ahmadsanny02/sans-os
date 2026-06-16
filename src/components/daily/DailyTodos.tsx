@@ -97,8 +97,9 @@ export function DailyTodos() {
 
       <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
         {isLoading ? (
-          <div className="flex h-32 items-center justify-center rounded-xl border border-border bg-card/20 backdrop-blur-md">
-            <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+          <div className="space-y-2.5 pt-1">
+            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
+            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
           </div>
         ) : isError ? (
           <div className="flex h-32 items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">

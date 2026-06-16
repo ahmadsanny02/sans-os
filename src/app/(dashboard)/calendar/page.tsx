@@ -11,7 +11,7 @@ import {
   TimetableBlock,
 } from "@/hooks/useDaily"
 import { format, parseISO, addMonths, subMonths } from "date-fns"
-import { Calendar, Clock, Check, Loader2, ListTodo } from "lucide-react"
+import { Calendar, Clock, Check, ListTodo } from "lucide-react"
 import { HeaderPage } from "@/components/ui/HeaderPage"
 
 // Color scheme mapping for timetable blocks
@@ -156,8 +156,9 @@ export default function CalendarPage() {
               </h4>
 
               {isLoadingPriorities ? (
-                <div className="flex justify-center py-4">
-                  <Loader2 className="h-4.5 w-4.5 animate-spin text-sidebar-primary" />
+                <div className="space-y-2 pt-1 animate-pulse">
+                  <div className="h-10 w-full bg-muted/25 dark:bg-card/15 rounded-lg border border-border/40" />
+                  <div className="h-10 w-full bg-muted/25 dark:bg-card/15 rounded-lg border border-border/40" />
                 </div>
               ) : dayPriorities.length === 0 ? (
                 <p className="text-xs text-muted-foreground italic pl-1">No priorities scheduled</p>
@@ -199,8 +200,9 @@ export default function CalendarPage() {
               </h4>
 
               {isLoadingTimetable ? (
-                <div className="flex justify-center py-4">
-                  <Loader2 className="h-4.5 w-4.5 animate-spin text-sidebar-primary" />
+                <div className="space-y-2.5 pt-1 animate-pulse">
+                  <div className="h-12 w-full bg-muted/25 dark:bg-card/15 rounded-lg border border-border/40" />
+                  <div className="h-12 w-full bg-muted/25 dark:bg-card/15 rounded-lg border border-border/40" />
                 </div>
               ) : activeTimetableBlocks.length === 0 ? (
                 <p className="text-xs text-muted-foreground italic pl-1">No schedule blocks configured</p>
