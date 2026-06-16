@@ -79,9 +79,6 @@ export function ReadingBoard() {
   const [editProgress, setEditProgress] = useState("")
   const [editError, setEditError] = useState<string | null>(null)
 
-  // Inline progress state mapping book ID -> input value
-  const [progressInputs, setProgressInputs] = useState<Record<string, string>>({})
-
   const handleAddBook = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
     setAddError(null)
@@ -191,27 +188,11 @@ export function ReadingBoard() {
     setEditError(null)
   }
 
-  const handleProgressChange = (id: string, value: string): void => {
-    setProgressInputs((prev) => ({ ...prev, [id]: value }))
-  }
-
-  const handleSaveProgress = async (id: string): Promise<void> => {
-    const progressVal = progressInputs[id] !== undefined ? progressInputs[id] : ""
-    try {
-      await updateBookMutation.mutateAsync({
-        id,
-        currentProgress: progressVal.trim(),
-      })
-    } catch {
-      alert("Failed to save progress.")
-    }
-  }
-
   // Calculate metrics
   const totalBooks = booksList.length
   const readingCount = booksList.filter((b) => b.status === "Reading").length
   const completedCount = booksList.filter((b) => b.status === "Completed").length
-  
+
   const completedWithRating = booksList.filter((b) => b.status === "Completed" && b.rating !== null)
   const averageRating = completedWithRating.length > 0
     ? Number((completedWithRating.reduce((acc, curr) => acc + (curr.rating || 0), 0) / completedWithRating.length).toFixed(1))
@@ -222,7 +203,7 @@ export function ReadingBoard() {
     const matchesSearch =
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.author.toLowerCase().includes(searchQuery.toLowerCase())
-    
+
     const matchesStatus = selectedStatusFilter === "All" || book.status === selectedStatusFilter
 
     return matchesSearch && matchesStatus
@@ -408,11 +389,10 @@ export function ReadingBoard() {
                         className="p-1 rounded transition-transform active:scale-90"
                       >
                         <Star
-                          className={`h-6 w-6 ${
-                            active
+                          className={`h-6 w-6 ${active
                               ? "text-amber-500 fill-amber-500 hover:scale-110"
                               : "text-muted-foreground/40 hover:text-amber-500/50"
-                          } transition-all`}
+                            } transition-all`}
                         />
                       </button>
                     )
@@ -509,11 +489,10 @@ export function ReadingBoard() {
               <button
                 key={status}
                 onClick={() => setSelectedStatusFilter(status)}
-                className={`px-3.5 py-1 rounded-full text-xs font-bold transition-all border ${
-                  isActive
+                className={`px-3.5 py-1 rounded-full text-xs font-bold transition-all border ${isActive
                     ? "bg-sidebar-primary text-sidebar-primary-foreground border-sidebar-primary shadow-sm"
                     : "bg-secondary/20 hover:bg-secondary/50 border-border text-muted-foreground"
-                }`}
+                  }`}
               >
                 {status}
               </button>
@@ -573,38 +552,15 @@ export function ReadingBoard() {
                     </p>
                   </div>
 
-                  {/* Inline Progress Tracker for Reading Books */}
-                  {book.status === "Reading" && (
-                    <div className="mt-4 pt-3 border-t border-border/30 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                          Current Progress
-                        </span>
-                        {book.currentProgress && (
-                          <span className="text-[10px] font-medium text-sidebar-primary/80">
-                            Last: {book.currentProgress}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <input
-                          type="text"
-                          value={progressInputs[book.id] ?? book.currentProgress ?? ""}
-                          placeholder="e.g. Page 120, Chapter 5"
-                          onChange={(e) => handleProgressChange(book.id, e.target.value)}
-                          className="flex-1 rounded-lg border border-border bg-background/50 px-2.5 py-1 text-xs outline-none focus:border-sidebar-primary transition-all"
-                        />
-                        <button
-                          onClick={() => handleSaveProgress(book.id)}
-                          disabled={updateBookMutation.isPending}
-                          className="rounded-lg bg-sidebar-primary px-3 py-1 text-[10px] font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 transition-all shrink-0 active:scale-[0.95] flex items-center justify-center min-w-[40px]"
-                        >
-                          {updateBookMutation.isPending && progressInputs[book.id] !== undefined ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                          ) : (
-                            "Save"
-                          )}
-                        </button>
+                  {/* Progress Tracker Display for Reading Books */}
+                  {book.status === "Reading" && book.currentProgress && (
+                    <div className="mt-4 pt-3 border-t border-border/30">
+                      <div className="text-xs text-muted-foreground flex flex-col gap-1.5 font-semibold">
+                        <div className="flex items-center gap-1.5">
+                          <BookOpen className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                          <p>Progress:</p>
+                        </div>
+                        <p className="text-foreground">{book.currentProgress}</p>
                       </div>
                     </div>
                   )}
@@ -620,9 +576,8 @@ export function ReadingBoard() {
                             return (
                               <Star
                                 key={lvl}
-                                className={`h-4 w-4 ${
-                                  isGold ? "text-amber-500 fill-amber-500" : "text-muted/20"
-                                }`}
+                                className={`h-4 w-4 ${isGold ? "text-amber-500 fill-amber-500" : "text-muted/20"
+                                  }`}
                               />
                             )
                           })}
@@ -757,11 +712,10 @@ export function ReadingBoard() {
                             className="p-1 rounded transition-transform active:scale-90"
                           >
                             <Star
-                              className={`h-6 w-6 ${
-                                active
+                              className={`h-6 w-6 ${active
                                   ? "text-amber-500 fill-amber-500 hover:scale-110"
                                   : "text-muted-foreground/40 hover:text-amber-500/50"
-                              } transition-all`}
+                                } transition-all`}
                             />
                           </button>
                         )
