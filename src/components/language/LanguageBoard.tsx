@@ -84,6 +84,7 @@ export function LanguageBoard() {
       setExampleSentence("")
       setMastery(3)
       setShowAddForm(false)
+      showSuccessToast("Vocabulary added successfully")
     } catch {
       setFormError("Failed to add vocabulary log.")
     }

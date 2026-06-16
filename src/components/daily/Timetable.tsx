@@ -9,6 +9,7 @@ import {
 } from "@/hooks/useDaily"
 import { parseISO } from "date-fns"
 import { Plus, Trash2, Clock, Loader2, CalendarRange, AlertCircle } from "lucide-react"
+import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
 // Color options mapping for timetable blocks
 const COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
@@ -149,13 +150,24 @@ export function Timetable() {
       })
       setTitle("")
       setShowAddForm(false)
+      showSuccessToast("Schedule block added")
     } catch {
       setErrorMsg("Failed to save timetable block.")
     }
   }
 
-  const handleDeleteBlock = (id: string): void => {
-    deleteBlockMutation.mutate(id)
+  const handleDeleteBlock = async (id: string): Promise<void> => {
+    const isConfirmed = await confirmDestructive(
+      "Delete Schedule Block",
+      "Are you sure you want to delete this time block?"
+    )
+    if (!isConfirmed) return
+    try {
+      deleteBlockMutation.mutate(id)
+      showSuccessToast("Schedule block deleted")
+    } catch {
+      showError("Error", "Failed to delete schedule block.")
+    }
   }
 
 

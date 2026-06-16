@@ -9,6 +9,7 @@ import {
   useDeletePriorityMutation,
 } from "@/hooks/useDaily"
 import { Plus, Trash2, Check, Loader2, RefreshCw, AlertCircle } from "lucide-react"
+import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
 export function PrioritiesList() {
   const activeDate = useWorkspaceStore((state) => state.activeDate)
@@ -40,6 +41,7 @@ export function PrioritiesList() {
         orderIndex: listPriorities.length,
       })
       setNewText("")
+      showSuccessToast("Priority added")
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Failed to add priority")
     }
@@ -49,8 +51,18 @@ export function PrioritiesList() {
     togglePriorityMutation.mutate({ id, completed: !completed })
   }
 
-  const handleDeletePriority = (id: string): void => {
-    deletePriorityMutation.mutate(id)
+  const handleDeletePriority = async (id: string): Promise<void> => {
+    const isConfirmed = await confirmDestructive(
+      "Delete Priority",
+      "Are you sure you want to delete this priority?"
+    )
+    if (!isConfirmed) return
+    try {
+      deletePriorityMutation.mutate(id)
+      showSuccessToast("Priority deleted")
+    } catch {
+      showError("Error", "Failed to delete priority.")
+    }
   }
 
   return (

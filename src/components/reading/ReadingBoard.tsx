@@ -108,6 +108,7 @@ export function ReadingBoard() {
       setAddFinishedAt(todayStr)
       setAddProgress("")
       setShowAddForm(false)
+      showSuccessToast("Book added to reading journal")
     } catch {
       setAddError("Failed to add book to journal.")
     }
@@ -152,6 +153,7 @@ export function ReadingBoard() {
         currentProgress: editStatus === "Reading" ? editProgress.trim() : null,
       })
       setEditingBook(null)
+      showSuccessToast("Book log updated")
     } catch {
       setEditError("Failed to update book log.")
     }

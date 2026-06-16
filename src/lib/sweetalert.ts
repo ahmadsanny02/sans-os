@@ -1,7 +1,6 @@
 import Swal from "sweetalert2"
-import "sweetalert2/dist/sweetalert2.min.css"
 
-// Custom styles for popup confirm dialogs
+// Custom styles for popup confirm dialogs (destructive: delete)
 const ConfirmSwal = Swal.mixin({
   buttonsStyling: false,
   customClass: {
@@ -27,6 +26,8 @@ const ErrorSwal = Swal.mixin({
 })
 
 // Custom styles for toast notifications
+// NOTE: Do NOT add flex/grid/display overrides here — SweetAlert2 toast uses
+// its own internal CSS Grid layout. Adding flex/items-center/gap breaks it.
 const ToastSwal = Swal.mixin({
   toast: true,
   position: "top-end",
@@ -34,8 +35,9 @@ const ToastSwal = Swal.mixin({
   timer: 2500,
   timerProgressBar: true,
   customClass: {
-    popup: "bg-card border border-border/60 rounded-xl shadow-lg dark:bg-slate-900 p-3 flex items-center gap-2 select-none",
-    title: "text-xs font-bold text-foreground font-sans",
+    popup: "!bg-slate-900 !border !border-slate-700/60 !rounded-xl !shadow-xl select-none",
+    title: "!text-xs !font-bold !text-slate-100 !font-sans",
+    timerProgressBar: "!bg-violet-500/70",
   }
 })
 

@@ -9,6 +9,7 @@ import {
   useDeleteDailyTodoMutation,
 } from "@/hooks/useDailyLogs"
 import { Plus, Trash2, Check, Loader2, ListTodo, AlertCircle } from "lucide-react"
+import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 
 export function DailyTodos() {
   const activeDate = useWorkspaceStore((state) => state.activeDate)
@@ -32,6 +33,7 @@ export function DailyTodos() {
         text: newText,
       })
       setNewText("")
+      showSuccessToast("Todo added successfully")
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Failed to add todo")
     }
@@ -41,8 +43,18 @@ export function DailyTodos() {
     toggleTodoMutation.mutate({ id, completed: !completed })
   }
 
-  const handleDeleteTodo = (id: string): void => {
-    deleteTodoMutation.mutate(id)
+  const handleDeleteTodo = async (id: string): Promise<void> => {
+    const isConfirmed = await confirmDestructive(
+      "Delete Todo",
+      "Are you sure you want to delete this todo item?"
+    )
+    if (!isConfirmed) return
+    try {
+      deleteTodoMutation.mutate(id)
+      showSuccessToast("Todo deleted")
+    } catch {
+      showError("Error", "Failed to delete todo.")
+    }
   }
 
   return (

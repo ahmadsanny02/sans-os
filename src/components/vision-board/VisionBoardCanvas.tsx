@@ -70,6 +70,7 @@ export function VisionBoardCanvas() {
       })
       setContent("")
       setShowAddMenu(false)
+      showSuccessToast("Vision item added to canvas")
     } catch {
       setErrorMsg("Failed to add item to board.")
     }

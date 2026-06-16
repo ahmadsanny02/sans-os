@@ -3,6 +3,7 @@ import { Poppins, Geist_Mono } from "next/font/google"
 import { Providers } from "@/components/providers/Providers"
 import "./globals.css"
 import "../../node_modules/tw-animate-css/dist/tw-animate.css"
+import "sweetalert2/dist/sweetalert2.min.css"
 
 const poppins = Poppins({
   variable: "--font-poppins",

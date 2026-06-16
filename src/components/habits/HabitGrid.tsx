@@ -51,8 +51,10 @@ export function HabitGrid() {
       })
       setNewHabitName("")
       setShowAddForm(false)
+      showSuccessToast("Habit added successfully")
     } catch (err) {
       console.error(err)
+      showError("Error", "Failed to add habit.")
     }
   }
 

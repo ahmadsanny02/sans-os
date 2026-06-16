@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 import { useDailyLogQuery, useSaveDailyLogMutation } from "@/hooks/useDailyLogs"
 import { BookOpen, Heart, FileText, Save, Loader2, Check } from "lucide-react"
+import { showError, showSuccessToast } from "@/lib/sweetalert"
 
 type TabType = "journal" | "gratitude" | "notes"
 
@@ -17,7 +18,7 @@ export function DailyReflections() {
   const [journal, setJournal] = useState("")
   const [notes, setNotes] = useState("")
   const [gratitude, setGratitude] = useState("")
-  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [saveSuccess] = useState(false)
 
   // Sync with fetched daily logs
   useEffect(() => {
@@ -35,10 +36,10 @@ export function DailyReflections() {
         notes,
         gratitude,
       })
-      setSaveSuccess(true)
-      setTimeout(() => setSaveSuccess(false), 3000)
+      showSuccessToast("Reflections saved")
     } catch (err) {
       console.error("Failed to save reflections", err)
+      showError("Save Failed", "Failed to save your reflections. Please try again.")
     }
   }
 

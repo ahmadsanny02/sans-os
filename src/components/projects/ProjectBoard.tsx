@@ -142,6 +142,7 @@ export function ProjectBoard() {
       setProjectDeadline("")
       setShowAddProject(false)
       setSelectedProjectId(newProj.id)
+      showSuccessToast("Project created successfully")
     } catch {
       setProjectError("Failed to create project.")
     }
@@ -180,6 +181,7 @@ export function ProjectBoard() {
       setTaskName("")
       setTaskPriority("Medium")
       setTaskDeadline("")
+      showSuccessToast("Task added to project")
     } catch {
       setTaskError("Failed to add task.")
     }

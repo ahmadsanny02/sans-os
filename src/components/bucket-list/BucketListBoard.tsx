@@ -77,6 +77,7 @@ export function BucketListBoard() {
       setAddTitle("")
       setAddImageUrl("")
       setShowAddForm(false)
+      showSuccessToast("Dream added to bucket list!")
     } catch {
       setAddError("Failed to add item to bucket list.")
     }
@@ -108,6 +109,7 @@ export function BucketListBoard() {
         completed: editCompleted,
       })
       setEditingItem(null)
+      showSuccessToast("Dream updated successfully")
     } catch {
       setEditError("Failed to update bucket list item.")
     }
