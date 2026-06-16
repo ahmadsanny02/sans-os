@@ -26,7 +26,6 @@ import {
   ListTodo,
   Check,
   Award,
-  Loader2,
 } from "lucide-react"
 import { parseISO } from "date-fns"
 
@@ -85,22 +84,6 @@ function PrioritiesWidget({ activeDate }: { activeDate: string }) {
   const { data: priorities = [], isLoading, isError } = usePrioritiesQuery(activeDate)
   const togglePriorityMutation = useTogglePriorityMutation(activeDate)
 
-  if (isLoading) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-2xl border border-border bg-card/25">
-        <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 text-xs text-destructive">
-        Error loading priorities.
-      </div>
-    )
-  }
-
   const handleToggle = (id: string, completed: boolean): void => {
     togglePriorityMutation.mutate({ id, completed: !completed })
   }
@@ -113,12 +96,21 @@ function PrioritiesWidget({ activeDate }: { activeDate: string }) {
           <h3 className="text-lg font-bold text-foreground">Top 5 Priorities</h3>
         </div>
         <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border font-semibold text-muted-foreground">
-          {priorities.filter((p) => p.completed).length}/5
+          {isLoading ? "..." : `${priorities.filter((p) => p.completed).length}/5`}
         </span>
       </div>
 
       <div className="space-y-2">
-        {priorities.length === 0 ? (
+        {isLoading ? (
+          <div className="space-y-2 pt-1">
+            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
+            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
+          </div>
+        ) : isError ? (
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 py-8 text-center text-xs text-destructive">
+            Error loading priorities.
+          </div>
+        ) : priorities.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border py-8 text-center text-xs text-muted-foreground">
             No priorities set for today.
           </div>
@@ -163,22 +155,6 @@ function TodosWidget({ activeDate }: { activeDate: string }) {
   const { data: todos = [], isLoading, isError } = useDailyTodosQuery(activeDate)
   const toggleTodoMutation = useToggleDailyTodoMutation(activeDate)
 
-  if (isLoading) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-2xl border border-border bg-card/25">
-        <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 text-xs text-destructive">
-        Error loading checklist.
-      </div>
-    )
-  }
-
   const handleToggle = (id: string, completed: boolean): void => {
     toggleTodoMutation.mutate({ id, completed: !completed })
   }
@@ -191,12 +167,21 @@ function TodosWidget({ activeDate }: { activeDate: string }) {
           <h3 className="text-lg font-bold text-foreground">Daily Checklist</h3>
         </div>
         <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border font-semibold text-muted-foreground">
-          {todos.filter((t) => t.completed).length}/{todos.length} Done
+          {isLoading ? "..." : `${todos.filter((t) => t.completed).length}/${todos.length} Done`}
         </span>
       </div>
 
       <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-        {todos.length === 0 ? (
+        {isLoading ? (
+          <div className="space-y-2 pt-1">
+            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
+            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
+          </div>
+        ) : isError ? (
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 py-8 text-center text-xs text-destructive">
+            Error loading checklist.
+          </div>
+        ) : todos.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border py-8 text-center text-xs text-muted-foreground">
             No checklist items set for today.
           </div>
@@ -240,22 +225,6 @@ function TodosWidget({ activeDate }: { activeDate: string }) {
 function TimetableWidget({ activeDate }: { activeDate: string }) {
   const { data: timetableList = [], isLoading, isError } = useTimetableQuery()
 
-  if (isLoading) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-2xl border border-border bg-card/25">
-        <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 text-xs text-destructive">
-        Error loading schedule.
-      </div>
-    )
-  }
-
   // Get current date and time in user's local timezone to compare ongoing/future blocks
   const now = new Date()
   const year = now.getFullYear()
@@ -296,7 +265,22 @@ function TimetableWidget({ activeDate }: { activeDate: string }) {
       </div>
 
       <div className="space-y-3">
-        {activeDayBlocks.length === 0 ? (
+        {isLoading ? (
+          <div className="relative border-l border-border/70 ml-2.5 pl-6 space-y-4">
+            <div className="relative">
+              <span className="absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background bg-muted animate-pulse" />
+              <div className="h-16 w-full bg-muted/20 animate-pulse rounded-xl border border-border/40" />
+            </div>
+            <div className="relative">
+              <span className="absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background bg-muted animate-pulse" />
+              <div className="h-16 w-full bg-muted/20 animate-pulse rounded-xl border border-border/40" />
+            </div>
+          </div>
+        ) : isError ? (
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 py-8 text-center text-xs text-destructive">
+            Error loading schedule.
+          </div>
+        ) : activeDayBlocks.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border py-8 text-center text-xs text-muted-foreground">
             No schedule blocks set for today.
           </div>
@@ -338,14 +322,6 @@ function MemoryBoxWidget({ activeDate }: { activeDate: string }) {
   const { data: log, isLoading } = useDailyLogQuery(activeDate)
   const picUrl = log?.picUrl
 
-  if (isLoading) {
-    return (
-      <div className="flex h-36 items-center justify-center rounded-2xl border border-border bg-card/25">
-        <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
   return (
     <div className="rounded-2xl border border-border bg-card/25 dark:bg-card/10 p-6 shadow-sm space-y-4">
       <div className="flex items-center justify-between">
@@ -356,7 +332,9 @@ function MemoryBoxWidget({ activeDate }: { activeDate: string }) {
       </div>
 
       <div className="relative rounded-xl border border-border bg-card p-1.5 overflow-hidden h-48 flex items-center justify-center shadow-inner bg-secondary/5">
-        {picUrl ? (
+        {isLoading ? (
+          <div className="w-full h-full bg-muted/20 animate-pulse rounded-lg" />
+        ) : picUrl ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={picUrl}

@@ -221,22 +221,7 @@ export function ReadingBoard() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-96 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
 
-  if (isError) {
-    return (
-      <div className="flex h-96 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-        <AlertCircle className="h-8 w-8" />
-        <span>Error loading reading journal logs. Please check database.</span>
-      </div>
-    )
-  }
 
   return (
     <div className="space-y-6">
@@ -246,7 +231,7 @@ export function ReadingBoard() {
         <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
           <div className="space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Books</span>
-            <h4 className="text-3xl font-black text-foreground">{totalBooks}</h4>
+            <h4 className="text-3xl font-black text-foreground">{isLoading ? "..." : totalBooks}</h4>
           </div>
           <div className="rounded-xl bg-violet-500/10 p-3 text-violet-500">
             <BookOpen className="h-6 w-6" />
@@ -257,7 +242,7 @@ export function ReadingBoard() {
         <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
           <div className="space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Currently Reading</span>
-            <h4 className="text-3xl font-black text-foreground">{readingCount}</h4>
+            <h4 className="text-3xl font-black text-foreground">{isLoading ? "..." : readingCount}</h4>
           </div>
           <div className="rounded-xl bg-blue-500/10 p-3 text-blue-500">
             <Clock className="h-6 w-6" />
@@ -268,7 +253,7 @@ export function ReadingBoard() {
         <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
           <div className="space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Completed Books</span>
-            <h4 className="text-3xl font-black text-foreground">{completedCount}</h4>
+            <h4 className="text-3xl font-black text-foreground">{isLoading ? "..." : completedCount}</h4>
           </div>
           <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-500">
             <BookMarked className="h-6 w-6" />
@@ -280,7 +265,7 @@ export function ReadingBoard() {
           <div className="space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Average Rating</span>
             <h4 className="text-3xl font-black text-foreground flex items-baseline gap-1">
-              {averageRating}
+              {isLoading ? "..." : averageRating}
               <span className="text-sm font-bold text-muted-foreground">/ 5.0</span>
             </h4>
           </div>
@@ -502,7 +487,16 @@ export function ReadingBoard() {
       </div>
 
       {/* 5. Books Cards Grid */}
-      {filteredBooks.length === 0 ? (
+      {isLoading ? (
+        <div className="flex h-64 items-center justify-center rounded-2xl border border-border bg-card/10">
+          <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
+        </div>
+      ) : isError ? (
+        <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
+          <AlertCircle className="h-6 w-6" />
+          <span>Error loading reading journal logs. Please check database.</span>
+        </div>
+      ) : filteredBooks.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground bg-card/10 select-none">
           No books found matching criteria. Click &quot;Add Book Log&quot; to register a book.
         </div>

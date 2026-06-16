@@ -190,22 +190,7 @@ export function ProjectBoard() {
     toggleTaskMutation.mutate({ id, completed: !completed })
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-96 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
 
-  if (isError) {
-    return (
-      <div className="flex h-96 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-        <AlertCircle className="h-8 w-8" />
-        <span>Error loading projects data. Please try refreshing.</span>
-      </div>
-    )
-  }
 
   return (
     <div className="grid gap-8 lg:grid-cols-12">
@@ -344,7 +329,15 @@ export function ProjectBoard() {
 
         {/* Project Cards Grid */}
         <div className="space-y-3.5">
-          {projectsList.length === 0 ? (
+          {isLoading ? (
+            <div className="flex h-44 items-center justify-center rounded-xl border border-border bg-card/10">
+              <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+            </div>
+          ) : isError ? (
+            <div className="flex h-44 items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 text-xs text-destructive font-semibold">
+              Error loading projects.
+            </div>
+          ) : projectsList.length === 0 ? (
             <div className="rounded-2xl p-2 border border-dashed border-border py-12 text-center text-sm text-muted-foreground bg-card/10">
               No projects added yet. Create a project to start planning.
             </div>
@@ -442,7 +435,16 @@ export function ProjectBoard() {
 
       {/* Right Column: Project Tasks Detail Workspace */}
       <div className="lg:col-span-7 xl:col-span-8">
-        {!activeProject ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center text-center p-8 border border-border bg-card/25 dark:bg-card/10 rounded-2xl min-h-[400px] shadow-sm select-none">
+            <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center text-center p-8 border border-border bg-card/25 dark:bg-card/10 rounded-2xl min-h-[400px] shadow-sm select-none text-destructive">
+            <AlertCircle className="h-8 w-8 mb-2" />
+            <span>Failed to load active workspace.</span>
+          </div>
+        ) : !activeProject ? (
           <div className="flex flex-col items-center justify-center text-center p-8 border border-border bg-card/25 dark:bg-card/10 rounded-2xl min-h-[400px] shadow-sm select-none">
             <div className="rounded-full bg-secondary p-4 mb-4 text-muted-foreground/60">
               <Inbox className="h-10 w-10" />

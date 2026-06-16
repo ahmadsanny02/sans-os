@@ -120,23 +120,6 @@ export function VisionBoardCanvas() {
     })
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-96 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="flex h-96 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-        <AlertCircle className="h-8 w-8" />
-        <span>Error loading vision board items. Please refresh and check Supabase connections.</span>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       {/* Tools control header bar */}
@@ -310,7 +293,22 @@ export function VisionBoardCanvas() {
         ref={canvasRef}
         className="relative w-full h-[650px] bg-secondary/10 dark:bg-slate-950/20 border border-border/80 rounded-2xl overflow-hidden shadow-inner backdrop-blur-[2px] select-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"
       >
-        {boardItems.length === 0 ? (
+        {isLoading ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 select-none pointer-events-none">
+            <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary mb-2" />
+            <p className="text-xs text-muted-foreground font-semibold">Loading vision canvas...</p>
+          </div>
+        ) : isError ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 select-none">
+            <div className="rounded-full bg-destructive/10 p-4 mb-3 text-destructive">
+              <AlertCircle className="h-9 w-9" />
+            </div>
+            <h4 className="text-sm font-bold text-destructive">Failed to Load Canvas</h4>
+            <p className="text-[11px] text-muted-foreground mt-1 max-w-xs leading-relaxed">
+              Error loading vision board items. Please check database connection.
+            </p>
+          </div>
+        ) : boardItems.length === 0 ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 select-none pointer-events-none">
             <div className="rounded-full bg-secondary p-4 mb-3 text-muted-foreground/60">
               <Lightbulb className="h-9 w-9 text-violet-500" />

@@ -14,7 +14,7 @@ import {
   parseISO,
 } from "date-fns"
 import { usePrioritiesRangeQuery, useTimetableQuery } from "@/hooks/useDaily"
-import { Loader2, AlertCircle } from "lucide-react"
+import { AlertCircle } from "lucide-react"
 
 // Color scheme mapping for timetable blocks
 const TIMETABLE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
@@ -56,25 +56,17 @@ export function CalendarMonthGrid({ currentMonth, selectedDate, onSelectDate }: 
   const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
   const daysGrid = eachDayOfInterval({ start: gridStart, end: gridEnd })
 
-  if (isLoadingPriorities || isLoadingTimetable) {
-    return (
-      <div className="flex h-96 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
-  if (isErrorPriorities || isErrorTimetable) {
-    return (
-      <div className="flex h-96 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-        <AlertCircle className="h-8 w-8" />
-        <span>Error loading calendar contents. Please try refreshing.</span>
-      </div>
-    )
-  }
+  const isLoading = isLoadingPriorities || isLoadingTimetable
+  const isError = isErrorPriorities || isErrorTimetable
 
   return (
     <div className="space-y-4">
+      {isError && (
+        <div className="flex items-center gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-xs font-semibold text-destructive">
+          <AlertCircle className="h-4 w-4 shrink-0 animate-bounce" />
+          <span>Error loading calendar contents. Please try refreshing.</span>
+        </div>
+      )}
       {/* Calendar Grid Container */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm dark:bg-card/50">
         {/* Weekday headers */}
@@ -152,40 +144,49 @@ export function CalendarMonthGrid({ currentMonth, selectedDate, onSelectDate }: 
 
                 {/* Items preview list */}
                 <div className="flex-1 mt-2 space-y-1 overflow-hidden">
-                  {visibleItems.map((item) => {
-                    if (item.type === "timetable") {
-                      const theme = TIMETABLE_COLORS[item.color || "blue"] || TIMETABLE_COLORS.blue
-                      return (
-                        <div
-                          key={item.id}
-                          className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border truncate flex items-center gap-1 ${theme.bg} ${theme.text} ${theme.border}`}
-                        >
-                          <span className="shrink-0 text-[8px] md:text-[9px] opacity-75">
-                            {item.time}
-                          </span>
-                          <span className="truncate">{item.title}</span>
-                        </div>
-                      )
-                    } else {
-                      return (
-                        <div
-                          key={item.id}
-                          className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border border-indigo-500/10 truncate flex items-center gap-1 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 ${
-                            item.completed ? "line-through opacity-45 border-dashed" : ""
-                          }`}
-                        >
-                          <span className="shrink-0 text-[8px]">🎯</span>
-                          <span className="truncate">{item.title}</span>
-                        </div>
-                      )
-                    }
-                  })}
-
-                  {/* Remaining items count */}
-                  {remainingCount > 0 && (
-                    <div className="text-[8px] md:text-[9px] font-bold text-muted-foreground pl-1.5">
-                      + {remainingCount} more
+                  {isLoading ? (
+                    <div className="space-y-1.5 pt-1">
+                      <div className="h-2 w-11/12 bg-muted/60 rounded animate-pulse" />
+                      <div className="h-2 w-8/12 bg-muted/60 rounded animate-pulse" />
                     </div>
+                  ) : (
+                    <>
+                      {visibleItems.map((item) => {
+                        if (item.type === "timetable") {
+                          const theme = TIMETABLE_COLORS[item.color || "blue"] || TIMETABLE_COLORS.blue
+                          return (
+                            <div
+                              key={item.id}
+                              className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border truncate flex items-center gap-1 ${theme.bg} ${theme.text} ${theme.border}`}
+                            >
+                              <span className="shrink-0 text-[8px] md:text-[9px] opacity-75">
+                                {item.time}
+                              </span>
+                              <span className="truncate">{item.title}</span>
+                            </div>
+                          )
+                        } else {
+                          return (
+                            <div
+                              key={item.id}
+                              className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border border-indigo-500/10 truncate flex items-center gap-1 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 ${
+                                item.completed ? "line-through opacity-45 border-dashed" : ""
+                              }`}
+                            >
+                              <span className="shrink-0 text-[8px]">🎯</span>
+                              <span className="truncate">{item.title}</span>
+                            </div>
+                          )
+                        }
+                      })}
+
+                      {/* Remaining items count */}
+                      {remainingCount > 0 && (
+                        <div className="text-[8px] md:text-[9px] font-bold text-muted-foreground pl-1.5">
+                          + {remainingCount} more
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

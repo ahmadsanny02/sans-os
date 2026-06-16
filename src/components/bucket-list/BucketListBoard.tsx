@@ -24,6 +24,7 @@ import {
   Compass,
   Heart,
 } from "lucide-react"
+import { ImageCardSkeleton } from "@/components/ui/Skeletons"
 
 // PRESET BEAUTIFUL IMAGES FOR CONVENIENCE
 const BUCKET_PRESETS = [
@@ -170,23 +171,6 @@ export function BucketListBoard() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-96 items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-md">
-        <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary" />
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="flex h-96 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-        <AlertCircle className="h-8 w-8" />
-        <span>Error loading bucket list items. Please check database.</span>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       {/* 1. Statistics / Progress Card */}
@@ -195,7 +179,15 @@ export function BucketListBoard() {
         <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
           <div className="space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Dreams</span>
-            <h4 className="text-3xl font-black text-foreground">{totalCount}</h4>
+            <h4 className="text-3xl font-black text-foreground">
+              {isLoading ? (
+                <span className="inline-block w-8 h-8 bg-muted animate-pulse rounded-md mt-0.5" />
+              ) : isError ? (
+                "N/A"
+              ) : (
+                totalCount
+              )}
+            </h4>
           </div>
           <div className="rounded-xl bg-violet-500/10 p-3 text-violet-500">
             <Compass className="h-6 w-6" />
@@ -207,8 +199,16 @@ export function BucketListBoard() {
           <div className="space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Achieved Goals</span>
             <h4 className="text-3xl font-black text-foreground flex items-baseline gap-2">
-              {completedCount}
-              <span className="text-xs text-muted-foreground font-semibold">/ {totalCount} achieved</span>
+              {isLoading ? (
+                <span className="inline-block w-8 h-8 bg-muted animate-pulse rounded-md mt-0.5" />
+              ) : isError ? (
+                "N/A"
+              ) : (
+                <>
+                  {completedCount}
+                  <span className="text-xs text-muted-foreground font-semibold">/ {totalCount} achieved</span>
+                </>
+              )}
             </h4>
           </div>
           <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-500">
@@ -220,11 +220,19 @@ export function BucketListBoard() {
         <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex flex-col justify-center gap-2.5 backdrop-blur-md">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Completion Progress</span>
-            <span className="text-sm font-extrabold text-foreground">{completionRate}%</span>
+            <span className="text-sm font-extrabold text-foreground">
+              {isLoading ? (
+                <span className="inline-block w-12 h-5 bg-muted animate-pulse rounded-md" />
+              ) : isError ? (
+                "N/A"
+              ) : (
+                `${completionRate}%`
+              )}
+            </span>
           </div>
           <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
             <div
-              style={{ width: `${completionRate}%` }}
+              style={{ width: `${isLoading || isError ? 0 : completionRate}%` }}
               className="h-full bg-gradient-to-r from-violet-500 to-emerald-500 transition-all duration-500"
             />
           </div>
@@ -372,7 +380,18 @@ export function BucketListBoard() {
       </div>
 
       {/* 5. Cover Visual Grid */}
-      {filteredItems.length === 0 ? (
+      {isLoading ? (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <ImageCardSkeleton key={idx} />
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
+          <AlertCircle className="h-8 w-8 animate-bounce" />
+          <span>Error loading bucket list items. Please check database.</span>
+        </div>
+      ) : filteredItems.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground bg-card/10 select-none">
           No dreams found matching filters. Let&apos;s start adding some goals!
         </div>
