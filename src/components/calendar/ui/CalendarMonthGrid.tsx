@@ -13,10 +13,9 @@ import {
   isToday,
   parseISO,
 } from "date-fns"
-import { usePrioritiesRangeQuery, useTimetableQuery } from "@/hooks/useDaily"
+import { Priority, TimetableBlock } from "@/hooks/useDaily"
 import { AlertCircle } from "lucide-react"
 
-// Color scheme mapping for timetable blocks
 const TIMETABLE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   blue: { bg: "bg-blue-500/10", text: "text-blue-600 dark:text-blue-400", border: "border-blue-500/20" },
   green: { bg: "bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400", border: "border-emerald-500/20" },
@@ -34,30 +33,28 @@ interface CalendarMonthGridProps {
   currentMonth: Date
   selectedDate: string // YYYY-MM-DD
   onSelectDate: (date: string) => void
+  rangePriorities: Priority[]
+  timetableList: TimetableBlock[]
+  isLoading: boolean
+  isError: boolean
 }
 
-export function CalendarMonthGrid({ currentMonth, selectedDate, onSelectDate }: CalendarMonthGridProps) {
-  // Generate date bounds for queries
+export function CalendarMonthGrid({
+  currentMonth,
+  selectedDate,
+  onSelectDate,
+  rangePriorities,
+  timetableList,
+  isLoading,
+  isError,
+}: CalendarMonthGridProps) {
   const monthStart = startOfMonth(currentMonth)
   const monthEnd = endOfMonth(monthStart)
   const gridStart = startOfWeek(monthStart)
   const gridEnd = endOfWeek(monthEnd)
 
-  const startDateStr = format(gridStart, "yyyy-MM-dd")
-  const endDateStr = format(gridEnd, "yyyy-MM-dd")
-
-  // React Query Hooks
-  const { data: rangePriorities = [], isLoading: isLoadingPriorities, isError: isErrorPriorities } =
-    usePrioritiesRangeQuery(startDateStr, endDateStr)
-
-  const { data: timetableList = [], isLoading: isLoadingTimetable, isError: isErrorTimetable } =
-    useTimetableQuery()
-
   const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
   const daysGrid = eachDayOfInterval({ start: gridStart, end: gridEnd })
-
-  const isLoading = isLoadingPriorities || isLoadingTimetable
-  const isError = isErrorPriorities || isErrorTimetable
 
   return (
     <div className="space-y-4">
@@ -67,6 +64,7 @@ export function CalendarMonthGrid({ currentMonth, selectedDate, onSelectDate }: 
           <span>Error loading calendar contents. Please try refreshing.</span>
         </div>
       )}
+
       {/* Calendar Grid Container */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm dark:bg-card/50">
         {/* Weekday headers */}
@@ -87,15 +85,12 @@ export function CalendarMonthGrid({ currentMonth, selectedDate, onSelectDate }: 
             const isCurrMonth = isSameMonth(day, currentMonth)
             const isTday = isToday(day)
 
-            // 1. Filter timetable blocks: show ONLY custom date-matching blocks (exclude everyday fixed)
             const activeTimetables = timetableList
               .filter((block) => block.date === dateStr)
               .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
-            // 2. Filter priorities by date
             const activePriorities = rangePriorities.filter((p) => p.date === dateStr)
 
-            // Combined list items for display
             const allItems: Array<{ id: string; title: string; time?: string; type: "timetable" | "priority"; color?: string; completed?: boolean }> = [
               ...activeTimetables.map((t) => ({
                 id: t.id,
@@ -112,7 +107,6 @@ export function CalendarMonthGrid({ currentMonth, selectedDate, onSelectDate }: 
               })),
             ]
 
-            // Limit elements in calendar box to prevent overflowing
             const visibleItems = allItems.slice(0, 3)
             const remainingCount = allItems.length - 3
 
@@ -124,7 +118,7 @@ export function CalendarMonthGrid({ currentMonth, selectedDate, onSelectDate }: 
                   !isCurrMonth ? "opacity-35 hover:opacity-60 bg-secondary/10" : ""
                 } ${isSel ? "ring-2 ring-sidebar-primary ring-inset z-10" : ""}`}
               >
-                {/* Cell Header: Day number & today's highlighting indicator */}
+                {/* Cell Header */}
                 <div className="flex justify-between items-start">
                   <span
                     className={`text-xs md:text-sm font-bold w-6 h-6 flex items-center justify-center rounded-full transition-all ${
@@ -180,7 +174,6 @@ export function CalendarMonthGrid({ currentMonth, selectedDate, onSelectDate }: 
                         }
                       })}
 
-                      {/* Remaining items count */}
                       {remainingCount > 0 && (
                         <div className="text-[8px] md:text-[9px] font-bold text-muted-foreground pl-1.5">
                           + {remainingCount} more

@@ -27,18 +27,15 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Initialize the calendar viewed month based on the selected date
   const parsedSelectedDate = parseISO(selectedDate)
   const [prevSelectedDate, setPrevSelectedDate] = useState(selectedDate)
   const [viewedMonth, setViewedMonth] = useState<Date>(parsedSelectedDate)
 
-  // Sync viewed month when selectedDate changes from the outside
   if (selectedDate !== prevSelectedDate) {
     setPrevSelectedDate(selectedDate)
     setViewedMonth(parseISO(selectedDate))
   }
 
-  // Click outside listener
   useEffect(() => {
     function handleClickOutside(event: MouseEvent): void {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -51,7 +48,6 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
     }
   }, [])
 
-  // Month navigation handlers
   const handlePrevMonth = (e: React.MouseEvent): void => {
     e.stopPropagation()
     setViewedMonth((prev) => subMonths(prev, 1))
@@ -68,7 +64,6 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
     setIsOpen(false)
   }
 
-  // Generate days grid
   const monthStart = startOfMonth(viewedMonth)
   const monthEnd = endOfMonth(monthStart)
   const gridStart = startOfWeek(monthStart)
@@ -81,7 +76,6 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
 
   return (
     <div className="relative inline-block text-left" ref={containerRef}>
-      {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2.5 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold shadow-sm hover:border-sidebar-primary/50 hover:bg-muted transition-all active:scale-[0.98]"
@@ -92,7 +86,6 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
         <span className="text-foreground">{formattedActiveDate}</span>
       </button>
 
-      {/* Dropdown Popover */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -102,7 +95,6 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="absolute left-0 mt-2 z-50 w-76 rounded-2xl border border-border bg-card/95 p-4 shadow-xl backdrop-blur-md dark:bg-card/90"
           >
-            {/* Header */}
             <div className="flex items-center justify-between pb-3.5 border-b border-border/40">
               <span className="text-sm font-bold text-foreground">
                 {format(viewedMonth, "MMMM yyyy")}
@@ -127,7 +119,6 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
               </div>
             </div>
 
-            {/* Weekdays Row */}
             <div className="grid grid-cols-7 gap-1 text-center py-2 text-[10px] font-bold text-muted-foreground tracking-wider uppercase">
               {weekdays.map((day) => (
                 <div key={day} className="h-6 flex items-center justify-center">
@@ -136,7 +127,6 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
               ))}
             </div>
 
-            {/* Days Grid */}
             <div className="grid grid-cols-7 gap-1 text-center">
               {daysGrid.map((day, idx) => {
                 const isSelected = isSameDay(day, parsedSelectedDate)
