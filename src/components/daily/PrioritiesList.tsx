@@ -64,8 +64,12 @@ export function PrioritiesList() {
             Focus on the 5 most important tasks for today
           </p>
         </div>
-        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border">
-          {isLoading ? "..." : `${listPriorities.length}/5`}
+        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border flex items-center justify-center min-w-[32px] h-6">
+          {isLoading ? (
+            <span className="inline-block w-4 h-3 bg-muted/30 animate-pulse rounded" />
+          ) : (
+            `${listPriorities.length}/5`
+          )}
         </span>
       </div>
 

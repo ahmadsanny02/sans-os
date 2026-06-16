@@ -95,8 +95,12 @@ function PrioritiesWidget({ activeDate }: { activeDate: string }) {
           <Award className="h-5 w-5 text-sidebar-primary" />
           <h3 className="text-lg font-bold text-foreground">Top 5 Priorities</h3>
         </div>
-        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border font-semibold text-muted-foreground">
-          {isLoading ? "..." : `${priorities.filter((p) => p.completed).length}/5`}
+        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border font-semibold text-muted-foreground flex items-center justify-center min-w-[32px] h-5">
+          {isLoading ? (
+            <span className="inline-block w-4 h-2.5 bg-muted/30 animate-pulse rounded" />
+          ) : (
+            `${priorities.filter((p) => p.completed).length}/5`
+          )}
         </span>
       </div>
 
@@ -166,8 +170,12 @@ function TodosWidget({ activeDate }: { activeDate: string }) {
           <ListTodo className="h-5 w-5 text-sidebar-primary" />
           <h3 className="text-lg font-bold text-foreground">Daily Checklist</h3>
         </div>
-        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border font-semibold text-muted-foreground">
-          {isLoading ? "..." : `${todos.filter((t) => t.completed).length}/${todos.length} Done`}
+        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border font-semibold text-muted-foreground flex items-center justify-center min-w-[50px] h-5">
+          {isLoading ? (
+            <span className="inline-block w-8 h-2.5 bg-muted/30 animate-pulse rounded" />
+          ) : (
+            `${todos.filter((t) => t.completed).length}/${todos.length} Done`
+          )}
         </span>
       </div>
 

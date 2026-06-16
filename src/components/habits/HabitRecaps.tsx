@@ -35,11 +35,13 @@ export function HabitRecaps() {
   const startDateStr = format(monthStart, "yyyy-MM-dd")
   const endDateStr = format(monthEnd, "yyyy-MM-dd")
 
-  const { data: monthlyData } = useHabitsQuery(startDateStr, endDateStr)
+  const { data: monthlyData, isLoading: habitsLoading } = useHabitsQuery(startDateStr, endDateStr)
 
   // Calculate Active Month stats
   const currentMonthStr = activeDate.substring(0, 7) // "YYYY-MM"
   const { data: monthlyStats, isLoading: statsLoading } = useHabitStatsQuery(currentMonthStr)
+
+  const isLoading = statsLoading || habitsLoading
 
   // Prepare weekly chart data from monthlyData logs in-memory
   const chartData: ChartDataPoint[] = weekDays.map((day) => {
@@ -69,9 +71,28 @@ export function HabitRecaps() {
           MONTHLY RECAP
         </h4>
         
-        {statsLoading ? (
-          <div className="flex-1 flex items-center justify-center py-6 text-xs text-muted-foreground">
-            Calculating statistics...
+        {isLoading ? (
+          <div className="mt-4 space-y-4 flex-1 flex flex-col justify-center animate-pulse">
+            <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
+              <span className="text-sm text-muted-foreground flex items-center gap-2">
+                <Activity className="h-4 w-4 text-purple-500" /> Total Habits
+              </span>
+              <div className="h-5 w-8 bg-muted/20 rounded-md" />
+            </div>
+
+            <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
+              <span className="text-sm text-muted-foreground flex items-center gap-2">
+                <Award className="h-4 w-4 text-purple-500" /> Total Check-ins
+              </span>
+              <div className="h-5 w-14 bg-muted/20 rounded-md" />
+            </div>
+
+            <div className="flex items-center justify-between pb-2.5">
+              <span className="text-sm text-muted-foreground flex items-center gap-2">
+                <Percent className="h-4 w-4 text-purple-500" /> Success Rate
+              </span>
+              <div className="h-6 w-12 bg-muted/20 rounded-md" />
+            </div>
           </div>
         ) : (
           <div className="mt-4 space-y-4 flex-1 flex flex-col justify-center">
@@ -111,37 +132,49 @@ export function HabitRecaps() {
         </div>
 
         <div className="h-48 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border/40" />
-              <XAxis 
-                dataKey="dayLabel" 
-                tickLine={false} 
-                className="text-[10px] fill-muted-foreground font-semibold"
-              />
-              <YAxis 
-                allowDecimals={false} 
-                tickLine={false} 
-                className="text-[10px] fill-muted-foreground font-semibold"
-              />
-              <Tooltip 
-                cursor={{ fill: "rgba(139, 92, 246, 0.05)" }}
-                contentStyle={{
-                  backgroundColor: "var(--card)",
-                  borderColor: "var(--border)",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                  color: "var(--foreground)",
-                }}
-              />
-              <Bar 
-                dataKey="completions" 
-                name="Successful Check-ins" 
-                fill="#8b5cf6" 
-                radius={[4, 4, 0, 0]} 
-              />
-            </BarChart>
-          </ResponsiveContainer>
+          {isLoading ? (
+            <div className="h-full w-full flex items-end justify-between gap-4 px-2 pt-6">
+              {Array.from({ length: 7 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="flex-1 bg-muted/20 animate-pulse rounded-t-lg"
+                  style={{ height: `${[30, 45, 60, 40, 80, 50, 70][idx]}%` }}
+                />
+              ))}
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border/40" />
+                <XAxis 
+                  dataKey="dayLabel" 
+                  tickLine={false} 
+                  className="text-[10px] fill-muted-foreground font-semibold"
+                />
+                <YAxis 
+                  allowDecimals={false} 
+                  tickLine={false} 
+                  className="text-[10px] fill-muted-foreground font-semibold"
+                />
+                <Tooltip 
+                  cursor={{ fill: "rgba(139, 92, 246, 0.05)" }}
+                  contentStyle={{
+                    backgroundColor: "var(--card)",
+                    borderColor: "var(--border)",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                    color: "var(--foreground)",
+                  }}
+                />
+                <Bar 
+                  dataKey="completions" 
+                  name="Successful Check-ins" 
+                  fill="#8b5cf6" 
+                  radius={[4, 4, 0, 0]} 
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
     </div>

@@ -57,8 +57,12 @@ export function DailyTodos() {
             Keep track of today&apos;s tasks and routine items
           </p>
         </div>
-        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border">
-          {isLoading ? "..." : `${todos.filter((t) => t.completed).length}/${todos.length} Done`}
+        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border flex items-center justify-center min-w-[50px] h-6">
+          {isLoading ? (
+            <span className="inline-block w-8 h-3 bg-muted/30 animate-pulse rounded" />
+          ) : (
+            `${todos.filter((t) => t.completed).length}/${todos.length} Done`
+          )}
         </span>
       </div>
 

@@ -152,7 +152,13 @@ export function LanguageBoard() {
         <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
           <div className="space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Vocabulary</span>
-            <h4 className="text-3xl font-black text-foreground">{isLoading ? "..." : totalWords}</h4>
+            <h4 className="text-3xl font-black text-foreground">
+              {isLoading ? (
+                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
+              ) : (
+                totalWords
+              )}
+            </h4>
           </div>
           <div className="rounded-xl bg-violet-500/10 p-3 text-violet-500">
             <BookOpen className="h-6 w-6" />
@@ -164,8 +170,14 @@ export function LanguageBoard() {
           <div className="space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Average Mastery</span>
             <h4 className="text-3xl font-black text-foreground flex items-baseline gap-1">
-              {isLoading ? "..." : averageMastery}
-              <span className="text-sm font-bold text-muted-foreground">/ 5.0</span>
+              {isLoading ? (
+                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
+              ) : (
+                <>
+                  {averageMastery}
+                  <span className="text-sm font-bold text-muted-foreground">/ 5.0</span>
+                </>
+              )}
             </h4>
           </div>
           <div className="rounded-xl bg-amber-500/10 p-3 text-amber-500">
@@ -177,7 +189,13 @@ export function LanguageBoard() {
         <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
           <div className="space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Mastered Words (4+)</span>
-            <h4 className="text-3xl font-black text-foreground">{isLoading ? "..." : strongWordsCount}</h4>
+            <h4 className="text-3xl font-black text-foreground">
+              {isLoading ? (
+                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
+              ) : (
+                strongWordsCount
+              )}
+            </h4>
           </div>
           <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-500">
             <Sparkles className="h-6 w-6" />
