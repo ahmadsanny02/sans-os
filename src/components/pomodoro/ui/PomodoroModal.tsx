@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useMemo } from "react"
 import { usePomodoroStore, PomodoroPhase } from "@/store/pomodoroStore"
 import { useTimetableQuery, TimetableBlock } from "@/hooks/useDaily"
-import { useWorkspaceStore } from "@/store/workspaceStore"
 import { playPomodoroSound } from "@/lib/pomodoroSound"
 import {
   Play,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { startPip } from "./PomodoroPipController"
+import { showErrorToast } from "@/lib/sweetalert"
 
 // ---------- Helpers ----------
 
@@ -137,7 +137,6 @@ export function PomodoroModal() {
 
   const isPipSupported = typeof window !== "undefined" && "documentPictureInPicture" in window
 
-  const activeDate = useWorkspaceStore((s) => s.activeDate)
   const { data: timetableList = [] } = useTimetableQuery()
 
   // --- Adjust for elapsed time on mount/load & tab focus ---
@@ -189,7 +188,6 @@ export function PomodoroModal() {
   }, [isRunning, phase, remainingSeconds])
 
   // --- Determine active block ---
-  const dayOfWeek = new Date().getDay()
   const todayStr = new Date().toISOString().split("T")[0]
 
   const activeBlock = useMemo((): TimetableBlock | undefined => {
@@ -200,17 +198,14 @@ export function PomodoroModal() {
     const now = new Date()
     const currentMins = now.getHours() * 60 + now.getMinutes()
     return timetableList.find((b) => {
-      const isForToday =
-        (b.dayOfWeek === dayOfWeek && !b.date) ||
-        (b.dayOfWeek === -1 && b.date === activeDate) ||
-        (b.dayOfWeek === -1 && b.date === todayStr)
+      const isForToday = b.dayOfWeek === -1 || b.date === todayStr
       if (!isForToday) return false
       return (
         timeToMinutes(b.startTime) <= currentMins &&
         timeToMinutes(b.endTime) > currentMins
       )
     })
-  }, [timetableList, integrationMode, selectedBlockId, activeDate, dayOfWeek, todayStr])
+  }, [timetableList, integrationMode, selectedBlockId, todayStr])
 
   // --- Progress calculation ---
   const totalSeconds = useMemo(() => {
@@ -337,7 +332,12 @@ export function PomodoroModal() {
         <div className="flex items-center gap-2 w-full">
           {phase === "idle" ? (
             <button
-              onClick={startTimer}
+              onClick={() => {
+                const started = startTimer(timetableList)
+                if (!started && integrationMode === "auto") {
+                  showErrorToast("No active timetable schedule block right now!")
+                }
+              }}
               className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold py-2.5 transition-all"
             >
               <Play className="h-4 w-4" />
@@ -347,7 +347,16 @@ export function PomodoroModal() {
             <>
               {/* Pause/Resume */}
               <button
-                onClick={isRunning ? pauseTimer : startTimer}
+                onClick={() => {
+                  if (isRunning) {
+                    pauseTimer()
+                  } else {
+                    const started = startTimer(timetableList)
+                    if (!started && integrationMode === "auto") {
+                      showErrorToast("No active timetable schedule block right now!")
+                    }
+                  }
+                }}
                 className={`flex-1 flex items-center justify-center gap-2 rounded-xl text-white text-sm font-semibold py-2.5 transition-all ${
                   isRunning
                     ? "bg-amber-600 hover:bg-amber-500"

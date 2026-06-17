@@ -153,7 +153,7 @@ export function DashboardView({
             isPendingToggleHabit={isPendingToggleHabit}
           />
 
-           <MemoryBoxWidget
+          <MemoryBoxWidget
             picUrl={picUrl}
             isLoading={logLoading}
           />
@@ -166,7 +166,7 @@ export function DashboardView({
             isLoading={timetableLoading}
             isError={timetableError}
           />
-         
+
         </div>
       </div>
     </div>

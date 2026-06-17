@@ -35,7 +35,7 @@ export function HabitRecaps({
   return (
     <div className="grid gap-6 md:grid-cols-3">
       {/* 1. Monthly Statistics Card */}
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-card/50 flex flex-col justify-between">
+      <div className="col-span-3 lg:col-span-1 rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-card/50 flex flex-col justify-between">
         <h4 className="text-sm font-bold tracking-wider text-muted-foreground flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-purple-500" />
           MONTHLY RECAP
@@ -93,7 +93,7 @@ export function HabitRecaps({
       </div>
 
       {/* 2. Weekly Consistency Chart */}
-      <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-card/50">
+      <div className="col-span-3 lg:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-card/50">
         <div className="mb-4">
           <h4 className="text-sm font-bold tracking-wider text-muted-foreground flex items-center gap-2">
             <Activity className="h-4 w-4 text-purple-500" />

@@ -463,7 +463,7 @@ export function PomodoroConfigView({
             Timetable Integration
           </h2>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col lg:flex-row gap-3">
             <ModeBadge
               active={integrationMode === "auto"}
               icon={Zap}
@@ -480,31 +480,98 @@ export function PomodoroConfigView({
             />
           </div>
 
-          {/* Auto mode active block */}
+          {/* Auto mode: show all today blocks with active one highlighted */}
           {integrationMode === "auto" && (
-            <div className="rounded-xl border border-border bg-card/20 p-4 space-y-2">
+            <div className="rounded-xl border border-border bg-card/20 p-4 space-y-3">
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                Detected Active Block — {todayString}
+                Timetable Schedule — {todayString}
               </p>
               {timetableLoading ? (
-                <div className="h-10 w-full bg-muted/20 animate-pulse rounded-xl" />
-              ) : autoActiveBlock ? (
-                <div className="flex items-center gap-3">
-                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">
-                      {autoActiveBlock.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {autoActiveBlock.startTime} – {autoActiveBlock.endTime}
-                    </p>
-                  </div>
+                <div className="space-y-2">
+                  <div className="h-14 w-full bg-muted/20 animate-pulse rounded-xl" />
+                  <div className="h-14 w-full bg-muted/20 animate-pulse rounded-xl" />
+                </div>
+              ) : todayBlocks.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-border py-6 text-center text-xs text-muted-foreground">
+                  No schedule blocks found for today.{" "}
+                  <a href="/daily" className="underline text-violet-400">
+                    Add one in Daily Flow
+                  </a>
+                  .
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground">
-                  No active schedule block right now. The timer will still work
-                  without block context.
-                </p>
+                <div className="space-y-2">
+                  {todayBlocks
+                    .slice()
+                    .sort((a, b) => a.startTime.localeCompare(b.startTime))
+                    .map((block) => {
+                      const isActive = autoActiveBlock?.id === block.id
+                      const colorDot: Record<string, string> = {
+                        blue: "bg-blue-500",
+                        violet: "bg-violet-500",
+                        emerald: "bg-emerald-500",
+                        rose: "bg-rose-500",
+                        amber: "bg-amber-500",
+                        cyan: "bg-cyan-500",
+                      }
+                      const startMin =
+                        Number(block.startTime.split(":")[0]) * 60 +
+                        Number(block.startTime.split(":")[1])
+                      const endMin =
+                        Number(block.endTime.split(":")[0]) * 60 +
+                        Number(block.endTime.split(":")[1])
+                      const durationMins = endMin - startMin
+                      const sessions = Math.floor(
+                        durationMins / (localConfig.focusDuration + localConfig.breakDuration)
+                      )
+
+                      return (
+                        <div
+                          key={block.id}
+                          className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 transition-all ${
+                            isActive
+                              ? "border-emerald-500/50 bg-emerald-500/10"
+                              : "border-border bg-card/20 opacity-60"
+                          }`}
+                        >
+                          <span
+                            className={`h-3 w-3 shrink-0 rounded-full ${
+                              isActive ? "bg-emerald-500 animate-pulse" : (colorDot[block.color] ?? "bg-violet-500")
+                            }`}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p
+                                className={`text-sm font-semibold truncate ${
+                                  isActive ? "text-emerald-400" : "text-foreground"
+                                }`}
+                              >
+                                {block.title}
+                              </p>
+                              {isActive && (
+                                <span className="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-full font-semibold border border-emerald-500/30">
+                                  Detected Active Block
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              {block.startTime} – {block.endTime} · {durationMins}m
+                            </p>
+                          </div>
+                          {sessions > 0 && (
+                            <span className="shrink-0 text-[11px] font-bold bg-violet-500/10 text-violet-400 border border-violet-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              ~{sessions} <Target className="h-3 w-3 shrink-0" />
+                            </span>
+                          )}
+                        </div>
+                      )
+                    })}
+                  {!autoActiveBlock && (
+                    <p className="text-xs text-muted-foreground text-center py-1">
+                      No block is active right now. Start Focus will be blocked until a schedule block begins.
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           )}

@@ -3,7 +3,7 @@
 import React, { useMemo } from "react"
 import { usePomodoroStore, PomodoroPhase } from "@/store/pomodoroStore"
 import { useTimetableQuery, TimetableBlock } from "@/hooks/useDaily"
-import { useWorkspaceStore } from "@/store/workspaceStore"
+import { showErrorToast } from "@/lib/sweetalert"
 import {
   Play,
   Pause,
@@ -82,11 +82,9 @@ export function PomodoroPipView() {
   const stopTimer = usePomodoroStore((s) => s.stopTimer)
   const skipPhase = usePomodoroStore((s) => s.skipPhase)
 
-  const activeDate = useWorkspaceStore((s) => s.activeDate)
   const { data: timetableList = [] } = useTimetableQuery()
 
   // --- Determine active block ---
-  const dayOfWeek = new Date().getDay()
   const todayStr = new Date().toISOString().split("T")[0]
 
   const activeBlock = useMemo((): TimetableBlock | undefined => {
@@ -96,17 +94,14 @@ export function PomodoroPipView() {
     const now = new Date()
     const currentMins = now.getHours() * 60 + now.getMinutes()
     return timetableList.find((b) => {
-      const isForToday =
-        (b.dayOfWeek === dayOfWeek && !b.date) ||
-        (b.dayOfWeek === -1 && b.date === activeDate) ||
-        (b.dayOfWeek === -1 && b.date === todayStr)
+      const isForToday = b.dayOfWeek === -1 || b.date === todayStr
       if (!isForToday) return false
       return (
         timeToMinutes(b.startTime) <= currentMins &&
         timeToMinutes(b.endTime) > currentMins
       )
     })
-  }, [timetableList, integrationMode, selectedBlockId, activeDate, dayOfWeek, todayStr])
+  }, [timetableList, integrationMode, selectedBlockId, todayStr])
 
   const meta = PHASE_META[phase]
   const displaySession = Math.max(1, sessionCount + (phase === "focus" ? 1 : 0))
@@ -193,7 +188,12 @@ export function PomodoroPipView() {
         <div className="flex items-center gap-2 w-full max-w-[220px] mt-1">
           {phase === "idle" ? (
             <button
-              onClick={startTimer}
+              onClick={() => {
+                const started = startTimer(timetableList)
+                if (!started && integrationMode === "auto") {
+                  showErrorToast("No active timetable schedule block right now!")
+                }
+              }}
               className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold py-2 transition-all"
             >
               <Play className="h-3.5 w-3.5 fill-white" />
@@ -203,7 +203,16 @@ export function PomodoroPipView() {
             <>
               {/* Pause/Play */}
               <button
-                onClick={isRunning ? pauseTimer : startTimer}
+                onClick={() => {
+                  if (isRunning) {
+                    pauseTimer()
+                  } else {
+                    const started = startTimer(timetableList)
+                    if (!started && integrationMode === "auto") {
+                      showErrorToast("No active timetable schedule block right now!")
+                    }
+                  }
+                }}
                 className={`flex-1 flex items-center justify-center gap-1.5 rounded-xl text-white text-xs font-bold py-2 transition-all ${
                   isRunning
                     ? "bg-amber-600 hover:bg-amber-500"

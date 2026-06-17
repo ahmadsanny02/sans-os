@@ -1,14 +1,13 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { useWorkspaceStore } from "@/store/workspaceStore"
 import {
   usePomodoroStore,
   PomodoroConfig,
   IntegrationMode,
 } from "@/store/pomodoroStore"
 import { useTimetableQuery, TimetableBlock } from "@/hooks/useDaily"
-import { showSuccessToast } from "@/lib/sweetalert"
+import { showSuccessToast, showErrorToast } from "@/lib/sweetalert"
 import { format } from "date-fns"
 
 // Helper: convert "HH:MM" string to total minutes from midnight
@@ -23,9 +22,6 @@ function blockDurationMinutes(block: TimetableBlock): number {
 }
 
 export function usePomodoroPage() {
-  const activeDate = useWorkspaceStore((s) => s.activeDate)
-
-  // Store state
   const config = usePomodoroStore((s) => s.config)
   const setConfig = usePomodoroStore((s) => s.setConfig)
   const integrationMode = usePomodoroStore((s) => s.integrationMode)
@@ -41,18 +37,15 @@ export function usePomodoroPage() {
   const { data: timetableList = [], isLoading: timetableLoading } =
     useTimetableQuery()
 
-  // Today's blocks (fixed weekly + custom date blocks)
-  const todayDayOfWeek = new Date().getDay()
+  // Today's blocks — matches the same logic as the dashboard widget:
+  // - One-off blocks: date matches todayString
+  // - Fixed blocks: dayOfWeek === -1
   const todayString = format(new Date(), "yyyy-MM-dd")
-  const activeDayString = activeDate
 
   const todayBlocks = useMemo(
     () =>
-      timetableList.filter((b) => {
-        if (b.dayOfWeek === -1) return b.date === activeDayString
-        return b.dayOfWeek === todayDayOfWeek && !b.date
-      }),
-    [timetableList, todayDayOfWeek, activeDayString]
+      timetableList.filter((b) => b.dayOfWeek === -1 || b.date === todayString),
+    [timetableList, todayString]
   )
 
   // Auto mode: detect currently active block by real-time clock
@@ -138,7 +131,10 @@ export function usePomodoroPage() {
     if (phase !== "idle") {
       openModal()
     } else {
-      startTimer()
+      const started = startTimer(timetableList)
+      if (!started && integrationMode === "auto") {
+        showErrorToast("No active timetable schedule block right now!")
+      }
     }
   }
 

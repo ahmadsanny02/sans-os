@@ -71,3 +71,11 @@ export function showSuccessToast(title: string): void {
     iconColor: "#10b981",
   })
 }
+
+export function showErrorToast(title: string): void {
+  ToastSwal.fire({
+    title,
+    icon: "error",
+    iconColor: "#ef4444",
+  })
+}

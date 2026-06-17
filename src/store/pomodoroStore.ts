@@ -2,6 +2,7 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { TimetableBlock } from "@/hooks/useDaily"
 
 export interface PomodoroConfig {
   focusDuration: number // minutes
@@ -37,7 +38,7 @@ interface PomodoroState {
   setIntegrationMode: (mode: IntegrationMode) => void
   setSelectedBlock: (id: string | null) => void
 
-  startTimer: () => void
+  startTimer: (timetableList?: TimetableBlock[]) => boolean
   pauseTimer: () => void
   stopTimer: () => void
   skipPhase: () => void
@@ -86,10 +87,71 @@ export const usePomodoroStore = create<PomodoroState>()(
       setSelectedBlock: (selectedBlockId) => set({ selectedBlockId }),
 
       // Timer actions
-      startTimer: () => {
-        const { phase, config } = get()
+      startTimer: (timetableList) => {
+        const { phase, config, integrationMode } = get()
         const now = Date.now()
+
         if (phase === "idle") {
+          if (integrationMode === "auto") {
+            if (!timetableList || timetableList.length === 0) {
+              return false
+            }
+
+            const nowDate = new Date()
+            const year = nowDate.getFullYear()
+            const month = String(nowDate.getMonth() + 1).padStart(2, "0")
+            const day = String(nowDate.getDate()).padStart(2, "0")
+            const todayStr = `${year}-${month}-${day}`
+
+            const todayBlocks = timetableList.filter(
+              (b) => b.dayOfWeek === -1 || b.date === todayStr
+            )
+
+            const currentMins = nowDate.getHours() * 60 + nowDate.getMinutes()
+
+            const timeToMinutes = (t: string): number => {
+              const [h, m] = t.split(":").map(Number)
+              return h * 60 + m
+            }
+
+            const activeBlock = todayBlocks.find(
+              (b) =>
+                timeToMinutes(b.startTime) <= currentMins &&
+                timeToMinutes(b.endTime) > currentMins
+            )
+
+            if (!activeBlock) {
+              return false
+            }
+
+            const startMins = timeToMinutes(activeBlock.startTime)
+            const elapsedMins = currentMins - startMins
+            const cycleMins = config.focusDuration + config.breakDuration
+            const modulo = elapsedMins % cycleMins
+
+            let nextPhase: PomodoroPhase = "focus"
+            let seconds = config.focusDuration * 60
+
+            if (modulo < config.focusDuration) {
+              nextPhase = "focus"
+              seconds = (config.focusDuration - modulo) * 60
+            } else {
+              nextPhase = "break"
+              seconds = (cycleMins - modulo) * 60
+            }
+
+            set({
+              phase: nextPhase,
+              remainingSeconds: seconds,
+              sessionCount: 0,
+              isRunning: true,
+              isModalOpen: true,
+              lastActiveTimestamp: now,
+            })
+            return true
+          }
+
+          // Manual or normal mode starts normally
           set({
             phase: "focus",
             remainingSeconds: config.focusDuration * 60,
@@ -98,13 +160,16 @@ export const usePomodoroStore = create<PomodoroState>()(
             isModalOpen: true,
             lastActiveTimestamp: now,
           })
-        } else {
-          set({ 
-            isRunning: true, 
-            isModalOpen: true,
-            lastActiveTimestamp: now,
-          })
+          return true
         }
+
+        // Resume from paused
+        set({ 
+          isRunning: true, 
+          isModalOpen: true,
+          lastActiveTimestamp: now,
+        })
+        return true
       },
 
       pauseTimer: () => set({ isRunning: false, lastActiveTimestamp: null }),
