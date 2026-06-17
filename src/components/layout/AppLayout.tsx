@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 import { usePomodoroStore } from "@/store/pomodoroStore"
 import { PomodoroModal } from "@/components/pomodoro/ui/PomodoroModal"
+import { PomodoroPipController } from "@/components/pomodoro/ui/PomodoroPipController"
 import { createBrowserSupabaseClient } from "@/lib/supabase/client"
 import {
   LayoutDashboard,
@@ -61,7 +62,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pomodoroIsRunning = usePomodoroStore((s) => s.isRunning)
   const pomodoroPhase = usePomodoroStore((s) => s.phase)
   const toggleModal = usePomodoroStore((s) => s.toggleModal)
-  const pomodoroIsActive = pomodoroPhase !== "idle"
+  const isModalOpen = usePomodoroStore((s) => s.isModalOpen)
 
   // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -138,30 +139,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
           {/* Sidebar Footer */}
+
           <div className="border-t border-sidebar-border p-2 space-y-1">
-            {/* Pomodoro Timer Toggle Button */}
-            <button
-              onClick={toggleModal}
-              className="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-muted-foreground transition-all"
-              aria-label="Toggle Pomodoro Timer"
-            >
-              <div className="relative">
-                <Timer className={`h-5 w-5 ${pomodoroIsRunning ? "text-violet-400" : "text-muted-foreground"}`} />
-                {pomodoroIsActive && (
-                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-rose-500 border border-sidebar" />
-                )}
-              </div>
-              {sidebarOpen ? (
-                <span className={pomodoroIsRunning ? "text-violet-400" : ""}>
-                  Pomodoro
-                  {pomodoroIsRunning && (
-                    <span className="ml-1.5 text-[10px] bg-violet-500/20 text-violet-400 px-1.5 py-0.5 rounded-full font-bold border border-violet-500/30">
-                      ON
-                    </span>
-                  )}
-                </span>
-              ) : null}
-            </button>
           <button
             onClick={toggleTheme}
             className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-muted-foreground"
@@ -303,8 +282,40 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
       </div>
+      {/* Floating Pomodoro Trigger Badge (Bottom Right) */}
+      {!isModalOpen && (
+        <button
+          onClick={toggleModal}
+          className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full flex items-center justify-center border bg-zinc-900/90 text-white backdrop-blur-md transition-all duration-300 shadow-lg hover:scale-105 active:scale-95 cursor-pointer ${
+            pomodoroIsRunning
+              ? pomodoroPhase === "focus"
+                ? "border-violet-500 shadow-violet-500/20"
+                : "border-emerald-500 shadow-emerald-500/20"
+              : "border-white/10 hover:border-white/20"
+          }`}
+          aria-label="Toggle Pomodoro Panel"
+          title="Open Pomodoro Timer"
+        >
+          <div className="relative">
+            <Timer className={`h-5 w-5 ${
+              pomodoroIsRunning
+                ? pomodoroPhase === "focus"
+                  ? "text-violet-400 animate-pulse"
+                  : "text-emerald-400 animate-pulse"
+                : "text-muted-foreground"
+            }`} />
+            {pomodoroIsRunning && (
+              <span className={`absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border border-zinc-900 ${
+                pomodoroPhase === "focus" ? "bg-violet-500" : "bg-emerald-500"
+              }`} />
+            )}
+          </div>
+        </button>
+      )}
       {/* Pomodoro Floating Modal (global - persists across pages) */}
       <PomodoroModal />
+      {/* Pomodoro Picture-in-Picture Controller */}
+      <PomodoroPipController />
     </div>
   )
 }

@@ -116,7 +116,7 @@ export function PomodoroPipView() {
       <div className="w-full h-full min-h-screen flex items-center justify-center bg-zinc-950 p-1">
         <button
           onClick={() => setIsPipExpanded(true)}
-          className={`w-[118px] h-[118px] rounded-full flex flex-col items-center justify-center border-4 transition-all duration-300 text-left outline-none ${meta.border} ${meta.bg} shadow-lg ${meta.glow} hover:scale-105 hover:bg-zinc-800/40`}
+          className={`w-[138px] h-[138px] rounded-full flex flex-col items-center justify-center border-4 transition-all duration-300 text-left outline-none ${meta.border} ${meta.bg} shadow-lg ${meta.glow} hover:scale-105 hover:bg-zinc-800/40`}
           title="Click to expand controls"
         >
           <span className={`text-[10px] font-extrabold tracking-widest uppercase opacity-70 ${meta.color} leading-none mb-0.5`}>

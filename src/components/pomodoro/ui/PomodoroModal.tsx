@@ -16,7 +16,7 @@ import {
   Tv,
 } from "lucide-react"
 import Link from "next/link"
-import { PomodoroPipController, startPip } from "./PomodoroPipController"
+import { startPip } from "./PomodoroPipController"
 
 // ---------- Helpers ----------
 
@@ -384,8 +384,6 @@ export function PomodoroModal() {
           )}
         </div>
       </div>
-      {/* Picture-in-Picture Controller */}
-      <PomodoroPipController />
     </div>
   )
 }

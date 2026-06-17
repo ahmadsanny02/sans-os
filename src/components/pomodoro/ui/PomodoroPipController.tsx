@@ -38,8 +38,8 @@ export async function startPip(
     // Open the Document PiP window at collapsed circle mode dimensions
     const pipAPI = (window as unknown as { documentPictureInPicture: DocumentPictureInPicture }).documentPictureInPicture
     const win = await pipAPI.requestWindow({
-      width: 130,
-      height: 130,
+      width: 150,
+      height: 150,
     })
 
     activePipWindow = win
@@ -121,7 +121,7 @@ export function PomodoroPipController() {
         if (isPipExpanded) {
           activePipWindow.resizeTo(280, 320)
         } else {
-          activePipWindow.resizeTo(130, 130)
+          activePipWindow.resizeTo(150, 150)
         }
       } catch (err) {
         console.warn("Failed to resize PiP window:", err)
