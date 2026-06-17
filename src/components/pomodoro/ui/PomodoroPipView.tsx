@@ -95,7 +95,12 @@ export function PomodoroPipView() {
     return () => clearInterval(timer)
   }, [])
 
-  const todayStr = useMemo(() => currentTime.toISOString().split("T")[0], [currentTime])
+  const todayStr = useMemo(() => {
+    const year = currentTime.getFullYear()
+    const month = String(currentTime.getMonth() + 1).padStart(2, "0")
+    const day = String(currentTime.getDate()).padStart(2, "0")
+    return `${year}-${month}-${day}`
+  }, [currentTime])
 
   const activeBlock = useMemo((): TimetableBlock | undefined => {
     if (integrationMode === "manual") {
