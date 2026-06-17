@@ -128,9 +128,26 @@ export function PomodoroModal() {
   const skipPhase = usePomodoroStore((s) => s.skipPhase)
   const tick = usePomodoroStore((s) => s.tick)
   const closeModal = usePomodoroStore((s) => s.closeModal)
+  const adjustForElapsedTime = usePomodoroStore((s) => s.adjustForElapsedTime)
 
   const activeDate = useWorkspaceStore((s) => s.activeDate)
   const { data: timetableList = [] } = useTimetableQuery()
+
+  // --- Adjust for elapsed time on mount/load & tab focus ---
+  useEffect(() => {
+    adjustForElapsedTime()
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        adjustForElapsedTime()
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [adjustForElapsedTime])
 
   // --- Countdown interval ---
   useEffect(() => {
