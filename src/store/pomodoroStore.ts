@@ -226,6 +226,18 @@ export const usePomodoroStore = create<PomodoroState>()(
     }),
     {
       name: "sans-os-pomodoro",
+      // Custom merge function to safely deep-merge config object (e.g. for backward compatibility)
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<PomodoroState> | null | undefined
+        return {
+          ...currentState,
+          ...persisted,
+          config: {
+            ...currentState.config,
+            ...(persisted?.config || {}),
+          },
+        }
+      },
       // Persist config, integration mode, and the active timer state to survive page refreshes
       partialize: (state) => ({
         config: state.config,

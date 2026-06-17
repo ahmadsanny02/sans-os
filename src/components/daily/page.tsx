@@ -42,9 +42,9 @@ export default function DailyComponent() {
       />
 
       {/* Main Content */}
-      <div className="grid gap-8 lg:grid-cols-12">
+      <div className="grid gap-8 grid-cols-12">
         {/* Priorities Section */}
-        <div className="lg:col-span-6 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
+        <div className="col-span-12 lg:col-span-6 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
           <PrioritiesList
             listPriorities={dailyData.listPriorities}
             isLoading={dailyData.prioritiesLoading}
@@ -60,7 +60,7 @@ export default function DailyComponent() {
         </div>
 
         {/* To-Dos Section */}
-        <div className="lg:col-span-6 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
+        <div className="col-span-12 lg:col-span-6 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
           <DailyTodos
             todos={dailyData.todos}
             isLoading={dailyData.todosLoading || dailyData.habitsLoading}

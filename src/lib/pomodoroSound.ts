@@ -10,13 +10,21 @@ export type PomodoroSoundType = "focus" | "break" | "long-break"
  * - "break": calm descending tones
  * - "long-break": warm chord resolution
  */
-export function playPomodoroSound(type: PomodoroSoundType): void {
+export function playPomodoroSound(
+  type: PomodoroSoundType,
+  overrideConfig?: {
+    soundEnabled?: boolean
+    soundVolume?: number
+    soundType?: "sine" | "triangle" | "square" | "sawtooth"
+  }
+): void {
   try {
     const config = usePomodoroStore.getState().config
-    if (!config.soundEnabled) return
+    const soundEnabled = overrideConfig?.soundEnabled ?? config.soundEnabled
+    if (!soundEnabled) return
 
-    const volumeMultiplier = config.soundVolume ?? 0.5
-    const oscType = config.soundType ?? "sine"
+    const volumeMultiplier = overrideConfig?.soundVolume ?? config.soundVolume ?? 0.5
+    const oscType = overrideConfig?.soundType ?? config.soundType ?? "sine"
 
     const AudioContextClass =
       window.AudioContext ||

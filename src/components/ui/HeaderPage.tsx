@@ -29,7 +29,8 @@ export function HeaderPage({
   extraActions,
 }: HeaderPageProps) {
   return (
-    <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md pt-2 pb-6 border-b border-border/60 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-br from-violet-500/10 via-transparent to-indigo-500/5 p-8 shadow-sm flex flex-col lg:flex-row justify-items-center lg:justify-between gap-4">
+      <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-violet-500/5 blur-3xl" />
       <div className="space-y-1.5">
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
           {icon && <span className="shrink-0">{icon}</span>}
