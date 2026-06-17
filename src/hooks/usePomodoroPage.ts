@@ -167,6 +167,7 @@ export function usePomodoroPage() {
     estimatedSessions,
     timetableLoading,
     todayString,
+    currentTime,
     // Timer state
     isRunning,
     phase,

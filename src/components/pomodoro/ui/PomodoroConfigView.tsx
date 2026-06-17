@@ -19,6 +19,11 @@ import { IntegrationMode } from "@/store/pomodoroStore"
 import { TimetableBlock } from "@/hooks/useDaily"
 import { playPomodoroSound } from "@/lib/pomodoroSound"
 
+function timeToMinutes(t: string): number {
+  const [h, m] = t.split(":").map(Number)
+  return h * 60 + m
+}
+
 // ---------- Sub-components ----------
 
 interface SliderCardProps {
@@ -238,9 +243,15 @@ export function PomodoroConfigView({
   estimatedSessions,
   timetableLoading,
   todayString,
+  currentTime,
   phase,
   handleQuickStart,
 }: UsePomodoroPageReturn) {
+  const currentMins = currentTime.getHours() * 60 + currentTime.getMinutes()
+  const autoActiveOrFutureBlocks = todayBlocks.filter(
+    (block) => timeToMinutes(block.endTime) > currentMins
+  )
+
   return (
     <div className="mx-auto max-w-7xl space-y-8 py-4 animate-in fade-in duration-200">
       {/* Header */}
@@ -491,9 +502,9 @@ export function PomodoroConfigView({
                   <div className="h-14 w-full bg-muted/20 animate-pulse rounded-xl" />
                   <div className="h-14 w-full bg-muted/20 animate-pulse rounded-xl" />
                 </div>
-              ) : todayBlocks.length === 0 ? (
+              ) : autoActiveOrFutureBlocks.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-border py-6 text-center text-xs text-muted-foreground">
-                  No schedule blocks found for today.{" "}
+                  No active or upcoming schedule blocks found for today.{" "}
                   <a href="/daily" className="underline text-violet-400">
                     Add one in Daily Flow
                   </a>
@@ -501,7 +512,7 @@ export function PomodoroConfigView({
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {todayBlocks
+                  {autoActiveOrFutureBlocks
                     .slice()
                     .sort((a, b) => a.startTime.localeCompare(b.startTime))
                     .map((block) => {
