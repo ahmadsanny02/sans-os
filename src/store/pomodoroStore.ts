@@ -24,6 +24,7 @@ interface PomodoroState {
   selectedBlockId: string | null // for manual mode
   activeBlockEndTime: string | null // for auto mode boundary check
   activeBlockDate: string | null // for auto mode boundary check
+  activeBlockSessions: number | null // total sessions in block
   isLongBreakAfterBlock: boolean
 
   // --- Runtime / Persistent ---
@@ -72,6 +73,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       selectedBlockId: null,
       activeBlockEndTime: null,
       activeBlockDate: null,
+      activeBlockSessions: null,
       isLongBreakAfterBlock: false,
 
       // Runtime defaults
@@ -94,8 +96,13 @@ export const usePomodoroStore = create<PomodoroState>()(
 
       // Timer actions
       startTimer: (timetableList) => {
-        const { phase, config, integrationMode, activeBlockEndTime, activeBlockDate } = get()
+        const { phase, config, integrationMode, activeBlockEndTime, activeBlockDate, selectedBlockId } = get()
         const now = Date.now()
+
+        const timeToMinutes = (t: string): number => {
+          const [h, m] = t.split(":").map(Number)
+          return h * 60 + m
+        }
 
         if (phase === "idle") {
           if (integrationMode === "auto") {
@@ -114,11 +121,6 @@ export const usePomodoroStore = create<PomodoroState>()(
             )
 
             const currentMins = nowDate.getHours() * 60 + nowDate.getMinutes()
-
-            const timeToMinutes = (t: string): number => {
-              const [h, m] = t.split(":").map(Number)
-              return h * 60 + m
-            }
 
             const activeBlock = todayBlocks.find(
               (b) =>
@@ -146,6 +148,9 @@ export const usePomodoroStore = create<PomodoroState>()(
               seconds = (cycleMins - modulo) * 60
             }
 
+            const duration = timeToMinutes(activeBlock.endTime) - timeToMinutes(activeBlock.startTime)
+            const est = Math.floor(duration / cycleMins)
+
             set({
               phase: nextPhase,
               remainingSeconds: seconds,
@@ -155,12 +160,24 @@ export const usePomodoroStore = create<PomodoroState>()(
               lastActiveTimestamp: now,
               activeBlockEndTime: activeBlock.endTime,
               activeBlockDate: todayStr,
+              activeBlockSessions: est > 0 ? est : null,
               isLongBreakAfterBlock: false,
             })
             return true
           }
 
           // Manual or normal mode starts normally
+          let estimatedSessions: number | null = null
+          if (selectedBlockId && timetableList && timetableList.length > 0) {
+            const selectedBlock = timetableList.find((b) => b.id === selectedBlockId)
+            if (selectedBlock) {
+              const duration = timeToMinutes(selectedBlock.endTime) - timeToMinutes(selectedBlock.startTime)
+              const cycleMins = config.focusDuration + config.breakDuration
+              const est = Math.floor(duration / cycleMins)
+              if (est > 0) estimatedSessions = est
+            }
+          }
+
           set({
             phase: "focus",
             remainingSeconds: config.focusDuration * 60,
@@ -170,6 +187,7 @@ export const usePomodoroStore = create<PomodoroState>()(
             lastActiveTimestamp: now,
             activeBlockEndTime: null,
             activeBlockDate: null,
+            activeBlockSessions: estimatedSessions,
             isLongBreakAfterBlock: false,
           })
           return true
@@ -201,6 +219,7 @@ export const usePomodoroStore = create<PomodoroState>()(
                 lastActiveTimestamp: now,
                 activeBlockEndTime: null,
                 activeBlockDate: null,
+                activeBlockSessions: null,
                 isLongBreakAfterBlock: true,
               })
               return true
@@ -213,6 +232,7 @@ export const usePomodoroStore = create<PomodoroState>()(
                 lastActiveTimestamp: null,
                 activeBlockEndTime: null,
                 activeBlockDate: null,
+                activeBlockSessions: null,
                 isLongBreakAfterBlock: false,
               })
               return false
@@ -240,12 +260,13 @@ export const usePomodoroStore = create<PomodoroState>()(
           lastActiveTimestamp: null,
           activeBlockEndTime: null,
           activeBlockDate: null,
+          activeBlockSessions: null,
           isLongBreakAfterBlock: false,
         })
       },
 
       skipPhase: () => {
-        const { phase, config, sessionCount, isRunning, integrationMode, activeBlockEndTime, activeBlockDate } = get()
+        const { phase, config, sessionCount, isRunning, integrationMode, activeBlockEndTime, activeBlockDate, activeBlockSessions } = get()
         const now = Date.now()
 
         if (integrationMode === "auto" && activeBlockEndTime && activeBlockDate) {
@@ -283,6 +304,7 @@ export const usePomodoroStore = create<PomodoroState>()(
                 lastActiveTimestamp: null,
                 activeBlockEndTime: null,
                 activeBlockDate: null,
+                activeBlockSessions: null,
                 isLongBreakAfterBlock: false,
               })
               return
@@ -290,9 +312,11 @@ export const usePomodoroStore = create<PomodoroState>()(
           }
         }
 
+        const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
+
         if (phase === "focus") {
           const newCount = sessionCount + 1
-          const isLong = newCount % config.sessionsBeforeLongBreak === 0
+          const isLong = newCount % totalSessions === 0
           const nextPhase: PomodoroPhase = isLong ? "long-break" : "break"
           set({
             phase: nextPhase,
@@ -321,6 +345,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           integrationMode,
           activeBlockEndTime,
           activeBlockDate,
+          activeBlockSessions,
           isLongBreakAfterBlock,
         } = get()
         if (!isRunning || phase === "idle") return
@@ -361,10 +386,12 @@ export const usePomodoroStore = create<PomodoroState>()(
           return
         }
 
+        const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
+
         // Remaining === 1 → transition
         if (phase === "focus") {
           const newCount = sessionCount + 1
-          const isLong = newCount % config.sessionsBeforeLongBreak === 0
+          const isLong = newCount % totalSessions === 0
           const nextPhase: PomodoroPhase = isLong ? "long-break" : "break"
           set({
             phase: nextPhase,
@@ -381,6 +408,7 @@ export const usePomodoroStore = create<PomodoroState>()(
             sessionCount: 0,
             isRunning: false,
             lastActiveTimestamp: null,
+            activeBlockSessions: null,
             isLongBreakAfterBlock: false,
           })
         } else {
@@ -410,6 +438,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           integrationMode,
           activeBlockEndTime,
           activeBlockDate,
+          activeBlockSessions,
         } = get()
         if (!isRunning || phase === "idle" || !lastActiveTimestamp) return
 
@@ -451,6 +480,7 @@ export const usePomodoroStore = create<PomodoroState>()(
                 lastActiveTimestamp: null,
                 activeBlockEndTime: null,
                 activeBlockDate: null,
+                activeBlockSessions: null,
                 isLongBreakAfterBlock: false,
               })
               return
@@ -469,9 +499,10 @@ export const usePomodoroStore = create<PomodoroState>()(
           })
         } else {
           // Time exceeded
+          const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
           if (phase === "focus") {
             const newCount = sessionCount + 1
-            const isLong = newCount % config.sessionsBeforeLongBreak === 0
+            const isLong = newCount % totalSessions === 0
             const nextPhase: PomodoroPhase = isLong ? "long-break" : "break"
             set({
               phase: nextPhase,
@@ -512,6 +543,7 @@ export const usePomodoroStore = create<PomodoroState>()(
         selectedBlockId: state.selectedBlockId,
         activeBlockEndTime: state.activeBlockEndTime,
         activeBlockDate: state.activeBlockDate,
+        activeBlockSessions: state.activeBlockSessions,
         isLongBreakAfterBlock: state.isLongBreakAfterBlock,
         isRunning: state.isRunning,
         phase: state.phase,

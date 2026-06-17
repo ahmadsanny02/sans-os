@@ -123,6 +123,7 @@ export function PomodoroModal() {
   const config = usePomodoroStore((s) => s.config)
   const integrationMode = usePomodoroStore((s) => s.integrationMode)
   const selectedBlockId = usePomodoroStore((s) => s.selectedBlockId)
+  const activeBlockSessions = usePomodoroStore((s) => s.activeBlockSessions)
 
   const startTimer = usePomodoroStore((s) => s.startTimer)
   const pauseTimer = usePomodoroStore((s) => s.pauseTimer)
@@ -226,7 +227,14 @@ export function PomodoroModal() {
   const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 1
 
   const meta = PHASE_META[phase]
-  const displaySession = Math.max(1, sessionCount + (phase === "focus" ? 1 : 0))
+  const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
+  const displaySession = useMemo(() => {
+    if (phase === "focus") {
+      return (sessionCount % totalSessions) + 1
+    }
+    const completedInCycle = sessionCount % totalSessions
+    return completedInCycle === 0 ? totalSessions : completedInCycle
+  }, [phase, sessionCount, totalSessions])
 
   if (!isModalOpen) return null
 
@@ -303,17 +311,17 @@ export function PomodoroModal() {
           <span>
             {phase === "idle"
               ? "Ready to start"
-              : `Session ${displaySession} of ${config.sessionsBeforeLongBreak}`}
+              : `Session ${displaySession} of ${totalSessions}`}
           </span>
           <span>•</span>
           {/* Dot indicators */}
           <div className="flex gap-1">
-            {Array.from({ length: config.sessionsBeforeLongBreak }).map(
+            {Array.from({ length: totalSessions }).map(
               (_, i) => (
                 <span
                   key={i}
                   className={`inline-block h-1.5 w-1.5 rounded-full transition-colors ${
-                    i < (sessionCount % config.sessionsBeforeLongBreak)
+                    i < (sessionCount % totalSessions)
                       ? "bg-violet-400"
                       : "bg-white/20"
                   }`}

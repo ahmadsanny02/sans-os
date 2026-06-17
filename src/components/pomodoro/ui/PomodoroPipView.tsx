@@ -73,6 +73,7 @@ export function PomodoroPipView() {
   const config = usePomodoroStore((s) => s.config)
   const integrationMode = usePomodoroStore((s) => s.integrationMode)
   const selectedBlockId = usePomodoroStore((s) => s.selectedBlockId)
+  const activeBlockSessions = usePomodoroStore((s) => s.activeBlockSessions)
 
   const isPipExpanded = usePomodoroStore((s) => s.isPipExpanded)
   const setIsPipExpanded = usePomodoroStore((s) => s.setIsPipExpanded)
@@ -112,7 +113,14 @@ export function PomodoroPipView() {
   }, [timetableList, integrationMode, selectedBlockId, todayStr, currentTime])
 
   const meta = PHASE_META[phase]
-  const displaySession = Math.max(1, sessionCount + (phase === "focus" ? 1 : 0))
+  const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
+  const displaySession = useMemo(() => {
+    if (phase === "focus") {
+      return (sessionCount % totalSessions) + 1
+    }
+    const completedInCycle = sessionCount % totalSessions
+    return completedInCycle === 0 ? totalSessions : completedInCycle
+  }, [phase, sessionCount, totalSessions])
 
   // Render Circle Mode (Collapsed)
   if (!isPipExpanded) {
@@ -165,17 +173,17 @@ export function PomodoroPipView() {
             {formatSeconds(remainingSeconds)}
           </span>
           <span className={`text-xs font-bold tracking-widest uppercase mt-0.5 ${meta.color}`}>
-            {meta.label} {phase !== "idle" && `${displaySession}/${config.sessionsBeforeLongBreak}`}
+            {meta.label} {phase !== "idle" && `${displaySession}/${totalSessions}`}
           </span>
         </div>
 
         {/* Completed dots */}
         <div className="flex gap-1.5">
-          {Array.from({ length: config.sessionsBeforeLongBreak }).map((_, i) => (
+          {Array.from({ length: totalSessions }).map((_, i) => (
             <span
               key={i}
               className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                i < (sessionCount % config.sessionsBeforeLongBreak)
+                i < (sessionCount % totalSessions)
                   ? "bg-violet-400"
                   : "bg-white/15"
               }`}
