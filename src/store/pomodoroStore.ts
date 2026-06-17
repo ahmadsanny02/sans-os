@@ -67,7 +67,7 @@ function getAutoState(
   const todayStr = `${year}-${month}-${day}`
 
   const todayBlocks = timetableList.filter(
-    (b) => b.dayOfWeek === -1 || b.date === todayStr
+    (b) => (b.dayOfWeek === -1 || b.date === todayStr) && b.isTodo
   )
 
   const timeToMinutes = (t: string): number => {

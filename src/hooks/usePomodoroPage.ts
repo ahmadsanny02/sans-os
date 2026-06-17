@@ -54,7 +54,7 @@ export function usePomodoroPage() {
 
   const todayBlocks = useMemo(
     () =>
-      timetableList.filter((b) => b.dayOfWeek === -1 || b.date === todayString),
+      timetableList.filter((b) => (b.dayOfWeek === -1 || b.date === todayString) && b.isTodo),
     [timetableList, todayString]
   )
 

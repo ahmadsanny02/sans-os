@@ -103,11 +103,10 @@ function ModeBadge({ active, icon: Icon, label, description, onClick }: ModeBadg
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 flex flex-col items-start gap-1.5 rounded-xl border p-4 text-left transition-all ${
-        active
+      className={`flex-1 flex flex-col items-start gap-1.5 rounded-xl border p-4 text-left transition-all ${active
           ? "border-violet-500/60 bg-violet-500/10 shadow-sm"
           : "border-border bg-card/20 hover:border-border/80 hover:bg-card/40"
-      }`}
+        }`}
     >
       <div className="flex items-center gap-2">
         <Icon
@@ -188,19 +187,30 @@ function BlockSelector({
             key={block.id}
             type="button"
             onClick={() => onSelect(block.id)}
-            className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all ${
-              isActive
+            className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all ${isActive
                 ? "border-violet-500/50 bg-violet-500/10"
                 : "border-border bg-card/20 hover:border-border/70"
-            }`}
+              }`}
           >
             <span
               className={`h-3 w-3 shrink-0 rounded-full ${colorDot[block.color] ?? "bg-violet-500"}`}
             />
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-semibold truncate ${isActive ? "text-violet-400" : "text-foreground"}`}>
-                {block.title}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className={`text-sm font-semibold truncate ${isActive ? "text-violet-400" : "text-foreground"}`}>
+                  {block.title}
+                </p>
+                {block.dayOfWeek === -1 && (
+                  <span className="shrink-0 text-[9px] bg-violet-500/10 text-violet-400 border border-violet-500/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                    Every Day
+                  </span>
+                )}
+                {block.isTodo && (
+                  <span className="shrink-0 text-[9px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider font-semibold">
+                    To-Do
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">
                 {block.startTime} – {block.endTime} · {durationMins}m
               </p>
@@ -408,16 +418,14 @@ export function PomodoroConfigView({
                 <button
                   type="button"
                   onClick={() => handleUpdateLocalConfig({ soundEnabled: !localConfig.soundEnabled })}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
-                    localConfig.soundEnabled ? "bg-violet-600" : "bg-zinc-700"
-                  }`}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${localConfig.soundEnabled ? "bg-violet-600" : "bg-zinc-700"
+                    }`}
                   role="switch"
                   aria-checked={localConfig.soundEnabled}
                 >
                   <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                      localConfig.soundEnabled ? "translate-x-5" : "translate-x-0"
-                    }`}
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${localConfig.soundEnabled ? "translate-x-5" : "translate-x-0"
+                      }`}
                   />
                 </button>
               </div>
@@ -539,29 +547,31 @@ export function PomodoroConfigView({
                       return (
                         <div
                           key={block.id}
-                          className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 transition-all ${
-                            isActive
+                          className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 transition-all ${isActive
                               ? "border-emerald-500/50 bg-emerald-500/10"
                               : "border-border bg-card/20 opacity-60"
-                          }`}
+                            }`}
                         >
                           <span
-                            className={`h-3 w-3 shrink-0 rounded-full ${
-                              isActive ? "bg-emerald-500 animate-pulse" : (colorDot[block.color] ?? "bg-violet-500")
-                            }`}
+                            className={`h-3 w-3 shrink-0 rounded-full ${isActive ? "bg-emerald-500 animate-pulse" : (colorDot[block.color] ?? "bg-violet-500")
+                              }`}
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <p
-                                className={`text-sm font-semibold truncate ${
-                                  isActive ? "text-emerald-400" : "text-foreground"
-                                }`}
+                                className={`text-sm font-semibold truncate ${isActive ? "text-emerald-400" : "text-foreground"
+                                  }`}
                               >
                                 {block.title}
                               </p>
-                              {isActive && (
-                                <span className="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-full font-semibold border border-emerald-500/30">
-                                  Detected Active Block
+                              {block.dayOfWeek === -1 && (
+                                <span className="shrink-0 text-[9px] bg-violet-500/10 text-violet-400 border border-violet-500/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                  Every Day
+                                </span>
+                              )}
+                              {block.isTodo && (
+                                <span className="shrink-0 text-[9px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider font-semibold">
+                                  To-Do
                                 </span>
                               )}
                             </div>

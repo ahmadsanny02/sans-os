@@ -194,6 +194,7 @@ export function useDailyPage() {
   const [timetableStartTime, _setTimetableStartTime] = useState("08:00")
   const [timetableEndTime, _setTimetableEndTime] = useState("09:00")
   const [timetableDuration, _setTimetableDuration] = useState("60")
+  const [timetableIsTodo, setTimetableIsTodo] = useState(false)
   const [timetableCategory, setTimetableCategory] = useState("General")
   const [timetableErrorMsg, setTimetableErrorMsg] = useState<string | null>(null)
   const [timetableScheduleType, setTimetableScheduleType] = useState<"fixed" | "custom">("custom")
@@ -267,8 +268,10 @@ export function useDailyPage() {
         category: timetableCategory,
         color: CATEGORY_COLORS[timetableCategory] || "blue",
         date: timetableScheduleType === "fixed" ? undefined : activeDate,
+        isTodo: timetableIsTodo,
       })
       setTimetableTitle("")
+      setTimetableIsTodo(false)
       setShowTimetableAddForm(false)
       showSuccessToast("Schedule block added")
     } catch {
@@ -434,6 +437,8 @@ export function useDailyPage() {
     setTimetableEndTime,
     timetableDuration,
     setTimetableDuration,
+    timetableIsTodo,
+    setTimetableIsTodo,
     timetableCategory,
     setTimetableCategory,
     timetableErrorMsg,

@@ -82,6 +82,7 @@ export const timetableBlocks = pgTable("timetable_blocks", {
   category: text("category").default("General"), // Work, Health, Leisure, Study
   color: text("color").default("blue"), // css class or hex color
   date: text("date"), // YYYY-MM-DD for one-off custom blocks (null for everyday fixed)
+  isTodo: boolean("is_todo").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 

@@ -96,6 +96,8 @@ export default function DailyComponent() {
           setEndTime={dailyData.setTimetableEndTime}
           duration={dailyData.timetableDuration}
           setDuration={dailyData.setTimetableDuration}
+          isTodo={dailyData.timetableIsTodo}
+          setIsTodo={dailyData.setTimetableIsTodo}
           category={dailyData.timetableCategory}
           setCategory={dailyData.setTimetableCategory}
           scheduleType={dailyData.timetableScheduleType}

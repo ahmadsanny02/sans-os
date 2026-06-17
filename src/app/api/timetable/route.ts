@@ -40,7 +40,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { dayOfWeek, startTime, endTime, title, category, color, date } = body
+    const { dayOfWeek, startTime, endTime, title, category, color, date, isTodo } = body
 
     if (dayOfWeek === undefined || !startTime || !endTime || !title) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -57,6 +57,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         category: category || "General",
         color: color || "blue",
         date: date || null,
+        isTodo: isTodo ?? false,
       })
       .returning()
 

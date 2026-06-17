@@ -22,6 +22,7 @@ export interface TimetableBlock {
   color: string
   createdAt: string
   date: string | null
+  isTodo: boolean
 }
 
 // --- PRIORITIES ---
@@ -216,6 +217,7 @@ async function createTimetableBlock(body: {
   category?: string
   color?: string
   date?: string
+  isTodo?: boolean
 }): Promise<TimetableBlock> {
   const res = await fetch("/api/timetable", {
     method: "POST",
@@ -241,6 +243,7 @@ export function useCreateTimetableBlockMutation() {
       category?: string
       color?: string
       date?: string
+      isTodo?: boolean
     }
   >({
     mutationFn: createTimetableBlock,

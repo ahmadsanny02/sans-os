@@ -44,6 +44,8 @@ interface TimetableProps {
   setEndTime: (t: string) => void
   duration: string
   setDuration: (t: string) => void
+  isTodo: boolean
+  setIsTodo: (t: boolean) => void
   category: string
   setCategory: (c: string) => void
   scheduleType: "fixed" | "custom"
@@ -68,6 +70,8 @@ export function Timetable({
   setEndTime,
   duration,
   setDuration,
+  isTodo,
+  setIsTodo,
   category,
   setCategory,
   scheduleType,
@@ -165,7 +169,7 @@ export function Timetable({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <label htmlFor="blockCategory" className="text-xs font-bold text-muted-foreground">
                 Category
@@ -201,6 +205,38 @@ export function Timetable({
                 <option value="custom">This Day Only (Custom)</option>
                 <option value="fixed">Every Day (Fixed)</option>
               </select>
+            </div>
+
+            <div className="flex items-end pb-0.5">
+              <button
+                type="button"
+                onClick={() => setIsTodo(!isTodo)}
+                className={`flex items-center justify-between w-full rounded-lg border px-3 py-1.5 transition-all duration-200 text-left h-[38px] cursor-pointer select-none ${
+                  isTodo
+                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-sm"
+                    : "border-border bg-card/25 hover:border-border/80 hover:bg-card/40 text-muted-foreground"
+                }`}
+              >
+                <div className="flex flex-col justify-center min-w-0">
+                  <span className={`text-xs font-bold leading-tight ${isTodo ? "text-emerald-500 dark:text-emerald-400" : "text-foreground"}`}>
+                    To-Do / Focus Task
+                  </span>
+                  <span className="text-[9px] opacity-70 leading-tight truncate">
+                    Integrate in Pomodoro
+                  </span>
+                </div>
+                <div
+                  className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out px-0.5 ${
+                    isTodo ? "bg-emerald-500" : "bg-zinc-700"
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
+                      isTodo ? "translate-x-3" : "translate-x-0"
+                    }`}
+                  />
+                </div>
+              </button>
             </div>
           </div>
 
@@ -283,6 +319,11 @@ export function Timetable({
                         {block.dayOfWeek === -1 && (
                           <span className="rounded-full bg-sidebar-primary/10 text-sidebar-primary dark:bg-sidebar-primary/20 dark:text-violet-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
                             Every Day
+                          </span>
+                        )}
+                        {block.isTodo && (
+                          <span className="rounded-full bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/20 dark:text-emerald-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
+                            To-Do
                           </span>
                         )}
                       </div>
