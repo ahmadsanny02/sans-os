@@ -12,10 +12,12 @@ import {
   Zap,
   Calendar,
   Target,
+  Volume2,
 } from "lucide-react"
 import { UsePomodoroPageReturn } from "@/hooks/usePomodoroPage"
 import { IntegrationMode } from "@/store/pomodoroStore"
 import { TimetableBlock } from "@/hooks/useDaily"
+import { playPomodoroSound } from "@/lib/pomodoroSound"
 
 // ---------- Sub-components ----------
 
@@ -350,6 +352,98 @@ export function PomodoroConfigView({
             Save Configuration
           </button>
         )}
+      </div>
+
+      {/* Sound Settings */}
+      <div className="space-y-4">
+        <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+          <Volume2 className="h-4 w-4 text-violet-400" />
+          Sound Settings
+        </h2>
+
+        <div className="rounded-2xl border border-border bg-card/25 dark:bg-card/10 p-5 space-y-5">
+          {/* Sound Toggle & Test Button */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <span className="text-sm font-bold text-foreground">
+                Sound Notifications
+              </span>
+              <p className="text-xs text-muted-foreground">
+                Play acoustic tones when a focus or break period starts.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              {localConfig.soundEnabled && (
+                <button
+                  type="button"
+                  onClick={() => playPomodoroSound("focus")}
+                  className="flex items-center gap-1.5 rounded-xl bg-zinc-800/80 hover:bg-zinc-800 border border-white/5 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all active:scale-95 cursor-pointer"
+                  title="Test current sound settings"
+                >
+                  <Volume2 className="h-3.5 w-3.5" />
+                  Test Sound
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => handleUpdateLocalConfig({ soundEnabled: !localConfig.soundEnabled })}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
+                  localConfig.soundEnabled ? "bg-violet-600" : "bg-zinc-700"
+                }`}
+                role="switch"
+                aria-checked={localConfig.soundEnabled}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    localConfig.soundEnabled ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* Volume and Wave Type Controls */}
+          {localConfig.soundEnabled && (
+            <div className="grid gap-4 sm:grid-cols-2 pt-4 border-t border-border/40">
+              {/* Volume Slider */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-bold text-foreground">
+                  <span>Notification Volume</span>
+                  <span className="text-violet-400 tabular-nums">
+                    {Math.round(localConfig.soundVolume * 100)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0.1}
+                  max={1.0}
+                  step={0.05}
+                  value={localConfig.soundVolume}
+                  onChange={(e) => handleUpdateLocalConfig({ soundVolume: Number(e.target.value) })}
+                  className="w-full h-2 rounded-full appearance-none cursor-pointer accent-violet-600 bg-zinc-800"
+                  aria-label="Sound notification volume"
+                />
+              </div>
+
+              {/* Wave Type Selector */}
+              <div className="space-y-2">
+                <span className="block text-xs font-bold text-foreground">
+                  Sound Style (Tone Type)
+                </span>
+                <select
+                  value={localConfig.soundType}
+                  onChange={(e) => handleUpdateLocalConfig({ soundType: e.target.value as "sine" | "triangle" | "square" | "sawtooth" })}
+                  className="w-full rounded-xl border border-border bg-zinc-900/60 px-3.5 py-2 text-xs text-white focus:border-violet-500/80 outline-none transition-colors cursor-pointer"
+                >
+                  <option value="sine">Sine (Soft Chime)</option>
+                  <option value="triangle">Triangle (Retro Warm)</option>
+                  <option value="square">Square (Retro Arcade)</option>
+                  <option value="sawtooth">Sawtooth (Bright Alarm)</option>
+                </select>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Timetable Integration */}

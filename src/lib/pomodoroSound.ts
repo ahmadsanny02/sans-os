@@ -1,15 +1,23 @@
 "use client"
 
+import { usePomodoroStore } from "@/store/pomodoroStore"
+
 export type PomodoroSoundType = "focus" | "break" | "long-break"
 
 /**
  * Plays a notification sound using the Web Audio API.
- * - "focus": ascending energetic arpeggio (🍅 go time!)
- * - "break": calm descending tones (☕ relax)
- * - "long-break": warm chord resolution (🌟 well done!)
+ * - "focus": ascending energetic arpeggio
+ * - "break": calm descending tones
+ * - "long-break": warm chord resolution
  */
 export function playPomodoroSound(type: PomodoroSoundType): void {
   try {
+    const config = usePomodoroStore.getState().config
+    if (!config.soundEnabled) return
+
+    const volumeMultiplier = config.soundVolume ?? 0.5
+    const oscType = config.soundType ?? "sine"
+
     const AudioContextClass =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext: typeof AudioContext })
@@ -27,12 +35,14 @@ export function playPomodoroSound(type: PomodoroSoundType): void {
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
 
-      osc.type = "sine"
+      osc.type = oscType
       osc.frequency.setValueAtTime(freq, startAt)
 
+      const finalVolume = volume * volumeMultiplier
+
       gain.gain.setValueAtTime(0, startAt)
-      gain.gain.linearRampToValueAtTime(volume, startAt + 0.04)
-      gain.gain.setValueAtTime(volume, startAt + duration - 0.08)
+      gain.gain.linearRampToValueAtTime(finalVolume, startAt + 0.04)
+      gain.gain.setValueAtTime(finalVolume, startAt + duration - 0.08)
       gain.gain.linearRampToValueAtTime(0, startAt + duration)
 
       osc.connect(gain)

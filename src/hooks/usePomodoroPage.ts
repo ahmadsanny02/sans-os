@@ -92,7 +92,10 @@ export function usePomodoroPage() {
     localConfig.focusDuration !== config.focusDuration ||
     localConfig.breakDuration !== config.breakDuration ||
     localConfig.longBreakDuration !== config.longBreakDuration ||
-    localConfig.sessionsBeforeLongBreak !== config.sessionsBeforeLongBreak
+    localConfig.sessionsBeforeLongBreak !== config.sessionsBeforeLongBreak ||
+    localConfig.soundEnabled !== config.soundEnabled ||
+    localConfig.soundVolume !== config.soundVolume ||
+    localConfig.soundType !== config.soundType
 
   const handleUpdateLocalConfig = (patch: Partial<PomodoroConfig>): void => {
     setLocalConfig((prev) => ({ ...prev, ...patch }))

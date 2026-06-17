@@ -8,6 +8,9 @@ export interface PomodoroConfig {
   breakDuration: number // minutes
   longBreakDuration: number // minutes
   sessionsBeforeLongBreak: number
+  soundEnabled: boolean
+  soundVolume: number // 0 to 1
+  soundType: "sine" | "triangle" | "square" | "sawtooth"
 }
 
 export type PomodoroPhase = "idle" | "focus" | "break" | "long-break"
@@ -57,6 +60,9 @@ export const usePomodoroStore = create<PomodoroState>()(
         breakDuration: 5,
         longBreakDuration: 15,
         sessionsBeforeLongBreak: 4,
+        soundEnabled: true,
+        soundVolume: 0.5,
+        soundType: "sine",
       },
       integrationMode: "auto",
       selectedBlockId: null,
