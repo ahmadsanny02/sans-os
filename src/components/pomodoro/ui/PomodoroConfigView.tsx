@@ -11,6 +11,7 @@ import {
   LayoutGrid,
   Zap,
   Calendar,
+  Target,
 } from "lucide-react"
 import { UsePomodoroPageReturn } from "@/hooks/usePomodoroPage"
 import { IntegrationMode } from "@/store/pomodoroStore"
@@ -198,8 +199,8 @@ function BlockSelector({
               </p>
             </div>
             {sessions > 0 && (
-              <span className="shrink-0 text-[11px] font-bold bg-violet-500/10 text-violet-400 border border-violet-500/20 px-2 py-0.5 rounded-full">
-                ~{sessions} 🍅
+              <span className="shrink-0 text-[11px] font-bold bg-violet-500/10 text-violet-400 border border-violet-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                ~{sessions} <Target className="h-3 w-3 shrink-0" />
               </span>
             )}
           </button>
@@ -431,13 +432,13 @@ export function PomodoroConfigView({
 
       {/* Tips */}
       <div className="rounded-2xl border border-border bg-card/20 p-5 space-y-2">
-        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-          🍅 How It Works
+        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          <Target className="h-3.5 w-3.5 text-violet-400" /> How It Works
         </p>
         <ul className="text-xs text-muted-foreground space-y-1.5 list-none">
           <li className="flex gap-2">
             <span className="shrink-0">•</span>
-            Click the <strong className="text-foreground">🍅</strong> timer button in the sidebar to open/close the timer anywhere.
+            Click the floating timer button in the bottom-right corner to open/close the timer anywhere.
           </li>
           <li className="flex gap-2">
             <span className="shrink-0">•</span>

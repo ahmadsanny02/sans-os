@@ -11,6 +11,7 @@ import {
   SkipForward,
   Minimize2,
   Timer,
+  Target,
 } from "lucide-react"
 
 // ---------- Helpers ----------
@@ -32,7 +33,7 @@ const PHASE_META: Record<
 > = {
   idle: {
     label: "Ready",
-    emoji: "🍅",
+    emoji: "🎯",
     color: "text-violet-400",
     border: "border-zinc-700/60",
     bg: "bg-zinc-800/10",
@@ -40,7 +41,7 @@ const PHASE_META: Record<
   },
   focus: {
     label: "Focus",
-    emoji: "🍅",
+    emoji: "🎯",
     color: "text-violet-400",
     border: "border-violet-500",
     bg: "bg-violet-500/10",
@@ -125,8 +126,8 @@ export function PomodoroPipView() {
           <span className="text-[19px] font-mono font-black text-white tracking-tight leading-none my-0.5">
             {formatSeconds(remainingSeconds)}
           </span>
-          <span className="text-[9px] font-bold text-white/40 leading-none">
-            {sessionCount} 🍅
+          <span className="text-[9px] font-bold text-white/40 leading-none flex items-center gap-0.5 justify-center">
+            {sessionCount} <Target className="h-2.5 w-2.5 text-violet-400" />
           </span>
         </button>
       </div>
