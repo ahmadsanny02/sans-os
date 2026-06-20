@@ -214,7 +214,7 @@ export function LanguageBoardView({
                 required
                 value={translation}
                 onChange={(e) => setTranslation(e.target.value)}
-                placeholder="e.g. Sementara, singkat"
+                placeholder="e.g. Temporary, brief"
                 className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
               />
             </div>

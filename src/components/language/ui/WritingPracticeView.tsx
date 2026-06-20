@@ -257,7 +257,7 @@ export function WritingPracticeView({
                       required
                       value={freeTranslation}
                       onChange={(e) => setFreeTranslation(e.target.value)}
-                      placeholder="Terjemahan Bahasa Indonesia..."
+                      placeholder="Indonesian translation..."
                       className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 resize-none leading-relaxed"
                     />
                   </div>
@@ -271,7 +271,7 @@ export function WritingPracticeView({
                     <div className="flex items-center gap-1">
                       <Check className="h-3.5 w-3.5 text-emerald-500" />
                       <span className="text-xs font-extrabold uppercase tracking-wide text-emerald-500">
-                        1. Kalimat Positif (+)
+                        1. Positive Sentence (+)
                       </span>
                     </div>
                     <div className="space-y-1.5">
@@ -288,7 +288,7 @@ export function WritingPracticeView({
                         required
                         value={vocabTransPos}
                         onChange={(e) => setVocabTransPos(e.target.value)}
-                        placeholder="Terjemahan Indonesia..."
+                        placeholder="Indonesian translation..."
                         className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
                       />
                     </div>
@@ -299,7 +299,7 @@ export function WritingPracticeView({
                     <div className="flex items-center gap-1">
                       <Minus className="h-3.5 w-3.5 text-rose-500" />
                       <span className="text-xs font-extrabold uppercase tracking-wide text-rose-500">
-                        2. Kalimat Negatif (-)
+                        2. Negative Sentence (-)
                       </span>
                     </div>
                     <div className="space-y-1.5">
@@ -316,7 +316,7 @@ export function WritingPracticeView({
                         required
                         value={vocabTransNeg}
                         onChange={(e) => setVocabTransNeg(e.target.value)}
-                        placeholder="Terjemahan Indonesia..."
+                        placeholder="Indonesian translation..."
                         className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
                       />
                     </div>
@@ -327,7 +327,7 @@ export function WritingPracticeView({
                     <div className="flex items-center gap-1">
                       <HelpCircle className="h-3.5 w-3.5 text-blue-500" />
                       <span className="text-xs font-extrabold uppercase tracking-wide text-blue-500">
-                        3. Kalimat Tanya (?)
+                        3. Interrogative Sentence (?)
                       </span>
                     </div>
                     <div className="space-y-1.5">
@@ -344,7 +344,7 @@ export function WritingPracticeView({
                         required
                         value={vocabTransInt}
                         onChange={(e) => setVocabTransInt(e.target.value)}
-                        placeholder="Terjemahan Indonesia..."
+                        placeholder="Indonesian translation..."
                         className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
                       />
                     </div>
@@ -486,10 +486,10 @@ export function WritingPracticeView({
                               }`}
                             >
                               {log.sentenceType === "Positive"
-                                ? "Positif"
+                                ? "Positive"
                                 : log.sentenceType === "Negative"
-                                ? "Negatif"
-                                : "Tanya"}
+                                ? "Negative"
+                                : "Interrogative"}
                             </span>
                           )}
                         </div>
@@ -512,7 +512,7 @@ export function WritingPracticeView({
                       {/* Indonesian translation */}
                       <div className="pt-1.5 border-t border-dashed border-border/30 mt-2">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
-                          Terjemahan
+                          Translation
                         </span>
                         <p className="text-xs text-muted-foreground leading-relaxed italic">
                           {log.indonesianTranslation}
@@ -522,7 +522,7 @@ export function WritingPracticeView({
 
                     {/* Metadata Footer */}
                     <div className="mt-3 text-[9px] font-semibold text-muted-foreground/60 text-right">
-                      {new Date(log.createdAt).toLocaleDateString("id-ID", {
+                      {new Date(log.createdAt).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",

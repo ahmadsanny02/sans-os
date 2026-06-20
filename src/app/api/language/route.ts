@@ -59,7 +59,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       .limit(1)
 
     if (existingWords.length > 0) {
-      return NextResponse.json({ error: "Kosa kata ini sudah terdaftar" }, { status: 400 })
+      return NextResponse.json({ error: "This vocabulary word is already registered" }, { status: 400 })
     }
 
     const [newLog] = await db

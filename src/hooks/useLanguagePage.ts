@@ -87,7 +87,7 @@ export function useLanguagePage() {
     )
 
     if (isDuplicate) {
-      setFormError("Kosa kata ini sudah terdaftar.")
+      setFormError("This vocabulary word is already registered.")
       return
     }
 
@@ -199,7 +199,7 @@ export function useLanguagePage() {
         !vocabEngNeg.trim() || !vocabTransNeg.trim() ||
         !vocabEngInt.trim() || !vocabTransInt.trim()
       ) {
-        setWritingFormError("Please write sentences and translations for all three types (Positive, Negative, and Tanya).")
+        setWritingFormError("Please write sentences and translations for all three types (Positive, Negative, and Interrogative).")
         return
       }
 
