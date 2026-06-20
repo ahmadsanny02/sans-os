@@ -286,56 +286,61 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
       </div>
       {/* Floating Pomodoro Trigger Badge (Bottom Right) */}
-      {!isModalOpen && (
-        <motion.button
-          drag
-          dragConstraints={rootRef}
-          dragElastic={0.1}
-          dragMomentum={false}
-          onDragStart={() => {
-            isDraggingRef.current = true
-          }}
-          onDragEnd={() => {
-            setTimeout(() => {
-              isDraggingRef.current = false
-            }, 50)
-          }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={(e) => {
-            if (isDraggingRef.current) {
-              e.preventDefault()
-              e.stopPropagation()
-              return
-            }
-            toggleModal()
-          }}
-          className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full flex items-center justify-center border bg-zinc-900/90 text-white backdrop-blur-md transition-colors duration-300 shadow-lg cursor-pointer ${
+      <motion.button
+        drag
+        dragConstraints={rootRef}
+        dragElastic={0.1}
+        dragMomentum={false}
+        onDragStart={() => {
+          isDraggingRef.current = true
+        }}
+        onDragEnd={() => {
+          setTimeout(() => {
+            isDraggingRef.current = false
+          }, 50)
+        }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={(e) => {
+          if (isDraggingRef.current) {
+            e.preventDefault()
+            e.stopPropagation()
+            return
+          }
+          toggleModal()
+        }}
+        animate={{
+          opacity: isModalOpen ? 0 : 1,
+          scale: isModalOpen ? 0 : 1,
+        }}
+        transition={{ duration: 0.2 }}
+        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full flex items-center justify-center border bg-zinc-900/90 text-white backdrop-blur-md transition-colors duration-300 shadow-lg cursor-pointer ${
+          isModalOpen ? "pointer-events-none" : "pointer-events-auto"
+        } ${
+          pomodoroIsRunning
+            ? pomodoroPhase === "focus"
+              ? "border-violet-500 shadow-violet-500/20"
+              : "border-emerald-500 shadow-emerald-500/20"
+            : "border-white/10 hover:border-white/20"
+        }`}
+        aria-label="Toggle Pomodoro Panel"
+        title="Open Pomodoro Timer"
+      >
+        <div className="relative pointer-events-none">
+          <Timer className={`h-5 w-5 ${
             pomodoroIsRunning
               ? pomodoroPhase === "focus"
-                ? "border-violet-500 shadow-violet-500/20"
-                : "border-emerald-500 shadow-emerald-500/20"
-              : "border-white/10 hover:border-white/20"
-          }`}
-          aria-label="Toggle Pomodoro Panel"
-          title="Open Pomodoro Timer"
-        >
-          <div className="relative pointer-events-none">
-            <Timer className={`h-5 w-5 ${
-              pomodoroIsRunning
-                ? pomodoroPhase === "focus"
-                  ? "text-violet-400 animate-pulse"
-                  : "text-emerald-400 animate-pulse"
-                : "text-muted-foreground"
+                ? "text-violet-400 animate-pulse"
+                : "text-emerald-400 animate-pulse"
+              : "text-muted-foreground"
+          }`} />
+          {pomodoroIsRunning && (
+            <span className={`absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border border-zinc-900 ${
+              pomodoroPhase === "focus" ? "bg-violet-500" : "bg-emerald-500"
             }`} />
-            {pomodoroIsRunning && (
-              <span className={`absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border border-zinc-900 ${
-                pomodoroPhase === "focus" ? "bg-violet-500" : "bg-emerald-500"
-              }`} />
-            )}
-          </div>
-        </motion.button>
-      )}
+          )}
+        </div>
+      </motion.button>
       {/* Pomodoro Floating Modal (global - persists across pages) */}
       <PomodoroModal />
       {/* Pomodoro Picture-in-Picture Controller */}
