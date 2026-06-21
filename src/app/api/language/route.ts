@@ -144,15 +144,20 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     if (masteryLevel !== undefined) updateData.masteryLevel = Number(masteryLevel)
     if (memorized !== undefined) updateData.memorized = Boolean(memorized)
 
-    // If marked as memorized (checklist) and translation is "-", update to autoTranslation
-    if (Boolean(memorized) === true && currentLog.translation.trim() === "-") {
+    // If marked as memorized (checklist) and translation does not match autoTranslation, update it
+    if (Boolean(memorized) === true) {
+      const currentTranslation = currentLog.translation.trim()
       if (currentLog.autoTranslation) {
-        updateData.translation = currentLog.autoTranslation
+        if (currentTranslation !== currentLog.autoTranslation.trim()) {
+          updateData.translation = currentLog.autoTranslation
+        }
       } else {
         const auto = await translateText(currentLog.word)
         if (auto) {
-          updateData.translation = auto
           updateData.autoTranslation = auto
+          if (currentTranslation !== auto.trim()) {
+            updateData.translation = auto
+          }
         }
       }
     }

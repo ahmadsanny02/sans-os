@@ -137,7 +137,7 @@ export function useUpdateVocabularyMutation() {
           previous.map((item) => {
             if (item.id === variables.id) {
               const updatedItem = { ...item, ...variables }
-              if (variables.memorized === true && item.translation.trim() === "-") {
+              if (variables.memorized === true && item.translation.trim() !== (item.autoTranslation || "").trim()) {
                 updatedItem.translation = item.autoTranslation || item.translation
               }
               return updatedItem
