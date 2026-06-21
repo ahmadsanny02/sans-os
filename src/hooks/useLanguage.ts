@@ -134,9 +134,16 @@ export function useUpdateVocabularyMutation() {
       if (previous) {
         queryClient.setQueryData<VocabularyLog[]>(
           ["vocabulary"],
-          previous.map((item) =>
-            item.id === variables.id ? { ...item, ...variables } : item
-          )
+          previous.map((item) => {
+            if (item.id === variables.id) {
+              const updatedItem = { ...item, ...variables }
+              if (variables.memorized === true && item.translation.trim() === "-") {
+                updatedItem.translation = item.autoTranslation || item.translation
+              }
+              return updatedItem
+            }
+            return item
+          })
         )
       }
       return { previous }

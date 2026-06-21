@@ -122,12 +122,40 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    // Retrieve existing log to check its translation and autoTranslation
+    const existingLogs = await db
+      .select()
+      .from(vocabularyLogs)
+      .where(and(eq(vocabularyLogs.id, id), eq(vocabularyLogs.userId, user.id)))
+      .limit(1)
+
+    if (existingLogs.length === 0) {
+      return NextResponse.json({ error: "Log not found" }, { status: 404 })
+    }
+
+    const currentLog = existingLogs[0]
+
     const updateData: {
       masteryLevel?: number
       memorized?: boolean
+      translation?: string
+      autoTranslation?: string | null
     } = {}
     if (masteryLevel !== undefined) updateData.masteryLevel = Number(masteryLevel)
     if (memorized !== undefined) updateData.memorized = Boolean(memorized)
+
+    // If marked as memorized (checklist) and translation is "-", update to autoTranslation
+    if (Boolean(memorized) === true && currentLog.translation.trim() === "-") {
+      if (currentLog.autoTranslation) {
+        updateData.translation = currentLog.autoTranslation
+      } else {
+        const auto = await translateText(currentLog.word)
+        if (auto) {
+          updateData.translation = auto
+          updateData.autoTranslation = auto
+        }
+      }
+    }
 
     const [updatedLog] = await db
       .update(vocabularyLogs)
