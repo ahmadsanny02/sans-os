@@ -126,6 +126,21 @@ export function WritingPracticeView({
       {/* 1. Header Row (Tabs, Search, and Toggle Form Button) */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/50 pb-5 select-none">
         <div className="flex flex-col sm:flex-row gap-3 flex-1 max-w-2xl">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              value={searchQueryWriting}
+              onChange={(e) => setSearchQueryWriting(e.target.value)}
+              placeholder={
+                activeHistoryTab === "vocab"
+                  ? "Search sentences or vocabulary word..."
+                  : "Search free writing sentences..."
+              }
+              className="w-full rounded-xl border border-border bg-card/60 pl-9 pr-3 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
+            />
+          </div>
           
           {/* History Category Selector */}
           <div className="flex gap-1.5 p-0.5 bg-secondary/20 border border-border/30 rounded-xl select-none shrink-0 self-start sm:self-auto">
@@ -155,22 +170,6 @@ export function WritingPracticeView({
             >
               <PencilLine className="h-3.5 w-3.5" /> Free Writing ({freeWritingLogs.length})
             </button>
-          </div>
-
-          {/* Search Input */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchQueryWriting}
-              onChange={(e) => setSearchQueryWriting(e.target.value)}
-              placeholder={
-                activeHistoryTab === "vocab"
-                  ? "Search sentences or vocabulary word..."
-                  : "Search free writing sentences..."
-              }
-              className="w-full rounded-xl border border-border bg-card/60 pl-9 pr-3 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
-            />
           </div>
         </div>
 

@@ -106,7 +106,18 @@ export function DialoguePracticeView({
       {/* 1. Header Row (Reveal helper, Search, and Toggle Add button) */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/50 pb-5 select-none">
         <div className="flex flex-col sm:flex-row gap-3 flex-1 max-w-2xl">
-          
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground" />
+            <input
+              type="text"
+              value={searchQueryDialogue}
+              onChange={(e) => setSearchQueryDialogue(e.target.value)}
+              placeholder="Search conversations..."
+              className="w-full rounded-xl border border-border bg-card/60 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
+            />
+          </div>
+
           {/* Study Reveal Actions */}
           <div className="flex items-center gap-1.5 bg-secondary/40 border border-border/80 p-1 rounded-xl shrink-0 self-start sm:self-auto select-none">
             <button
@@ -123,18 +134,6 @@ export function DialoguePracticeView({
             >
               <EyeOff className="h-3.5 w-3.5" /> Hide All
             </button>
-          </div>
-
-          {/* Search Input */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchQueryDialogue}
-              onChange={(e) => setSearchQueryDialogue(e.target.value)}
-              placeholder="Search conversations..."
-              className="w-full rounded-xl border border-border bg-card/60 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
-            />
           </div>
         </div>
 
