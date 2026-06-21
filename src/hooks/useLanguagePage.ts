@@ -44,6 +44,7 @@ export function useLanguagePage() {
   // Vocab form fields
   const [word, setWord] = useState("")
   const [translation, setTranslation] = useState("")
+  const [partOfSpeech, setPartOfSpeech] = useState("noun")
   const [formError, setFormError] = useState<string | null>(null)
 
   // ==========================================
@@ -121,13 +122,14 @@ export function useLanguagePage() {
     try {
       await createVocabMutation.mutateAsync({
         word: trimmedWord,
-        partOfSpeech: "n/a",
+        partOfSpeech: partOfSpeech,
         definition: "n/a",
         translation: trimmedTranslation,
         masteryLevel: 3,
       })
       setWord("")
       setTranslation("")
+      setPartOfSpeech("noun")
       setShowAddForm(false)
       showSuccessToast("Vocabulary added successfully")
     } catch (err) {
@@ -465,6 +467,8 @@ export function useLanguagePage() {
     filteredVocab,
     vocabCreatePending: createVocabMutation.isPending,
     vocabDeletePending: deleteVocabMutation.isPending,
+    partOfSpeech,
+    setPartOfSpeech,
 
     // Writing Practice States
     showWritingForm,

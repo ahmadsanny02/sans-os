@@ -32,6 +32,8 @@ interface LanguageBoardViewProps {
   setWord: (w: string) => void
   translation: string
   setTranslation: (t: string) => void
+  partOfSpeech: string
+  setPartOfSpeech: (pos: string) => void
   formError: string | null
   handleAddVocabulary: (e: React.FormEvent) => Promise<void>
   handleDeleteVocabulary: (id: string, wordStr: string) => Promise<void>
@@ -61,6 +63,8 @@ export function LanguageBoardView({
   setWord,
   translation,
   setTranslation,
+  partOfSpeech,
+  setPartOfSpeech,
   formError,
   handleAddVocabulary,
   handleDeleteVocabulary,
@@ -219,7 +223,7 @@ export function LanguageBoardView({
           onSubmit={handleAddVocabulary}
           className="rounded-2xl border border-border bg-card/60 p-5 shadow-sm backdrop-blur-md space-y-4 animate-in slide-in-from-top-4 duration-200"
         >
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-3">
             {/* Word Input */}
             <div className="space-y-1.5">
               <label htmlFor="vocabWord" className="text-xs font-bold text-muted-foreground">
@@ -234,6 +238,25 @@ export function LanguageBoardView({
                 placeholder="e.g. Ephemeral"
                 className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
               />
+            </div>
+
+            {/* Part of Speech Selection */}
+            <div className="space-y-1.5">
+              <label htmlFor="vocabPos" className="text-xs font-bold text-muted-foreground">
+                Part of Speech *
+              </label>
+              <select
+                id="vocabPos"
+                value={partOfSpeech}
+                onChange={(e) => setPartOfSpeech(e.target.value)}
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
+              >
+                <option value="noun">Noun (Kata Benda)</option>
+                <option value="verb">Verb (Kata Kerja)</option>
+                <option value="adjective">Adjective (Kata Sifat)</option>
+                <option value="adverb">Adverb (Kata Keterangan)</option>
+                <option value="other">Other (Lainnya)</option>
+              </select>
             </div>
 
             {/* Translation */}
@@ -318,9 +341,26 @@ export function LanguageBoardView({
                 {/* Header row */}
                 <div>
                   <div className="flex items-center justify-between gap-2 border-b border-border/40 pb-2.5">
-                    <span className="text-[10px] font-extrabold text-muted-foreground/50 tracking-wider">
-                      VOCAB
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-extrabold text-muted-foreground/50 tracking-wider">
+                        VOCAB
+                      </span>
+                      {vocab.partOfSpeech && vocab.partOfSpeech !== "n/a" && (
+                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider ${
+                          vocab.partOfSpeech === "verb"
+                            ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
+                            : vocab.partOfSpeech === "noun"
+                            ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                            : vocab.partOfSpeech === "adjective"
+                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            : vocab.partOfSpeech === "adverb"
+                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                            : "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20"
+                        }`}>
+                          {vocab.partOfSpeech}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2">
                       {/* Memorized Checklist Toggle */}
                       <button
@@ -381,6 +421,46 @@ export function LanguageBoardView({
                                 Google Translate
                               </span>
                               <span className="text-xs font-medium text-muted-foreground leading-normal italic">{vocab.autoTranslation}</span>
+                            </div>
+                          )}
+                          {vocab.partOfSpeech.trim().toLowerCase() === "verb" && vocab.v1 && (
+                            <div className="border-t border-border/40 pt-1.5 mt-2 space-y-1.5">
+                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-violet-400 block select-none">
+                                Verb Conjugations
+                              </span>
+                              <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[10px] rounded-lg bg-zinc-950/40 p-2 border border-white/5 font-mono">
+                                <div className="truncate">
+                                  <span className="text-muted-foreground mr-1">V1:</span>
+                                  <span className="font-bold text-white">{vocab.v1}</span>
+                                </div>
+                                <div className="text-muted-foreground truncate">
+                                  {vocab.v1Translation}
+                                </div>
+                                
+                                <div className="truncate">
+                                  <span className="text-muted-foreground mr-1">V2:</span>
+                                  <span className="font-bold text-white">{vocab.v2}</span>
+                                </div>
+                                <div className="text-muted-foreground truncate">
+                                  {vocab.v2Translation}
+                                </div>
+
+                                <div className="truncate">
+                                  <span className="text-muted-foreground mr-1">V3:</span>
+                                  <span className="font-bold text-white">{vocab.v3}</span>
+                                </div>
+                                <div className="text-muted-foreground truncate">
+                                  {vocab.v3Translation}
+                                </div>
+
+                                <div className="truncate">
+                                  <span className="text-muted-foreground mr-1">V-ing:</span>
+                                  <span className="font-bold text-white">{vocab.vIng}</span>
+                                </div>
+                                <div className="text-muted-foreground truncate">
+                                  {vocab.vIngTranslation}
+                                </div>
+                              </div>
                             </div>
                           )}
                         </div>

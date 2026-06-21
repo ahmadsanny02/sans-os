@@ -110,6 +110,14 @@ export const vocabularyLogs = pgTable("vocabulary_logs", {
   masteryLevel: integer("mastery_level").default(1).notNull(), // scale 1-5
   memorized: boolean("memorized").default(false).notNull(),
   autoTranslation: text("auto_translation"),
+  v1: text("v1"),
+  v2: text("v2"),
+  v3: text("v3"),
+  vIng: text("v_ing"),
+  v1Translation: text("v1_translation"),
+  v2Translation: text("v2_translation"),
+  v3Translation: text("v3_translation"),
+  vIngTranslation: text("v_ing_translation"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 

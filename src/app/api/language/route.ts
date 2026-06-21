@@ -4,6 +4,7 @@ import { vocabularyLogs } from "@/types/schema"
 import { eq, and, asc, sql } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { translateText } from "@/lib/translate"
+import { conjugateVerb } from "@/lib/verbs"
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -25,15 +26,48 @@ export async function GET(): Promise<NextResponse> {
     // On-the-fly backfill for older logs
     const updatedLogs = await Promise.all(
       logs.map(async (log) => {
+        let needsUpdate = false
+        const updateFields: Record<string, string | null> = {}
+
         if (!log.autoTranslation) {
           const auto = await translateText(log.word)
           if (auto) {
-            await db
-              .update(vocabularyLogs)
-              .set({ autoTranslation: auto })
-              .where(and(eq(vocabularyLogs.id, log.id), eq(vocabularyLogs.userId, user.id)))
-            return { ...log, autoTranslation: auto }
+            updateFields.autoTranslation = auto
+            needsUpdate = true
+            log.autoTranslation = auto
           }
+        }
+
+        if (log.partOfSpeech.trim().toLowerCase() === "verb" && !log.v1) {
+          const conj = conjugateVerb(log.word)
+          
+          updateFields.v1 = conj.v1
+          updateFields.v2 = conj.v2
+          updateFields.v3 = conj.v3
+          updateFields.vIng = conj.vIng
+          
+          updateFields.v1Translation = log.translation.trim()
+          updateFields.v2Translation = await translateText(conj.v2)
+          updateFields.v3Translation = await translateText(conj.v3)
+          updateFields.vIngTranslation = await translateText(conj.vIng)
+          
+          needsUpdate = true
+
+          log.v1 = conj.v1
+          log.v2 = conj.v2
+          log.v3 = conj.v3
+          log.vIng = conj.vIng
+          log.v1Translation = updateFields.v1Translation
+          log.v2Translation = updateFields.v2Translation
+          log.v3Translation = updateFields.v3Translation
+          log.vIngTranslation = updateFields.vIngTranslation
+        }
+
+        if (needsUpdate) {
+          await db
+            .update(vocabularyLogs)
+            .set(updateFields)
+            .where(and(eq(vocabularyLogs.id, log.id), eq(vocabularyLogs.userId, user.id)))
         }
         return log
       })
@@ -82,6 +116,28 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const autoTranslation = await translateText(word)
 
+    let v1 = null
+    let v2 = null
+    let v3 = null
+    let vIng = null
+    let v1Translation = null
+    let v2Translation = null
+    let v3Translation = null
+    let vIngTranslation = null
+
+    if (partOfSpeech && partOfSpeech.trim().toLowerCase() === "verb") {
+      const conj = conjugateVerb(word)
+      v1 = conj.v1
+      v2 = conj.v2
+      v3 = conj.v3
+      vIng = conj.vIng
+      
+      v1Translation = translation.trim()
+      v2Translation = await translateText(conj.v2)
+      v3Translation = await translateText(conj.v3)
+      vIngTranslation = await translateText(conj.vIng)
+    }
+
     const [newLog] = await db
       .insert(vocabularyLogs)
       .values({
@@ -94,6 +150,14 @@ export async function POST(request: Request): Promise<NextResponse> {
         masteryLevel: masteryLevel !== undefined ? Number(masteryLevel) : 3,
         memorized: false,
         autoTranslation,
+        v1,
+        v2,
+        v3,
+        vIng,
+        v1Translation,
+        v2Translation,
+        v3Translation,
+        vIngTranslation,
       })
       .returning()
 

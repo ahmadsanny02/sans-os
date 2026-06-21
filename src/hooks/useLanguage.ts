@@ -11,6 +11,14 @@ export interface VocabularyLog {
   masteryLevel: number
   memorized: boolean
   autoTranslation: string | null
+  v1: string | null
+  v2: string | null
+  v3: string | null
+  vIng: string | null
+  v1Translation: string | null
+  v2Translation: string | null
+  v3Translation: string | null
+  vIngTranslation: string | null
   createdAt: string
 }
 
