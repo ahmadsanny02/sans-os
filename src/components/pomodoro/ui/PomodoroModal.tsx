@@ -49,7 +49,7 @@ const PHASE_META: Record<
   },
   break: {
     label: "Break",
-    emoji: "☕",
+    emoji: "",
     color: "text-emerald-400",
     ring: "stroke-emerald-500",
   },
