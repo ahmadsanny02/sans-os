@@ -10,6 +10,7 @@ export interface VocabularyLog {
   exampleSentence: string | null
   masteryLevel: number
   memorized: boolean
+  autoTranslation: string | null
   createdAt: string
 }
 
@@ -21,6 +22,7 @@ export interface WritingLog {
   sentenceType: "Positive" | "Negative" | "Interrogative" | null
   englishSentence: string
   indonesianTranslation: string
+  autoTranslation: string | null
   createdAt: string
 }
 
@@ -33,6 +35,8 @@ export interface DialogueLog {
   indonesianQuestion: string
   englishAnswer: string
   indonesianAnswer: string
+  autoTranslationQuestion: string | null
+  autoTranslationAnswer: string | null
   createdAt: string
 }
 

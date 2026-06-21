@@ -361,14 +361,29 @@ export function LanguageBoardView({
 
                     <div
                       onClick={() => toggleRevealTranslation(vocab.id)}
-                      className={`relative min-h-[42px] flex items-center justify-center rounded-lg border text-xs font-bold transition-all p-2 select-none cursor-pointer ${
+                      className={`relative min-h-[48px] flex rounded-lg border transition-all p-3 select-none cursor-pointer ${
                         isRevealed
-                          ? "bg-secondary/40 border-border/60 text-foreground"
-                          : "bg-secondary/10 border-dashed border-border/40 text-muted-foreground backdrop-blur-[2px]"
+                          ? "bg-secondary/40 border-border/60 text-foreground items-start justify-start"
+                          : "bg-secondary/10 border-dashed border-border/40 text-muted-foreground backdrop-blur-[2px] items-center justify-center"
                       }`}
                     >
                       {isRevealed ? (
-                        <span className="text-center font-bold tracking-normal">{vocab.translation}</span>
+                        <div className="flex flex-col gap-2 w-full text-left">
+                          <div>
+                            <span className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground block select-none">
+                              Manual
+                            </span>
+                            <span className="text-xs font-bold text-foreground leading-normal">{vocab.translation}</span>
+                          </div>
+                          {vocab.autoTranslation && (
+                            <div className="border-t border-border/40 pt-1.5 mt-1">
+                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground block select-none">
+                                Google Translate
+                              </span>
+                              <span className="text-xs font-medium text-muted-foreground leading-normal italic">{vocab.autoTranslation}</span>
+                            </div>
+                          )}
+                        </div>
                       ) : (
                         <div className="flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider select-none text-muted-foreground/60 group-hover:text-muted-foreground/95 transition-colors">
                           <Eye className="h-3.5 w-3.5" /> Click to reveal

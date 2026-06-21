@@ -527,13 +527,25 @@ export function WritingPracticeView({
                     </p>
 
                     {/* Indonesian translation */}
-                    <div className="pt-1.5 border-t border-dashed border-border/30 mt-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
-                        Translation
-                      </span>
-                      <p className="text-xs text-muted-foreground leading-relaxed italic">
-                        {log.indonesianTranslation}
-                      </p>
+                    <div className="pt-1.5 border-t border-dashed border-border/30 mt-2 space-y-2">
+                      <div>
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                          Manual Translation
+                        </span>
+                        <p className="text-xs text-muted-foreground leading-relaxed italic font-semibold">
+                          {log.indonesianTranslation}
+                        </p>
+                      </div>
+                      {log.autoTranslation && (
+                        <div className="border-t border-dotted border-border/40 pt-1">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                            Google Translation
+                          </span>
+                          <p className="text-xs text-muted-foreground/80 leading-relaxed italic">
+                            {log.autoTranslation}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
 

@@ -109,6 +109,7 @@ export const vocabularyLogs = pgTable("vocabulary_logs", {
   exampleSentence: text("example_sentence"),
   masteryLevel: integer("mastery_level").default(1).notNull(), // scale 1-5
   memorized: boolean("memorized").default(false).notNull(),
+  autoTranslation: text("auto_translation"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
@@ -121,6 +122,7 @@ export const writingLogs = pgTable("writing_logs", {
   sentenceType: text("sentence_type"), // 'Positive', 'Negative', 'Interrogative'
   englishSentence: text("english_sentence").notNull(),
   indonesianTranslation: text("indonesian_translation").notNull(),
+  autoTranslation: text("auto_translation"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
@@ -136,6 +138,8 @@ export const dialogueLogs = pgTable("dialogue_logs", {
   indonesianQuestion: text("indonesian_question").notNull(),
   englishAnswer: text("english_answer").notNull(),
   indonesianAnswer: text("indonesian_answer").notNull(),
+  autoTranslationQuestion: text("auto_translation_question"),
+  autoTranslationAnswer: text("auto_translation_answer"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 

@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { vocabularyLogs } from "@/types/schema"
 import { eq, and, asc, sql } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { translateText } from "@/lib/translate"
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -21,7 +22,24 @@ export async function GET(): Promise<NextResponse> {
       .where(eq(vocabularyLogs.userId, user.id))
       .orderBy(asc(vocabularyLogs.word))
 
-    return NextResponse.json(logs)
+    // On-the-fly backfill for older logs
+    const updatedLogs = await Promise.all(
+      logs.map(async (log) => {
+        if (!log.autoTranslation) {
+          const auto = await translateText(log.word)
+          if (auto) {
+            await db
+              .update(vocabularyLogs)
+              .set({ autoTranslation: auto })
+              .where(and(eq(vocabularyLogs.id, log.id), eq(vocabularyLogs.userId, user.id)))
+            return { ...log, autoTranslation: auto }
+          }
+        }
+        return log
+      })
+    )
+
+    return NextResponse.json(updatedLogs)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
@@ -62,6 +80,8 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "This vocabulary word is already registered" }, { status: 400 })
     }
 
+    const autoTranslation = await translateText(word)
+
     const [newLog] = await db
       .insert(vocabularyLogs)
       .values({
@@ -73,6 +93,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         exampleSentence: exampleSentence ? exampleSentence.trim() : null,
         masteryLevel: masteryLevel !== undefined ? Number(masteryLevel) : 3,
         memorized: false,
+        autoTranslation,
       })
       .returning()
 

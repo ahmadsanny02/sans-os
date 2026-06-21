@@ -401,9 +401,26 @@ export function DialoguePracticeView({
                           {log.englishQuestion}
                         </p>
                         {isRevealed && (
-                          <p className="text-xs text-muted-foreground italic border-t border-violet-500/10 dark:border-violet-500/20 pt-1.5 mt-1.5 animate-in fade-in duration-200">
-                            {log.indonesianQuestion}
-                          </p>
+                          <div className="mt-2.5 pt-2 border-t border-violet-500/10 dark:border-violet-500/20 space-y-2 animate-in fade-in duration-200">
+                            <div>
+                              <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                Manual Translation
+                              </span>
+                              <p className="text-xs text-muted-foreground italic font-semibold">
+                                {log.indonesianQuestion}
+                              </p>
+                            </div>
+                            {log.autoTranslationQuestion && (
+                              <div className="border-t border-dotted border-violet-500/10 dark:border-violet-500/20 pt-1">
+                                <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                  Google Translation
+                                </span>
+                                <p className="text-xs text-muted-foreground/80 italic">
+                                  {log.autoTranslationQuestion}
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -420,9 +437,26 @@ export function DialoguePracticeView({
                           {log.englishAnswer}
                         </p>
                         {isRevealed && (
-                          <p className="text-xs text-muted-foreground italic border-t border-emerald-500/10 dark:border-emerald-500/20 pt-1.5 mt-1.5 animate-in fade-in duration-200">
-                            {log.indonesianAnswer}
-                          </p>
+                          <div className="mt-2.5 pt-2 border-t border-emerald-500/10 dark:border-emerald-500/20 space-y-2 animate-in fade-in duration-200">
+                            <div>
+                              <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                Manual Translation
+                              </span>
+                              <p className="text-xs text-muted-foreground italic font-semibold">
+                                {log.indonesianAnswer}
+                              </p>
+                            </div>
+                            {log.autoTranslationAnswer && (
+                              <div className="border-t border-dotted border-emerald-500/10 dark:border-emerald-500/20 pt-1">
+                                <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                  Google Translation
+                                </span>
+                                <p className="text-xs text-muted-foreground/80 italic">
+                                  {log.autoTranslationAnswer}
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>

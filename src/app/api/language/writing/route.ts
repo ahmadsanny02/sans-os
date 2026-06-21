@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { writingLogs } from "@/types/schema"
 import { eq, and, desc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { translateText } from "@/lib/translate"
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -21,7 +22,24 @@ export async function GET(): Promise<NextResponse> {
       .where(eq(writingLogs.userId, user.id))
       .orderBy(desc(writingLogs.createdAt))
 
-    return NextResponse.json(logs)
+    // On-the-fly backfill for older writing logs
+    const updatedLogs = await Promise.all(
+      logs.map(async (log) => {
+        if (!log.autoTranslation) {
+          const auto = await translateText(log.englishSentence)
+          if (auto) {
+            await db
+              .update(writingLogs)
+              .set({ autoTranslation: auto })
+              .where(and(eq(writingLogs.id, log.id), eq(writingLogs.userId, user.id)))
+            return { ...log, autoTranslation: auto }
+          }
+        }
+        return log
+      })
+    )
+
+    return NextResponse.json(updatedLogs)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
@@ -46,6 +64,8 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    const autoTranslation = await translateText(englishSentence)
+
     const [newLog] = await db
       .insert(writingLogs)
       .values({
@@ -55,6 +75,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         sentenceType: sentenceType || null,
         englishSentence,
         indonesianTranslation,
+        autoTranslation,
       })
       .returning()
 
