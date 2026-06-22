@@ -246,7 +246,7 @@ export function LanguageBoardView({
             </button>
 
             {isFilterOpen && (
-              <div className="absolute left-0 mt-2 z-50 w-72 rounded-2xl border border-border bg-card/95 p-4 shadow-xl backdrop-blur-xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute right-0 sm:right-auto sm:left-0 mt-2 z-50 w-72 rounded-2xl border border-border bg-card/95 p-4 shadow-xl backdrop-blur-xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-150">
                 {/* 1. Language Direction Group */}
                 <div className="space-y-1.5">
                   <span className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground block select-none">
@@ -363,7 +363,7 @@ export function LanguageBoardView({
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider select-none">
                 Language Direction / Arah Bahasa
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   type="button"
                   onClick={() => setLangDirection("en-id")}
@@ -620,35 +620,35 @@ export function LanguageBoardView({
                                                 Verb Conjugations
                                               </span>
                                               <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[10px] rounded-lg bg-zinc-950/40 p-2 border border-white/5 font-mono">
-                                                <div className="truncate">
+                                                <div className="break-words whitespace-normal">
                                                   <span className="text-muted-foreground mr-1">V1:</span>
                                                   <span className="font-bold text-white">{vocab.v1}</span>
                                                 </div>
-                                                <div className="text-muted-foreground truncate">
+                                                <div className="text-muted-foreground break-words whitespace-normal">
                                                   {vocab.v1Translation}
                                                 </div>
                                                 
-                                                <div className="truncate">
+                                                <div className="break-words whitespace-normal">
                                                   <span className="text-muted-foreground mr-1">V2:</span>
                                                   <span className="font-bold text-white">{vocab.v2}</span>
                                                 </div>
-                                                <div className="text-muted-foreground truncate">
+                                                <div className="text-muted-foreground break-words whitespace-normal">
                                                   {vocab.v2Translation}
                                                 </div>
 
-                                                <div className="truncate">
+                                                <div className="break-words whitespace-normal">
                                                   <span className="text-muted-foreground mr-1">V3:</span>
                                                   <span className="font-bold text-white">{vocab.v3}</span>
                                                 </div>
-                                                <div className="text-muted-foreground truncate">
+                                                <div className="text-muted-foreground break-words whitespace-normal">
                                                   {vocab.v3Translation}
                                                 </div>
 
-                                                <div className="truncate">
+                                                <div className="break-words whitespace-normal">
                                                   <span className="text-muted-foreground mr-1">V-ing:</span>
                                                   <span className="font-bold text-white">{vocab.vIng}</span>
                                                 </div>
-                                                <div className="text-muted-foreground truncate">
+                                                <div className="text-muted-foreground break-words whitespace-normal">
                                                   {vocab.vIngTranslation}
                                                 </div>
                                               </div>

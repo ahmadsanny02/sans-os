@@ -69,6 +69,17 @@ export function VisionBoardCanvasView({
   isPendingCreate,
   isPendingDelete,
 }: VisionBoardCanvasViewProps) {
+  const [isMobile, setIsMobile] = React.useState(false)
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
   return (
     <div className="space-y-6">
       {/* Tools control header bar */}
@@ -240,7 +251,11 @@ export function VisionBoardCanvasView({
       {/* 4. Canvas workspace wrapper */}
       <div
         ref={canvasRef}
-        className="relative w-full h-[650px] bg-secondary/10 dark:bg-slate-950/20 border border-border/80 rounded-2xl overflow-hidden shadow-inner backdrop-blur-[2px] select-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"
+        className={`relative w-full bg-secondary/10 dark:bg-slate-950/20 border border-border/80 rounded-2xl shadow-inner backdrop-blur-[2px] select-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] ${
+          isMobile
+            ? "h-auto min-h-[400px] p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto"
+            : "h-[650px] overflow-hidden"
+        }`}
       >
         {isLoading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 select-none pointer-events-none">
@@ -274,26 +289,36 @@ export function VisionBoardCanvasView({
             return (
               <motion.div
                 key={item.id}
-                drag
+                drag={!isMobile}
                 dragMomentum={false}
                 dragElastic={0}
                 dragConstraints={canvasRef}
                 onDragEnd={(event, info) => handleDragEnd(item, info)}
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                  x: item.xOffset,
-                  y: item.yOffset,
-                  width: item.width,
-                  height: item.height,
-                  cursor: "grab",
-                  zIndex: 10,
-                }}
-                whileDrag={{ scale: 1.03, cursor: "grabbing", zIndex: 50 }}
+                style={
+                  isMobile
+                    ? {
+                        position: "relative",
+                        width: "100%",
+                        height: isText ? "auto" : `${item.height}px`,
+                        minHeight: isText ? "120px" : "auto",
+                        zIndex: 10,
+                      }
+                    : {
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        x: item.xOffset,
+                        y: item.yOffset,
+                        width: item.width,
+                        height: item.height,
+                        cursor: "grab",
+                        zIndex: 10,
+                      }
+                }
+                whileDrag={isMobile ? undefined : { scale: 1.03, cursor: "grabbing", zIndex: 50 }}
                 className={`group rounded-xl overflow-hidden shadow-md flex flex-col justify-between border ${
                   isText
-                    ? "bg-gradient-to-br from-yellow-500/10 to-amber-500/5 dark:from-yellow-500/15 dark:to-transparent border-yellow-500/30 text-yellow-800 dark:text-yellow-200 p-2"
+                    ? "bg-gradient-to-br from-yellow-500/10 to-amber-500/5 dark:from-yellow-500/15 dark:to-transparent border-yellow-500/30 text-yellow-800 dark:text-yellow-200 p-3"
                     : "bg-card border-border/60"
                 }`}
               >
@@ -304,7 +329,7 @@ export function VisionBoardCanvasView({
                       {item.content}
                     </div>
 
-                    <div className="flex justify-between items-center border-t border-yellow-500/20 pt-2 text-[8px] font-black uppercase tracking-widest text-yellow-700/60 dark:text-yellow-500/60 shrink-0">
+                    <div className="flex justify-between items-center border-t border-yellow-500/20 pt-2 text-[8px] font-black uppercase tracking-widest text-yellow-700/60 dark:text-yellow-500/60 shrink-0 mt-3">
                       <span>Goal Note</span>
                       <button
                         onClick={(e) => handleDeleteItem(item.id, e)}
@@ -319,7 +344,6 @@ export function VisionBoardCanvasView({
                 ) : (
                   // Image Item Layout
                   <div className="relative w-full h-full">
-                    {/* Visual image */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={item.content}

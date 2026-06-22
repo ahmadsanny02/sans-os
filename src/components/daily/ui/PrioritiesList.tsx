@@ -133,7 +133,7 @@ export function PrioritiesList({
 
                   <div className="flex flex-col min-w-0 pr-2">
                     <span
-                      className={`text-sm font-semibold truncate leading-snug ${
+                      className={`text-sm font-semibold break-words whitespace-normal leading-snug ${
                         priority.completed ? "line-through text-muted-foreground" : "text-foreground"
                       }`}
                     >

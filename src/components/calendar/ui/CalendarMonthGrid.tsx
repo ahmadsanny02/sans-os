@@ -72,7 +72,7 @@ export function CalendarMonthGrid({
           {weekdays.map((day) => (
             <div key={day} className="truncate px-1">
               <span className="hidden sm:inline">{day}</span>
-              <span className="sm:hidden">{day.slice(0, 3)}</span>
+              <span className="sm:hidden">{day.slice(0, 2)}</span>
             </div>
           ))}
         </div>
@@ -114,7 +114,7 @@ export function CalendarMonthGrid({
               <div
                 key={idx}
                 onClick={() => onSelectDate(dateStr)}
-                className={`min-h-[110px] md:min-h-[130px] bg-card p-2.5 flex flex-col justify-between hover:bg-muted/40 transition-colors cursor-pointer select-none relative group ${
+                className={`min-h-[75px] sm:min-h-[110px] md:min-h-[130px] bg-card p-1.5 sm:p-2.5 flex flex-col justify-between hover:bg-muted/40 transition-colors cursor-pointer select-none relative group ${
                   !isCurrMonth ? "opacity-35 hover:opacity-60 bg-secondary/10" : ""
                 } ${isSel ? "ring-2 ring-sidebar-primary ring-inset z-10" : ""}`}
               >
@@ -137,7 +137,7 @@ export function CalendarMonthGrid({
                 </div>
 
                 {/* Items preview list */}
-                <div className="flex-1 mt-2 space-y-1 overflow-hidden">
+                <div className="flex-1 mt-2 space-y-1 overflow-hidden flex flex-col justify-end">
                   {isLoading ? (
                     <div className="space-y-1.5 pt-1">
                       <div className="h-2 w-11/12 bg-muted/60 rounded animate-pulse" />
@@ -145,40 +145,79 @@ export function CalendarMonthGrid({
                     </div>
                   ) : (
                     <>
-                      {visibleItems.map((item) => {
-                        if (item.type === "timetable") {
-                          const theme = TIMETABLE_COLORS[item.color || "blue"] || TIMETABLE_COLORS.blue
-                          return (
-                            <div
-                              key={item.id}
-                              className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border truncate flex items-center gap-1 ${theme.bg} ${theme.text} ${theme.border}`}
-                            >
-                              <span className="shrink-0 text-[8px] md:text-[9px] opacity-75">
-                                {item.time}
-                              </span>
-                              <span className="truncate">{item.title}</span>
-                            </div>
-                          )
-                        } else {
-                          return (
-                            <div
-                              key={item.id}
-                              className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border border-indigo-500/10 truncate flex items-center gap-1 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 ${
-                                item.completed ? "line-through opacity-45 border-dashed" : ""
-                              }`}
-                            >
-                              <span className="shrink-0 text-[8px]">🎯</span>
-                              <span className="truncate">{item.title}</span>
-                            </div>
-                          )
-                        }
-                      })}
+                      {/* Desktop Text List (>= sm) */}
+                      <div className="hidden sm:block space-y-1">
+                        {visibleItems.map((item) => {
+                          if (item.type === "timetable") {
+                            const theme = TIMETABLE_COLORS[item.color || "blue"] || TIMETABLE_COLORS.blue
+                            return (
+                              <div
+                                key={item.id}
+                                className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border truncate flex items-center gap-1 ${theme.bg} ${theme.text} ${theme.border}`}
+                              >
+                                <span className="shrink-0 text-[8px] md:text-[9px] opacity-75">
+                                  {item.time}
+                                </span>
+                                <span className="truncate">{item.title}</span>
+                              </div>
+                            )
+                          } else {
+                            return (
+                              <div
+                                key={item.id}
+                                className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border border-indigo-500/10 truncate flex items-center gap-1 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 ${
+                                  item.completed ? "line-through opacity-45 border-dashed" : ""
+                                }`}
+                              >
+                                <span className="shrink-0 text-[8px]">🎯</span>
+                                <span className="truncate">{item.title}</span>
+                              </div>
+                            )
+                          }
+                        })}
 
-                      {remainingCount > 0 && (
-                        <div className="text-[8px] md:text-[9px] font-bold text-muted-foreground pl-1.5">
-                          + {remainingCount} more
-                        </div>
-                      )}
+                        {remainingCount > 0 && (
+                          <div className="text-[8px] md:text-[9px] font-bold text-muted-foreground pl-1.5">
+                            + {remainingCount} more
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Mobile Colored Dot Indicators (< sm) */}
+                      <div className="flex sm:hidden flex-wrap gap-1.5 justify-center items-center mt-auto">
+                        {allItems.map((item) => {
+                          if (item.type === "timetable") {
+                            let dotColorClass = "bg-blue-500"
+                            if (item.color === "green") dotColorClass = "bg-emerald-500"
+                            else if (item.color === "purple") dotColorClass = "bg-purple-500"
+                            else if (item.color === "amber") dotColorClass = "bg-amber-500"
+                            else if (item.color === "red") dotColorClass = "bg-rose-500"
+                            else if (item.color === "pink") dotColorClass = "bg-pink-500"
+                            else if (item.color === "teal") dotColorClass = "bg-teal-500"
+                            else if (item.color === "orange") dotColorClass = "bg-orange-500"
+                            else if (item.color === "indigo") dotColorClass = "bg-indigo-500"
+                            else if (item.color === "slate") dotColorClass = "bg-slate-500"
+
+                            return (
+                              <span
+                                key={item.id}
+                                className={`h-1.5 w-1.5 rounded-full shrink-0 ${dotColorClass}`}
+                                title={`${item.time} - ${item.title}`}
+                              />
+                            )
+                          } else {
+                            return (
+                              <span
+                                key={item.id}
+                                className={`h-1.5 w-1.5 rounded-full shrink-0 bg-indigo-500 ${
+                                  item.completed ? "opacity-40" : ""
+                                }`}
+                                title={`Priority: ${item.title}`}
+                              />
+                            )
+                          }
+                        })}
+                      </div>
                     </>
                   )}
                 </div>

@@ -152,7 +152,7 @@ export function DailyTodos({
                         </button>
 
                         <span
-                          className={`text-sm font-medium truncate pr-2 ${
+                          className={`text-sm font-medium break-words whitespace-normal pr-2 ${
                             habit.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                           }`}
                         >
@@ -196,7 +196,7 @@ export function DailyTodos({
                         </button>
 
                         <span
-                          className={`text-sm font-medium truncate pr-2 ${
+                          className={`text-sm font-medium break-words whitespace-normal pr-2 ${
                             todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                           }`}
                         >

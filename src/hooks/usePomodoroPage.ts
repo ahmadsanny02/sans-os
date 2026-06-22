@@ -7,7 +7,7 @@ import {
   IntegrationMode,
 } from "@/store/pomodoroStore"
 import { useTimetableQuery, TimetableBlock } from "@/hooks/useDaily"
-import { showSuccessToast, showErrorToast } from "@/lib/sweetalert"
+import { showErrorToast } from "@/lib/sweetalert"
 import { format } from "date-fns"
 
 // Helper: convert "HH:MM" string to total minutes from midnight

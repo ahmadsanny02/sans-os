@@ -493,7 +493,7 @@ export function ProjectBoardView({
 
                             <div className="flex flex-col min-w-0 pr-3">
                               <span
-                                className={`text-xs font-semibold truncate leading-tight ${
+                                className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
                                   task.completed ? "line-through text-muted-foreground" : "text-foreground"
                                 }`}
                               >

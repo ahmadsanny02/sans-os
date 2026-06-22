@@ -72,7 +72,7 @@ export function PrioritiesWidget({
                   {priority.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
                 </button>
                 <span
-                  className={`text-xs font-semibold truncate leading-tight ${
+                  className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
                     priority.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                   }`}
                 >

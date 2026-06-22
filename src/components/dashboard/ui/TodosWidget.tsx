@@ -95,7 +95,7 @@ export function TodosWidget({
                       {habit.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
                     </button>
                     <span
-                      className={`text-xs font-semibold truncate leading-tight ${
+                      className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
                         habit.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                       }`}
                     >
@@ -135,7 +135,7 @@ export function TodosWidget({
                       {todo.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
                     </button>
                     <span
-                      className={`text-xs font-semibold truncate leading-tight ${
+                      className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
                         todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                       }`}
                     >

@@ -93,7 +93,7 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute left-0 mt-2 z-50 w-76 rounded-2xl border border-border bg-card/95 p-4 shadow-xl backdrop-blur-md dark:bg-card/90"
+            className="absolute right-0 sm:right-auto sm:left-0 mt-2 z-50 w-76 rounded-2xl border border-border bg-card/95 p-4 shadow-xl backdrop-blur-md dark:bg-card/90"
           >
             <div className="flex items-center justify-between pb-3.5 border-b border-border/40">
               <span className="text-sm font-bold text-foreground">

@@ -26,7 +26,7 @@ export default function LanguageComponent() {
       />
 
       {/* Sub-Navigation Tabs */}
-      <div className="flex gap-2 p-1 bg-secondary/35 border border-border/40 rounded-2xl w-fit select-none backdrop-blur-sm shadow-sm">
+      <div className="flex gap-2 p-1 bg-secondary/35 border border-border/40 rounded-2xl w-fit max-w-full overflow-x-auto select-none backdrop-blur-sm shadow-sm">
         <button
           onClick={() => setActiveTab("vocab")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
