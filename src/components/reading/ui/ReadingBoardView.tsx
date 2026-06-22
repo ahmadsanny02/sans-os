@@ -17,9 +17,12 @@ import {
   CheckCircle2,
   Edit2,
   MessageSquare,
-  X,
 } from "lucide-react"
 import { GridCardSkeleton } from "@/components/ui/Skeletons"
+import { StatCard } from "@/components/ui/StatCard"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ErrorState } from "@/components/ui/ErrorState"
+import { Modal } from "@/components/ui/Modal"
 
 const STATUS_THEMES: Record<string, { bg: string; text: string; border: string }> = {
   "To Read": {
@@ -157,77 +160,51 @@ export function ReadingBoardView({
   return (
     <div className="space-y-6">
       {/* 1. Statistics Cards */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Metric 1 */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Books</span>
-            <h4 className="text-3xl font-black text-foreground">
-              {isLoading ? (
-                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
-              ) : (
-                totalBooks
-              )}
-            </h4>
-          </div>
-          <div className="rounded-xl bg-violet-500/10 p-3 text-violet-500">
-            <BookOpen className="h-6 w-6" />
-          </div>
-        </div>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in duration-200">
+        <StatCard
+          title="Total Books"
+          value={totalBooks}
+          icon={<BookOpen className="h-6 w-6" />}
+          iconBgClass="bg-violet-500/10"
+          iconTextClass="text-violet-500"
+          isLoading={isLoading}
+          description="Books registered"
+        />
 
-        {/* Metric 2 */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Currently Reading</span>
-            <h4 className="text-3xl font-black text-foreground">
-              {isLoading ? (
-                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
-              ) : (
-                readingCount
-              )}
-            </h4>
-          </div>
-          <div className="rounded-xl bg-blue-500/10 p-3 text-blue-500">
-            <Clock className="h-6 w-6" />
-          </div>
-        </div>
+        <StatCard
+          title="Currently Reading"
+          value={readingCount}
+          icon={<Clock className="h-6 w-6" />}
+          iconBgClass="bg-blue-500/10"
+          iconTextClass="text-blue-500"
+          isLoading={isLoading}
+          description="Books in progress"
+        />
 
-        {/* Metric 3 */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Completed Books</span>
-            <h4 className="text-3xl font-black text-foreground">
-              {isLoading ? (
-                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
-              ) : (
-                completedCount
-              )}
-            </h4>
-          </div>
-          <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-500">
-            <BookMarked className="h-6 w-6" />
-          </div>
-        </div>
+        <StatCard
+          title="Completed Books"
+          value={completedCount}
+          icon={<BookMarked className="h-6 w-6" />}
+          iconBgClass="bg-emerald-500/10"
+          iconTextClass="text-emerald-500"
+          isLoading={isLoading}
+          description="Finished reading"
+        />
 
-        {/* Metric 4 */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Average Rating</span>
-            <h4 className="text-3xl font-black text-foreground flex items-baseline gap-1">
-              {isLoading ? (
-                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
-              ) : (
-                <>
-                  {averageRating}
-                  <span className="text-sm font-bold text-muted-foreground">/ 5.0</span>
-                </>
-              )}
-            </h4>
-          </div>
-          <div className="rounded-xl bg-amber-500/10 p-3 text-amber-500 flex items-center justify-center">
-            <Star className="h-6 w-6 fill-amber-500 text-amber-500" />
-          </div>
-        </div>
+        <StatCard
+          title="Average Rating"
+          value={
+            <>
+              {averageRating}
+              <span className="text-sm font-bold text-muted-foreground">/ 5.0</span>
+            </>
+          }
+          icon={<Star className="h-6 w-6 fill-amber-500 text-amber-500" />}
+          iconBgClass="bg-amber-500/10"
+          iconTextClass="text-amber-500"
+          isLoading={isLoading}
+          description="Rating overall"
+        />
       </div>
 
       {/* 2. Controls Section (Search, Add button) */}
@@ -449,14 +426,12 @@ export function ReadingBoardView({
           ))}
         </div>
       ) : isError ? (
-        <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-          <AlertCircle className="h-6 w-6" />
-          <span>Error loading reading journal logs. Please check database.</span>
-        </div>
+        <ErrorState message="Error loading reading journal logs. Please check database." />
       ) : filteredBooks.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground bg-card/10 select-none">
-          No books found matching criteria. Click &quot;Add Book Log&quot; to register a book.
-        </div>
+        <EmptyState
+          title="No books found matching criteria."
+          description="Click &quot;Add Book Log&quot; to register a book."
+        />
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredBooks.map((book) => {
@@ -588,168 +563,158 @@ export function ReadingBoardView({
       )}
 
       {/* 6. Edit Book Modal Dialog Overlay */}
-      {editingBook && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-xl backdrop-blur-md space-y-4 animate-in zoom-in-95 duration-200">
-            {/* Close button */}
-            <button
-              onClick={() => setEditingBook(null)}
-              className="absolute right-4.5 top-4.5 p-1 rounded-lg hover:bg-secondary text-muted-foreground transition-all"
-            >
-              <X className="h-5 w-5" />
-            </button>
+      <Modal
+        isOpen={!!editingBook}
+        onClose={() => setEditingBook(null)}
+        title="Edit Book Details"
+        icon={<BookOpen className="h-5 w-5 text-violet-500" />}
+      >
+        {editingBook && (
+          <form onSubmit={handleUpdateBook} className="space-y-4 pt-1">
+            <div className="space-y-3">
+              {/* Title */}
+              <div className="space-y-1.5">
+                <label htmlFor="editBookTitle" className="text-xs font-bold text-muted-foreground">Book Title *</label>
+                <input
+                  id="editBookTitle"
+                  type="text"
+                  required
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                />
+              </div>
 
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border/40 pb-2">
-              <BookOpen className="h-5 w-5 text-violet-500" />
-              Edit Book Details
-            </h3>
+              {/* Author */}
+              <div className="space-y-1.5">
+                <label htmlFor="editBookAuthor" className="text-xs font-bold text-muted-foreground">Author *</label>
+                <input
+                  id="editBookAuthor"
+                  type="text"
+                  required
+                  value={editAuthor}
+                  onChange={(e) => setEditAuthor(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                />
+              </div>
 
-            <form onSubmit={handleUpdateBook} className="space-y-4 pt-1">
-              <div className="space-y-3">
-                {/* Title */}
+              {/* Status */}
+              <div className="space-y-1.5">
+                <label htmlFor="editBookStatus" className="text-xs font-bold text-muted-foreground">Reading Status *</label>
+                <select
+                  id="editBookStatus"
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                >
+                  <option value="To Read">To Read</option>
+                  <option value="Reading">Reading</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Conditional Star Rating & Review for Completed status */}
+            {editStatus === "Completed" && (
+              <div className="border-t border-border/40 pt-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-xs font-bold text-muted-foreground">Rating *</span>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => {
+                      const active = star <= editRating
+                      return (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setEditRating(star)}
+                          className="p-1 rounded transition-transform active:scale-90"
+                        >
+                          <Star
+                            className={`h-6 w-6 ${active
+                              ? "text-amber-500 fill-amber-500 hover:scale-110"
+                              : "text-muted-foreground/40 hover:text-amber-500/50"
+                            } transition-all`}
+                          />
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Date Finished */}
                 <div className="space-y-1.5">
-                  <label htmlFor="editBookTitle" className="text-xs font-bold text-muted-foreground">Book Title *</label>
+                  <label htmlFor="editBookFinishedAt" className="text-xs font-bold text-muted-foreground">Date Finished *</label>
                   <input
-                    id="editBookTitle"
-                    type="text"
+                    id="editBookFinishedAt"
+                    type="date"
                     required
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
+                    value={editFinishedAt}
+                    onChange={(e) => setEditFinishedAt(e.target.value)}
                     className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
                   />
                 </div>
 
-                {/* Author */}
                 <div className="space-y-1.5">
-                  <label htmlFor="editBookAuthor" className="text-xs font-bold text-muted-foreground">Author *</label>
+                  <label htmlFor="editBookReview" className="text-xs font-bold text-muted-foreground">Book Review / Key Takeaways</label>
+                  <textarea
+                    id="editBookReview"
+                    rows={3}
+                    value={editReview}
+                    onChange={(e) => setEditReview(e.target.value)}
+                    placeholder="Share what you learned..."
+                    className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-sm outline-none focus:border-sidebar-primary"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Conditional Progress Input for Reading status */}
+            {editStatus === "Reading" && (
+              <div className="border-t border-border/40 pt-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
+                <div className="space-y-1.5">
+                  <label htmlFor="editBookProgress" className="text-xs font-bold text-muted-foreground">Current Progress</label>
                   <input
-                    id="editBookAuthor"
+                    id="editBookProgress"
                     type="text"
-                    required
-                    value={editAuthor}
-                    onChange={(e) => setEditAuthor(e.target.value)}
+                    value={editProgress}
+                    onChange={(e) => setEditProgress(e.target.value)}
+                    placeholder="e.g. Page 120, Chapter 5"
                     className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
                   />
                 </div>
-
-                {/* Status */}
-                <div className="space-y-1.5">
-                  <label htmlFor="editBookStatus" className="text-xs font-bold text-muted-foreground">Reading Status *</label>
-                  <select
-                    id="editBookStatus"
-                    value={editStatus}
-                    onChange={(e) => setEditStatus(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
-                  >
-                    <option value="To Read">To Read</option>
-                    <option value="Reading">Reading</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
               </div>
+            )}
 
-              {/* Conditional Star Rating & Review for Completed status */}
-              {editStatus === "Completed" && (
-                <div className="border-t border-border/40 pt-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-xs font-bold text-muted-foreground">Rating *</span>
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map((star) => {
-                        const active = star <= editRating
-                        return (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setEditRating(star)}
-                            className="p-1 rounded transition-transform active:scale-90"
-                          >
-                            <Star
-                              className={`h-6 w-6 ${active
-                                ? "text-amber-500 fill-amber-500 hover:scale-110"
-                                : "text-muted-foreground/40 hover:text-amber-500/50"
-                              } transition-all`}
-                            />
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
+            {editError && (
+              <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
+                <AlertCircle className="h-3.5 w-3.5" />
+                {editError}
+              </p>
+            )}
 
-                  {/* Date Finished */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="editBookFinishedAt" className="text-xs font-bold text-muted-foreground">Date Finished *</label>
-                    <input
-                      id="editBookFinishedAt"
-                      type="date"
-                      required
-                      value={editFinishedAt}
-                      onChange={(e) => setEditFinishedAt(e.target.value)}
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label htmlFor="editBookReview" className="text-xs font-bold text-muted-foreground">Book Review / Key Takeaways</label>
-                    <textarea
-                      id="editBookReview"
-                      rows={3}
-                      value={editReview}
-                      onChange={(e) => setEditReview(e.target.value)}
-                      placeholder="Share what you learned..."
-                      className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-sm outline-none focus:border-sidebar-primary"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Conditional Progress Input for Reading status */}
-              {editStatus === "Reading" && (
-                <div className="border-t border-border/40 pt-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
-                  <div className="space-y-1.5">
-                    <label htmlFor="editBookProgress" className="text-xs font-bold text-muted-foreground">Current Progress</label>
-                    <input
-                      id="editBookProgress"
-                      type="text"
-                      value={editProgress}
-                      onChange={(e) => setEditProgress(e.target.value)}
-                      placeholder="e.g. Page 120, Chapter 5"
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {editError && (
-                <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
-                  <AlertCircle className="h-3.5 w-3.5" />
-                  {editError}
-                </p>
-              )}
-
-              <div className="flex justify-end gap-2 border-t border-border/40 pt-3">
-                <button
-                  type="button"
-                  onClick={() => setEditingBook(null)}
-                  className="rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold hover:bg-muted"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPendingUpdate}
-                  className="rounded-lg bg-sidebar-primary px-4 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
-                >
-                  {isPendingUpdate ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    "Save Changes"
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+            <div className="flex justify-end gap-2 border-t border-border/40 pt-3">
+              <button
+                type="button"
+                onClick={() => setEditingBook(null)}
+                className="rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isPendingUpdate}
+                className="rounded-lg bg-sidebar-primary px-4 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
+              >
+                {isPendingUpdate ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  "Save Changes"
+                )}
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
     </div>
   )
 }

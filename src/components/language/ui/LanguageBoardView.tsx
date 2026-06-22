@@ -19,6 +19,9 @@ import {
   ChevronDown,
 } from "lucide-react"
 import { GridCardSkeleton } from "@/components/ui/Skeletons"
+import { StatCard } from "@/components/ui/StatCard"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ErrorState } from "@/components/ui/ErrorState"
 
 interface LanguageBoardViewProps {
   isLoading: boolean
@@ -173,62 +176,40 @@ export function LanguageBoardView({
     <>
       {/* 1. Statistics Cards */}
       <div className="grid gap-6 sm:grid-cols-3 animate-in fade-in duration-200">
-        {/* Metric 1 */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Vocabulary</span>
-            <h4 className="text-3xl font-black text-foreground">
-              {isLoading ? (
-                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
-              ) : (
-                totalWords
-              )}
-            </h4>
-            <p className="text-[10px] text-muted-foreground font-semibold">Words registered</p>
-          </div>
-          <div className="rounded-xl bg-violet-500/10 p-3 text-violet-500">
-            <BookOpen className="h-6 w-6" />
-          </div>
-        </div>
+        <StatCard
+          title="Total Vocabulary"
+          value={totalWords}
+          icon={<BookOpen className="h-6 w-6" />}
+          iconBgClass="bg-violet-500/10"
+          iconTextClass="text-violet-500"
+          isLoading={isLoading}
+          description="Words registered"
+        />
 
-        {/* Metric 2 */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Memorized Words</span>
-            <h4 className="text-3xl font-black text-foreground flex items-baseline gap-1">
-              {isLoading ? (
-                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
-              ) : (
-                <>
-                  {memorizedCount}
-                  <span className="text-sm font-bold text-muted-foreground">/ {totalWords}</span>
-                </>
-              )}
-            </h4>
-            <p className="text-[10px] text-muted-foreground font-semibold">{memorizedPercentage}% of total</p>
-          </div>
-          <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-500">
-            <CheckCircle2 className="h-6 w-6" />
-          </div>
-        </div>
+        <StatCard
+          title="Memorized Words"
+          value={
+            <>
+              {memorizedCount}
+              <span className="text-sm font-bold text-muted-foreground">/ {totalWords}</span>
+            </>
+          }
+          icon={<CheckCircle2 className="h-6 w-6" />}
+          iconBgClass="bg-emerald-500/10"
+          iconTextClass="text-emerald-500"
+          isLoading={isLoading}
+          description={`${memorizedPercentage}% of total`}
+        />
 
-        {/* Metric 3 */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Writing Practices</span>
-            <h4 className="text-3xl font-black text-foreground">
-              {isLoading ? (
-                <span className="inline-block w-12 h-8 bg-muted/20 animate-pulse rounded-md mt-0.5" />
-              ) : (
-                writingCount
-              )}
-            </h4>
-            <p className="text-[10px] text-muted-foreground font-semibold">Sentences constructed</p>
-          </div>
-          <div className="rounded-xl bg-amber-500/10 p-3 text-amber-500">
-            <PencilLine className="h-6 w-6" />
-          </div>
-        </div>
+        <StatCard
+          title="Writing Practices"
+          value={writingCount}
+          icon={<PencilLine className="h-6 w-6" />}
+          iconBgClass="bg-amber-500/10"
+          iconTextClass="text-amber-500"
+          isLoading={isLoading}
+          description="Sentences constructed"
+        />
       </div>
 
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/50 pb-5 animate-in fade-in duration-200">
@@ -500,14 +481,12 @@ export function LanguageBoardView({
           ))}
         </div>
       ) : isError ? (
-        <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-          <AlertCircle className="h-6 w-6" />
-          <span>Error loading vocabulary logs. Please check database.</span>
-        </div>
+        <ErrorState message="Error loading vocabulary logs. Please check database." />
       ) : filteredVocab.length === 0 || renderedCount === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground bg-card/10 select-none animate-in fade-in duration-200">
-          No vocabulary matches the search filters. Click &quot;Add Vocabulary&quot; to record new words.
-        </div>
+        <EmptyState
+          title="No vocabulary matches the search filters."
+          description="Click &quot;Add Vocabulary&quot; to record new words."
+        />
       ) : (
         <div className="space-y-12 animate-in fade-in duration-250">
           {vocabByDirection.map(({ direction, label, grouped, count }) => {

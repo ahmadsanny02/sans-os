@@ -16,9 +16,12 @@ import {
   Edit2,
   Compass,
   Heart,
-  X,
 } from "lucide-react"
 import { ImageCardSkeleton } from "@/components/ui/Skeletons"
+import { StatCard } from "@/components/ui/StatCard"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ErrorState } from "@/components/ui/ErrorState"
+import { Modal } from "@/components/ui/Modal"
 
 const BUCKET_PRESETS = [
   { name: "Mount Fuji", url: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&auto=format&fit=crop&q=80" },
@@ -107,68 +110,46 @@ export function BucketListBoardView({
     <div className="space-y-6">
       {/* 1. Statistics / Progress Card */}
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Metric 1: Total */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Dreams</span>
-            <h4 className="text-3xl font-black text-foreground">
-              {isLoading ? (
-                <span className="inline-block w-8 h-8 bg-muted animate-pulse rounded-md mt-0.5" />
-              ) : isError ? (
-                "N/A"
-              ) : (
-                totalCount
-              )}
-            </h4>
-          </div>
-          <div className="rounded-xl bg-violet-500/10 p-3 text-violet-500">
-            <Compass className="h-6 w-6" />
-          </div>
-        </div>
+        <StatCard
+          title="Total Dreams"
+          value={isError ? "N/A" : totalCount}
+          icon={<Compass className="h-6 w-6" />}
+          iconBgClass="bg-violet-500/10"
+          iconTextClass="text-violet-500"
+          isLoading={isLoading}
+          description="Dreams registered"
+        />
 
-        {/* Metric 2: Completed */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex items-center justify-between backdrop-blur-md">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Achieved Goals</span>
-            <h4 className="text-3xl font-black text-foreground flex items-baseline gap-2">
-              {isLoading ? (
-                <span className="inline-block w-8 h-8 bg-muted animate-pulse rounded-md mt-0.5" />
-              ) : isError ? (
-                "N/A"
-              ) : (
-                <>
-                  {completedCount}
-                  <span className="text-xs text-muted-foreground font-semibold">/ {totalCount} achieved</span>
-                </>
-              )}
-            </h4>
-          </div>
-          <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-500">
-            <Trophy className="h-6 w-6" />
-          </div>
-        </div>
+        <StatCard
+          title="Achieved Goals"
+          value={
+            isError ? (
+              "N/A"
+            ) : (
+              <>
+                {completedCount}
+                <span className="text-xs text-muted-foreground font-semibold">/ {totalCount} achieved</span>
+              </>
+            )
+          }
+          icon={<Trophy className="h-6 w-6" />}
+          iconBgClass="bg-emerald-500/10"
+          iconTextClass="text-emerald-500"
+          isLoading={isLoading}
+        />
 
-        {/* Metric 3: Completion Rate */}
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex flex-col justify-center gap-2.5 backdrop-blur-md">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Completion Progress</span>
-            <span className="text-sm font-extrabold text-foreground">
-              {isLoading ? (
-                <span className="inline-block w-12 h-5 bg-muted animate-pulse rounded-md" />
-              ) : isError ? (
-                "N/A"
-              ) : (
-                `${completionRate}%`
-              )}
-            </span>
-          </div>
-          <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+        <StatCard
+          title="Completion Progress"
+          value={isError ? "N/A" : `${completionRate}%`}
+          isLoading={isLoading}
+        >
+          <div className="h-2 w-full bg-secondary rounded-full overflow-hidden mt-2.5">
             <div
               style={{ width: `${isLoading || isError ? 0 : completionRate}%` }}
               className="h-full bg-gradient-to-r from-violet-500 to-emerald-500 transition-all duration-500"
             />
           </div>
-        </div>
+        </StatCard>
       </div>
 
       {/* 2. Controls Section */}
@@ -319,14 +300,12 @@ export function BucketListBoardView({
           ))}
         </div>
       ) : isError ? (
-        <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
-          <AlertCircle className="h-8 w-8 animate-bounce" />
-          <span>Error loading bucket list items. Please check database.</span>
-        </div>
+        <ErrorState message="Error loading bucket list items. Please check database." />
       ) : filteredItems.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground bg-card/10 select-none">
-          No dreams found matching filters. Let&apos;s start adding some goals!
-        </div>
+        <EmptyState
+          title="No dreams found matching filters."
+          description="Let's start adding some goals!"
+        />
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredItems.map((item) => {
@@ -410,93 +389,83 @@ export function BucketListBoardView({
       )}
 
       {/* 6. Edit Dream Modal Dialog */}
-      {editingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-xl backdrop-blur-md space-y-4 animate-in zoom-in-95 duration-200">
-            {/* Close button */}
-            <button
-              onClick={() => setEditingItem(null)}
-              className="absolute right-4.5 top-4.5 p-1 rounded-lg hover:bg-secondary text-muted-foreground transition-all"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border/40 py-2">
-              <Compass className="h-5 w-5 text-violet-500" />
-              Edit Bucket List Goal
-            </h3>
-
-            <form onSubmit={handleUpdateItem} className="space-y-4 pt-1">
-              <div className="space-y-3">
-                {/* Title */}
-                <div className="space-y-1.5">
-                  <label htmlFor="editGoalTitle" className="text-xs font-bold text-muted-foreground">What is your dream? *</label>
-                  <input
-                    id="editGoalTitle"
-                    type="text"
-                    required
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
-                  />
-                </div>
-
-                {/* Image URL */}
-                <div className="space-y-1.5">
-                  <label htmlFor="editGoalImg" className="text-xs font-bold text-muted-foreground">Image URL</label>
-                  <input
-                    id="editGoalImg"
-                    type="text"
-                    value={editImageUrl}
-                    onChange={(e) => setEditImageUrl(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
-                  />
-                </div>
-
-                {/* Completion */}
-                <div className="flex items-center gap-2 pt-2 select-none">
-                  <input
-                    id="editGoalCompleted"
-                    type="checkbox"
-                    checked={editCompleted}
-                    onChange={(e) => setEditCompleted(e.target.checked)}
-                    className="rounded border-border text-sidebar-primary outline-none focus:ring-sidebar-primary h-4 w-4 shrink-0"
-                  />
-                  <label htmlFor="editGoalCompleted" className="text-sm font-bold text-muted-foreground">Mark as Achieved</label>
-                </div>
+      <Modal
+        isOpen={!!editingItem}
+        onClose={() => setEditingItem(null)}
+        title="Edit Bucket List Goal"
+        icon={<Compass className="h-5 w-5 text-violet-500" />}
+      >
+        {editingItem && (
+          <form onSubmit={handleUpdateItem} className="space-y-4 pt-1">
+            <div className="space-y-3">
+              {/* Title */}
+              <div className="space-y-1.5">
+                <label htmlFor="editGoalTitle" className="text-xs font-bold text-muted-foreground">What is your dream? *</label>
+                <input
+                  id="editGoalTitle"
+                  type="text"
+                  required
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                />
               </div>
 
-              {editError && (
-                <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
-                  <AlertCircle className="h-3.5 w-3.5" />
-                  {editError}
-                </p>
-              )}
-
-              <div className="flex justify-end gap-2 border-t border-border/40 pt-3">
-                <button
-                  type="button"
-                  onClick={() => setEditingItem(null)}
-                  className="rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold hover:bg-muted"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPendingUpdate}
-                  className="rounded-lg bg-sidebar-primary px-4 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
-                >
-                  {isPendingUpdate ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    "Save Changes"
-                  )}
-                </button>
+              {/* Image URL */}
+              <div className="space-y-1.5">
+                <label htmlFor="editGoalImg" className="text-xs font-bold text-muted-foreground">Image URL</label>
+                <input
+                  id="editGoalImg"
+                  type="text"
+                  value={editImageUrl}
+                  onChange={(e) => setEditImageUrl(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                />
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+
+              {/* Completion */}
+              <div className="flex items-center gap-2 pt-2 select-none">
+                <input
+                  id="editGoalCompleted"
+                  type="checkbox"
+                  checked={editCompleted}
+                  onChange={(e) => setEditCompleted(e.target.checked)}
+                  className="rounded border-border text-sidebar-primary outline-none focus:ring-sidebar-primary h-4 w-4 shrink-0"
+                />
+                <label htmlFor="editGoalCompleted" className="text-sm font-bold text-muted-foreground">Mark as Achieved</label>
+              </div>
+            </div>
+
+            {editError && (
+              <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
+                <AlertCircle className="h-3.5 w-3.5" />
+                {editError}
+              </p>
+            )}
+
+            <div className="flex justify-end gap-2 border-t border-border/40 pt-3">
+              <button
+                type="button"
+                onClick={() => setEditingItem(null)}
+                className="rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isPendingUpdate}
+                className="rounded-lg bg-sidebar-primary px-4 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
+              >
+                {isPendingUpdate ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  "Save Changes"
+                )}
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
     </div>
   )
 }

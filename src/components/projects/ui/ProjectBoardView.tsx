@@ -18,6 +18,8 @@ import {
   AlertTriangle,
 } from "lucide-react"
 import { ListSkeleton } from "@/components/ui/Skeletons"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ErrorState } from "@/components/ui/ErrorState"
 
 const PRIORITY_THEMES: Record<string, { bg: string; text: string; border: string }> = {
   High: {
@@ -280,13 +282,13 @@ export function ProjectBoardView({
               <div className="h-24 w-full bg-muted/25 dark:bg-card/15 animate-pulse rounded-2xl border border-border/60" />
             </div>
           ) : isError ? (
-            <div className="flex h-44 items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 text-xs text-destructive font-semibold">
-              Error loading projects.
-            </div>
+            <ErrorState className="h-44 text-xs font-semibold" message="Error loading projects." />
           ) : projectsList.length === 0 ? (
-            <div className="rounded-2xl p-2 border border-dashed border-border py-12 text-center text-sm text-muted-foreground bg-card/10">
-              No projects added yet. Create a project to start planning.
-            </div>
+            <EmptyState
+              className="py-12 p-2"
+              title="No projects added yet."
+              description="Create a project to start planning."
+            />
           ) : (
             projectsList.map((project: Project) => {
               const totalTasks = project.tasks.length
@@ -389,20 +391,18 @@ export function ProjectBoardView({
             <ListSkeleton count={4} />
           </div>
         ) : isError ? (
-          <div className="flex flex-col items-center justify-center text-center p-8 border border-border bg-card/25 dark:bg-card/10 rounded-2xl min-h-[400px] shadow-sm select-none text-destructive">
-            <AlertCircle className="h-8 w-8 mb-2" />
-            <span>Failed to load active workspace.</span>
-          </div>
+          <ErrorState className="min-h-[400px] h-auto p-8" message="Failed to load active workspace." />
         ) : !activeProject ? (
-          <div className="flex flex-col items-center justify-center text-center p-8 border border-border bg-card/25 dark:bg-card/10 rounded-2xl min-h-[400px] shadow-sm select-none">
-            <div className="rounded-full bg-secondary p-4 mb-4 text-muted-foreground/60">
-              <Inbox className="h-10 w-10" />
-            </div>
-            <h4 className="text-base font-bold text-foreground">No Project Selected</h4>
-            <p className="text-xs text-muted-foreground mt-1 max-w-xs leading-relaxed">
-              Select an existing workspace from the list or create a new project to start scheduling task deliverables.
-            </p>
-          </div>
+          <EmptyState
+            className="min-h-[400px] py-16 p-8"
+            title="No Project Selected"
+            description="Select an existing workspace from the list or create a new project to start scheduling task deliverables."
+            icon={
+              <div className="rounded-full bg-secondary p-4 text-muted-foreground/60">
+                <Inbox className="h-10 w-10" />
+              </div>
+            }
+          />
         ) : (
           <div className="border border-border bg-card dark:bg-card/50 rounded-2xl p-6 shadow-sm space-y-6">
             {/* Project Header details */}
