@@ -48,8 +48,12 @@ interface TimetableProps {
   setIsTodo: (t: boolean) => void
   category: string
   setCategory: (c: string) => void
-  scheduleType: "fixed" | "custom"
-  setScheduleType: (t: "fixed" | "custom") => void
+  scheduleType: "custom" | "weekly" | "fixed"
+  setScheduleType: (t: "custom" | "weekly" | "fixed") => void
+  timetableDate: string
+  setTimetableDate: (d: string) => void
+  timetableDayOfWeek: number
+  setTimetableDayOfWeek: (w: number) => void
   errorMsg: string | null
   handleAddBlock: (e: React.FormEvent) => Promise<void>
   handleDeleteBlock: (id: string) => Promise<void>
@@ -76,6 +80,10 @@ export function Timetable({
   setCategory,
   scheduleType,
   setScheduleType,
+  timetableDate,
+  setTimetableDate,
+  timetableDayOfWeek,
+  setTimetableDayOfWeek,
   errorMsg,
   handleAddBlock,
   handleDeleteBlock,
@@ -169,7 +177,7 @@ export function Timetable({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             <div className="space-y-1.5">
               <label htmlFor="blockCategory" className="text-xs font-bold text-muted-foreground">
                 Category
@@ -199,13 +207,52 @@ export function Timetable({
               <select
                 id="scheduleType"
                 value={scheduleType}
-                onChange={(e) => setScheduleType(e.target.value as "fixed" | "custom")}
+                onChange={(e) => setScheduleType(e.target.value as "custom" | "weekly" | "fixed")}
                 className="w-full rounded-lg border border-border bg-background px-3.5 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
               >
-                <option value="custom">This Day Only (Custom)</option>
+                <option value="custom">Specific Date (One-off)</option>
+                <option value="weekly">Specific Day of Week (Weekly)</option>
                 <option value="fixed">Every Day (Fixed)</option>
               </select>
             </div>
+
+            {scheduleType === "custom" && (
+              <div className="space-y-1.5 animate-in fade-in duration-200">
+                <label htmlFor="timetableDate" className="text-xs font-bold text-muted-foreground">
+                  Choose Date
+                </label>
+                <input
+                  id="timetableDate"
+                  type="date"
+                  required
+                  value={timetableDate}
+                  onChange={(e) => setTimetableDate(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+                />
+              </div>
+            )}
+
+            {scheduleType === "weekly" && (
+              <div className="space-y-1.5 animate-in fade-in duration-200">
+                <label htmlFor="timetableDayOfWeek" className="text-xs font-bold text-muted-foreground">
+                  Choose Day
+                </label>
+                <select
+                  id="timetableDayOfWeek"
+                  value={timetableDayOfWeek}
+                  onChange={(e) => setTimetableDayOfWeek(Number(e.target.value))}
+                  className="w-full rounded-lg border border-border bg-background px-3.5 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+                >
+                  <option value={0}>Sunday</option>
+                  <option value={1}>Monday</option>
+                  <option value={2}>Tuesday</option>
+                  <option value={3}>Wednesday</option>
+                  <option value={4}>Thursday</option>
+                  <option value={5}>Friday</option>
+                  <option value={6}>Saturday</option>
+                </select>
+              </div>
+            )}
 
             <div className="flex items-end pb-0.5">
               <button

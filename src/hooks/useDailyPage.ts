@@ -197,7 +197,16 @@ export function useDailyPage() {
   const [timetableIsTodo, setTimetableIsTodo] = useState(false)
   const [timetableCategory, setTimetableCategory] = useState("General")
   const [timetableErrorMsg, setTimetableErrorMsg] = useState<string | null>(null)
-  const [timetableScheduleType, setTimetableScheduleType] = useState<"fixed" | "custom">("custom")
+  const [timetableScheduleType, setTimetableScheduleType] = useState<"custom" | "weekly" | "fixed">("custom")
+  const [prevActiveDate, setPrevActiveDate] = useState(activeDate)
+  const [timetableDate, setTimetableDate] = useState(activeDate)
+  const [timetableDayOfWeek, setTimetableDayOfWeek] = useState(() => parseISO(activeDate).getDay())
+
+  if (activeDate !== prevActiveDate) {
+    setPrevActiveDate(activeDate)
+    setTimetableDate(activeDate)
+    setTimetableDayOfWeek(parseISO(activeDate).getDay())
+  }
 
   const setTimetableStartTime = (newVal: string) => {
     _setTimetableStartTime(newVal)
@@ -234,7 +243,7 @@ export function useDailyPage() {
 
   const activeDayOfWeek = parseISO(activeDate).getDay()
   const activeDayBlocks = timetableList
-    .filter((block) => block.dayOfWeek === -1 || block.date === activeDate)
+    .filter((block) => block.dayOfWeek === -1 || block.date === activeDate || (block.dayOfWeek === activeDayOfWeek && !block.date))
     .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
   const CATEGORY_COLORS: Record<string, string> = {
@@ -259,15 +268,29 @@ export function useDailyPage() {
       return
     }
 
+    let targetDayOfWeek = -1
+    let targetDate: string | undefined = undefined
+
+    if (timetableScheduleType === "fixed") {
+      targetDayOfWeek = -1
+      targetDate = undefined
+    } else if (timetableScheduleType === "weekly") {
+      targetDayOfWeek = timetableDayOfWeek
+      targetDate = undefined
+    } else {
+      targetDayOfWeek = parseISO(timetableDate).getDay()
+      targetDate = timetableDate
+    }
+
     try {
       await createBlockMutation.mutateAsync({
-        dayOfWeek: timetableScheduleType === "fixed" ? -1 : activeDayOfWeek,
+        dayOfWeek: targetDayOfWeek,
         startTime: timetableStartTime,
         endTime: timetableEndTime,
         title: timetableTitle,
         category: timetableCategory,
         color: CATEGORY_COLORS[timetableCategory] || "blue",
-        date: timetableScheduleType === "fixed" ? undefined : activeDate,
+        date: targetDate,
         isTodo: timetableIsTodo,
       })
       setTimetableTitle("")
@@ -444,6 +467,10 @@ export function useDailyPage() {
     timetableErrorMsg,
     timetableScheduleType,
     setTimetableScheduleType,
+    timetableDate,
+    setTimetableDate,
+    timetableDayOfWeek,
+    setTimetableDayOfWeek,
     handleAddTimetableBlock,
     handleDeleteTimetableBlock,
     activeDayBlocks,

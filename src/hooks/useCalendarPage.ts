@@ -74,7 +74,11 @@ export function useCalendarPage() {
 
   const activeTimetableBlocks = timetableList
     .filter((block) => {
-      const isForDay = block.dayOfWeek === -1 || block.date === selectedDate
+      const selectedDayOfWeek = parseISO(selectedDate).getDay()
+      const isForDay =
+        block.dayOfWeek === -1 ||
+        block.date === selectedDate ||
+        (block.dayOfWeek === selectedDayOfWeek && !block.date)
       if (!isForDay) return false
 
       if (isSelectedDateToday) {

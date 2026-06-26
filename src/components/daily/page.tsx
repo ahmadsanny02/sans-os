@@ -102,6 +102,10 @@ export default function DailyComponent() {
           setCategory={dailyData.setTimetableCategory}
           scheduleType={dailyData.timetableScheduleType}
           setScheduleType={dailyData.setTimetableScheduleType}
+          timetableDate={dailyData.timetableDate}
+          setTimetableDate={dailyData.setTimetableDate}
+          timetableDayOfWeek={dailyData.timetableDayOfWeek}
+          setTimetableDayOfWeek={dailyData.setTimetableDayOfWeek}
           errorMsg={dailyData.timetableErrorMsg}
           handleAddBlock={dailyData.handleAddTimetableBlock}
           handleDeleteBlock={dailyData.handleDeleteTimetableBlock}

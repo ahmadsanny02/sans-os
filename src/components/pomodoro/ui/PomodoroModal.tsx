@@ -217,7 +217,8 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
     }
     // Auto: find block active right now
     const currentMins = currentTime.getHours() * 60 + currentTime.getMinutes()
-    const todayBlocks = timetableList.filter((b) => (b.dayOfWeek === -1 || b.date === todayStr) && b.isTodo)
+    const todayDayOfWeek = currentTime.getDay()
+    const todayBlocks = timetableList.filter((b) => (b.dayOfWeek === -1 || b.date === todayStr || (b.dayOfWeek === todayDayOfWeek && !b.date)) && b.isTodo)
     const sortedBlocks = [...todayBlocks].sort((a, b) => {
       if (a.dayOfWeek !== -1 && b.dayOfWeek === -1) return -1
       if (a.dayOfWeek === -1 && b.dayOfWeek !== -1) return 1

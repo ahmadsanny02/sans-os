@@ -53,9 +53,17 @@ export function usePomodoroPage() {
   const todayString = useMemo(() => format(currentTime, "yyyy-MM-dd"), [currentTime])
 
   const todayBlocks = useMemo(
-    () =>
-      timetableList.filter((b) => (b.dayOfWeek === -1 || b.date === todayString) && b.isTodo),
-    [timetableList, todayString]
+    () => {
+      const todayDayOfWeek = currentTime.getDay()
+      return timetableList.filter(
+        (b) =>
+          (b.dayOfWeek === -1 ||
+            b.date === todayString ||
+            (b.dayOfWeek === todayDayOfWeek && !b.date)) &&
+          b.isTodo
+      )
+    },
+    [timetableList, todayString, currentTime]
   )
 
   // Auto mode: detect currently active block by real-time clock

@@ -106,7 +106,11 @@ export function useDashboardPage() {
 
   const activeDayBlocks = timetableList
     .filter((block) => {
-      const isForDay = block.dayOfWeek === -1 || block.date === activeDate
+      const activeDayOfWeek = parseISO(activeDate).getDay()
+      const isForDay =
+        block.dayOfWeek === -1 ||
+        block.date === activeDate ||
+        (block.dayOfWeek === activeDayOfWeek && !block.date)
       if (!isForDay) return false
 
       if (isTodayDate) {
