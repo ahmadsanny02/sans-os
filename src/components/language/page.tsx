@@ -74,8 +74,6 @@ export default function LanguageComponent() {
           setWord={languageData.setWord}
           translation={languageData.translation}
           setTranslation={languageData.setTranslation}
-          partOfSpeech={languageData.partOfSpeech}
-          setPartOfSpeech={languageData.setPartOfSpeech}
           langDirection={languageData.langDirection}
           setLangDirection={languageData.setLangDirection}
           formError={languageData.formError}

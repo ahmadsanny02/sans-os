@@ -37,8 +37,6 @@ interface LanguageBoardViewProps {
   setWord: (w: string) => void
   translation: string
   setTranslation: (t: string) => void
-  partOfSpeech: string
-  setPartOfSpeech: (pos: string) => void
   langDirection: string
   setLangDirection: (dir: string) => void
   formError: string | null
@@ -70,8 +68,6 @@ export function LanguageBoardView({
   setWord,
   translation,
   setTranslation,
-  partOfSpeech,
-  setPartOfSpeech,
   langDirection,
   setLangDirection,
   formError,
@@ -389,7 +385,7 @@ export function LanguageBoardView({
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               {/* Word Input */}
               <div className="space-y-1.5">
                 <label htmlFor="vocabWord" className="text-xs font-bold text-muted-foreground">
@@ -404,25 +400,6 @@ export function LanguageBoardView({
                   placeholder={langDirection === "id-en" ? "e.g. Belajar" : "e.g. Ephemeral"}
                   className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
                 />
-              </div>
-
-              {/* Part of Speech Selection */}
-              <div className="space-y-1.5">
-                <label htmlFor="vocabPos" className="text-xs font-bold text-muted-foreground">
-                  Part of Speech *
-                </label>
-                <select
-                  id="vocabPos"
-                  value={partOfSpeech}
-                  onChange={(e) => setPartOfSpeech(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
-                >
-                  <option value="noun">Noun (Kata Benda)</option>
-                  <option value="verb">Verb (Kata Kerja)</option>
-                  <option value="adjective">Adjective (Kata Sifat)</option>
-                  <option value="adverb">Adverb (Kata Keterangan)</option>
-                  <option value="other">Other (Lainnya)</option>
-                </select>
               </div>
 
               {/* Translation */}

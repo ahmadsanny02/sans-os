@@ -44,7 +44,6 @@ export function useLanguagePage() {
   // Vocab form fields
   const [word, setWord] = useState("")
   const [translation, setTranslation] = useState("")
-  const [partOfSpeech, setPartOfSpeech] = useState("noun")
   const [langDirection, setLangDirection] = useState("en-id")
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -123,7 +122,6 @@ export function useLanguagePage() {
     try {
       await createVocabMutation.mutateAsync({
         word: trimmedWord,
-        partOfSpeech: partOfSpeech,
         definition: "n/a",
         translation: trimmedTranslation,
         masteryLevel: 3,
@@ -131,7 +129,6 @@ export function useLanguagePage() {
       })
       setWord("")
       setTranslation("")
-      setPartOfSpeech("noun")
       setLangDirection("en-id")
       setShowAddForm(false)
       showSuccessToast("Vocabulary added successfully")
@@ -470,8 +467,6 @@ export function useLanguagePage() {
     filteredVocab,
     vocabCreatePending: createVocabMutation.isPending,
     vocabDeletePending: deleteVocabMutation.isPending,
-    partOfSpeech,
-    setPartOfSpeech,
     langDirection,
     setLangDirection,
 

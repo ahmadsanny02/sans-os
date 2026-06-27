@@ -80,6 +80,59 @@ export async function GET(): Promise<NextResponse> {
   }
 }
 
+function isIndonesianVerb(indoWord: string): boolean {
+  const w = indoWord.trim().toLowerCase()
+  const commonIndoVerbs = [
+    "makan", "minum", "tidur", "pergi", "datang", "duduk", "pulang",
+    "main", "bantu", "beli", "jual", "tahu", "lihat", "dengar"
+  ]
+  if (commonIndoVerbs.includes(w)) return true
+
+  // Match prefixes: me-, ber-, ter-, di-, bel-
+  if (/^(me[nmy]?|ber|ter|di|bel|be)[a-z]+/i.test(w)) {
+    const falsePositives = [
+      "merah", "meja", "mentega", "mentimun", "terang", "terbang",
+      "terigu", "dinding", "dinas", "besok", "bebek", "belakang"
+    ]
+    if (falsePositives.includes(w)) return false
+    return true
+  }
+  return false
+}
+
+async function detectPartOfSpeech(englishWord: string, indonesianWord: string): Promise<string> {
+  const cleanWord = englishWord.split(/[,;]/)[0].trim().toLowerCase()
+  if (!cleanWord) return "noun"
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`)
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray(data) && data[0] && data[0].meanings) {
+        const primaryEntry = data[0]
+        const primaryParts = primaryEntry.meanings.map((m: { partOfSpeech: string }) => m.partOfSpeech.toLowerCase())
+        const primaryPOS = primaryEntry.meanings[0].partOfSpeech.toLowerCase()
+
+        if (primaryParts.includes("verb")) {
+          // If it can be a verb, check if it is the primary POS or if the Indonesian word is a verb
+          if (primaryPOS === "verb" || isIndonesianVerb(indonesianWord)) {
+            return "verb"
+          }
+          return primaryPOS
+        }
+
+        // Fallback to other parts of speech in the primary entry
+        if (primaryParts.includes("adjective")) return "adjective"
+        if (primaryParts.includes("adverb")) return "adverb"
+        if (primaryParts.includes("noun")) return "noun"
+        if (primaryParts.length > 0) return primaryParts[0]
+      }
+    }
+  } catch (error) {
+    console.error("Error auto-detecting part of speech:", error)
+  }
+  return "noun" // default fallback
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
   try {
     const supabase = await createServerSupabaseClient()
@@ -92,7 +145,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { word, partOfSpeech, definition, translation, exampleSentence, masteryLevel, langDirection } = body
+    const { word, definition, translation, exampleSentence, masteryLevel, langDirection } = body
 
     if (!word || !translation) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -121,6 +174,11 @@ export async function POST(request: Request): Promise<NextResponse> {
       ? await translateText(word, "id", "en")
       : await translateText(word, "en", "id")
 
+    // Automatically detect part of speech based on the English word
+    const englishWordRaw = direction === "id-en" ? translation.trim() : word.trim()
+    const indonesianWordRaw = direction === "id-en" ? word.trim() : translation.trim()
+    const detectedPartOfSpeech = await detectPartOfSpeech(englishWordRaw, indonesianWordRaw)
+
     let v1 = null
     let v2 = null
     let v3 = null
@@ -130,12 +188,13 @@ export async function POST(request: Request): Promise<NextResponse> {
     let v3Translation = null
     let vIngTranslation = null
 
-    if (partOfSpeech && partOfSpeech.trim().toLowerCase() === "verb") {
+    if (detectedPartOfSpeech === "verb") {
       // For verbs:
       // If direction is id-en, the English word to conjugate is the translation (e.g. "study").
       // If en-id, the English word to conjugate is the main word (e.g. "study").
       const englishVerb = direction === "id-en" ? translation.trim() : word.trim()
-      const conj = conjugateVerb(englishVerb)
+      const cleanVerb = englishVerb.split(/[,;]/)[0].trim()
+      const conj = conjugateVerb(cleanVerb)
       
       v1 = conj.v1
       v2 = conj.v2
@@ -156,7 +215,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       .values({
         userId: user.id,
         word: word.trim(),
-        partOfSpeech: partOfSpeech || "n/a",
+        partOfSpeech: detectedPartOfSpeech,
         definition: definition || "n/a",
         translation: translation.trim(),
         exampleSentence: exampleSentence ? exampleSentence.trim() : null,
