@@ -22,9 +22,13 @@ interface WordDetails {
   alternativeTranslations: { partOfSpeech: string; translations: string[] }[]
 }
 
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+
 export function DictionaryView({ vocabList }: DictionaryViewProps) {
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [collapsedLetters, setCollapsedLetters] = useState<Record<string, boolean>>({})
+  const [letterWords, setLetterWords] = useState<Record<string, DictionaryWord[]>>({})
+  const [loadingLetters, setLoadingLetters] = useState<Record<string, boolean>>({})
   const [words, setWords] = useState<DictionaryWord[]>([])
   const [isLoadingWords, setIsLoadingWords] = useState<boolean>(false)
   
@@ -35,24 +39,47 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
 
   const createVocabMutation = useCreateVocabularyMutation()
 
+  const fetchWordsForLetter = async (letter: string) => {
+    setLoadingLetters((prev) => ({ ...prev, [letter]: true }))
+    try {
+      const res = await fetch(`/api/language/dictionary?letter=${letter.toLowerCase()}`)
+      if (!res.ok) throw new Error("Failed to fetch words")
+      const data = await res.json()
+      setLetterWords((prev) => ({ ...prev, [letter]: data }))
+    } catch (err) {
+      console.error(err)
+      setLetterWords((prev) => ({ ...prev, [letter]: [] }))
+    } finally {
+      setLoadingLetters((prev) => ({ ...prev, [letter]: false }))
+    }
+  }
+
   const toggleLetterCollapse = (letter: string) => {
+    const isCollapsed = collapsedLetters[letter] !== false
+    const nextCollapsed = !isCollapsed
+    
     setCollapsedLetters((prev) => ({
       ...prev,
-      [letter]: prev[letter] === undefined ? false : !prev[letter],
+      [letter]: nextCollapsed,
     }))
+
+    if (nextCollapsed === false && !searchQuery.trim() && letterWords[letter] === undefined) {
+      fetchWordsForLetter(letter)
+    }
   }
 
   // Fetch words list when search query changes
   useEffect(() => {
+    if (!searchQuery.trim()) {
+      setWords([])
+      setIsLoadingWords(false)
+      return
+    }
+
     async function fetchWords() {
       setIsLoadingWords(true)
       try {
-        let url = `/api/language/dictionary`
-        if (searchQuery.trim()) {
-          url += `?q=${encodeURIComponent(searchQuery.trim())}`
-        }
-
-        const res = await fetch(url)
+        const res = await fetch(`/api/language/dictionary?q=${encodeURIComponent(searchQuery.trim())}`)
         if (!res.ok) throw new Error("Failed to fetch dictionary words")
         const data = await res.json()
         setWords(data)
@@ -66,7 +93,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
 
     const delayDebounce = setTimeout(() => {
       fetchWords()
-    }, searchQuery.trim() ? 400 : 0) // Debounce search
+    }, 400) // Debounce search
 
     return () => clearTimeout(delayDebounce)
   }, [searchQuery])
@@ -150,6 +177,12 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
         words: groups[letter],
       }))
   }
+  const activeGroups = searchQuery.trim()
+    ? makeGroupedAlphabetical(words)
+    : ALPHABET.map((letter) => ({
+        letter,
+        words: letterWords[letter] || [],
+      }))
 
   return (
     <div className="space-y-6">
@@ -180,13 +213,14 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
         </div>
       </div>
 
+
       {/* Words Grid / List */}
       {isLoadingWords ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
           <Loader2 className="h-8 w-8 text-violet-500 animate-spin" />
-          <span className="text-xs font-semibold text-muted-foreground">Loading dictionary words...</span>
+          <span className="text-xs font-semibold text-muted-foreground">Searching dictionary words...</span>
         </div>
-      ) : words.length === 0 ? (
+      ) : searchQuery.trim() !== "" && words.length === 0 ? (
         <div className="text-center py-20 border border-dashed border-border/60 rounded-3xl space-y-2 bg-secondary/5 animate-in fade-in duration-200">
           <BookOpen className="h-10 w-10 text-muted-foreground/40 mx-auto" />
           <h3 className="text-sm font-bold text-foreground">No words found</h3>
@@ -194,8 +228,22 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
         </div>
       ) : (
         <div className="space-y-6">
-          {makeGroupedAlphabetical(words).map(({ letter, words: groupWords }) => {
+          {activeGroups.map(({ letter, words: groupWords }) => {
             const isCollapsed = collapsedLetters[letter] !== false
+            const isLoading = loadingLetters[letter] === true
+            const hasFetched = letterWords[letter] !== undefined || searchQuery.trim() !== ""
+
+            const getLetterSubText = () => {
+              if (isLoading) return "Loading..."
+              if (searchQuery.trim() !== "") {
+                return `${groupWords.length} ${groupWords.length === 1 ? "Word" : "Words"} found`
+              }
+              if (letterWords[letter] !== undefined) {
+                const count = letterWords[letter].length
+                return `${count} ${count === 1 ? "Word" : "Words"} loaded`
+              }
+              return "Click to load words"
+            }
 
             return (
               <div key={letter} className="space-y-3">
@@ -210,7 +258,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                       {letter}
                     </div>
                     <span className="text-xs font-bold text-muted-foreground">
-                      {groupWords.length} {groupWords.length === 1 ? "Word" : "Words"} found
+                      {getLetterSubText()}
                     </span>
                   </div>
                   <ChevronDown
@@ -231,191 +279,204 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                       className="overflow-hidden"
                     >
                       <div className="rounded-2xl border border-border bg-card/10 dark:bg-card/5 p-5 shadow-sm mt-1">
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                          {groupWords.map((item) => {
-                            const isExpanded = expandedWord === item.word
-                            const details = wordDetails[item.word]
-                            const detailsLoading = isLoadingDetails[item.word]
-                            
-                            // Check if this word is already registered in the user's logs
-                            const isAlreadySaved = vocabList.some(
-                              (v) => v.word.trim().toLowerCase() === item.word.trim().toLowerCase()
-                            )
+                        {isLoading ? (
+                          <div className="flex flex-col items-center justify-center py-10 gap-2.5">
+                            <Loader2 className="h-6 w-6 text-violet-500 animate-spin" />
+                            <span className="text-xs font-semibold text-muted-foreground">Loading words starting with {letter}...</span>
+                          </div>
+                        ) : hasFetched && groupWords.length === 0 ? (
+                          <div className="text-center py-10 border border-dashed border-border/40 rounded-xl space-y-1.5 bg-secondary/5">
+                            <BookOpen className="h-6 w-6 text-muted-foreground/30 mx-auto" />
+                            <h4 className="text-xs font-bold text-foreground">No words found</h4>
+                            <p className="text-[10px] text-muted-foreground">No dictionary definitions match this letter.</p>
+                          </div>
+                        ) : (
+                          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {groupWords.map((item) => {
+                              const isExpanded = expandedWord === item.word
+                              const details = wordDetails[item.word]
+                              const detailsLoading = isLoadingDetails[item.word]
+                              
+                              // Check if this word is already registered in the user's logs
+                              const isAlreadySaved = vocabList.some(
+                                (v) => v.word.trim().toLowerCase() === item.word.trim().toLowerCase()
+                              )
 
-                            return (
-                              <div
-                                key={item.word}
-                                className={`rounded-2xl border transition-all duration-300 flex flex-col justify-between overflow-hidden ${
-                                  isExpanded
-                                    ? "border-sidebar-primary/40 bg-secondary/10 shadow-md col-span-full sm:col-span-full lg:col-span-full"
-                                    : "border-border bg-card/45 hover:border-sidebar-primary/20 hover:shadow-sm"
-                                }`}
-                              >
-                                {/* Main Header / Clickable Toggle */}
+                              return (
                                 <div
-                                  onClick={() => handleToggleExpand(item.word)}
-                                  className="p-5 flex items-center justify-between cursor-pointer select-none"
+                                  key={item.word}
+                                  className={`rounded-2xl border transition-all duration-300 flex flex-col justify-between overflow-hidden ${
+                                    isExpanded
+                                      ? "border-sidebar-primary/40 bg-secondary/10 shadow-md col-span-full sm:col-span-full lg:col-span-full"
+                                      : "border-border bg-card/45 hover:border-sidebar-primary/20 hover:shadow-sm"
+                                  }`}
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded-lg bg-violet-500/10 text-violet-400 flex items-center justify-center font-bold text-xs uppercase shadow-inner">
-                                      {item.word.charAt(0)}
-                                    </div>
-                                    <span className="text-md font-bold text-foreground capitalize tracking-tight">
-                                      {item.word}
-                                    </span>
-                                  </div>
-
-                                  <div className="flex items-center gap-3">
-                                    {isAlreadySaved && (
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                        <BookMarked className="h-3 w-3" /> Saved
+                                  {/* Main Header / Clickable Toggle */}
+                                  <div
+                                    onClick={() => handleToggleExpand(item.word)}
+                                    className="p-5 flex items-center justify-between cursor-pointer select-none"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <div className="h-8 w-8 rounded-lg bg-violet-500/10 text-violet-400 flex items-center justify-center font-bold text-xs uppercase shadow-inner">
+                                        {item.word.charAt(0)}
+                                      </div>
+                                      <span className="text-md font-bold text-foreground capitalize tracking-tight">
+                                        {item.word}
                                       </span>
-                                    )}
-                                    <ChevronDown
-                                      className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${
-                                        isExpanded ? "rotate-180 text-violet-400" : ""
-                                      }`}
-                                    />
-                                  </div>
-                                </div>
+                                    </div>
 
-                                {/* Expanded Detail Panel */}
-                                <AnimatePresence>
-                                  {isExpanded && (
-                                    <motion.div
-                                      initial={{ height: 0, opacity: 0 }}
-                                      animate={{ height: "auto", opacity: 1 }}
-                                      exit={{ height: 0, opacity: 0 }}
-                                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                                      className="border-t border-border/40 bg-card/20"
-                                    >
-                                      <div className="p-5 space-y-5">
-                                        {detailsLoading ? (
-                                          <div className="flex items-center justify-center py-8 gap-2">
-                                            <Loader2 className="h-5 w-5 text-violet-500 animate-spin" />
-                                            <span className="text-xs font-semibold text-muted-foreground">Fetching meanings and translations...</span>
-                                          </div>
-                                        ) : details ? (
-                                          <div className="space-y-4">
-                                            {/* Definition & Part of Speech Badge */}
-                                            <div className="space-y-2">
-                                              <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">
-                                                  English Definition
+                                    <div className="flex items-center gap-3">
+                                      {isAlreadySaved && (
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                          <BookMarked className="h-3 w-3" /> Saved
+                                        </span>
+                                      )}
+                                      <ChevronDown
+                                        className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${
+                                          isExpanded ? "rotate-180 text-violet-400" : ""
+                                        }`}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  {/* Expanded Detail Panel */}
+                                  <AnimatePresence>
+                                    {isExpanded && (
+                                      <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                                        className="border-t border-border/40 bg-card/20"
+                                      >
+                                        <div className="p-5 space-y-5">
+                                          {detailsLoading ? (
+                                            <div className="flex items-center justify-center py-8 gap-2">
+                                              <Loader2 className="h-5 w-5 text-violet-500 animate-spin" />
+                                              <span className="text-xs font-semibold text-muted-foreground">Fetching meanings and translations...</span>
+                                            </div>
+                                          ) : details ? (
+                                            <div className="space-y-4">
+                                              {/* Definition & Part of Speech Badge */}
+                                              <div className="space-y-2">
+                                                <div className="flex items-center gap-2">
+                                                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">
+                                                    English Definition
+                                                  </span>
+                                                  {details.partOfSpeech && (
+                                                    <div className="flex flex-wrap gap-1">
+                                                      {details.partOfSpeech.split(",").map((pos) => {
+                                                        const cleanPos = pos.trim().toLowerCase()
+                                                        return (
+                                                          <span
+                                                            key={cleanPos}
+                                                            className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider ${
+                                                              cleanPos === "verb"
+                                                                ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
+                                                                : cleanPos === "noun"
+                                                                ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                                                                : cleanPos === "adjective"
+                                                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                                                : cleanPos === "adverb"
+                                                                ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                                                : "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20"
+                                                            }`}
+                                                          >
+                                                            {cleanPos}
+                                                          </span>
+                                                        )
+                                                      })}
+                                                    </div>
+                                                  )}
+                                                </div>
+                                                <p className="text-xs font-semibold text-foreground/80 leading-relaxed bg-secondary/10 dark:bg-zinc-950/20 p-3 rounded-xl border border-border/30">
+                                                  {details.definition}
+                                                </p>
+                                              </div>
+
+                                              {/* Indonesian Translations */}
+                                              <div className="space-y-2.5">
+                                                <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground block">
+                                                  Indonesian Meanings
                                                 </span>
-                                                {details.partOfSpeech && (
-                                                  <div className="flex flex-wrap gap-1">
-                                                    {details.partOfSpeech.split(",").map((pos) => {
-                                                      const cleanPos = pos.trim().toLowerCase()
-                                                      return (
-                                                        <span
-                                                          key={cleanPos}
-                                                          className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider ${
-                                                            cleanPos === "verb"
-                                                              ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
-                                                              : cleanPos === "noun"
-                                                              ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                                                              : cleanPos === "adjective"
-                                                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                                              : cleanPos === "adverb"
-                                                              ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                                                              : "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20"
-                                                          }`}
+
+                                                {/* Primary Google Translation */}
+                                                <div className="p-3 bg-violet-500/5 border border-violet-500/15 rounded-xl space-y-1">
+                                                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-violet-400 block select-none">
+                                                    Primary Translation
+                                                  </span>
+                                                  <span className="text-sm font-bold text-foreground">
+                                                    {details.translation}
+                                                  </span>
+                                                </div>
+
+                                                {/* Bilingual alternative meanings */}
+                                                {details.alternativeTranslations && details.alternativeTranslations.length > 0 && (
+                                                  <div className="space-y-2">
+                                                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground block mt-3">
+                                                      Alternative Meanings (by Part of Speech)
+                                                    </span>
+                                                    <div className="grid gap-3 sm:grid-cols-2">
+                                                      {details.alternativeTranslations.map((alt, index) => (
+                                                        <div
+                                                          key={index}
+                                                          className="p-3 bg-secondary/20 dark:bg-zinc-950/15 border border-border/40 rounded-xl space-y-1.5"
                                                         >
-                                                          {cleanPos}
-                                                        </span>
-                                                      )
-                                                    })}
+                                                          <span className="inline-block px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
+                                                            {alt.partOfSpeech}
+                                                          </span>
+                                                          <div className="text-xs font-bold text-foreground/80 flex flex-wrap gap-1">
+                                                            {alt.translations.join(", ")}
+                                                          </div>
+                                                        </div>
+                                                      ))}
+                                                    </div>
                                                   </div>
                                                 )}
                                               </div>
-                                              <p className="text-xs font-semibold text-foreground/80 leading-relaxed bg-secondary/10 dark:bg-zinc-950/20 p-3 rounded-xl border border-border/30">
-                                                {details.definition}
-                                              </p>
-                                            </div>
 
-                                            {/* Indonesian Translations */}
-                                            <div className="space-y-2.5">
-                                              <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground block">
-                                                Indonesian Meanings
-                                              </span>
-
-                                              {/* Primary Google Translation */}
-                                              <div className="p-3 bg-violet-500/5 border border-violet-500/15 rounded-xl space-y-1">
-                                                <span className="text-[9px] font-extrabold uppercase tracking-wider text-violet-400 block select-none">
-                                                  Primary Translation
-                                                </span>
-                                                <span className="text-sm font-bold text-foreground">
-                                                  {details.translation}
-                                                </span>
+                                              {/* Action Row */}
+                                              <div className="flex justify-end border-t border-border/30 pt-4 mt-2">
+                                                {isAlreadySaved ? (
+                                                  <button
+                                                    type="button"
+                                                    disabled
+                                                    className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3.5 py-1.5 text-xs font-bold flex items-center gap-1 shadow-sm select-none"
+                                                  >
+                                                    <Check className="h-4.5 w-4.5 stroke-[3]" /> Saved to Logs
+                                                  </button>
+                                                ) : (
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => handleSaveToLogs(details)}
+                                                    disabled={createVocabMutation.isPending}
+                                                    className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5 transition-all hover:scale-[1.02] shadow-sm select-none cursor-pointer"
+                                                  >
+                                                    {createVocabMutation.isPending ? (
+                                                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                                    ) : (
+                                                      <>
+                                                        <Plus className="h-4.5 w-4.5 stroke-[2.5]" /> Save to Logs
+                                                      </>
+                                                    )}
+                                                  </button>
+                                                )}
                                               </div>
-
-                                              {/* Bilingual alternative meanings */}
-                                              {details.alternativeTranslations && details.alternativeTranslations.length > 0 && (
-                                                <div className="space-y-2">
-                                                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground block mt-3">
-                                                    Alternative Meanings (by Part of Speech)
-                                                  </span>
-                                                  <div className="grid gap-3 sm:grid-cols-2">
-                                                    {details.alternativeTranslations.map((alt, index) => (
-                                                      <div
-                                                        key={index}
-                                                        className="p-3 bg-secondary/20 dark:bg-zinc-950/15 border border-border/40 rounded-xl space-y-1.5"
-                                                      >
-                                                        <span className="inline-block px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
-                                                          {alt.partOfSpeech}
-                                                        </span>
-                                                        <div className="text-xs font-bold text-foreground/80 flex flex-wrap gap-1">
-                                                          {alt.translations.join(", ")}
-                                                        </div>
-                                                      </div>
-                                                    ))}
-                                                  </div>
-                                                </div>
-                                              )}
                                             </div>
-
-                                            {/* Action Row */}
-                                            <div className="flex justify-end border-t border-border/30 pt-4 mt-2">
-                                              {isAlreadySaved ? (
-                                                <button
-                                                  type="button"
-                                                  disabled
-                                                  className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3.5 py-1.5 text-xs font-bold flex items-center gap-1 shadow-sm select-none"
-                                                >
-                                                  <Check className="h-4.5 w-4.5 stroke-[3]" /> Saved to Logs
-                                                </button>
-                                              ) : (
-                                                <button
-                                                  type="button"
-                                                  onClick={() => handleSaveToLogs(details)}
-                                                  disabled={createVocabMutation.isPending}
-                                                  className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5 transition-all hover:scale-[1.02] shadow-sm select-none cursor-pointer"
-                                                >
-                                                  {createVocabMutation.isPending ? (
-                                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                                  ) : (
-                                                    <>
-                                                      <Plus className="h-4.5 w-4.5 stroke-[2.5]" /> Save to Logs
-                                                    </>
-                                                  )}
-                                                </button>
-                                              )}
+                                          ) : (
+                                            <div className="text-center py-4 text-xs font-semibold text-destructive">
+                                              Failed to load details.
                                             </div>
-                                          </div>
-                                        ) : (
-                                          <div className="text-center py-4 text-xs font-semibold text-destructive">
-                                            Failed to load details.
-                                          </div>
-                                        )}
-                                      </div>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </div>
-                            )
-                          })}
-                        </div>
+                                          )}
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   )}
