@@ -63,7 +63,7 @@ export function useDailyPage() {
   const [entryTitle, setEntryTitle] = useState("")
   const [entryLink, setEntryLink] = useState("")
   const [targetTimetable, setTargetTimetable] = useState(false)
-  const [targetTodo, setTargetTodo] = useState(true)
+  const [targetTodo, setTargetTodo] = useState(false)
   const [targetPriority, setTargetPriority] = useState(false)
   const [combinedErrorMsg, setCombinedErrorMsg] = useState<string | null>(null)
   const [isPendingCombined, setIsPendingCombined] = useState(false)
@@ -160,8 +160,9 @@ export function useDailyPage() {
       await Promise.all(promises)
       setEntryTitle("")
       setEntryLink("")
-      // Uncheck timetable & priority to reset cleanly, leave todo checked by default
+      // Uncheck all destinations to reset cleanly
       setTargetTimetable(false)
+      setTargetTodo(false)
       setTargetPriority(false)
       setTodoDate(activeDate)
       setPriorityDate(activeDate)
