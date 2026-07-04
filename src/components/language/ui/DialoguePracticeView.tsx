@@ -86,6 +86,7 @@ export function DialoguePracticeView({
   filteredDialogueVocabList,
   filteredDialogues,
   dialogueCreatePending,
+  dialogueDeletePending,
 }: DialoguePracticeViewProps) {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -104,7 +105,7 @@ export function DialoguePracticeView({
     <div className="space-y-6 animate-in fade-in duration-200">
       
       {/* 1. Header Row (Reveal helper, Search, and Toggle Add button) */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/50 pb-5 select-none">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/40 pb-5 select-none">
         <div className="flex flex-col sm:flex-row gap-3 flex-1 max-w-2xl">
           {/* Search Input */}
           <div className="relative flex-1">
@@ -114,22 +115,22 @@ export function DialoguePracticeView({
               value={searchQueryDialogue}
               onChange={(e) => setSearchQueryDialogue(e.target.value)}
               placeholder="Search conversations..."
-              className="w-full rounded-xl border border-border bg-card/60 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
+              className="w-full rounded-xl border border-border/60 bg-card/40 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
 
           {/* Study Reveal Actions */}
-          <div className="flex items-center gap-1.5 bg-secondary/40 border border-border/80 p-1 rounded-xl shrink-0 self-start sm:self-auto select-none">
+          <div className="flex items-center gap-1.5 bg-secondary/35 border border-border/30 p-1 rounded-xl shrink-0 self-start sm:self-auto select-none">
             <button
               onClick={revealAllDialogueTranslations}
-              className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1"
+              className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
               title="Reveal all dialogue translations"
             >
               <Eye className="h-3.5 w-3.5" /> Reveal All
             </button>
             <button
               onClick={hideAllDialogueTranslations}
-              className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1"
+              className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
               title="Hide all dialogue translations"
             >
               <EyeOff className="h-3.5 w-3.5" /> Hide All
@@ -140,7 +141,7 @@ export function DialoguePracticeView({
         {/* Toggle Dialogue Form Button */}
         <button
           onClick={() => setShowDialogueForm(!showDialogueForm)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-sidebar-primary px-3.5 py-2 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/90 hover:scale-[1.02] self-start md:self-auto"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 self-start md:self-auto"
         >
           <Plus className="h-4 w-4" />
           {showDialogueForm ? "Cancel Add" : "Add Dialogue"}
@@ -149,9 +150,9 @@ export function DialoguePracticeView({
 
       {/* 2. Dialogue Form Card (Only visible if showDialogueForm is true) */}
       {showDialogueForm && (
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm backdrop-blur-md animate-in slide-in-from-top-4 duration-200">
+        <div className="bento-card p-5 animate-in slide-in-from-top-4 duration-200">
           <div className="flex items-center gap-2 mb-4">
-            <MessageSquare className="h-5 w-5 text-violet-500" />
+            <MessageSquare className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-bold text-foreground">Add Conversation</h3>
           </div>
 
@@ -179,7 +180,7 @@ export function DialoguePracticeView({
                         setShowDialogueVocabDropdown(true)
                       }}
                       placeholder="Search vocabulary logs..."
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     {selectedDialogueVocabId && (
                       <span 
@@ -190,7 +191,7 @@ export function DialoguePracticeView({
                   </div>
 
                   {showDialogueVocabDropdown && (
-                    <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
+                    <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
                       {filteredDialogueVocabList.length === 0 ? (
                         <div className="px-3 py-2 text-xs text-muted-foreground">
                           No matching vocabulary found
@@ -201,7 +202,7 @@ export function DialoguePracticeView({
                             key={v.id}
                             type="button"
                             onClick={() => handleSelectDialogueVocab(v.id, v.word)}
-                            className={`w-full text-left px-3 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground transition-colors flex items-center justify-between ${
+                            className={`w-full text-left px-3 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground transition-colors flex items-center justify-between cursor-pointer ${
                               selectedDialogueVocabId === v.id ? "bg-accent/40 font-bold" : ""
                             }`}
                           >
@@ -222,12 +223,12 @@ export function DialoguePracticeView({
             <div className="grid gap-6 sm:grid-cols-2">
               
               {/* USER A: Question Form Inputs */}
-              <div className="space-y-3 border-l-2 border-violet-500 pl-3.5 py-0.5">
+              <div className="space-y-3 border-l-2 border-primary pl-3.5 py-0.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="h-4 w-4 rounded-full bg-violet-500/10 text-violet-500 flex items-center justify-center text-[10px] font-bold">
+                  <span className="h-4 w-4 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold">
                     Q
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-violet-500">
+                  <span className="text-xs font-bold uppercase tracking-wider text-primary">
                     User A (Question)
                   </span>
                 </div>
@@ -239,7 +240,7 @@ export function DialoguePracticeView({
                     value={dialogueEngQ}
                     onChange={(e) => setDialogueEngQ(e.target.value)}
                     placeholder="English question (e.g., What are you doing?)"
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                   <input
                     type="text"
@@ -247,7 +248,7 @@ export function DialoguePracticeView({
                     value={dialogueTransQ}
                     onChange={(e) => setDialogueTransQ(e.target.value)}
                     placeholder="Indonesian translation (e.g., Apa yang sedang kamu lakukan?)"
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </div>
@@ -270,7 +271,7 @@ export function DialoguePracticeView({
                     value={dialogueEngA}
                     onChange={(e) => setDialogueEngA(e.target.value)}
                     placeholder="English answer (e.g., I am reading a book.)"
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                   <input
                     type="text"
@@ -278,7 +279,7 @@ export function DialoguePracticeView({
                     value={dialogueTransA}
                     onChange={(e) => setDialogueTransA(e.target.value)}
                     placeholder="Indonesian translation (e.g., Saya sedang membaca buku.)"
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </div>
@@ -296,14 +297,14 @@ export function DialoguePracticeView({
               <button
                 type="button"
                 onClick={() => setShowDialogueForm(false)}
-                className="rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-all"
+                className="rounded-lg border border-border/40 px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={dialogueCreatePending || !selectedDialogueVocabId || vocabList.length === 0}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-sidebar-primary px-3.5 py-1.5 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 active:scale-95 disabled:opacity-50 cursor-pointer"
               >
                 {dialogueCreatePending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -321,7 +322,7 @@ export function DialoguePracticeView({
       {/* 3. History Feed (Flows 1-column full-width) */}
       <div className="space-y-4 w-full">
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, idx) => (
               <GridCardSkeleton key={idx} />
             ))}
@@ -332,7 +333,7 @@ export function DialoguePracticeView({
             <span>Error loading dialogue logs. Please reload the page.</span>
           </div>
         ) : filteredDialogues.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground bg-card/10 select-none animate-in fade-in duration-200">
+          <div className="rounded-2xl border border-dashed border-border/40 py-16 text-center text-sm text-muted-foreground bg-card/10 select-none animate-in fade-in duration-200">
             {searchQueryDialogue ? (
               <>
                 <AlertCircle className="mx-auto h-8 w-8 text-muted-foreground/60 mb-2" />
@@ -343,7 +344,7 @@ export function DialoguePracticeView({
               </>
             ) : (
               <>
-                <Sparkles className="mx-auto h-8 w-8 text-violet-500/60 mb-2 animate-pulse" />
+                <Sparkles className="mx-auto h-8 w-8 text-primary/60 mb-2 animate-pulse" />
                 <p className="font-bold">No conversation practices yet</p>
                 <p className="text-xs text-muted-foreground/80 mt-1 max-w-xs mx-auto">
                   Click &quot;Add Dialogue&quot; above and write a Q&A conversation practice to get started.
@@ -358,12 +359,12 @@ export function DialoguePracticeView({
               return (
                 <div
                   key={log.id}
-                  className="group rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm hover:shadow-md transition-all duration-200 backdrop-blur-md relative"
+                  className="group rounded-2xl border border-border/60 bg-card/40 dark:bg-card/20 p-5 shadow-sm hover:bg-card/65 hover:border-primary/20 transition-all duration-200 backdrop-blur-md relative"
                 >
                   {/* Log Header Actions */}
                   <div className="flex items-center justify-between mb-4 border-b border-border/40 pb-2.5">
                     <div className="flex items-center gap-2">
-                      <span className="bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 border border-violet-500/20 rounded-lg px-2.5 py-1 text-xs font-bold flex items-center gap-1.5">
+                      <span className="bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-bold flex items-center gap-1.5">
                         <BookOpen className="h-3.5 w-3.5" />
                         {log.vocabWord}
                       </span>
@@ -372,14 +373,15 @@ export function DialoguePracticeView({
                       <button
                         onClick={() => toggleDialogueTranslation(log.id)}
                         title={isRevealed ? "Hide translations" : "Reveal translations"}
-                        className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all"
+                        className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
                       >
                         {isRevealed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       </button>
                       <button
                         onClick={() => handleDeleteDialogue(log.id, log.vocabWord)}
+                        disabled={dialogueDeletePending}
                         title="Delete dialogue log"
-                        className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
+                        className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all disabled:opacity-50 cursor-pointer"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
@@ -392,16 +394,16 @@ export function DialoguePracticeView({
                     {/* Speaker A (User A, Q) Bubble - Left Aligned */}
                     <div className="flex flex-col items-start space-y-1 max-w-[85%]">
                       <div className="flex items-center gap-1.5 ml-1">
-                        <span className="text-[10px] font-extrabold text-violet-500 uppercase tracking-wide">
+                        <span className="text-[10px] font-extrabold text-primary uppercase tracking-wide">
                           User A
                         </span>
                       </div>
-                      <div className="bg-violet-500/[0.07] dark:bg-violet-500/[0.12] border border-violet-500/15 rounded-2xl rounded-tl-none px-4 py-3 text-left">
+                      <div className="bg-primary/[0.07] dark:bg-primary/[0.12] border border-primary/15 rounded-2xl rounded-tl-none px-4 py-3 text-left">
                         <p className="text-sm font-semibold text-foreground leading-relaxed">
                           {log.englishQuestion}
                         </p>
                         {isRevealed && (
-                          <div className="mt-2.5 pt-2 border-t border-violet-500/10 dark:border-violet-500/20 space-y-2 animate-in fade-in duration-200">
+                          <div className="mt-2.5 pt-2 border-t border-primary/10 dark:border-primary/20 space-y-2 animate-in fade-in duration-200">
                             <div>
                               <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
                                 Manual Translation
@@ -411,7 +413,7 @@ export function DialoguePracticeView({
                               </p>
                             </div>
                             {log.autoTranslationQuestion && (
-                              <div className="border-t border-dotted border-violet-500/10 dark:border-violet-500/20 pt-1">
+                              <div className="border-t border-dotted border-primary/10 dark:border-primary/20 pt-1">
                                 <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
                                   Google Translation
                                 </span>

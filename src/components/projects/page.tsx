@@ -15,10 +15,10 @@ export default function ProjectsComponent() {
   }, [])
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 py-4 animate-in fade-in duration-200">
+    <div className="mx-auto max-w-7xl gap-6 flex flex-col py-4 animate-in fade-in duration-200">
       <HeaderPage
         title="Projects & Tasks"
-        icon={<Briefcase className="h-7 w-7 text-violet-500 shrink-0" />}
+        icon={<Briefcase className="h-7 w-7 text-primary shrink-0" />}
         description="Manage your high-level goals and track deliverables"
       />
 

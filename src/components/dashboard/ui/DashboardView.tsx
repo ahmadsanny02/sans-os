@@ -74,15 +74,15 @@ export function DashboardView({
   logLoading,
 }: DashboardViewProps) {
   return (
-    <div className="mx-auto max-w-7xl space-y-8 py-4">
+    <div className="mx-auto max-w-7xl gap-6 flex flex-col py-4">
       {/* Header welcome banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-br from-violet-500/10 via-transparent to-indigo-500/5 p-8 shadow-sm">
-        <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-violet-500/5 blur-3xl" />
+      <div className="bento-card relative overflow-hidden p-6 md:p-8 bg-gradient-to-br from-primary/10 via-card/50 to-primary/5">
+        <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
         <div className="relative z-10 space-y-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-600 dark:text-violet-400">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             <TrendingUp className="h-3.5 w-3.5" /> Workspace Active
           </span>
-          <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+          <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl text-foreground">
             {greeting}, Ahmad Sani Jabarulloh
           </h1>
           <p className="text-sm text-muted-foreground md:text-base">
@@ -132,9 +132,9 @@ export function DashboardView({
       </div>
 
       {/* Widgets Workspace */}
-      <div className="grid gap-8 lg:grid-cols-12">
+      <div className="grid gap-6 lg:grid-cols-12">
         {/* Left Column (lg:col-span-5) - Priorities & Checklist */}
-        <div className="lg:col-span-5 space-y-8">
+        <div className="lg:col-span-5 flex flex-col gap-6">
           <PrioritiesWidget
             priorities={priorities}
             isLoading={prioritiesLoading}
@@ -159,14 +159,13 @@ export function DashboardView({
           />
         </div>
 
-        {/* Right Column (lg:col-span-7) - Timetable & Memory Box */}
-        <div className="lg:col-span-7 space-y-8">
+        {/* Right Column (lg:col-span-7) - Timetable */}
+        <div className="lg:col-span-7 flex flex-col gap-6">
           <TimetableWidget
             activeDayBlocks={activeDayBlocks}
             isLoading={timetableLoading}
             isError={timetableError}
           />
-
         </div>
       </div>
     </div>

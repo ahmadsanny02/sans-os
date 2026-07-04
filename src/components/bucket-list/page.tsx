@@ -15,10 +15,10 @@ export default function BucketListComponent() {
   }, [])
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 py-4 animate-in fade-in duration-200">
+    <div className="mx-auto max-w-7xl gap-6 flex flex-col py-4 animate-in fade-in duration-200">
       <HeaderPage
         title="Bucket List"
-        icon={<Compass className="h-7 w-7 text-violet-500 shrink-0" />}
+        icon={<Compass className="h-7 w-7 text-primary shrink-0" />}
         description="Visualize and track your life-long goals, milestones, and dreams"
       />
 

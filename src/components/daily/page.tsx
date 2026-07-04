@@ -23,13 +23,13 @@ export default function DailyComponent() {
   }, [])
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 py-4 animate-in fade-in duration-200">
+    <div className="mx-auto max-w-7xl gap-6 flex flex-col py-4 animate-in fade-in duration-200">
       <HeaderPage
         title="Daily Flow"
-        icon={<Clock className="h-7 w-7 text-violet-500 shrink-0" />}
+        icon={<Clock className="h-7 w-7 text-primary shrink-0" />}
         description={
           <div className="flex items-center gap-1.5 mt-1">
-            <Calendar className="h-4 w-4 text-violet-500" />
+            <Calendar className="h-4 w-4 text-primary" />
             <span>
               Active Date: <span className="font-semibold text-foreground">{format(baseDate, "MMMM d, yyyy")}</span>
             </span>
@@ -48,9 +48,9 @@ export default function DailyComponent() {
         <div className="flex justify-start">
           <button
             onClick={() => setShowAddForm(true)}
-            className="flex items-center gap-2 px-5 py-3 rounded-2xl border border-border bg-card/45 dark:bg-card/20 text-foreground hover:bg-muted/40 transition-all font-semibold shadow-sm hover:scale-[1.01] cursor-pointer"
+            className="flex items-center gap-2 px-5 py-3 rounded-2xl border border-border/60 bg-card/40 hover:bg-card/75 text-foreground hover:border-primary/20 transition-all font-semibold shadow-glass hover:scale-[1.01] active:scale-95 cursor-pointer"
           >
-            <Plus className="h-5 w-5 text-violet-500" />
+            <Plus className="h-5 w-5 text-primary" />
             <span>Add Flow Item</span>
           </button>
         </div>
@@ -90,9 +90,9 @@ export default function DailyComponent() {
       )}
 
       {/* Main Content */}
-      <div className="grid gap-8 grid-cols-12">
+      <div className="grid gap-6 grid-cols-12">
         {/* Priorities Section */}
-        <div className="col-span-12 lg:col-span-6 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
+        <div className="col-span-12 lg:col-span-6 bento-card p-6">
           <PrioritiesList
             listPriorities={dailyData.listPriorities}
             isLoading={dailyData.prioritiesLoading}
@@ -104,7 +104,7 @@ export default function DailyComponent() {
         </div>
 
         {/* To-Dos Section */}
-        <div className="col-span-12 lg:col-span-6 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
+        <div className="col-span-12 lg:col-span-6 bento-card p-6">
           <DailyTodos
             todos={dailyData.todos}
             isLoading={dailyData.todosLoading || dailyData.habitsLoading}
@@ -120,7 +120,7 @@ export default function DailyComponent() {
       </div>
 
       {/* Timetable Section */}
-      <div className="lg:col-span-12 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
+      <div className="lg:col-span-12 bento-card p-6">
         <Timetable
           isLoading={dailyData.timetableLoading}
           isError={dailyData.timetableError}
@@ -130,8 +130,8 @@ export default function DailyComponent() {
       </div>
 
       {/* Reflections & Pics of the Day Section */}
-      <div className="grid gap-8 lg:grid-cols-12">
-        <div className="lg:col-span-6 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
+      <div className="grid gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-6 bento-card p-6">
           <DailyReflections
             isLoading={dailyData.logLoading}
             activeTab={dailyData.activeReflectionTab}
@@ -147,7 +147,7 @@ export default function DailyComponent() {
           />
         </div>
 
-        <div className="lg:col-span-6 border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 shadow-sm">
+        <div className="lg:col-span-6 bento-card p-6">
           <DailyPics
             isLoading={dailyData.logLoading}
             isUploading={dailyData.isUploadingPic}

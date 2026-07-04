@@ -54,7 +54,7 @@ export function DailyReflections({
         <button
           onClick={handleSave}
           disabled={isLoading || isPendingSave}
-          className="inline-flex items-center gap-2 rounded-xl bg-sidebar-primary px-4 py-2 text-sm font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50 active:scale-95 animate-in"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 disabled:opacity-50 active:scale-95 animate-in"
         >
           {isPendingSave ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -68,7 +68,7 @@ export function DailyReflections({
       </div>
 
       {/* Tabs list */}
-      <div className="flex rounded-xl bg-secondary/30 p-1 border border-border">
+      <div className="flex rounded-xl bg-secondary/30 p-1 border border-border/40">
         {tabs.map((tab) => {
           const Icon = tab.icon
           const isActive = activeTab === tab.id
@@ -78,7 +78,7 @@ export function DailyReflections({
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-all ${
                 isActive
-                  ? "bg-card text-foreground shadow-sm border border-border/60"
+                  ? "bg-card text-foreground shadow-sm border border-border/40"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -90,7 +90,7 @@ export function DailyReflections({
       </div>
 
       {/* Tab content area */}
-      <div className="rounded-2xl border border-border bg-card p-4 min-h-[180px] flex flex-col justify-stretch relative">
+      <div className="rounded-2xl border border-border/40 bg-secondary/15 p-4 min-h-[180px] flex flex-col justify-stretch relative">
         {isLoading ? (
           <div className="flex-1 space-y-2.5 pt-1 animate-pulse">
             <div className="h-4 w-full bg-muted/20 rounded-md" />

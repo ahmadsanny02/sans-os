@@ -18,10 +18,10 @@ export default function LanguageComponent() {
   }, [])
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 py-4 animate-in fade-in duration-200">
+    <div className="mx-auto max-w-7xl gap-6 flex flex-col py-4 animate-in fade-in duration-200">
       <HeaderPage
         title="Language Logs"
-        icon={<Languages className="h-7 w-7 text-violet-500 shrink-0" />}
+        icon={<Languages className="h-7 w-7 text-primary shrink-0" />}
         description="Track foreign vocabulary definitions, study quiz lists, and practice writing sentences"
       />
 
@@ -31,7 +31,7 @@ export default function LanguageComponent() {
           onClick={() => setActiveTab("vocab")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
             activeTab === "vocab"
-              ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
+              ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -41,7 +41,7 @@ export default function LanguageComponent() {
           onClick={() => setActiveTab("writing")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
             activeTab === "writing"
-              ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
+              ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -51,7 +51,7 @@ export default function LanguageComponent() {
           onClick={() => setActiveTab("dialogue")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
             activeTab === "dialogue"
-              ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
+              ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >

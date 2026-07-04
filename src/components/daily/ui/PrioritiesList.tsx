@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Priority } from "@/hooks/useDaily"
-import { Plus, Trash2, Check, Loader2, RefreshCw, AlertCircle, Link2 } from "lucide-react"
+import { Trash2, Check, RefreshCw, Link2 } from "lucide-react"
 
 interface PrioritiesListProps {
   listPriorities: Priority[]
@@ -39,7 +39,7 @@ export function PrioritiesList({
             Focus on the 5 most important tasks for today
           </p>
         </div>
-        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border flex items-center justify-center min-w-[32px] h-6">
+        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border/40 flex items-center justify-center min-w-[32px] h-6">
           {isLoading ? (
             <span className="inline-block w-4 h-3 bg-muted/30 animate-pulse rounded" />
           ) : (
@@ -60,7 +60,7 @@ export function PrioritiesList({
             Error loading priorities. Please check connection.
           </div>
         ) : listPriorities.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-border/60 py-10 text-center text-sm text-muted-foreground">
             No priorities added for today. Add your first item below!
           </div>
         ) : (
@@ -68,10 +68,10 @@ export function PrioritiesList({
             {sortedPriorities.map((priority) => (
               <div
                 key={priority.id}
-                className={`flex items-center justify-between rounded-xl border p-4 transition-all duration-200 bg-card ${
+                className={`flex items-center justify-between rounded-xl border p-4 transition-all duration-200 ${
                   priority.completed
-                    ? "border-border/50 bg-secondary/20 opacity-75"
-                    : "border-border shadow-sm hover:border-sidebar-primary/30"
+                    ? "border-border/40 bg-secondary/20 opacity-70"
+                    : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
                 }`}
               >
                 <div className="flex items-center gap-3.5 flex-1 min-w-0">
@@ -80,8 +80,8 @@ export function PrioritiesList({
                     onClick={() => handleToggleCompleted(priority.id, priority.completed)}
                     className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
                       priority.completed
-                        ? "bg-sidebar-primary border-sidebar-primary text-sidebar-primary-foreground"
-                        : "border-border hover:border-sidebar-primary/50 hover:bg-sidebar-primary/10"
+                        ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                        : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
                     } ${isPendingToggle ? "cursor-not-allowed" : "cursor-pointer"}`}
                     aria-label="Toggle task completed"
                   >
@@ -102,7 +102,7 @@ export function PrioritiesList({
                           href={priority.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center text-violet-500 hover:text-violet-600 dark:text-violet-400 dark:hover:text-violet-300 transition-colors"
+                          className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
                           title="Open Link"
                         >
                           <Link2 className="h-3.5 w-3.5" />

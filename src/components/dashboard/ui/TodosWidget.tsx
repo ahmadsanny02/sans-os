@@ -47,13 +47,13 @@ export function TodosWidget({
   })
 
   return (
-    <div className="rounded-2xl border border-border bg-card/25 dark:bg-card/10 p-6 shadow-sm space-y-4">
+    <div className="bento-card p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ListTodo className="h-5 w-5 text-sidebar-primary" />
+          <ListTodo className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-bold text-foreground">Daily Checklist</h3>
         </div>
-        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border font-semibold text-muted-foreground flex items-center justify-center min-w-[50px] h-5">
+        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border/40 font-semibold text-muted-foreground flex items-center justify-center min-w-[50px] h-5">
           {isLoading ? (
             <span className="inline-block w-8 h-2.5 bg-muted/30 animate-pulse rounded" />
           ) : (
@@ -73,7 +73,7 @@ export function TodosWidget({
             Error loading checklist.
           </div>
         ) : totalCount === 0 ? (
-          <div className="rounded-xl border border-dashed border-border py-8 text-center text-xs text-muted-foreground">
+          <div className="rounded-xl border border-dashed border-border/60 py-8 text-center text-xs text-muted-foreground">
             No checklist items set for today.
           </div>
         ) : (
@@ -88,8 +88,10 @@ export function TodosWidget({
                   <div
                     key={habit.id}
                     onClick={() => !isPendingToggleHabit && handleToggleHabit?.(habit.id)}
-                    className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 bg-card hover:border-indigo-500/30 ${
-                      habit.completed ? "opacity-75 border-border/50 bg-secondary/10" : "border-border shadow-sm"
+                    className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
+                      habit.completed 
+                        ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65" 
+                        : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
                     }`}
                   >
                     <button
@@ -97,8 +99,8 @@ export function TodosWidget({
                       disabled={isPendingToggleHabit}
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${
                         habit.completed
-                          ? "bg-indigo-600 border-indigo-600 text-white"
-                          : "border-border hover:border-indigo-500/50"
+                          ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                          : "border-border hover:border-primary/50 bg-card"
                       }`}
                       aria-label="Toggle habit check-in"
                     >
@@ -128,8 +130,10 @@ export function TodosWidget({
                   <div
                     key={todo.id}
                     onClick={() => !isPendingToggle && handleToggle(todo.id, todo.completed)}
-                    className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 bg-card hover:border-sidebar-primary/30 ${
-                      todo.completed ? "opacity-75 border-border/50 bg-secondary/10" : "border-border shadow-sm"
+                    className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
+                      todo.completed 
+                        ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65" 
+                        : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
                     }`}
                   >
                     <button
@@ -137,8 +141,8 @@ export function TodosWidget({
                       disabled={isPendingToggle}
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${
                         todo.completed
-                          ? "bg-sidebar-primary border-sidebar-primary text-sidebar-primary-foreground"
-                          : "border-border hover:border-sidebar-primary/50"
+                          ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                          : "border-border hover:border-primary/50 bg-card"
                       }`}
                       aria-label="Toggle todo status"
                     >

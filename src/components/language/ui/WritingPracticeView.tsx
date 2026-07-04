@@ -124,7 +124,7 @@ export function WritingPracticeView({
     <div className="space-y-6 animate-in fade-in duration-200">
       
       {/* 1. Header Row (Tabs, Search, and Toggle Form Button) */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/50 pb-5 select-none">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/40 pb-5 select-none">
         <div className="flex flex-col sm:flex-row gap-3 flex-1 max-w-2xl">
           {/* Search Input */}
           <div className="relative flex-1">
@@ -138,12 +138,12 @@ export function WritingPracticeView({
                   ? "Search sentences or vocabulary word..."
                   : "Search free writing sentences..."
               }
-              className="w-full rounded-xl border border-border bg-card/60 pl-9 pr-3 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
+              className="w-full rounded-xl border border-border/60 bg-card/40 pl-9 pr-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
           
           {/* History Category Selector */}
-          <div className="flex gap-1.5 p-0.5 bg-secondary/20 border border-border/30 rounded-xl select-none shrink-0 self-start sm:self-auto">
+          <div className="flex gap-1.5 p-0.5 bg-secondary/35 border border-border/30 rounded-xl select-none shrink-0 self-start sm:self-auto">
             <button
               onClick={() => {
                 setActiveHistoryTab("vocab")
@@ -151,7 +151,7 @@ export function WritingPracticeView({
               }}
               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 activeHistoryTab === "vocab"
-                  ? "bg-background text-foreground shadow-sm border border-border/20 font-extrabold"
+                  ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -164,7 +164,7 @@ export function WritingPracticeView({
               }}
               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 activeHistoryTab === "free"
-                  ? "bg-background text-foreground shadow-sm border border-border/20 font-extrabold"
+                  ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -176,7 +176,7 @@ export function WritingPracticeView({
         {/* Toggle Form Button */}
         <button
           onClick={() => setShowWritingForm(!showWritingForm)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-sidebar-primary px-3.5 py-2 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/90 hover:scale-[1.02] self-start md:self-auto"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 self-start md:self-auto"
         >
           <Plus className="h-4 w-4" />
           {showWritingForm ? "Cancel Add" : "Add Writing"}
@@ -185,20 +185,20 @@ export function WritingPracticeView({
 
       {/* 2. Form Workspace (Only displays if showWritingForm is true) */}
       {showWritingForm && (
-        <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm backdrop-blur-md animate-in slide-in-from-top-4 duration-200">
+        <div className="bento-card p-5 animate-in slide-in-from-top-4 duration-200">
           <div className="flex items-center gap-2 mb-4">
-            <PencilLine className="h-5 w-5 text-violet-500" />
+            <PencilLine className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-bold text-foreground">New Writing Practice</h3>
           </div>
 
           {/* Practice Mode Selector Toggle */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-secondary/30 rounded-xl mb-5 border border-border/40 select-none max-w-sm">
+          <div className="grid grid-cols-2 gap-2 p-1 bg-secondary/30 rounded-xl mb-5 border border-border/30 select-none max-w-sm">
             <button
               type="button"
               onClick={() => setPracticeMode("free")}
-              className={`py-2 text-xs font-semibold rounded-lg transition-all ${
+              className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 practiceMode === "free"
-                  ? "bg-background text-foreground shadow-sm border border-border/30"
+                  ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -216,9 +216,9 @@ export function WritingPracticeView({
                   setSearchVocabQuery(vocabList[0].word)
                 }
               }}
-              className={`py-2 text-xs font-semibold rounded-lg transition-all ${
+              className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 practiceMode === "vocab"
-                  ? "bg-background text-foreground shadow-sm border border-border/30"
+                  ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -253,7 +253,7 @@ export function WritingPracticeView({
                             setShowVocabDropdown(true)
                           }}
                           placeholder="Type to search vocabulary..."
-                          className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+                          className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                         />
                         {selectedVocabId && (
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="Valid Word Selected" />
@@ -261,7 +261,7 @@ export function WritingPracticeView({
                       </div>
 
                       {showVocabDropdown && (
-                        <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
+                        <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
                           {filteredVocabList.length === 0 ? (
                             <div className="px-3 py-2 text-xs text-muted-foreground">
                               No matching vocabulary found
@@ -272,7 +272,7 @@ export function WritingPracticeView({
                                 key={v.id}
                                 type="button"
                                 onClick={() => handleSelectVocab(v.id, v.word)}
-                                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground transition-colors flex items-center justify-between ${
+                                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground transition-colors flex items-center justify-between cursor-pointer ${
                                   selectedVocabId === v.id ? "bg-accent/40 font-bold" : ""
                                 }`}
                               >
@@ -303,7 +303,7 @@ export function WritingPracticeView({
                     value={freeEnglish}
                     onChange={(e) => setFreeEnglish(e.target.value)}
                     placeholder="Type your English sentence practice here..."
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 resize-none leading-relaxed"
+                    className="w-full rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none leading-relaxed"
                   />
                 </div>
 
@@ -318,7 +318,7 @@ export function WritingPracticeView({
                     value={freeTranslation}
                     onChange={(e) => setFreeTranslation(e.target.value)}
                     placeholder="Indonesian translation..."
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 resize-none leading-relaxed"
+                    className="w-full rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none leading-relaxed"
                   />
                 </div>
               </div>
@@ -341,7 +341,7 @@ export function WritingPracticeView({
                       value={vocabEngPos}
                       onChange={(e) => setVocabEngPos(e.target.value)}
                       placeholder="English positive sentence..."
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
@@ -349,7 +349,7 @@ export function WritingPracticeView({
                       value={vocabTransPos}
                       onChange={(e) => setVocabTransPos(e.target.value)}
                       placeholder="Indonesian translation..."
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
                 </div>
@@ -369,7 +369,7 @@ export function WritingPracticeView({
                       value={vocabEngNeg}
                       onChange={(e) => setVocabEngNeg(e.target.value)}
                       placeholder="English negative sentence..."
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
@@ -377,7 +377,7 @@ export function WritingPracticeView({
                       value={vocabTransNeg}
                       onChange={(e) => setVocabTransNeg(e.target.value)}
                       placeholder="Indonesian translation..."
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
                 </div>
@@ -397,7 +397,7 @@ export function WritingPracticeView({
                       value={vocabEngInt}
                       onChange={(e) => setVocabEngInt(e.target.value)}
                       placeholder="English question sentence..."
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
@@ -405,7 +405,7 @@ export function WritingPracticeView({
                       value={vocabTransInt}
                       onChange={(e) => setVocabTransInt(e.target.value)}
                       placeholder="Indonesian translation..."
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-sidebar-primary"
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
                 </div>
@@ -424,7 +424,7 @@ export function WritingPracticeView({
               <button
                 type="button"
                 onClick={() => setShowWritingForm(false)}
-                className="rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-all"
+                className="rounded-lg border border-border/40 px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -434,7 +434,7 @@ export function WritingPracticeView({
                   writingCreatePending ||
                   (practiceMode === "vocab" && (!selectedVocabId || vocabList.length === 0))
                 }
-                className="inline-flex items-center gap-1.5 rounded-lg bg-sidebar-primary px-3.5 py-1.5 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 active:scale-95 disabled:opacity-50 cursor-pointer"
               >
                 {writingCreatePending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -452,7 +452,7 @@ export function WritingPracticeView({
       {/* 3. History Feed (Flows 1-column full-width) */}
       <div className="space-y-4 w-full">
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, idx) => (
               <GridCardSkeleton key={idx} />
             ))}
@@ -463,7 +463,7 @@ export function WritingPracticeView({
             <span>Error loading writing logs. Please check database.</span>
           </div>
         ) : filteredHistory.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground bg-card/10 select-none animate-in fade-in duration-200">
+          <div className="rounded-2xl border border-dashed border-border/40 py-16 text-center text-sm text-muted-foreground bg-card/10 select-none animate-in fade-in duration-200">
             {searchQueryWriting
               ? "No sentences match your search query."
               : activeHistoryTab === "vocab"
@@ -476,18 +476,18 @@ export function WritingPracticeView({
               return (
                 <div
                   key={log.id}
-                  className="group relative rounded-xl border border-border bg-card/45 dark:bg-card/15 p-4 shadow-sm hover:border-sidebar-primary/30 transition-all duration-300 flex flex-col justify-between"
+                  className="group relative rounded-xl border border-border/60 bg-card/40 dark:bg-card/15 p-4 shadow-sm hover:border-primary/30 hover:bg-card/75 transition-all duration-300 flex flex-col justify-between"
                 >
                   <div className="space-y-2">
                     {/* Top Badges Row */}
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/30 pb-2 mb-2">
                       <div className="flex flex-wrap items-center gap-1.5">
                         {log.vocabWord ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-violet-500/10 text-violet-500 dark:text-violet-400 border border-violet-500/20">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
                             Word: {log.vocabWord}
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-secondary/40 text-muted-foreground border border-border/50">
+                          <span className="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-secondary/40 text-muted-foreground border border-border/55">
                             Free Writing
                           </span>
                         )}
@@ -514,7 +514,7 @@ export function WritingPracticeView({
                       <button
                         onClick={() => handleDeleteWriting(log.id)}
                         disabled={writingDeletePending}
-                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
+                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                         aria-label="Delete sentence log"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

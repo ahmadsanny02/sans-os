@@ -31,20 +31,20 @@ export function TimetableWidget({
   isError,
 }: TimetableWidgetProps) {
   return (
-    <div className="rounded-2xl border border-border bg-card/25 dark:bg-card/10 p-6 shadow-sm space-y-4">
+    <div className="bento-card p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Clock className="h-5 w-5 text-sidebar-primary" />
+          <Clock className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-bold text-foreground">Today&apos;s Schedule</h3>
         </div>
-        <Link href="/daily" className="text-xs text-sidebar-primary hover:underline font-semibold flex items-center gap-0.5">
+        <Link href="/daily" className="text-xs text-primary hover:underline font-semibold flex items-center gap-0.5">
           Edit Timetable <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
 
       <div className="space-y-3">
         {isLoading ? (
-          <div className="relative border-l border-border/70 ml-2.5 pl-6 space-y-4">
+          <div className="relative border-l border-border/40 ml-2.5 pl-6 space-y-4">
             <div className="relative">
               <span className="absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background bg-muted animate-pulse" />
               <div className="h-16 w-full bg-muted/20 animate-pulse rounded-xl border border-border/40" />
@@ -59,11 +59,11 @@ export function TimetableWidget({
             Error loading schedule.
           </div>
         ) : activeDayBlocks.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border py-8 text-center text-xs text-muted-foreground">
+          <div className="rounded-xl border border-dashed border-border/60 py-8 text-center text-xs text-muted-foreground">
             No schedule blocks set for today.
           </div>
         ) : (
-          <div className="relative border-l border-border/70 ml-2.5 pl-6 space-y-4">
+          <div className="relative border-l border-border/40 ml-2.5 pl-6 space-y-4">
             {activeDayBlocks.map((block) => {
               const color = TIMETABLE_COLORS[block.color || "blue"] || TIMETABLE_COLORS.blue
               return (
@@ -71,7 +71,7 @@ export function TimetableWidget({
                   {/* Bullet Marker */}
                   <span className={`absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background ${color.bullet}`} />
                   
-                  <div className={`rounded-xl border p-3 bg-card shadow-sm ${color.border} ${color.bg}`}>
+                  <div className={`rounded-xl border p-3 bg-card/40 shadow-sm transition-colors duration-200 hover:bg-card/70 border-border/60 ${color.border}`}>
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 sm:gap-2">
                       <div className="min-w-0">
                         <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${color.bg} ${color.text} border ${color.border}`}>

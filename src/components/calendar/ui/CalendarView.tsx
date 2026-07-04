@@ -52,7 +52,7 @@ export function CalendarView({
   gridError,
 }: CalendarViewProps) {
   return (
-    <div className="grid gap-8 lg:grid-cols-12">
+    <div className="grid gap-6 lg:grid-cols-12">
       {/* Calendar Column */}
       <div className="lg:col-span-8 xl:col-span-9 space-y-4">
         <CalendarMonthGrid
@@ -67,10 +67,10 @@ export function CalendarView({
       </div>
 
       {/* Selected Day Agenda Detail Panel */}
-      <div className="lg:col-span-4 xl:col-span-3 border border-border bg-card/40 rounded-2xl p-5 shadow-sm backdrop-blur-md flex flex-col h-[fit-content] space-y-6">
-        <div className="border-b border-border/60 pb-4">
+      <div className="lg:col-span-4 xl:col-span-3 bento-card p-5 flex flex-col h-[fit-content] space-y-6">
+        <div className="border-b border-border/40 pb-4">
           <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-violet-500 shrink-0" />
+            <Calendar className="h-4 w-4 text-primary shrink-0" />
             Day Agenda
           </h3>
           <p className="text-xs text-muted-foreground mt-1 leading-snug">
@@ -100,7 +100,7 @@ export function CalendarView({
                   <div
                     key={priority.id}
                     className={`flex items-start gap-2.5 rounded-lg border p-2.5 transition-all text-xs bg-background/50 ${
-                      priority.completed ? "border-border/40 opacity-60" : "border-border"
+                      priority.completed ? "border-border/40 opacity-60" : "border-border/60"
                     }`}
                   >
                     <button
@@ -108,8 +108,8 @@ export function CalendarView({
                       disabled={isPendingToggle}
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-all mt-0.5 cursor-pointer disabled:cursor-not-allowed ${
                         priority.completed
-                          ? "bg-sidebar-primary border-sidebar-primary text-sidebar-primary-foreground"
-                          : "border-border hover:border-sidebar-primary hover:bg-sidebar-primary/10"
+                          ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                          : "border-border/65 hover:border-primary hover:bg-primary/10 bg-card"
                       }`}
                       aria-label="Toggle completed"
                     >

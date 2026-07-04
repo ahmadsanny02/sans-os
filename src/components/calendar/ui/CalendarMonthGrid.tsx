@@ -66,9 +66,9 @@ export function CalendarMonthGrid({
       )}
 
       {/* Calendar Grid Container */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm dark:bg-card/50">
+      <div className="bento-card">
         {/* Weekday headers */}
-        <div className="grid grid-cols-7 border-b border-border/80 bg-secondary/40 text-center py-3 text-xs font-bold text-muted-foreground tracking-wider uppercase select-none">
+        <div className="grid grid-cols-7 border-b border-border/40 bg-secondary/40 text-center py-3 text-xs font-bold text-muted-foreground tracking-wider uppercase select-none">
           {weekdays.map((day) => (
             <div key={day} className="truncate px-1">
               <span className="hidden sm:inline">{day}</span>
@@ -78,7 +78,7 @@ export function CalendarMonthGrid({
         </div>
 
         {/* Days grid layout */}
-        <div className="grid grid-cols-7 bg-border/40 gap-[1px]">
+        <div className="grid grid-cols-7 bg-border/30 gap-[1px]">
           {daysGrid.map((day, idx) => {
             const dateStr = format(day, "yyyy-MM-dd")
             const isSel = isSameDay(day, parseISO(selectedDate))
@@ -116,23 +116,23 @@ export function CalendarMonthGrid({
                 onClick={() => onSelectDate(dateStr)}
                 className={`min-h-[75px] sm:min-h-[110px] md:min-h-[130px] bg-card p-1.5 sm:p-2.5 flex flex-col justify-between hover:bg-muted/40 transition-colors cursor-pointer select-none relative group ${
                   !isCurrMonth ? "opacity-35 hover:opacity-60 bg-secondary/10" : ""
-                } ${isSel ? "ring-2 ring-sidebar-primary ring-inset z-10" : ""}`}
+                } ${isSel ? "ring-2 ring-primary ring-inset z-10" : ""}`}
               >
                 {/* Cell Header */}
                 <div className="flex justify-between items-start">
                   <span
                     className={`text-xs md:text-sm font-bold w-6 h-6 flex items-center justify-center rounded-full transition-all ${
                       isSel
-                        ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm font-extrabold"
+                        ? "bg-primary text-primary-foreground shadow-sm font-extrabold shadow-glow"
                         : isTday
-                        ? "border border-sidebar-primary/50 text-sidebar-primary font-bold"
+                        ? "border border-primary/50 text-primary font-bold"
                         : "text-muted-foreground group-hover:text-foreground"
                     }`}
                   >
                     {format(day, "d")}
                   </span>
                   {isTday && !isSel && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-sidebar-primary mr-1 mt-1.5 animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary mr-1 mt-1.5 animate-pulse" />
                   )}
                 </div>
 
@@ -165,7 +165,7 @@ export function CalendarMonthGrid({
                             return (
                               <div
                                 key={item.id}
-                                className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border border-indigo-500/10 truncate flex items-center gap-1 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 ${
+                                className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border border-primary/15 truncate flex items-center gap-1 bg-primary/5 text-primary ${
                                   item.completed ? "line-through opacity-45 border-dashed" : ""
                                 }`}
                               >
@@ -209,7 +209,7 @@ export function CalendarMonthGrid({
                             return (
                               <span
                                 key={item.id}
-                                className={`h-1.5 w-1.5 rounded-full shrink-0 bg-indigo-500 ${
+                                className={`h-1.5 w-1.5 rounded-full shrink-0 bg-primary ${
                                   item.completed ? "opacity-40" : ""
                                 }`}
                                 title={`Priority: ${item.title}`}

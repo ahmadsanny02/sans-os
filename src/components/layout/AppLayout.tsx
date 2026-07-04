@@ -125,12 +125,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     <div ref={rootRef} className="flex h-screen w-screen overflow-hidden bg-background font-sans text-foreground transition-colors duration-300">
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex flex-col border-r border-border bg-sidebar text-sidebar-foreground transition-all duration-300 ${
+        className={`hidden md:flex flex-col border-r border-sidebar-border/30 bg-sidebar/85 backdrop-blur-lg text-sidebar-foreground transition-all duration-300 ${
           sidebarOpen ? "w-64" : "w-16"
         }`}
       >
         {/* Sidebar Header */}
-        <div className="flex h-14 items-center justify-between border-b border-sidebar-border px-4">
+        <div className="flex h-14 items-center justify-between border-b border-sidebar-border/20 px-4">
           {sidebarOpen ? (
             <span className="bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-lg font-bold tracking-wider text-transparent">
               SansOS
@@ -138,7 +138,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           ) : null}
           <button
             onClick={toggleSidebar}
-            className="rounded p-1 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            className="rounded-lg p-1 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
             aria-label="Toggle Sidebar"
           >
             {sidebarOpen ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
@@ -146,7 +146,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Sidebar Navigation */}
-        <nav className="flex-1 space-y-1 p-2 overflow-y-auto">
+        <nav className="flex-1 space-y-1.5 p-3 overflow-y-auto">
           {SIDEBAR_ITEMS.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
@@ -154,25 +154,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground font-semibold"
-                    : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-muted-foreground"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-glow-active"
+                    : "hover:bg-sidebar-accent/50 hover:text-foreground text-muted-foreground"
                 }`}
               >
-                <Icon className={`h-5 w-5 ${isActive ? "text-sidebar-primary-foreground" : "text-muted-foreground"}`} />
+                <Icon className={`h-5 w-5 ${isActive ? "text-primary-foreground" : "text-muted-foreground"}`} />
                 {sidebarOpen ? <span>{item.name}</span> : null}
               </Link>
             );
           })}
         </nav>
 
-          {/* Sidebar Footer */}
-
-          <div className="border-t border-sidebar-border p-2 space-y-1">
+        {/* Sidebar Footer */}
+        <div className="border-t border-sidebar-border/20 p-3 space-y-1.5">
           <button
             onClick={toggleTheme}
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-muted-foreground"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium hover:bg-sidebar-accent/50 hover:text-foreground text-muted-foreground transition-all duration-200"
             aria-label="Toggle Theme"
           >
             {userConfig.theme === "dark" ? (
@@ -186,7 +185,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </button>
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-destructive/10 hover:text-destructive text-muted-foreground"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-all duration-200"
             aria-label="Log out"
           >
             <LogOut className="h-5 w-5" />
@@ -198,8 +197,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile Sidebar (Slide-out Drawer) */}
       {mobileMenuOpen ? (
         <div className="fixed inset-0 z-50 flex md:hidden bg-background/80 backdrop-blur-sm">
-          <div className="w-64 border-r border-border bg-sidebar text-sidebar-foreground flex flex-col h-full animate-in slide-in-from-left duration-250">
-            <div className="flex h-14 items-center justify-between border-b border-sidebar-border px-4">
+          <div className="w-64 border-r border-sidebar-border/30 bg-sidebar/95 backdrop-blur-md text-sidebar-foreground flex flex-col h-full animate-in slide-in-from-left duration-250">
+            <div className="flex h-14 items-center justify-between border-b border-sidebar-border/20 px-4">
               <span className="bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-lg font-bold tracking-wider text-transparent">
                 SansOS
               </span>
@@ -207,7 +206,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <nav className="flex-1 space-y-1 p-2 overflow-y-auto">
+            <nav className="flex-1 space-y-1.5 p-3 overflow-y-auto">
               {SIDEBAR_ITEMS.map((item) => {
                 const isActive = pathname === item.href
                 const Icon = item.icon
@@ -216,10 +215,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all ${
+                    className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 ${
                       isActive
-                        ? "bg-sidebar-primary text-sidebar-primary-foreground font-semibold"
-                        : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-muted-foreground"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-glow-active"
+                        : "hover:bg-sidebar-accent/50 hover:text-foreground text-muted-foreground"
                     }`}
                   >
                     <Icon className="h-5 w-5" />
@@ -228,10 +227,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 );
               })}
             </nav>
-            <div className="border-t border-sidebar-border p-2 space-y-1">
+            <div className="border-t border-sidebar-border/20 p-3 space-y-1.5">
               <button
                 onClick={toggleTheme}
-                className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-muted-foreground"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium hover:bg-sidebar-accent/50 hover:text-foreground text-muted-foreground transition-all duration-200"
               >
                 {userConfig.theme === "dark" ? (
                   <Sun className="h-5 w-5 text-amber-500" />
@@ -242,7 +241,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </button>
               <button
                 onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-destructive/10 hover:text-destructive text-muted-foreground"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-all duration-200"
               >
                 <LogOut className="h-5 w-5" />
                 <span>Sign Out</span>
@@ -256,11 +255,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Mobile Header */}
-        <header className="flex h-14 items-center justify-between border-b border-border bg-card/60 backdrop-blur-md px-4 md:hidden shrink-0">
+        <header className="flex h-14 items-center justify-between border-b border-border/40 bg-card/70 backdrop-blur-md px-4 md:hidden shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="rounded p-1 hover:bg-accent hover:text-accent-foreground"
+              className="rounded-lg p-1 hover:bg-accent hover:text-accent-foreground"
               aria-label="Open menu"
             >
               <Menu className="h-6 w-6" />
@@ -271,7 +270,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <button
             onClick={toggleTheme}
-            className="rounded p-1.5 hover:bg-accent hover:text-accent-foreground"
+            className="rounded-lg p-1.5 hover:bg-accent hover:text-accent-foreground"
             aria-label="Toggle Theme"
           >
             {userConfig.theme === "dark" ? (
@@ -283,12 +282,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Dynamic page view content container */}
-        <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-background/95 scroll-smooth">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-background scroll-smooth">
           {children}
         </main>
 
         {/* Mobile Bottom Navigation Bar (Quick Navigation) */}
-        <nav className="flex h-16 border-t border-border bg-card/85 backdrop-blur-md md:hidden items-center justify-around pb-safe shrink-0">
+        <nav className="flex h-16 border-t border-border/40 bg-card/75 backdrop-blur-lg md:hidden items-center justify-around pb-safe shrink-0">
           {SIDEBAR_ITEMS.slice(0, 4).map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
@@ -296,7 +295,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors ${
+                className={`flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors duration-200 ${
                   isActive
                     ? "text-primary font-semibold"
                     : "text-muted-foreground hover:text-foreground"
@@ -341,14 +340,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           scale: isModalOpen ? 0 : 1,
         }}
         transition={{ duration: 0.2 }}
-        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full flex items-center justify-center border bg-zinc-900/90 text-white backdrop-blur-md transition-colors duration-300 shadow-lg cursor-pointer ${
+        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full flex items-center justify-center border bg-card/90 text-foreground backdrop-blur-md transition-all duration-300 shadow-glass cursor-pointer ${
           isModalOpen ? "pointer-events-none" : "pointer-events-auto"
         } ${
           pomodoroIsRunning
             ? pomodoroPhase === "focus"
-              ? "border-violet-500 shadow-violet-500/20"
-              : "border-emerald-500 shadow-emerald-500/20"
-            : "border-white/10 hover:border-white/20"
+              ? "border-violet-500 shadow-glow"
+              : "border-emerald-500 shadow-glow"
+            : "border-border/60 hover:border-primary/40 hover:shadow-glow-active"
         }`}
         aria-label="Toggle Pomodoro Panel"
         title="Open Pomodoro Timer"

@@ -2,7 +2,7 @@
 
 import React from "react"
 import { TimetableBlock } from "@/hooks/useDaily"
-import { Plus, Trash2, Clock, Loader2, CalendarRange, AlertCircle, Link2 } from "lucide-react"
+import { Trash2, Clock, CalendarRange, Link2 } from "lucide-react"
 
 const COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
   blue: { bg: "bg-blue-500/10", text: "text-blue-500 dark:text-blue-400", border: "border-blue-500/20", bullet: "bg-blue-500" },
@@ -57,10 +57,10 @@ export function Timetable({
         </div>
       </div>
 
-      {/* Timeline List Card */}
-      <div className="relative border border-border bg-card rounded-2xl p-6 shadow-sm dark:bg-card/50">
+      {/* Timeline List (Flat Bento Container) */}
+      <div className="relative mt-2">
         {isLoading ? (
-          <div className="relative border-l border-border pl-6 space-y-6">
+          <div className="relative border-l border-border/40 pl-6 space-y-6">
             <div className="relative">
               <span className="absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background bg-muted animate-pulse" />
               <div className="h-16 w-full bg-muted/20 animate-pulse rounded-xl border border-border/40" />
@@ -80,7 +80,7 @@ export function Timetable({
             <span>No events scheduled for this day of week.</span>
           </div>
         ) : (
-          <div className="relative border-l border-border pl-6 space-y-6">
+          <div className="relative border-l border-border/40 pl-6 space-y-6">
             {activeDayBlocks.map((block) => {
               const theme = COLORS[block.color] || COLORS.blue
               const duration = calculateDuration(block.startTime, block.endTime)
@@ -104,7 +104,7 @@ export function Timetable({
                           </span>
                         )}
                         {block.dayOfWeek === -1 && (
-                          <span className="rounded-full bg-sidebar-primary/10 text-sidebar-primary dark:bg-sidebar-primary/20 dark:text-violet-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
+                          <span className="rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-violet-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
                             Every Day
                           </span>
                         )}
@@ -124,7 +124,7 @@ export function Timetable({
                             href={block.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center text-violet-500 hover:text-violet-600 dark:text-violet-400 dark:hover:text-violet-300 transition-colors"
+                            className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
                             title="Open Link"
                           >
                             <Link2 className="h-3.5 w-3.5" />

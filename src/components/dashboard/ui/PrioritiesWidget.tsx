@@ -27,13 +27,13 @@ export function PrioritiesWidget({
   })
 
   return (
-    <div className="rounded-2xl border border-border bg-card/25 dark:bg-card/10 p-6 shadow-sm space-y-4">
+    <div className="bento-card p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Award className="h-5 w-5 text-sidebar-primary" />
+          <Award className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-bold text-foreground">Top 5 Priorities</h3>
         </div>
-        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border font-semibold text-muted-foreground flex items-center justify-center min-w-[32px] h-5">
+        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border/40 font-semibold text-muted-foreground flex items-center justify-center min-w-[32px] h-5">
           {isLoading ? (
             <span className="inline-block w-4 h-2.5 bg-muted/30 animate-pulse rounded" />
           ) : (
@@ -53,7 +53,7 @@ export function PrioritiesWidget({
             Error loading priorities.
           </div>
         ) : priorities.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border py-8 text-center text-xs text-muted-foreground">
+          <div className="rounded-xl border border-dashed border-border/60 py-8 text-center text-xs text-muted-foreground">
             No priorities set for today.
           </div>
         ) : (
@@ -62,8 +62,10 @@ export function PrioritiesWidget({
               <div
                 key={priority.id}
                 onClick={() => !isPendingToggle && handleToggle(priority.id, priority.completed)}
-                className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 bg-card hover:border-sidebar-primary/30 ${
-                  priority.completed ? "opacity-75 border-border/50 bg-secondary/10" : "border-border shadow-sm"
+                className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
+                  priority.completed 
+                    ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65" 
+                    : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
                 }`}
               >
                 <button
@@ -71,8 +73,8 @@ export function PrioritiesWidget({
                   disabled={isPendingToggle}
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${
                     priority.completed
-                      ? "bg-sidebar-primary border-sidebar-primary text-sidebar-primary-foreground"
-                      : "border-border hover:border-sidebar-primary/50"
+                      ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                      : "border-border hover:border-primary/50 bg-card"
                   }`}
                   aria-label="Toggle completed"
                 >

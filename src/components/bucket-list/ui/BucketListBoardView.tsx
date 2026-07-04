@@ -114,8 +114,8 @@ export function BucketListBoardView({
           title="Total Dreams"
           value={isError ? "N/A" : totalCount}
           icon={<Compass className="h-6 w-6" />}
-          iconBgClass="bg-violet-500/10"
-          iconTextClass="text-violet-500"
+          iconBgClass="bg-primary/10"
+          iconTextClass="text-primary"
           isLoading={isLoading}
           description="Dreams registered"
         />
@@ -146,14 +146,14 @@ export function BucketListBoardView({
           <div className="h-2 w-full bg-secondary rounded-full overflow-hidden mt-2.5">
             <div
               style={{ width: `${isLoading || isError ? 0 : completionRate}%` }}
-              className="h-full bg-gradient-to-r from-violet-500 to-emerald-500 transition-all duration-500"
+              className="h-full bg-gradient-to-r from-primary to-emerald-500 transition-all duration-500"
             />
           </div>
         </StatCard>
       </div>
 
       {/* 2. Controls Section */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/50 pb-5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/40 pb-5">
         <div className="relative flex-1 max-w-lg">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground" />
           <input
@@ -161,13 +161,13 @@ export function BucketListBoardView({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search bucket goals..."
-            className="w-full rounded-xl border border-border bg-card/60 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+            className="w-full rounded-xl border border-border/60 bg-card/40 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
           />
         </div>
 
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-sidebar-primary px-3.5 py-2 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/90 hover:scale-[1.02] self-start md:self-auto"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 self-start md:self-auto cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           {showAddForm ? "Cancel Add" : "Add Bucket Goal"}
@@ -178,10 +178,10 @@ export function BucketListBoardView({
       {showAddForm && (
         <form
           onSubmit={handleAddItem}
-          className="rounded-2xl border border-border bg-card/60 p-5 shadow-sm backdrop-blur-md space-y-4 animate-in slide-in-from-top-4 duration-200"
+          className="bento-card p-5 space-y-4 animate-in slide-in-from-top-4 duration-200"
         >
           <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5 border-b border-border/40 pb-2">
-            <Sparkles className="h-4.5 w-4.5 text-violet-500" /> Log a New Life Goal
+            <Sparkles className="h-4.5 w-4.5 text-primary" /> Log a New Life Goal
           </h4>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -197,7 +197,7 @@ export function BucketListBoardView({
                 value={addTitle}
                 onChange={(e) => setAddTitle(e.target.value)}
                 placeholder="e.g. Scuba Dive in Great Barrier Reef"
-                className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-sm outline-none focus:border-sidebar-primary"
+                className="w-full rounded-lg border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
 
@@ -212,7 +212,7 @@ export function BucketListBoardView({
                 value={addImageUrl}
                 onChange={(e) => setAddImageUrl(e.target.value)}
                 placeholder="e.g. https://images.unsplash.com/photo-..."
-                className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-sm outline-none focus:border-sidebar-primary"
+                className="w-full rounded-lg border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
           </div>
@@ -220,7 +220,7 @@ export function BucketListBoardView({
           {/* Presets template */}
           <div className="space-y-2">
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-              <Heart className="h-3.5 w-3.5 text-violet-500" /> Or pick a preset dream location
+              <Heart className="h-3.5 w-3.5 text-primary" /> Or pick a preset dream location
             </span>
             <div className="flex flex-wrap gap-2">
               {BUCKET_PRESETS.map((preset) => (
@@ -228,10 +228,10 @@ export function BucketListBoardView({
                   key={preset.name}
                   type="button"
                   onClick={() => setAddImageUrl(preset.url)}
-                  className={`px-3 py-1 text-[10px] font-bold rounded-full border transition-all ${
+                  className={`px-3 py-1 text-[10px] font-bold rounded-full border transition-all cursor-pointer ${
                     addImageUrl === preset.url
-                      ? "bg-amber-500/10 text-amber-500 border-amber-500/30"
-                      : "border-border text-muted-foreground hover:bg-secondary/40"
+                      ? "bg-primary/10 text-primary border-primary/20"
+                      : "border-border/60 text-muted-foreground hover:bg-secondary/40"
                   }`}
                 >
                   {preset.name}
@@ -251,14 +251,14 @@ export function BucketListBoardView({
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold hover:bg-muted"
+              className="rounded-lg border border-border/40 px-3 py-1.5 text-xs font-semibold hover:bg-muted cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPendingCreate}
-              className="rounded-lg bg-sidebar-primary px-3.5 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
+              className="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1 cursor-pointer active:scale-95"
             >
               {isPendingCreate ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -279,10 +279,10 @@ export function BucketListBoardView({
               <button
                 key={filter}
                 onClick={() => setSelectedFilter(filter)}
-                className={`px-3.5 py-1 rounded-full text-xs font-bold transition-all border ${
+                className={`px-3.5 py-1 rounded-full text-xs font-bold transition-all border cursor-pointer ${
                   isActive
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground border-sidebar-primary shadow-sm"
-                    : "bg-secondary/20 hover:bg-secondary/50 border-border text-muted-foreground"
+                    ? "bg-primary text-primary-foreground border-primary shadow-glass shadow-glow"
+                    : "bg-secondary/35 hover:bg-secondary/50 border-border/40 text-muted-foreground"
                 }`}
               >
                 {filter} {filter === "Active" ? `(${activeCount})` : filter === "Achieved" ? `(${completedCount})` : `(${totalCount})`}
@@ -312,7 +312,7 @@ export function BucketListBoardView({
             return (
               <div
                 key={item.id}
-                className="group relative h-64 rounded-2xl border border-border/60 overflow-hidden shadow-md flex flex-col justify-end p-5 select-none bg-black"
+                className="group relative h-64 rounded-2xl border border-border/60 overflow-hidden shadow-md flex flex-col justify-end p-5 select-none bg-black hover:border-primary/30 transition-all duration-300"
               >
                 {/* Visual Cover Photo */}
                 {item.imageUrl ? (
@@ -325,7 +325,7 @@ export function BucketListBoardView({
                     }`}
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-violet-950/40 to-slate-900 w-full h-full transition-opacity duration-500 group-hover:opacity-85" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-slate-900 w-full h-full transition-opacity duration-500 group-hover:opacity-85" />
                 )}
 
                 {/* Dark Vignette Overlay */}
@@ -335,7 +335,7 @@ export function BucketListBoardView({
                 <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                   <button
                     onClick={() => handleOpenEdit(item)}
-                    className="p-1.5 rounded-lg bg-black/60 border border-white/20 text-white hover:bg-black/80 transition-all active:scale-95"
+                    className="p-1.5 rounded-lg bg-black/60 border border-white/20 text-white hover:bg-black/80 transition-all active:scale-95 cursor-pointer"
                     title="Edit Item"
                   >
                     <Edit2 className="h-3.5 w-3.5" />
@@ -343,7 +343,7 @@ export function BucketListBoardView({
                   <button
                     onClick={() => handleDeleteItem(item.id, item.title)}
                     disabled={isPendingDelete}
-                    className="p-1.5 rounded-lg bg-black/60 border border-white/20 text-rose-400 hover:bg-rose-500/30 transition-all active:scale-95"
+                    className="p-1.5 rounded-lg bg-black/60 border border-white/20 text-rose-400 hover:bg-rose-500/30 transition-all active:scale-95 cursor-pointer"
                     title="Delete Item"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -356,7 +356,7 @@ export function BucketListBoardView({
                     <button
                       onClick={() => handleToggleCompleted(item)}
                       disabled={isPendingUpdate}
-                      className="text-white hover:scale-105 transition-transform shrink-0"
+                      className="text-white hover:scale-105 transition-transform shrink-0 cursor-pointer"
                     >
                       {item.completed ? (
                         <CheckCircle2 className="h-6 w-6 text-emerald-400 fill-emerald-950/80" />
@@ -392,8 +392,8 @@ export function BucketListBoardView({
       <Modal
         isOpen={!!editingItem}
         onClose={() => setEditingItem(null)}
-        title="Edit Bucket List Goal"
-        icon={<Compass className="h-5 w-5 text-violet-500" />}
+        title="Edit Bucket Goal"
+        icon={<Compass className="h-5 w-5 text-primary" />}
       >
         {editingItem && (
           <form onSubmit={handleUpdateItem} className="space-y-4 pt-1">
@@ -407,7 +407,7 @@ export function BucketListBoardView({
                   required
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
 
@@ -419,7 +419,7 @@ export function BucketListBoardView({
                   type="text"
                   value={editImageUrl}
                   onChange={(e) => setEditImageUrl(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
 
@@ -430,9 +430,9 @@ export function BucketListBoardView({
                   type="checkbox"
                   checked={editCompleted}
                   onChange={(e) => setEditCompleted(e.target.checked)}
-                  className="rounded border-border text-sidebar-primary outline-none focus:ring-sidebar-primary h-4 w-4 shrink-0"
+                  className="rounded border-border/60 text-primary outline-none focus:ring-primary h-4 w-4 shrink-0 cursor-pointer"
                 />
-                <label htmlFor="editGoalCompleted" className="text-sm font-bold text-muted-foreground">Mark as Achieved</label>
+                <label htmlFor="editGoalCompleted" className="text-sm font-bold text-muted-foreground cursor-pointer">Mark as Achieved</label>
               </div>
             </div>
 
@@ -447,14 +447,14 @@ export function BucketListBoardView({
               <button
                 type="button"
                 onClick={() => setEditingItem(null)}
-                className="rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold hover:bg-muted"
+                className="rounded-lg border border-border/40 px-3.5 py-1.5 text-xs font-semibold hover:bg-muted cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPendingUpdate}
-                className="rounded-lg bg-sidebar-primary px-4 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
+                className="rounded-lg bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1 cursor-pointer active:scale-95"
               >
                 {isPendingUpdate ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />

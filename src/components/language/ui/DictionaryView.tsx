@@ -187,7 +187,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
   return (
     <div className="space-y-6">
       {/* Search and Quick Filters */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/50 pb-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/40 pb-5">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground" />
           <input
@@ -195,7 +195,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search word in dictionary..."
-            className="w-full rounded-xl border border-border bg-card/60 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+            className="w-full rounded-xl border border-border/60 bg-card/40 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
           />
           {searchQuery && (
             <button
@@ -208,7 +208,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
         </div>
 
         <div className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-          <Sparkles className="h-4 w-4 text-violet-500" />
+          <Sparkles className="h-4 w-4 text-primary" />
           Powered by Datamuse & Free Dictionary API
         </div>
       </div>
@@ -217,7 +217,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
       {/* Words Grid / List */}
       {isLoadingWords ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <Loader2 className="h-8 w-8 text-violet-500 animate-spin" />
+          <Loader2 className="h-8 w-8 text-primary animate-spin" />
           <span className="text-xs font-semibold text-muted-foreground">Searching dictionary words...</span>
         </div>
       ) : searchQuery.trim() !== "" && words.length === 0 ? (
@@ -251,10 +251,10 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                 <button
                   type="button"
                   onClick={() => toggleLetterCollapse(letter)}
-                  className="w-full flex items-center justify-between p-3 bg-secondary/20 hover:bg-secondary/45 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/60 border border-border/80 rounded-xl transition-all duration-200 select-none cursor-pointer text-left shadow-sm active:scale-[0.995]"
+                  className="w-full flex items-center justify-between p-3 bg-secondary/20 hover:bg-secondary/45 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/60 border border-border/40 rounded-xl transition-all duration-200 select-none cursor-pointer text-left shadow-sm active:scale-[0.995]"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="inline-flex h-8 w-8 items-center justify-center text-xs font-extrabold bg-sidebar-primary text-sidebar-primary-foreground rounded-lg shadow-sm border border-white/5 uppercase select-none">
+                    <div className="inline-flex h-8 w-8 items-center justify-center text-xs font-extrabold bg-primary text-primary-foreground rounded-lg shadow-glass shadow-glow uppercase select-none">
                       {letter}
                     </div>
                     <span className="text-xs font-bold text-muted-foreground">
@@ -263,7 +263,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                   </div>
                   <ChevronDown
                     className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${
-                      isCollapsed ? "" : "rotate-180 text-violet-500"
+                      isCollapsed ? "" : "rotate-180 text-primary"
                     }`}
                   />
                 </button>
@@ -278,10 +278,10 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                       transition={{ duration: 0.2, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="rounded-2xl border border-border bg-card/10 dark:bg-card/5 p-5 shadow-sm mt-1">
+                      <div className="rounded-2xl border border-border/40 bg-secondary/10 p-5 shadow-sm mt-1">
                         {isLoading ? (
                           <div className="flex flex-col items-center justify-center py-10 gap-2.5">
-                            <Loader2 className="h-6 w-6 text-violet-500 animate-spin" />
+                            <Loader2 className="h-6 w-6 text-primary animate-spin" />
                             <span className="text-xs font-semibold text-muted-foreground">Loading words starting with {letter}...</span>
                           </div>
                         ) : hasFetched && groupWords.length === 0 ? (
@@ -307,8 +307,8 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                                   key={item.word}
                                   className={`rounded-2xl border transition-all duration-300 flex flex-col justify-between overflow-hidden ${
                                     isExpanded
-                                      ? "border-sidebar-primary/40 bg-secondary/10 shadow-md col-span-full sm:col-span-full lg:col-span-full"
-                                      : "border-border bg-card/45 hover:border-sidebar-primary/20 hover:shadow-sm"
+                                      ? "border-primary/45 bg-secondary/15 shadow-glass col-span-full sm:col-span-full lg:col-span-full"
+                                      : "border-border/60 bg-card/40 hover:bg-card/75 hover:border-primary/20 hover:shadow-sm"
                                   }`}
                                 >
                                   {/* Main Header / Clickable Toggle */}
@@ -317,7 +317,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                                     className="p-5 flex items-center justify-between cursor-pointer select-none"
                                   >
                                     <div className="flex items-center gap-3">
-                                      <div className="h-8 w-8 rounded-lg bg-violet-500/10 text-violet-400 flex items-center justify-center font-bold text-xs uppercase shadow-inner">
+                                      <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs uppercase shadow-inner">
                                         {item.word.charAt(0)}
                                       </div>
                                       <span className="text-md font-bold text-foreground capitalize tracking-tight">
@@ -333,7 +333,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                                       )}
                                       <ChevronDown
                                         className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${
-                                          isExpanded ? "rotate-180 text-violet-400" : ""
+                                          isExpanded ? "rotate-180 text-primary" : ""
                                         }`}
                                       />
                                     </div>
@@ -352,7 +352,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                                         <div className="p-5 space-y-5">
                                           {detailsLoading ? (
                                             <div className="flex items-center justify-center py-8 gap-2">
-                                              <Loader2 className="h-5 w-5 text-violet-500 animate-spin" />
+                                              <Loader2 className="h-5 w-5 text-primary animate-spin" />
                                               <span className="text-xs font-semibold text-muted-foreground">Fetching meanings and translations...</span>
                                             </div>
                                           ) : details ? (
@@ -401,8 +401,8 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                                                 </span>
 
                                                 {/* Primary Google Translation */}
-                                                <div className="p-3 bg-violet-500/5 border border-violet-500/15 rounded-xl space-y-1">
-                                                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-violet-400 block select-none">
+                                                <div className="p-3 bg-primary/5 border border-primary/15 rounded-xl space-y-1">
+                                                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-primary block select-none">
                                                     Primary Translation
                                                   </span>
                                                   <span className="text-sm font-bold text-foreground">
@@ -450,7 +450,7 @@ export function DictionaryView({ vocabList }: DictionaryViewProps) {
                                                     type="button"
                                                     onClick={() => handleSaveToLogs(details)}
                                                     disabled={createVocabMutation.isPending}
-                                                    className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5 transition-all hover:scale-[1.02] shadow-sm select-none cursor-pointer"
+                                                    className="rounded-lg bg-primary text-primary-foreground hover:bg-primary/95 px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5 transition-all hover:scale-[1.02] shadow-sm select-none cursor-pointer"
                                                   >
                                                     {createVocabMutation.isPending ? (
                                                       <Loader2 className="h-3.5 w-3.5 animate-spin" />

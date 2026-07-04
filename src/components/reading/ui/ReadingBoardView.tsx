@@ -208,7 +208,7 @@ export function ReadingBoardView({
       </div>
 
       {/* 2. Controls Section (Search, Add button) */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/50 pb-5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border/40 pb-5">
         <div className="relative flex-1 max-w-lg">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground" />
           <input
@@ -216,13 +216,13 @@ export function ReadingBoardView({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search book title or author..."
-            className="w-full rounded-xl border border-border bg-card/60 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+            className="w-full rounded-xl border border-border/60 bg-card/40 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
           />
         </div>
 
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-sidebar-primary px-3.5 py-2 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/90 hover:scale-[1.02] self-start md:self-auto"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 self-start md:self-auto"
         >
           <Plus className="h-4 w-4" />
           {showAddForm ? "Cancel Add" : "Add Book Log"}
@@ -233,10 +233,10 @@ export function ReadingBoardView({
       {showAddForm && (
         <form
           onSubmit={handleAddBook}
-          className="rounded-2xl border border-border bg-card/60 p-5 shadow-sm backdrop-blur-md space-y-4 animate-in slide-in-from-top-4 duration-200"
+          className="bento-card p-5 space-y-4 animate-in slide-in-from-top-4 duration-200"
         >
           <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5 border-b border-border/40 pb-2">
-            <BookOpen className="h-4.5 w-4.5 text-violet-500" /> Record New Book
+            <BookOpen className="h-4.5 w-4.5 text-primary" /> Record New Book
           </h4>
 
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -252,7 +252,7 @@ export function ReadingBoardView({
                 value={addTitle}
                 onChange={(e) => setAddTitle(e.target.value)}
                 placeholder="e.g. Atomic Habits"
-                className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
 
@@ -268,7 +268,7 @@ export function ReadingBoardView({
                 value={addAuthor}
                 onChange={(e) => setAddAuthor(e.target.value)}
                 placeholder="e.g. James Clear"
-                className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
 
@@ -281,7 +281,7 @@ export function ReadingBoardView({
                 id="addBookStatus"
                 value={addStatus}
                 onChange={(e) => setAddStatus(e.target.value)}
-                className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary"
               >
                 <option value="To Read">To Read</option>
                 <option value="Reading">Reading</option>
@@ -328,7 +328,7 @@ export function ReadingBoardView({
                   required
                   value={addFinishedAt}
                   onChange={(e) => setAddFinishedAt(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
 
@@ -342,7 +342,7 @@ export function ReadingBoardView({
                   value={addReview}
                   onChange={(e) => setAddReview(e.target.value)}
                   placeholder="Share what you learned or your thoughts on the book..."
-                  className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
             </div>
@@ -361,7 +361,7 @@ export function ReadingBoardView({
                   value={addProgress}
                   onChange={(e) => setAddProgress(e.target.value)}
                   placeholder="Where are you in the book?"
-                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
             </div>
@@ -378,14 +378,14 @@ export function ReadingBoardView({
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold hover:bg-muted"
+              className="rounded-lg border border-border/40 px-3 py-1.5 text-xs font-semibold hover:bg-muted"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPendingCreate}
-              className="rounded-lg bg-sidebar-primary px-3.5 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
+              className="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1"
             >
               {isPendingCreate ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -407,8 +407,8 @@ export function ReadingBoardView({
                 key={status}
                 onClick={() => setSelectedStatusFilter(status)}
                 className={`px-3.5 py-1 rounded-full text-xs font-bold transition-all border ${isActive
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground border-sidebar-primary shadow-sm"
-                  : "bg-secondary/20 hover:bg-secondary/50 border-border text-muted-foreground"
+                  ? "bg-primary text-primary-foreground border-primary shadow-glass shadow-glow"
+                  : "bg-secondary/20 hover:bg-secondary/50 border-border/60 text-muted-foreground"
                 }`}
               >
                 {status}
@@ -439,7 +439,7 @@ export function ReadingBoardView({
             return (
               <div
                 key={book.id}
-                className="group relative rounded-2xl border border-border bg-card/40 dark:bg-card/10 p-5 shadow-sm hover:border-sidebar-primary/30 transition-all duration-300 flex flex-col justify-between"
+                className="group relative rounded-2xl border border-border/60 bg-card/40 hover:bg-card/75 p-5 shadow-sm hover:border-primary/30 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   {/* Status Badge & Actions */}
@@ -581,7 +581,7 @@ export function ReadingBoardView({
                   required
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
 
@@ -594,7 +594,7 @@ export function ReadingBoardView({
                   required
                   value={editAuthor}
                   onChange={(e) => setEditAuthor(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
 
@@ -605,7 +605,7 @@ export function ReadingBoardView({
                   id="editBookStatus"
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none focus:border-primary"
                 >
                   <option value="To Read">To Read</option>
                   <option value="Reading">Reading</option>
@@ -650,7 +650,7 @@ export function ReadingBoardView({
                     required
                     value={editFinishedAt}
                     onChange={(e) => setEditFinishedAt(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none focus:border-primary"
                   />
                 </div>
 
@@ -662,7 +662,7 @@ export function ReadingBoardView({
                     value={editReview}
                     onChange={(e) => setEditReview(e.target.value)}
                     placeholder="Share what you learned..."
-                    className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-sm outline-none focus:border-sidebar-primary"
+                    className="w-full rounded-lg border border-border/60 bg-background px-3.5 py-2 text-sm outline-none focus:border-primary"
                   />
                 </div>
               </div>
@@ -679,7 +679,7 @@ export function ReadingBoardView({
                     value={editProgress}
                     onChange={(e) => setEditProgress(e.target.value)}
                     placeholder="e.g. Page 120, Chapter 5"
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-sidebar-primary"
+                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none focus:border-primary"
                   />
                 </div>
               </div>
@@ -696,14 +696,14 @@ export function ReadingBoardView({
               <button
                 type="button"
                 onClick={() => setEditingBook(null)}
-                className="rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold hover:bg-muted"
+                className="rounded-lg border border-border/40 px-3.5 py-1.5 text-xs font-semibold hover:bg-muted"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPendingUpdate}
-                className="rounded-lg bg-sidebar-primary px-4 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
+                className="rounded-lg bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1"
               >
                 {isPendingUpdate ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />

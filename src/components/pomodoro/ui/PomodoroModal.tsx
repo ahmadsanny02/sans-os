@@ -39,14 +39,14 @@ const PHASE_META: Record<
   idle: {
     label: "Ready",
     emoji: "",
-    color: "text-violet-400",
-    ring: "stroke-violet-500/40",
+    color: "text-primary",
+    ring: "stroke-primary/40",
   },
   focus: {
     label: "Focus",
     emoji: "",
-    color: "text-violet-400",
-    ring: "stroke-violet-500",
+    color: "text-primary",
+    ring: "stroke-primary",
   },
   break: {
     label: "Break",
@@ -334,7 +334,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
         }}
       >
         <div className="flex items-center gap-2">
-          <Timer className="h-4 w-4 text-violet-400" />
+          <Timer className="h-4 w-4 text-primary" />
           <span className="text-xs font-bold text-white/80 tracking-wide uppercase">
             Pomodoro
           </span>
@@ -352,9 +352,9 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
                   startPip(setIsPipActive, setIsPipExpanded)
                 }
               }}
-              className={`rounded p-1 transition-colors ${
+              className={`rounded p-1 transition-colors cursor-pointer ${
                 isPipActive
-                  ? "text-violet-400 bg-white/10"
+                  ? "text-primary bg-white/10"
                   : "text-white/40 hover:text-white/70 hover:bg-white/10"
               }`}
               aria-label={isPipActive ? "Close floating window" : "Open floating window"}
@@ -373,7 +373,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
           </Link>
           <button
             onClick={closeModal}
-            className="rounded p-1 hover:bg-white/10 transition-colors"
+            className="rounded p-1 hover:bg-white/10 transition-colors cursor-pointer"
             aria-label="Close Pomodoro modal"
           >
             <X className="h-3.5 w-3.5 text-white/40 hover:text-white/70" />
@@ -409,7 +409,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
                   key={i}
                   className={`inline-block h-1.5 w-1.5 rounded-full transition-colors ${
                     i < (sessionCount % totalSessions)
-                      ? "bg-violet-400"
+                      ? "bg-primary"
                       : "bg-white/20"
                   }`}
                 />
@@ -441,7 +441,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
                   showErrorToast("No active timetable schedule block right now!")
                 }
               }}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold py-2.5 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground text-sm font-semibold py-2.5 transition-all cursor-pointer active:scale-95"
             >
               <Play className="h-4 w-4" />
               Start Focus
@@ -460,10 +460,10 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
                     }
                   }
                 }}
-                className={`flex-1 flex items-center justify-center gap-2 rounded-xl text-white text-sm font-semibold py-2.5 transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 rounded-xl text-sm font-semibold py-2.5 transition-all cursor-pointer active:scale-95 ${
                   isRunning
-                    ? "bg-amber-600 hover:bg-amber-500"
-                    : "bg-violet-600 hover:bg-violet-500"
+                    ? "bg-amber-600 hover:bg-amber-500 text-white"
+                    : "bg-primary hover:bg-primary/95 text-primary-foreground"
                 }`}
                 aria-label={isRunning ? "Pause timer" : "Resume timer"}
               >

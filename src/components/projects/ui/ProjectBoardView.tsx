@@ -149,7 +149,7 @@ export function ProjectBoardView({
   })
 
   return (
-    <div className="grid gap-8 lg:grid-cols-12 animate-in fade-in duration-200">
+    <div className="grid gap-6 lg:grid-cols-12 animate-in fade-in duration-200">
       {/* Left Column: Projects List */}
       <div className="lg:col-span-5 xl:col-span-4 space-y-6">
         <div className="flex items-center justify-between">
@@ -163,7 +163,7 @@ export function ProjectBoardView({
           </div>
           <button
             onClick={() => setShowAddProject(!showAddProject)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-sidebar-primary px-3.5 py-1.5 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/90 hover:scale-[1.02]"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95"
           >
             <Plus className="h-4 w-4" />
             {showAddProject ? "Cancel" : "Add Project"}
@@ -174,7 +174,7 @@ export function ProjectBoardView({
         {showAddProject ? (
           <form
             onSubmit={handleAddProject}
-            className="rounded-xl border border-border bg-card/60 p-4 shadow-sm backdrop-blur-md space-y-4 animate-in slide-in-from-top-4 duration-200"
+            className="bento-card p-4 space-y-4 animate-in slide-in-from-top-4 duration-200"
           >
             <div className="space-y-1.5">
               <label htmlFor="projectName" className="text-xs font-bold text-muted-foreground">
@@ -187,7 +187,7 @@ export function ProjectBoardView({
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
                 placeholder="e.g., SansOS redesign, Travel planning..."
-                className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+                className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
 
@@ -201,7 +201,7 @@ export function ProjectBoardView({
                 value={projectDesc}
                 onChange={(e) => setProjectDesc(e.target.value)}
                 placeholder="Write description or goals..."
-                className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 resize-none"
+                className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
               />
             </div>
 
@@ -214,7 +214,7 @@ export function ProjectBoardView({
                   id="projectPriority"
                   value={projectPriority}
                   onChange={(e) => setProjectPriority(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary"
                 >
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
@@ -230,7 +230,7 @@ export function ProjectBoardView({
                   id="projectStatus"
                   value={projectStatus}
                   onChange={(e) => setProjectStatus(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary"
                 >
                   <option value="Planning">Planning</option>
                   <option value="In Progress">In Progress</option>
@@ -249,7 +249,7 @@ export function ProjectBoardView({
                 type="date"
                 value={projectDeadline}
                 onChange={(e) => setProjectDeadline(e.target.value)}
-                className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary"
               />
             </div>
 
@@ -264,14 +264,14 @@ export function ProjectBoardView({
               <button
                 type="button"
                 onClick={() => setShowAddProject(false)}
-                className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold hover:bg-muted"
+                className="rounded-lg border border-border/40 px-3 py-1.5 text-xs font-semibold hover:bg-muted"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPendingProjectCreate}
-                className="rounded-lg bg-sidebar-primary px-3 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
+                className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1"
               >
                 {isPendingProjectCreate ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -313,10 +313,10 @@ export function ProjectBoardView({
                 <div
                   key={project.id}
                   onClick={() => setSelectedProjectId(project.id)}
-                  className={`group relative rounded-xl border p-2 bg-card/45 hover:bg-card dark:bg-card/25 dark:hover:bg-card/40 transition-all duration-300 cursor-pointer select-none ${
+                  className={`group relative rounded-xl border p-4 transition-all duration-300 cursor-pointer select-none ${
                     isSelected
-                      ? "border-sidebar-primary ring-1 ring-sidebar-primary/30 shadow-md"
-                      : "border-border shadow-sm hover:border-sidebar-primary"
+                      ? "border-primary ring-1 ring-primary/35 bg-card shadow-glass"
+                      : "border-border/60 bg-card/40 hover:bg-card/75 shadow-sm hover:border-primary/45"
                   }`}
                 >
                   <div className="space-y-3">
@@ -324,7 +324,7 @@ export function ProjectBoardView({
                       <div className="space-y-1 min-w-0">
                         <h4 className="text-sm font-bold text-foreground truncate flex items-center gap-1.5 leading-snug">
                           {isSelected ? (
-                            <FolderOpen className="h-4.5 w-4.5 text-violet-500 shrink-0" />
+                            <FolderOpen className="h-4.5 w-4.5 text-primary shrink-0 animate-in fade-in" />
                           ) : (
                             <Folder className="h-4.5 w-4.5 text-muted-foreground shrink-0" />
                           )}
@@ -355,7 +355,7 @@ export function ProjectBoardView({
                       </div>
                       <div className="h-1.5 w-full bg-secondary/80 rounded-full overflow-hidden border border-border/10">
                         <div
-                          className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-300"
+                          className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-300 shadow-glow"
                           style={{ width: `${progressPct}%` }}
                         />
                       </div>
@@ -392,8 +392,8 @@ export function ProjectBoardView({
       {/* Right Column: Project Tasks Detail Workspace */}
       <div className="lg:col-span-7 xl:col-span-8">
         {isLoading ? (
-          <div className="border border-border bg-card/25 dark:bg-card/10 rounded-2xl p-6 min-h-[400px] shadow-sm space-y-6">
-            <div className="border-b border-border/60 pb-4 space-y-2 animate-pulse">
+          <div className="bento-card p-6 min-h-[400px] space-y-6">
+            <div className="border-b border-border/40 pb-4 space-y-2 animate-pulse">
               <div className="h-6 w-1/3 bg-muted/70 rounded-md" />
               <div className="h-4 w-1/2 bg-muted/60 rounded-md" />
             </div>
@@ -413,12 +413,12 @@ export function ProjectBoardView({
             }
           />
         ) : (
-          <div className="border border-border bg-card dark:bg-card/50 rounded-2xl p-6 shadow-sm space-y-6">
+          <div className="bento-card p-6 min-h-[400px] space-y-6">
             {/* Project Header details */}
-            <div className="border-b border-border pb-5 space-y-4">
+            <div className="border-b border-border/40 pb-5 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="space-y-1">
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary uppercase tracking-widest">
                     <TrendingUp className="h-3.5 w-3.5" /> Workspace Agenda
                   </span>
                   <h3 className="text-2xl font-black text-foreground tracking-tight">
@@ -444,7 +444,7 @@ export function ProjectBoardView({
               {/* Deadline alert row */}
               {activeProject.deadline && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Calendar className="h-4 w-4 text-violet-500 shrink-0" />
+                  <Calendar className="h-4 w-4 text-primary shrink-0" />
                   <span>Deadline: <span className="font-semibold text-foreground">{formatDate(activeProject.deadline)}</span></span>
                   {isOverdue(activeProject.deadline, activeProject.status === "Completed") && (
                     <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 ml-2 uppercase animate-pulse">
@@ -458,12 +458,12 @@ export function ProjectBoardView({
             {/* Task list sub-section */}
             <div className="space-y-4">
               <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Trophy className="h-4 w-4 text-yellow-500" />
+                <Trophy className="h-4 w-4 text-amber-500" />
                 Tasks Checklist
               </h4>
 
               {activeProject.tasks.length === 0 ? (
-                <div className="py-10 text-center text-sm text-muted-foreground border border-dashed border-border rounded-xl bg-background/50">
+                <div className="py-10 text-center text-sm text-muted-foreground border border-dashed border-border/60 rounded-xl bg-background/50">
                   No deliverables created for this project. Use the form below to add your first subtask.
                 </div>
               ) : (
@@ -480,20 +480,20 @@ export function ProjectBoardView({
                       return (
                         <div
                           key={task.id}
-                          className={`flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 bg-background/40 ${
+                          className={`flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 ${
                             task.completed
-                              ? "border-border/40 opacity-60"
-                              : "border-border shadow-sm hover:border-sidebar-primary/20"
+                              ? "border-border/40 bg-secondary/20 opacity-70"
+                              : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
                           }`}
                         >
                           <div className="flex items-center gap-3.5 flex-1 min-w-0">
                             <button
                               onClick={() => handleToggleTask(task.id, task.completed)}
                               disabled={isPendingTaskToggle}
-                              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 ${
+                              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
                                 task.completed
-                                  ? "bg-sidebar-primary border-sidebar-primary text-sidebar-primary-foreground"
-                                  : "border-border hover:border-sidebar-primary/50"
+                                  ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                                  : "border-border/65 hover:border-primary/50 bg-card"
                               }`}
                               aria-label="Toggle task completed"
                             >
@@ -503,7 +503,7 @@ export function ProjectBoardView({
                             <div className="flex flex-col min-w-0 pr-3">
                               <span
                                 className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
-                                  task.completed ? "line-through text-muted-foreground" : "text-foreground"
+                                  task.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                                 }`}
                               >
                                 {task.name}
@@ -543,7 +543,7 @@ export function ProjectBoardView({
             </div>
 
             {/* Add task inline form */}
-            <form onSubmit={handleAddTask} className="border-t border-border/60 pt-5 space-y-3">
+            <form onSubmit={handleAddTask} className="border-t border-border/40 pt-5 space-y-3">
               <div className="flex flex-col gap-3 sm:flex-row">
                 <input
                   type="text"
@@ -551,14 +551,14 @@ export function ProjectBoardView({
                   value={taskName}
                   onChange={(e) => setTaskName(e.target.value)}
                   placeholder="Add new subtask deliverables..."
-                  className="flex-1 rounded-lg border border-border bg-background px-3.5 py-2 text-xs outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+                  className="flex-1 rounded-lg border border-border/60 bg-background px-3.5 py-2 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
 
                 <div className="flex gap-2 shrink-0">
                   <select
                     value={taskPriority}
                     onChange={(e) => setTaskPriority(e.target.value)}
-                    className="rounded-lg border border-border bg-background px-2.5 py-2 text-xs outline-none transition-all focus:border-sidebar-primary"
+                    className="rounded-lg border border-border/60 bg-background px-2.5 py-2 text-xs outline-none transition-all focus:border-primary"
                     aria-label="Task priority selection"
                   >
                     <option value="Low">Low</option>
@@ -570,14 +570,14 @@ export function ProjectBoardView({
                     type="date"
                     value={taskDeadline}
                     onChange={(e) => setTaskDeadline(e.target.value)}
-                    className="rounded-lg border border-border bg-background px-2.5 py-2 text-xs outline-none transition-all focus:border-sidebar-primary w-[130px]"
+                    className="rounded-lg border border-border/60 bg-background px-2.5 py-2 text-xs outline-none transition-all focus:border-primary w-[130px]"
                     aria-label="Task deadline selection"
                   />
 
                   <button
                     type="submit"
                     disabled={isPendingTaskCreate || !taskName.trim()}
-                    className="inline-flex items-center justify-center rounded-lg bg-sidebar-primary px-3 py-2 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/95 disabled:opacity-50"
+                    className="inline-flex items-center justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 disabled:opacity-50"
                   >
                     {isPendingTaskCreate ? (
                       <Loader2 className="h-4.5 w-4.5 animate-spin" />

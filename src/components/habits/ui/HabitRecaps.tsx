@@ -33,11 +33,11 @@ export function HabitRecaps({
   chartData,
 }: HabitRecapsProps) {
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="grid gap-6 lg:grid-cols-12">
       {/* 1. Monthly Statistics Card */}
-      <div className="col-span-3 lg:col-span-1 rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-card/50 flex flex-col justify-between">
-        <h4 className="text-sm font-bold tracking-wider text-muted-foreground flex items-center gap-2">
-          <CalendarDays className="h-4 w-4 text-purple-500" />
+      <div className="lg:col-span-4 bento-card p-6 flex flex-col justify-between">
+        <h4 className="text-xs font-bold tracking-wider text-muted-foreground flex items-center gap-2">
+          <CalendarDays className="h-4 w-4 text-primary" />
           MONTHLY RECAP
         </h4>
         
@@ -45,21 +45,21 @@ export function HabitRecaps({
           <div className="mt-4 space-y-4 flex-1 flex flex-col justify-center animate-pulse">
             <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
               <span className="text-sm text-muted-foreground flex items-center gap-2">
-                <Activity className="h-4 w-4 text-purple-500" /> Total Habits
+                <Activity className="h-4 w-4 text-primary" /> Total Habits
               </span>
               <div className="h-5 w-8 bg-muted/20 rounded-md" />
             </div>
 
             <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
               <span className="text-sm text-muted-foreground flex items-center gap-2">
-                <Award className="h-4 w-4 text-purple-500" /> Total Check-ins
+                <Award className="h-4 w-4 text-primary" /> Total Check-ins
               </span>
               <div className="h-5 w-14 bg-muted/20 rounded-md" />
             </div>
 
             <div className="flex items-center justify-between pb-2.5">
               <span className="text-sm text-muted-foreground flex items-center gap-2">
-                <Percent className="h-4 w-4 text-purple-500" /> Success Rate
+                <Percent className="h-4 w-4 text-primary" /> Success Rate
               </span>
               <div className="h-6 w-12 bg-muted/20 rounded-md" />
             </div>
@@ -68,23 +68,23 @@ export function HabitRecaps({
           <div className="mt-4 space-y-4 flex-1 flex flex-col justify-center">
             <div className="flex items-center justify-between border-b border-border/40 pb-2">
               <span className="text-sm text-muted-foreground flex items-center gap-2">
-                <Activity className="h-4 w-4 text-purple-500" /> Total Habits
+                <Activity className="h-4 w-4 text-primary" /> Total Habits
               </span>
-              <span className="text-lg font-bold text-foreground">{totalHabits}</span>
+              <span className="text-base font-bold text-foreground">{totalHabits}</span>
             </div>
 
             <div className="flex items-center justify-between border-b border-border/40 pb-2">
               <span className="text-sm text-muted-foreground flex items-center gap-2">
-                <Award className="h-4 w-4 text-purple-500" /> Total Check-ins
+                <Award className="h-4 w-4 text-primary" /> Total Check-ins
               </span>
-              <span className="text-lg font-bold text-foreground">{completedLogsCount} times</span>
+              <span className="text-base font-bold text-foreground">{completedLogsCount} times</span>
             </div>
 
             <div className="flex items-center justify-between pb-2">
               <span className="text-sm text-muted-foreground flex items-center gap-2">
-                <Percent className="h-4 w-4 text-purple-500" /> Success Rate
+                <Percent className="h-4 w-4 text-primary" /> Success Rate
               </span>
-              <span className="text-2xl font-black text-purple-600 dark:text-purple-400">
+              <span className="text-xl font-black text-primary">
                 {successRate}%
               </span>
             </div>
@@ -93,10 +93,10 @@ export function HabitRecaps({
       </div>
 
       {/* 2. Weekly Consistency Chart */}
-      <div className="col-span-3 lg:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-card/50">
+      <div className="lg:col-span-8 bento-card p-6">
         <div className="mb-4">
-          <h4 className="text-sm font-bold tracking-wider text-muted-foreground flex items-center gap-2">
-            <Activity className="h-4 w-4 text-purple-500" />
+          <h4 className="text-xs font-bold tracking-wider text-muted-foreground flex items-center gap-2">
+            <Activity className="h-4 w-4 text-primary" />
             WEEKLY CONSISTENCY TREND
           </h4>
         </div>
@@ -107,7 +107,7 @@ export function HabitRecaps({
               {Array.from({ length: 7 }).map((_, idx) => (
                 <div
                   key={idx}
-                  className="flex-1 bg-muted/20 animate-pulse rounded-t-lg"
+                  className="flex-1 bg-primary/10 animate-pulse rounded-t-xl"
                   style={{ height: `${[30, 45, 60, 40, 80, 50, 70][idx]}%` }}
                 />
               ))}
@@ -127,19 +127,19 @@ export function HabitRecaps({
                   className="text-[10px] fill-muted-foreground font-semibold"
                 />
                 <Tooltip 
-                  cursor={{ fill: "rgba(139, 92, 246, 0.05)" }}
+                  cursor={{ fill: "hsl(var(--primary) / 0.04)" }}
                   contentStyle={{
-                    backgroundColor: "var(--card)",
-                    borderColor: "var(--border)",
-                    borderRadius: "8px",
+                    backgroundColor: "hsl(var(--card))",
+                    borderColor: "hsl(var(--border))",
+                    borderRadius: "12px",
                     fontSize: "12px",
-                    color: "var(--foreground)",
+                    color: "hsl(var(--foreground))",
                   }}
                 />
                 <Bar 
                   dataKey="completions" 
                   name="Successful Check-ins" 
-                  fill="#8b5cf6" 
+                  fill="hsl(var(--primary))" 
                   radius={[4, 4, 0, 0]} 
                 />
               </BarChart>

@@ -95,7 +95,7 @@ export function VisionBoardCanvasView({
 
         <button
           onClick={() => setShowAddMenu(!showAddMenu)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-sidebar-primary px-3.5 py-2 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/90 hover:scale-[1.02] self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           {showAddMenu ? "Close Panel" : "Add Vision Item"}
@@ -104,7 +104,7 @@ export function VisionBoardCanvasView({
 
       {/* Slide popover for adding note/images */}
       {showAddMenu && (
-        <div className="rounded-2xl border border-border bg-card/60 p-5 shadow-sm backdrop-blur-md animate-in slide-in-from-top-4 duration-200">
+        <div className="bento-card p-5 animate-in slide-in-from-top-4 duration-200">
           <form onSubmit={handleAddItem} className="space-y-4">
             <div className="flex items-center gap-4 border-b border-border/40 pb-3">
               <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Type:</span>
@@ -116,10 +116,10 @@ export function VisionBoardCanvasView({
                   setWidth(220)
                   setHeight(160)
                 }}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
                   itemType === "text"
-                    ? "bg-violet-500/10 text-violet-500 border-violet-500/30"
-                    : "border-border text-muted-foreground hover:bg-secondary/40"
+                    ? "bg-primary/10 text-primary border-primary/20"
+                    : "border-border/60 text-muted-foreground hover:bg-secondary/40"
                 }`}
               >
                 <TextIcon className="h-3.5 w-3.5" /> Sticky Note
@@ -132,10 +132,10 @@ export function VisionBoardCanvasView({
                   setWidth(240)
                   setHeight(160)
                 }}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
                   itemType === "image"
-                    ? "bg-violet-500/10 text-violet-500 border-violet-500/30"
-                    : "border-border text-muted-foreground hover:bg-secondary/40"
+                    ? "bg-primary/10 text-primary border-primary/20"
+                    : "border-border/60 text-muted-foreground hover:bg-secondary/40"
                 }`}
               >
                 <ImageIcon className="h-3.5 w-3.5" /> Image Card
@@ -146,7 +146,7 @@ export function VisionBoardCanvasView({
             {itemType === "image" && (
               <div className="space-y-2">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                  <Compass className="h-3.5 w-3.5 text-violet-500" /> Presets Visual Wallpapers
+                  <Compass className="h-3.5 w-3.5 text-primary" /> Presets Visual Wallpapers
                 </span>
                 <div className="flex flex-wrap gap-2 pt-0.5">
                   {IMAGE_PRESETS.map((preset) => (
@@ -154,10 +154,10 @@ export function VisionBoardCanvasView({
                       key={preset.name}
                       type="button"
                       onClick={() => handleApplyPreset(preset.url)}
-                      className={`px-2.5 py-1 text-[10px] font-semibold rounded-full border transition-all ${
+                      className={`px-2.5 py-1 text-[10px] font-semibold rounded-full border transition-all cursor-pointer ${
                         content === preset.url
-                          ? "bg-amber-500/10 text-amber-500 border-amber-500/30"
-                          : "border-border text-muted-foreground hover:bg-secondary/40"
+                          ? "bg-primary/10 text-primary border-primary/20"
+                          : "border-border/60 text-muted-foreground hover:bg-secondary/40"
                       }`}
                     >
                       {preset.name}
@@ -184,7 +184,7 @@ export function VisionBoardCanvasView({
                       ? "e.g., Code daily to build mastery! 🚀"
                       : "e.g., https://unsplash.com/..."
                   }
-                  className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10"
+                  className="w-full rounded-lg border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
 
@@ -199,7 +199,7 @@ export function VisionBoardCanvasView({
                     onChange={(e) => setWidth(Number(e.target.value))}
                     min={120}
                     max={400}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -211,7 +211,7 @@ export function VisionBoardCanvasView({
                     onChange={(e) => setHeight(Number(e.target.value))}
                     min={100}
                     max={400}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-sidebar-primary"
+                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </div>
@@ -228,14 +228,14 @@ export function VisionBoardCanvasView({
               <button
                 type="button"
                 onClick={() => setShowAddMenu(false)}
-                className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold hover:bg-muted"
+                className="rounded-lg border border-border/40 px-3 py-1.5 text-xs font-semibold hover:bg-muted cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPendingCreate}
-                className="rounded-lg bg-sidebar-primary px-3.5 py-1.5 text-xs font-semibold text-sidebar-primary-foreground hover:bg-sidebar-primary/95 flex items-center gap-1"
+                className="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1 cursor-pointer active:scale-95"
               >
                 {isPendingCreate ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -251,7 +251,7 @@ export function VisionBoardCanvasView({
       {/* 4. Canvas workspace wrapper */}
       <div
         ref={canvasRef}
-        className={`relative w-full bg-secondary/10 dark:bg-slate-950/20 border border-border/80 rounded-2xl shadow-inner backdrop-blur-[2px] select-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] ${
+        className={`relative w-full bg-secondary/10 dark:bg-slate-950/20 border border-border/40 rounded-2xl shadow-inner backdrop-blur-[2px] select-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] ${
           isMobile
             ? "h-auto min-h-[400px] p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto"
             : "h-[650px] overflow-hidden"
@@ -259,7 +259,7 @@ export function VisionBoardCanvasView({
       >
         {isLoading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 select-none pointer-events-none">
-            <Loader2 className="h-8 w-8 animate-spin text-sidebar-primary mb-2" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
             <p className="text-xs text-muted-foreground font-semibold">Loading vision canvas...</p>
           </div>
         ) : isError ? (
@@ -275,7 +275,7 @@ export function VisionBoardCanvasView({
         ) : boardItems.length === 0 ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 select-none pointer-events-none">
             <div className="rounded-full bg-secondary p-4 mb-3 text-muted-foreground/60">
-              <Lightbulb className="h-9 w-9 text-violet-500" />
+              <Lightbulb className="h-9 w-9 text-primary" />
             </div>
             <h4 className="text-sm font-bold text-foreground">Canvas is Empty</h4>
             <p className="text-[11px] text-muted-foreground mt-1 max-w-xs leading-relaxed">
