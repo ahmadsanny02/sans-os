@@ -70,7 +70,7 @@ export function usePrioritiesRangeQuery(startDate: string, endDate: string) {
   })
 }
 
-async function createPriority(body: { date: string; text: string; orderIndex: number; link?: string }): Promise<Priority> {
+async function createPriority(body: { date: string; text: string; orderIndex?: number; link?: string }): Promise<Priority> {
   const res = await fetch("/api/priorities", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -85,7 +85,7 @@ async function createPriority(body: { date: string; text: string; orderIndex: nu
 
 export function useCreatePriorityMutation() {
   const queryClient = useQueryClient()
-  return useMutation<Priority, Error, { date: string; text: string; orderIndex: number; link?: string }>({
+  return useMutation<Priority, Error, { date: string; text: string; orderIndex?: number; link?: string }>({
     mutationFn: createPriority,
     onSuccess: (newPriority, variables) => {
       queryClient.setQueryData<Priority[]>(["priorities", variables.date], (old) => {

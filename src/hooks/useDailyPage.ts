@@ -68,6 +68,9 @@ export function useDailyPage() {
   const [combinedErrorMsg, setCombinedErrorMsg] = useState<string | null>(null)
   const [isPendingCombined, setIsPendingCombined] = useState(false)
 
+  const [todoDate, setTodoDate] = useState(activeDate)
+  const [priorityDate, setPriorityDate] = useState(activeDate)
+
   // Navigation handlers
   const handlePrevDay = (): void => {
     const newDate = subDays(baseDate, 1)
@@ -90,7 +93,7 @@ export function useDailyPage() {
 
     setIsPendingCombined(true)
     try {
-      const promises: Promise<any>[] = []
+      const promises: Promise<unknown>[] = []
 
       if (targetTimetable) {
         if (timetableStartTime >= timetableEndTime) {
@@ -129,7 +132,7 @@ export function useDailyPage() {
       if (targetTodo) {
         promises.push(
           createTodoMutation.mutateAsync({
-            date: activeDate,
+            date: todoDate,
             text: entryTitle.trim(),
             link: entryLink.trim() || undefined,
           })
@@ -137,14 +140,14 @@ export function useDailyPage() {
       }
 
       if (targetPriority) {
-        if (listPriorities.length >= 5) {
+        if (priorityDate === activeDate && listPriorities.length >= 5) {
           throw new Error("You can only have a maximum of 5 priorities per day.")
         }
         promises.push(
           createPriorityMutation.mutateAsync({
-            date: activeDate,
+            date: priorityDate,
             text: entryTitle.trim(),
-            orderIndex: listPriorities.length,
+            orderIndex: priorityDate === activeDate ? listPriorities.length : undefined,
             link: entryLink.trim() || undefined,
           })
         )
@@ -160,6 +163,8 @@ export function useDailyPage() {
       // Uncheck timetable & priority to reset cleanly, leave todo checked by default
       setTargetTimetable(false)
       setTargetPriority(false)
+      setTodoDate(activeDate)
+      setPriorityDate(activeDate)
       showSuccessToast("Daily Flow item added")
     } catch (err) {
       setCombinedErrorMsg(err instanceof Error ? err.message : "Failed to add entry")
@@ -266,6 +271,8 @@ export function useDailyPage() {
     setPrevActiveDate(activeDate)
     setTimetableDate(activeDate)
     setTimetableDayOfWeek(parseISO(activeDate).getDay())
+    setTodoDate(activeDate)
+    setPriorityDate(activeDate)
   }
 
   const setTimetableStartTime = (newVal: string) => {
@@ -437,6 +444,10 @@ export function useDailyPage() {
     setTargetTodo,
     targetPriority,
     setTargetPriority,
+    todoDate,
+    setTodoDate,
+    priorityDate,
+    setPriorityDate,
     combinedErrorMsg,
     setCombinedErrorMsg,
     isPendingCombined,

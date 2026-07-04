@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useDailyPage } from "@/hooks/useDailyPage"
 import { AddDailyEntryCard } from "./ui/AddDailyEntryCard"
 import { PrioritiesList } from "./ui/PrioritiesList"
@@ -9,12 +9,13 @@ import { Timetable } from "./ui/Timetable"
 import { DailyReflections } from "./ui/DailyReflections"
 import { DailyPics } from "./ui/DailyPics"
 import { format } from "date-fns"
-import { Clock, Calendar } from "lucide-react"
+import { Clock, Calendar, Plus } from "lucide-react"
 import { HeaderPage } from "@/components/ui/HeaderPage"
 
 export default function DailyComponent() {
   const dailyData = useDailyPage()
   const { baseDate, handlePrevDay, handleNextDay, handleGoToToday } = dailyData
+  const [showAddForm, setShowAddForm] = useState(false)
 
   // Update document title for client-side SEO
   useEffect(() => {
@@ -43,37 +44,54 @@ export default function DailyComponent() {
       />
 
       {/* Unified Add Card */}
-      <AddDailyEntryCard
-        entryTitle={dailyData.entryTitle}
-        setEntryTitle={dailyData.setEntryTitle}
-        entryLink={dailyData.entryLink}
-        setEntryLink={dailyData.setEntryLink}
-        targetTimetable={dailyData.targetTimetable}
-        setTargetTimetable={dailyData.setTargetTimetable}
-        targetTodo={dailyData.targetTodo}
-        setTargetTodo={dailyData.setTargetTodo}
-        targetPriority={dailyData.targetPriority}
-        setTargetPriority={dailyData.setTargetPriority}
-        combinedErrorMsg={dailyData.combinedErrorMsg}
-        isPendingCombined={dailyData.isPendingCombined}
-        handleAddDailyEntry={dailyData.handleAddDailyEntry}
-        timetableStartTime={dailyData.timetableStartTime}
-        setTimetableStartTime={dailyData.setTimetableStartTime}
-        timetableEndTime={dailyData.timetableEndTime}
-        setTimetableEndTime={dailyData.setTimetableEndTime}
-        timetableDuration={dailyData.timetableDuration}
-        setTimetableDuration={dailyData.setTimetableDuration}
-        timetableIsTodo={dailyData.timetableIsTodo}
-        setTimetableIsTodo={dailyData.setTimetableIsTodo}
-        timetableCategory={dailyData.timetableCategory}
-        setTimetableCategory={dailyData.setTimetableCategory}
-        timetableScheduleType={dailyData.timetableScheduleType}
-        setTimetableScheduleType={dailyData.setTimetableScheduleType}
-        timetableDate={dailyData.timetableDate}
-        setTimetableDate={dailyData.setTimetableDate}
-        timetableDayOfWeek={dailyData.timetableDayOfWeek}
-        setTimetableDayOfWeek={dailyData.setTimetableDayOfWeek}
-      />
+      {!showAddForm ? (
+        <div className="flex justify-start">
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="flex items-center gap-2 px-5 py-3 rounded-2xl border border-border bg-card/45 dark:bg-card/20 text-foreground hover:bg-muted/40 transition-all font-semibold shadow-sm hover:scale-[1.01] cursor-pointer"
+          >
+            <Plus className="h-5 w-5 text-violet-500" />
+            <span>Add Flow Item</span>
+          </button>
+        </div>
+      ) : (
+        <AddDailyEntryCard
+          entryTitle={dailyData.entryTitle}
+          setEntryTitle={dailyData.setEntryTitle}
+          entryLink={dailyData.entryLink}
+          setEntryLink={dailyData.setEntryLink}
+          targetTimetable={dailyData.targetTimetable}
+          setTargetTimetable={dailyData.setTargetTimetable}
+          targetTodo={dailyData.targetTodo}
+          setTargetTodo={dailyData.setTargetTodo}
+          targetPriority={dailyData.targetPriority}
+          setTargetPriority={dailyData.setTargetPriority}
+          combinedErrorMsg={dailyData.combinedErrorMsg}
+          isPendingCombined={dailyData.isPendingCombined}
+          handleAddDailyEntry={dailyData.handleAddDailyEntry}
+          timetableStartTime={dailyData.timetableStartTime}
+          setTimetableStartTime={dailyData.setTimetableStartTime}
+          timetableEndTime={dailyData.timetableEndTime}
+          setTimetableEndTime={dailyData.setTimetableEndTime}
+          timetableDuration={dailyData.timetableDuration}
+          setTimetableDuration={dailyData.setTimetableDuration}
+          timetableIsTodo={dailyData.timetableIsTodo}
+          setTimetableIsTodo={dailyData.setTimetableIsTodo}
+          timetableCategory={dailyData.timetableCategory}
+          setTimetableCategory={dailyData.setTimetableCategory}
+          timetableScheduleType={dailyData.timetableScheduleType}
+          setTimetableScheduleType={dailyData.setTimetableScheduleType}
+          timetableDate={dailyData.timetableDate}
+          setTimetableDate={dailyData.setTimetableDate}
+          timetableDayOfWeek={dailyData.timetableDayOfWeek}
+          setTimetableDayOfWeek={dailyData.setTimetableDayOfWeek}
+          todoDate={dailyData.todoDate}
+          setTodoDate={dailyData.setTodoDate}
+          priorityDate={dailyData.priorityDate}
+          setPriorityDate={dailyData.setPriorityDate}
+          onClose={() => setShowAddForm(false)}
+        />
+      )}
 
       {/* Main Content */}
       <div className="grid gap-8 grid-cols-12">

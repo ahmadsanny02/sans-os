@@ -36,6 +36,13 @@ interface AddDailyEntryCardProps {
   setTimetableDate: (d: string) => void
   timetableDayOfWeek: number
   setTimetableDayOfWeek: (w: number) => void
+
+  // Daily Checklist & Priorities date fields
+  todoDate: string
+  setTodoDate: (d: string) => void
+  priorityDate: string
+  setPriorityDate: (d: string) => void
+  onClose?: () => void
 }
 
 export function AddDailyEntryCard({
@@ -70,6 +77,13 @@ export function AddDailyEntryCard({
   setTimetableDate,
   timetableDayOfWeek,
   setTimetableDayOfWeek,
+
+  // Daily Checklist & Priorities date fields
+  todoDate,
+  setTodoDate,
+  priorityDate,
+  setPriorityDate,
+  onClose,
 }: AddDailyEntryCardProps) {
   return (
     <div className="border border-border bg-card/45 dark:bg-card/20 rounded-2xl p-6 shadow-sm backdrop-blur-md">
@@ -347,6 +361,68 @@ export function AddDailyEntryCard({
           )}
         </AnimatePresence>
 
+        {/* Conditional Checklist Form Fields */}
+        <AnimatePresence initial={false}>
+          {targetTodo && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="border-t border-dashed border-border pt-4 mt-4 space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                  <div className="space-y-1.5 animate-in fade-in duration-200">
+                    <label htmlFor="todoDate" className="text-xs font-bold text-muted-foreground">
+                      Choose Date (Daily Checklist)
+                    </label>
+                    <input
+                      id="todoDate"
+                      type="date"
+                      required={targetTodo}
+                      value={todoDate}
+                      onChange={(e) => setTodoDate(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
+                    />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Conditional Priority Form Fields */}
+        <AnimatePresence initial={false}>
+          {targetPriority && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="border-t border-dashed border-border pt-4 mt-4 space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                  <div className="space-y-1.5 animate-in fade-in duration-200">
+                    <label htmlFor="priorityDate" className="text-xs font-bold text-muted-foreground">
+                      Choose Date (Top 5 Priorities)
+                    </label>
+                    <input
+                      id="priorityDate"
+                      type="date"
+                      required={targetPriority}
+                      value={priorityDate}
+                      onChange={(e) => setPriorityDate(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
+                    />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Error Messages */}
         {combinedErrorMsg && (
           <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
@@ -355,8 +431,17 @@ export function AddDailyEntryCard({
           </p>
         )}
 
-        {/* Submit Button */}
-        <div className="flex justify-end pt-2">
+        {/* Submit and Cancel Buttons */}
+        <div className="flex justify-end items-center gap-3 pt-2">
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-xl border border-border bg-background px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all hover:bg-muted/30 cursor-pointer"
+            >
+              Cancel
+            </button>
+          )}
           <button
             type="submit"
             disabled={isPendingCombined || !entryTitle.trim() || (!targetTimetable && !targetTodo && !targetPriority)}

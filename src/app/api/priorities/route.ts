@@ -133,7 +133,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     const body = await request.json()
     const { date, text, orderIndex, link } = body
 
-    if (!date || !text || orderIndex === undefined) {
+    if (!date || !text) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
@@ -150,13 +150,15 @@ export async function POST(request: Request): Promise<NextResponse> {
       )
     }
 
+    const finalOrderIndex = orderIndex !== undefined ? orderIndex : currentPriorities.length
+
     const [newPriority] = await db
       .insert(priorities)
       .values({
         userId: user.id,
         date,
         text,
-        orderIndex,
+        orderIndex: finalOrderIndex,
         completed: false,
         rolloverCount: 0,
         link: link || null,
