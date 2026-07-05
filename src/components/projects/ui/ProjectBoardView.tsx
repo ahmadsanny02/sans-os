@@ -12,6 +12,7 @@ import {
   AlertCircle,
   Folder,
   FolderOpen,
+  Trophy,
   TrendingUp,
   Inbox,
   AlertTriangle,
