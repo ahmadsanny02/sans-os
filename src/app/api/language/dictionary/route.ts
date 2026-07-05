@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { translateText } from "@/lib/translate"
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -37,11 +36,14 @@ export async function GET(request: Request): Promise<NextResponse> {
           }
           if (transData && transData[1]) {
             // Parse bilingual dictionary
-            alternativeTranslations = transData[1].map((item: any) => {
-              return {
-                partOfSpeech: item[0],
-                translations: item[1] || []
+            alternativeTranslations = transData[1].map((item: unknown) => {
+              if (Array.isArray(item) && item.length >= 2) {
+                return {
+                  partOfSpeech: String(item[0]),
+                  translations: Array.isArray(item[1]) ? item[1] : []
+                }
               }
+              return { partOfSpeech: "noun", translations: [] }
             })
           }
         }
@@ -105,8 +107,8 @@ export async function GET(request: Request): Promise<NextResponse> {
     const data = await res.json()
     // Datamuse returns array of { word: string, score: number, tags?: string[] }
     const wordsList = data
-      .map((item: any) => ({ word: item.word }))
-      .sort((a: any, b: any) => a.word.toLowerCase().localeCompare(b.word.toLowerCase()))
+      .map((item: { word: string }) => ({ word: item.word }))
+      .sort((a: { word: string }, b: { word: string }) => a.word.toLowerCase().localeCompare(b.word.toLowerCase()))
     
     return NextResponse.json(wordsList)
   } catch (error) {

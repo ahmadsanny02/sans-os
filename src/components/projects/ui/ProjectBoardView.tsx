@@ -168,9 +168,9 @@ export function ProjectBoardView({
   })
 
   return (
-    <div className="grid gap-6 lg:grid-cols-12 animate-in fade-in duration-200">
+    <div className="grid gap-6 md:grid-cols-12 animate-in fade-in duration-200 w-full min-w-0">
       {/* Left Column: Projects List */}
-      <div className={`lg:col-span-5 xl:col-span-4 space-y-6 ${selectedProjectId ? "hidden lg:block" : "block"}`}>
+      <div className={`md:col-span-5 xl:col-span-4 space-y-6 min-w-0 ${selectedProjectId ? "hidden md:block" : "block"}`}>
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
@@ -182,7 +182,7 @@ export function ProjectBoardView({
           </div>
           <button
             onClick={() => setShowAddProject(!showAddProject)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-tr from-primary to-primary/80 px-4 py-2 text-xs font-bold text-primary-foreground shadow-[0_4px_14px_0_rgba(var(--primary),0.39)] transition-all hover:shadow-[0_6px_20px_rgba(var(--primary),0.23)] hover:scale-[1.02] active:scale-95 shrink-0"
           >
             <Plus className="h-4 w-4" />
             {showAddProject ? "Cancel" : "Add Project"}
@@ -332,29 +332,37 @@ export function ProjectBoardView({
                 <div
                   key={project.id}
                   onClick={() => setSelectedProjectId(project.id)}
-                  className={`group relative rounded-xl border p-4 transition-all duration-300 cursor-pointer select-none ${
+                  className={`group relative rounded-2xl border p-5 transition-all duration-300 cursor-pointer select-none overflow-hidden min-w-0 ${
                     isSelected
-                      ? "border-primary ring-1 ring-primary/35 bg-card shadow-glass"
-                      : "border-border/60 bg-card/40 hover:bg-card/75 shadow-sm hover:border-primary/45"
+                      ? "border-primary/50 bg-gradient-to-br from-primary/10 via-card to-card shadow-[0_0_30px_-5px_rgba(var(--primary),0.3)]"
+                      : "border-border/40 bg-card/40 hover:bg-card/80 shadow-sm hover:border-primary/30 hover:shadow-glow"
                   }`}
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="space-y-1 min-w-0">
-                        <h4 className="text-sm font-bold text-foreground truncate flex items-center gap-1.5 leading-snug">
+                  <div className="absolute top-0 right-0 p-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity opacity-0 group-hover:opacity-100" />
+                  
+                  <div className="relative space-y-4 min-w-0">
+                    <div className="flex items-start justify-between gap-3 min-w-0">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors ${
+                          isSelected ? "bg-primary/20 border-primary/30 text-primary" : "bg-secondary/50 border-border/50 text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 group-hover:border-primary/20"
+                        }`}>
                           {isSelected ? (
-                            <FolderOpen className="h-4.5 w-4.5 text-primary shrink-0 animate-in fade-in" />
+                            <FolderOpen className="h-5 w-5 animate-in fade-in" />
                           ) : (
-                            <Folder className="h-4.5 w-4.5 text-muted-foreground shrink-0" />
+                            <Folder className="h-5 w-5" />
                           )}
-                          <span className="truncate">{project.name}</span>
-                        </h4>
+                        </div>
+                        <div className="space-y-1 min-w-0 pt-0.5">
+                          <h4 className="text-[15px] font-bold text-foreground truncate leading-tight group-hover:text-primary transition-colors">
+                            {project.name}
+                          </h4>
                         {project.description && (
                           <p className="text-[11px] text-muted-foreground line-clamp-1 leading-normal">
                             {project.description}
                           </p>
                         )}
                       </div>
+                    </div>
 
                       <button
                         onClick={(e) => handleDeleteProject(project.id, e)}
@@ -367,36 +375,37 @@ export function ProjectBoardView({
                     </div>
 
                     {/* Progress Slider */}
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground">
+                    <div className="space-y-2 bg-background/40 rounded-xl p-3 border border-border/30">
+                      <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                         <span>Progress</span>
-                        <span>{completedTasks}/{totalTasks} ({progressPct}%)</span>
+                        <span className="text-foreground">{completedTasks}/{totalTasks} ({progressPct}%)</span>
                       </div>
-                      <div className="h-1.5 w-full bg-secondary/80 rounded-full overflow-hidden border border-border/10">
+                      <div className="h-2 w-full bg-secondary/80 dark:bg-white/10 rounded-full overflow-hidden border border-border/20">
                         <div
-                          className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-300 shadow-glow"
+                          className="h-full bg-gradient-to-r from-primary/80 to-primary rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(var(--primary),0.5)]"
                           style={{ width: `${progressPct}%` }}
                         />
                       </div>
                     </div>
 
                     {/* Badges footer */}
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[9px] font-bold uppercase tracking-wider">
-                      <span className={`px-2 py-0.5 rounded border ${statusTheme.bg} ${statusTheme.text} ${statusTheme.border}`}>
+                    <div className="flex flex-wrap items-center gap-2 pt-1 text-[9px] font-bold uppercase tracking-wider">
+                      <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1 ${statusTheme.bg} ${statusTheme.text} ${statusTheme.border}`}>
+                        <div className={`h-1.5 w-1.5 rounded-full ${statusTheme.text.split(' ')[0].replace('text-', 'bg-')} shadow-[0_0_5px_currentColor]`} />
                         {project.status}
                       </span>
-                      <span className={`px-2 py-0.5 rounded border ${priorityTheme.bg} ${priorityTheme.text} ${priorityTheme.border}`}>
+                      <span className={`px-2.5 py-1 rounded-md border ${priorityTheme.bg} ${priorityTheme.text} ${priorityTheme.border}`}>
                         {project.priority}
                       </span>
                       {project.deadline && (
-                        <span className={`px-2 py-0.5 rounded border flex items-center gap-1 ${
+                        <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1.5 ${
                           isOver
                             ? "bg-rose-500/10 text-rose-500 border-rose-500/20 dark:text-rose-400"
                             : "bg-slate-500/10 text-slate-500 border-slate-500/20"
                         }`}>
                           <Calendar className="h-3 w-3 shrink-0" />
                           <span>{formatDate(project.deadline)}</span>
-                          {isOver && <AlertTriangle className="h-2.5 w-2.5 shrink-0 animate-pulse text-rose-500" />}
+                          {isOver && <AlertTriangle className="h-3 w-3 shrink-0 animate-pulse text-rose-500" />}
                         </span>
                       )}
                     </div>
@@ -409,7 +418,7 @@ export function ProjectBoardView({
       </div>
 
       {/* Right Column: Project Tasks Detail Workspace */}
-      <div className={`lg:col-span-7 xl:col-span-8 ${!selectedProjectId ? "hidden lg:block" : "block"}`}>
+      <div className={`md:col-span-7 xl:col-span-8 ${!selectedProjectId ? "hidden md:block" : "block"}`}>
         {isLoading ? (
           <div className="bento-card p-6 min-h-[400px] space-y-6">
             <div className="border-b border-border/40 pb-4 space-y-2 animate-pulse">
@@ -437,7 +446,7 @@ export function ProjectBoardView({
             <div className="border-b border-border/40 pb-5 space-y-4">
               <button
                 onClick={() => setSelectedProjectId(null)}
-                className="lg:hidden inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground mb-1 transition-colors"
+                className="md:hidden inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground mb-1 transition-colors"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Back to Projects

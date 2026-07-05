@@ -122,7 +122,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }, [isModalOpen])
 
   return (
-    <div ref={rootRef} className="flex h-screen w-screen overflow-hidden bg-background font-sans text-foreground transition-colors duration-300">
+    <div ref={rootRef} className="flex h-screen w-full overflow-hidden bg-background font-sans text-foreground transition-colors duration-300">
       {/* Desktop Sidebar */}
       <aside
         className={`hidden md:flex flex-col border-r border-sidebar-border/30 bg-sidebar/85 backdrop-blur-lg text-sidebar-foreground transition-all duration-300 ${
@@ -282,7 +282,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Dynamic page view content container */}
-        <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-background scroll-smooth">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6 bg-background scroll-smooth">
           {children}
         </main>
 
