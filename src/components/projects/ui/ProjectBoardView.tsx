@@ -12,10 +12,10 @@ import {
   AlertCircle,
   Folder,
   FolderOpen,
-  Trophy,
   TrendingUp,
   Inbox,
   AlertTriangle,
+  ChevronLeft,
 } from "lucide-react"
 import { ListSkeleton } from "@/components/ui/Skeletons"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -169,7 +169,7 @@ export function ProjectBoardView({
   return (
     <div className="grid gap-6 lg:grid-cols-12 animate-in fade-in duration-200">
       {/* Left Column: Projects List */}
-      <div className="lg:col-span-5 xl:col-span-4 space-y-6">
+      <div className={`lg:col-span-5 xl:col-span-4 space-y-6 ${selectedProjectId ? "hidden lg:block" : "block"}`}>
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
@@ -408,7 +408,7 @@ export function ProjectBoardView({
       </div>
 
       {/* Right Column: Project Tasks Detail Workspace */}
-      <div className="lg:col-span-7 xl:col-span-8">
+      <div className={`lg:col-span-7 xl:col-span-8 ${!selectedProjectId ? "hidden lg:block" : "block"}`}>
         {isLoading ? (
           <div className="bento-card p-6 min-h-[400px] space-y-6">
             <div className="border-b border-border/40 pb-4 space-y-2 animate-pulse">
@@ -431,9 +431,17 @@ export function ProjectBoardView({
             }
           />
         ) : (
-          <div className="bento-card p-6 min-h-[400px] space-y-6">
+          <div className="bento-card p-4 sm:p-6 min-h-[400px] space-y-6">
             {/* Project Header details */}
             <div className="border-b border-border/40 pb-5 space-y-4">
+              <button
+                onClick={() => setSelectedProjectId(null)}
+                className="lg:hidden inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground mb-1 transition-colors"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Back to Projects
+              </button>
+              
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="space-y-1">
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary uppercase tracking-widest">
@@ -605,7 +613,7 @@ export function ProjectBoardView({
                                 value={subTaskInputs[task.id] || ""}
                                 onChange={(e) => setSubTaskInputs((prev) => ({ ...prev, [task.id]: e.target.value }))}
                                 placeholder="Add a sub-task..."
-                                className="flex-1 bg-transparent border-b border-dashed border-border/60 hover:border-primary/40 focus:border-primary px-1 py-1 text-[11px] outline-none transition-all placeholder:text-muted-foreground/60"
+                                className="flex-1 min-w-0 bg-transparent border-b border-dashed border-border/60 hover:border-primary/40 focus:border-primary px-1 py-1 text-[11px] outline-none transition-all placeholder:text-muted-foreground/60"
                               />
                               <button
                                 type="submit"
@@ -630,7 +638,7 @@ export function ProjectBoardView({
 
             {/* Add task inline form */}
             <form onSubmit={handleAddTask} className="border-t border-border/40 pt-5 space-y-3">
-              <div className="flex flex-col gap-3 md:flex-row">
+              <div className="flex flex-col gap-3 lg:flex-row">
                 <input
                   type="text"
                   required
@@ -640,11 +648,11 @@ export function ProjectBoardView({
                   className="flex-1 rounded-lg border border-border/60 bg-background px-3.5 py-2 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 min-w-0"
                 />
 
-                <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0">
+                <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-2 shrink-0">
                   <select
                     value={taskPriority}
                     onChange={(e) => setTaskPriority(e.target.value)}
-                    className="flex-1 sm:flex-none w-full sm:w-auto rounded-lg border border-border/60 bg-background px-2.5 py-2 text-xs outline-none transition-all focus:border-primary"
+                    className="col-span-1 sm:w-auto rounded-lg border border-border/60 bg-background px-2.5 py-2 text-xs outline-none transition-all focus:border-primary"
                     aria-label="Task priority selection"
                   >
                     <option value="Low">Low</option>
@@ -656,14 +664,14 @@ export function ProjectBoardView({
                     type="date"
                     value={taskDeadline}
                     onChange={(e) => setTaskDeadline(e.target.value)}
-                    className="flex-1 sm:flex-none w-full sm:w-[130px] rounded-lg border border-border/60 bg-background px-2.5 py-2 text-xs outline-none transition-all focus:border-primary"
+                    className="col-span-1 w-full sm:w-[130px] rounded-lg border border-border/60 bg-background px-2.5 py-2 text-xs outline-none transition-all focus:border-primary"
                     aria-label="Task deadline selection"
                   />
 
                   <button
                     type="submit"
                     disabled={isPendingTaskCreate || !taskName.trim()}
-                    className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 disabled:opacity-50"
+                    className="col-span-2 sm:col-span-1 inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 disabled:opacity-50"
                   >
                     {isPendingTaskCreate ? (
                       <Loader2 className="h-4.5 w-4.5 animate-spin" />
