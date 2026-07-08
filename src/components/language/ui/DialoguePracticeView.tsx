@@ -1,6 +1,4 @@
-"use client"
-
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useState } from "react"
 import { VocabularyLog, DialogueLog } from "@/hooks/useLanguage"
 import {
   Plus,
@@ -42,7 +40,15 @@ interface DialoguePracticeViewProps {
   dialogueFormError: string | null
   revealedDialogueTranslationIds: Record<string, boolean>
   handleSelectDialogueVocab: (id: string, word: string) => void
-  handleAddDialogue: (e: React.FormEvent) => Promise<void>
+  handleAddDialogue: (
+    e: React.FormEvent,
+    formData?: {
+      dialogueEngQ?: string
+      dialogueTransQ?: string
+      dialogueEngA?: string
+      dialogueTransA?: string
+    }
+  ) => Promise<void>
   handleDeleteDialogue: (id: string, wordStr: string) => Promise<void>
   toggleDialogueTranslation: (id: string) => void
   revealAllDialogueTranslations: () => void
@@ -67,14 +73,6 @@ export function DialoguePracticeView({
   setSearchDialogueVocabQuery,
   showDialogueVocabDropdown,
   setShowDialogueVocabDropdown,
-  dialogueEngQ,
-  setDialogueEngQ,
-  dialogueTransQ,
-  setDialogueTransQ,
-  dialogueEngA,
-  setDialogueEngA,
-  dialogueTransA,
-  setDialogueTransA,
   dialogueFormError,
   revealedDialogueTranslationIds,
   handleSelectDialogueVocab,
@@ -89,6 +87,33 @@ export function DialoguePracticeView({
   dialogueDeletePending,
 }: DialoguePracticeViewProps) {
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const [localDialogueEngQ, setLocalDialogueEngQ] = useState("")
+  const [localDialogueTransQ, setLocalDialogueTransQ] = useState("")
+  const [localDialogueEngA, setLocalDialogueEngA] = useState("")
+  const [localDialogueTransA, setLocalDialogueTransA] = useState("")
+
+  // Reset local form values when form closes
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (!showDialogueForm) {
+      setLocalDialogueEngQ("")
+      setLocalDialogueTransQ("")
+      setLocalDialogueEngA("")
+      setLocalDialogueTransA("")
+    }
+  }, [showDialogueForm])
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await handleAddDialogue(e, {
+      dialogueEngQ: localDialogueEngQ,
+      dialogueTransQ: localDialogueTransQ,
+      dialogueEngA: localDialogueEngA,
+      dialogueTransA: localDialogueTransA,
+    })
+  }
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -156,7 +181,7 @@ export function DialoguePracticeView({
             <h3 className="text-lg font-bold text-foreground">Add Conversation</h3>
           </div>
 
-          <form onSubmit={handleAddDialogue} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Searchable autocomplete select */}
             <div className="space-y-1.5 relative max-w-md" ref={dropdownRef}>
               <label className="text-xs font-bold text-muted-foreground">
@@ -237,16 +262,16 @@ export function DialoguePracticeView({
                   <input
                     type="text"
                     required
-                    value={dialogueEngQ}
-                    onChange={(e) => setDialogueEngQ(e.target.value)}
+                    value={localDialogueEngQ}
+                    onChange={(e) => setLocalDialogueEngQ(e.target.value)}
                     placeholder="English question (e.g., What are you doing?)"
                     className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                   <input
                     type="text"
                     required
-                    value={dialogueTransQ}
-                    onChange={(e) => setDialogueTransQ(e.target.value)}
+                    value={localDialogueTransQ}
+                    onChange={(e) => setLocalDialogueTransQ(e.target.value)}
                     placeholder="Indonesian translation (e.g., Apa yang sedang kamu lakukan?)"
                     className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
@@ -268,16 +293,16 @@ export function DialoguePracticeView({
                   <input
                     type="text"
                     required
-                    value={dialogueEngA}
-                    onChange={(e) => setDialogueEngA(e.target.value)}
+                    value={localDialogueEngA}
+                    onChange={(e) => setLocalDialogueEngA(e.target.value)}
                     placeholder="English answer (e.g., I am reading a book.)"
                     className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                   <input
                     type="text"
                     required
-                    value={dialogueTransA}
-                    onChange={(e) => setDialogueTransA(e.target.value)}
+                    value={localDialogueTransA}
+                    onChange={(e) => setLocalDialogueTransA(e.target.value)}
                     placeholder="Indonesian translation (e.g., Saya sedang membaca buku.)"
                     className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />

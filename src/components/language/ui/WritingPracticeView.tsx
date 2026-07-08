@@ -1,6 +1,4 @@
-"use client"
-
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useState } from "react"
 import { VocabularyLog, WritingLog, GroupedWritingLog } from "@/hooks/useLanguage"
 import {
   Plus,
@@ -51,7 +49,19 @@ interface WritingPracticeViewProps {
   vocabTransInt: string
   setVocabTransInt: (s: string) => void
   writingFormError: string | null
-  handleAddWriting: (e: React.FormEvent) => Promise<void>
+  handleAddWriting: (
+    e: React.FormEvent,
+    formData?: {
+      freeEnglish?: string
+      freeTranslation?: string
+      vocabEngPos?: string
+      vocabTransPos?: string
+      vocabEngNeg?: string
+      vocabTransNeg?: string
+      vocabEngInt?: string
+      vocabTransInt?: string
+    }
+  ) => Promise<void>
   handleDeleteWriting: (id: string) => Promise<void>
   handleSelectVocab: (id: string, word: string) => void
   filteredVocabList: VocabularyLog[]
@@ -81,22 +91,6 @@ export function WritingPracticeView({
   setSearchVocabQuery,
   showVocabDropdown,
   setShowVocabDropdown,
-  freeEnglish,
-  setFreeEnglish,
-  freeTranslation,
-  setFreeTranslation,
-  vocabEngPos,
-  setVocabEngPos,
-  vocabTransPos,
-  setVocabTransPos,
-  vocabEngNeg,
-  setVocabEngNeg,
-  vocabTransNeg,
-  setVocabTransNeg,
-  vocabEngInt,
-  setVocabEngInt,
-  vocabTransInt,
-  setVocabTransInt,
   writingFormError,
   handleAddWriting,
   handleDeleteWriting,
@@ -110,6 +104,45 @@ export function WritingPracticeView({
   writingDeletePending,
 }: WritingPracticeViewProps) {
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const [localFreeEnglish, setLocalFreeEnglish] = useState("")
+  const [localFreeTranslation, setLocalFreeTranslation] = useState("")
+  const [localVocabEngPos, setLocalVocabEngPos] = useState("")
+  const [localVocabTransPos, setLocalVocabTransPos] = useState("")
+  const [localVocabEngNeg, setLocalVocabEngNeg] = useState("")
+  const [localVocabTransNeg, setLocalVocabTransNeg] = useState("")
+  const [localVocabEngInt, setLocalVocabEngInt] = useState("")
+  const [localVocabTransInt, setLocalVocabTransInt] = useState("")
+
+  // Reset local form values when form closes
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (!showWritingForm) {
+      setLocalFreeEnglish("")
+      setLocalFreeTranslation("")
+      setLocalVocabEngPos("")
+      setLocalVocabTransPos("")
+      setLocalVocabEngNeg("")
+      setLocalVocabTransNeg("")
+      setLocalVocabEngInt("")
+      setLocalVocabTransInt("")
+    }
+  }, [showWritingForm])
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await handleAddWriting(e, {
+      freeEnglish: localFreeEnglish,
+      freeTranslation: localFreeTranslation,
+      vocabEngPos: localVocabEngPos,
+      vocabTransPos: localVocabTransPos,
+      vocabEngNeg: localVocabEngNeg,
+      vocabTransNeg: localVocabTransNeg,
+      vocabEngInt: localVocabEngInt,
+      vocabTransInt: localVocabTransInt,
+    })
+  }
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -228,7 +261,7 @@ export function WritingPracticeView({
             </button>
           </div>
 
-          <form onSubmit={handleAddWriting} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Conditional Fields for Vocabulary Practice */}
             {practiceMode === "vocab" && (
               <div className="space-y-4 border-b border-border/40 pb-4 animate-in fade-in duration-200">
@@ -302,8 +335,8 @@ export function WritingPracticeView({
                     id="freeEnglish"
                     rows={3}
                     required
-                    value={freeEnglish}
-                    onChange={(e) => setFreeEnglish(e.target.value)}
+                    value={localFreeEnglish}
+                    onChange={(e) => setLocalFreeEnglish(e.target.value)}
                     placeholder="Type your English sentence practice here..."
                     className="w-full rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none leading-relaxed"
                   />
@@ -317,8 +350,8 @@ export function WritingPracticeView({
                     id="freeTranslation"
                     rows={3}
                     required
-                    value={freeTranslation}
-                    onChange={(e) => setFreeTranslation(e.target.value)}
+                    value={localFreeTranslation}
+                    onChange={(e) => setLocalFreeTranslation(e.target.value)}
                     placeholder="Indonesian translation..."
                     className="w-full rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none leading-relaxed"
                   />
@@ -340,16 +373,16 @@ export function WritingPracticeView({
                     <input
                       type="text"
                       required
-                      value={vocabEngPos}
-                      onChange={(e) => setVocabEngPos(e.target.value)}
+                      value={localVocabEngPos}
+                      onChange={(e) => setLocalVocabEngPos(e.target.value)}
                       placeholder="English positive sentence..."
                       className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
                       required
-                      value={vocabTransPos}
-                      onChange={(e) => setVocabTransPos(e.target.value)}
+                      value={localVocabTransPos}
+                      onChange={(e) => setLocalVocabTransPos(e.target.value)}
                       placeholder="Indonesian translation..."
                       className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
@@ -368,16 +401,16 @@ export function WritingPracticeView({
                     <input
                       type="text"
                       required
-                      value={vocabEngNeg}
-                      onChange={(e) => setVocabEngNeg(e.target.value)}
+                      value={localVocabEngNeg}
+                      onChange={(e) => setLocalVocabEngNeg(e.target.value)}
                       placeholder="English negative sentence..."
                       className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
                       required
-                      value={vocabTransNeg}
-                      onChange={(e) => setVocabTransNeg(e.target.value)}
+                      value={localVocabTransNeg}
+                      onChange={(e) => setLocalVocabTransNeg(e.target.value)}
                       placeholder="Indonesian translation..."
                       className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
@@ -396,16 +429,16 @@ export function WritingPracticeView({
                     <input
                       type="text"
                       required
-                      value={vocabEngInt}
-                      onChange={(e) => setVocabEngInt(e.target.value)}
+                      value={localVocabEngInt}
+                      onChange={(e) => setLocalVocabEngInt(e.target.value)}
                       placeholder="English question sentence..."
                       className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
                       required
-                      value={vocabTransInt}
-                      onChange={(e) => setVocabTransInt(e.target.value)}
+                      value={localVocabTransInt}
+                      onChange={(e) => setLocalVocabTransInt(e.target.value)}
                       placeholder="Indonesian translation..."
                       className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />

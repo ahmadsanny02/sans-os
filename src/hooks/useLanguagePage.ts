@@ -245,12 +245,33 @@ export function useLanguagePage() {
   // ==========================================
   // Writing Handlers
   // ==========================================
-  const handleAddWriting = async (e: React.FormEvent): Promise<void> => {
+  const handleAddWriting = async (
+    e: React.FormEvent,
+    formData?: {
+      freeEnglish?: string
+      freeTranslation?: string
+      vocabEngPos?: string
+      vocabTransPos?: string
+      vocabEngNeg?: string
+      vocabTransNeg?: string
+      vocabEngInt?: string
+      vocabTransInt?: string
+    }
+  ): Promise<void> => {
     e.preventDefault()
     setWritingFormError(null)
 
+    const activeFreeEnglish = formData?.freeEnglish ?? freeEnglish
+    const activeFreeTranslation = formData?.freeTranslation ?? freeTranslation
+    const activeVocabEngPos = formData?.vocabEngPos ?? vocabEngPos
+    const activeVocabTransPos = formData?.vocabTransPos ?? vocabTransPos
+    const activeVocabEngNeg = formData?.vocabEngNeg ?? vocabEngNeg
+    const activeVocabTransNeg = formData?.vocabTransNeg ?? vocabTransNeg
+    const activeVocabEngInt = formData?.vocabEngInt ?? vocabEngInt
+    const activeVocabTransInt = formData?.vocabTransInt ?? vocabTransInt
+
     if (practiceMode === "free") {
-      if (!freeEnglish.trim() || !freeTranslation.trim()) {
+      if (!activeFreeEnglish.trim() || !activeFreeTranslation.trim()) {
         setWritingFormError("Please fill out both English sentence and translation.")
         return
       }
@@ -260,8 +281,8 @@ export function useLanguagePage() {
           vocabId: null,
           vocabWord: null,
           sentenceType: null,
-          englishSentence: freeEnglish.trim(),
-          indonesianTranslation: freeTranslation.trim(),
+          englishSentence: activeFreeEnglish.trim(),
+          indonesianTranslation: activeFreeTranslation.trim(),
         })
         setFreeEnglish("")
         setFreeTranslation("")
@@ -277,9 +298,9 @@ export function useLanguagePage() {
       }
 
       if (
-        !vocabEngPos.trim() || !vocabTransPos.trim() ||
-        !vocabEngNeg.trim() || !vocabTransNeg.trim() ||
-        !vocabEngInt.trim() || !vocabTransInt.trim()
+        !activeVocabEngPos.trim() || !activeVocabTransPos.trim() ||
+        !activeVocabEngNeg.trim() || !activeVocabTransNeg.trim() ||
+        !activeVocabEngInt.trim() || !activeVocabTransInt.trim()
       ) {
         setWritingFormError("Please write sentences and translations for all three types (Positive, Negative, and Interrogative).")
         return
@@ -297,22 +318,22 @@ export function useLanguagePage() {
             vocabId: selectedVocabObj.id,
             vocabWord: selectedVocabObj.word,
             sentenceType: "Positive",
-            englishSentence: vocabEngPos.trim(),
-            indonesianTranslation: vocabTransPos.trim(),
+            englishSentence: activeVocabEngPos.trim(),
+            indonesianTranslation: activeVocabTransPos.trim(),
           }),
           createWritingMutation.mutateAsync({
             vocabId: selectedVocabObj.id,
             vocabWord: selectedVocabObj.word,
             sentenceType: "Negative",
-            englishSentence: vocabEngNeg.trim(),
-            indonesianTranslation: vocabTransNeg.trim(),
+            englishSentence: activeVocabEngNeg.trim(),
+            indonesianTranslation: activeVocabTransNeg.trim(),
           }),
           createWritingMutation.mutateAsync({
             vocabId: selectedVocabObj.id,
             vocabWord: selectedVocabObj.word,
             sentenceType: "Interrogative",
-            englishSentence: vocabEngInt.trim(),
-            indonesianTranslation: vocabTransInt.trim(),
+            englishSentence: activeVocabEngInt.trim(),
+            indonesianTranslation: activeVocabTransInt.trim(),
           }),
         ])
 
@@ -404,9 +425,22 @@ export function useLanguagePage() {
     setDialogueFormError(null)
   }
 
-  const handleAddDialogue = async (e: React.FormEvent): Promise<void> => {
+  const handleAddDialogue = async (
+    e: React.FormEvent,
+    formData?: {
+      dialogueEngQ?: string
+      dialogueTransQ?: string
+      dialogueEngA?: string
+      dialogueTransA?: string
+    }
+  ): Promise<void> => {
     e.preventDefault()
     setDialogueFormError(null)
+
+    const activeDialogueEngQ = formData?.dialogueEngQ ?? dialogueEngQ
+    const activeDialogueTransQ = formData?.dialogueTransQ ?? dialogueTransQ
+    const activeDialogueEngA = formData?.dialogueEngA ?? dialogueEngA
+    const activeDialogueTransA = formData?.dialogueTransA ?? dialogueTransA
 
     if (!selectedDialogueVocabId) {
       setDialogueFormError("Please select a vocabulary word.")
@@ -414,8 +448,8 @@ export function useLanguagePage() {
     }
 
     if (
-      !dialogueEngQ.trim() || !dialogueTransQ.trim() ||
-      !dialogueEngA.trim() || !dialogueTransA.trim()
+      !activeDialogueEngQ.trim() || !activeDialogueTransQ.trim() ||
+      !activeDialogueEngA.trim() || !activeDialogueTransA.trim()
     ) {
       setDialogueFormError("Please fill out all Question and Answer fields.")
       return
@@ -431,10 +465,10 @@ export function useLanguagePage() {
       await createDialogueMutation.mutateAsync({
         vocabId: selectedVocab.id,
         vocabWord: selectedVocab.word,
-        englishQuestion: dialogueEngQ.trim(),
-        indonesianQuestion: dialogueTransQ.trim(),
-        englishAnswer: dialogueEngA.trim(),
-        indonesianAnswer: dialogueTransA.trim(),
+        englishQuestion: activeDialogueEngQ.trim(),
+        indonesianQuestion: activeDialogueTransQ.trim(),
+        englishAnswer: activeDialogueEngA.trim(),
+        indonesianAnswer: activeDialogueTransA.trim(),
       })
 
       // Reset form
