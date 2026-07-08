@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useCallback } from "react"
 import {
   useVocabularyQuery,
   useCreateVocabularyMutation,
@@ -186,7 +186,7 @@ export function useLanguagePage() {
     }
   }
 
-  const handleDeleteVocabulary = async (id: string, wordStr: string): Promise<void> => {
+  const handleDeleteVocabulary = useCallback(async (id: string, wordStr: string): Promise<void> => {
     const isConfirmed = await confirmDestructive(
       "Delete Vocabulary",
       `Are you sure you want to delete the word "${wordStr}"?`
@@ -198,18 +198,18 @@ export function useLanguagePage() {
     } catch {
       showError("Delete Error", "Failed to delete vocabulary log.")
     }
-  }
+  }, [deleteVocabMutation])
 
-  const handleToggleMemorized = (id: string, currentMemorized: boolean): void => {
+  const handleToggleMemorized = useCallback((id: string, currentMemorized: boolean): void => {
     updateVocabularyMutation.mutate({ id, memorized: !currentMemorized })
-  }
+  }, [updateVocabularyMutation])
 
-  const toggleRevealTranslation = (id: string): void => {
+  const toggleRevealTranslation = useCallback((id: string): void => {
     setRevealedTranslationIds((prev) => ({
       ...prev,
       [id]: !prev[id],
     }))
-  }
+  }, [])
 
   const revealAllTranslations = (): void => {
     const allIds: Record<string, boolean> = {}
