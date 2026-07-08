@@ -101,6 +101,9 @@ interface ProjectBoardViewProps {
   handleAddSubTask: (e: React.FormEvent, taskId: string) => Promise<void>
   handleDeleteSubTask: (id: string) => Promise<void>
   handleToggleSubTask: (id: string, completed: boolean) => void
+  handleUpdateProjectStatus: (id: string, status: string) => Promise<void>
+  handleUpdateProjectPriority: (id: string, priority: string) => Promise<void>
+  handleUpdateTaskPriority: (id: string, priority: string) => Promise<void>
   isPendingProjectCreate: boolean
   isPendingProjectDelete: boolean
   isPendingTaskCreate: boolean
@@ -109,6 +112,8 @@ interface ProjectBoardViewProps {
   isPendingSubTaskCreate: boolean
   isPendingSubTaskDelete: boolean
   isPendingSubTaskToggle: boolean
+  isPendingProjectUpdate: boolean
+  isPendingTaskUpdate: boolean
 }
 
 export function ProjectBoardView({
@@ -149,6 +154,9 @@ export function ProjectBoardView({
   handleAddSubTask,
   handleDeleteSubTask,
   handleToggleSubTask,
+  handleUpdateProjectStatus,
+  handleUpdateProjectPriority,
+  handleUpdateTaskPriority,
   isPendingProjectCreate,
   isPendingProjectDelete,
   isPendingTaskCreate,
@@ -157,6 +165,8 @@ export function ProjectBoardView({
   isPendingSubTaskCreate,
   isPendingSubTaskDelete,
   isPendingSubTaskToggle,
+  isPendingProjectUpdate,
+  isPendingTaskUpdate,
 }: ProjectBoardViewProps) {
   const sortedProjects = [...projectsList].sort((a, b) => {
     const aCompleted = a.status === "Completed"
@@ -390,12 +400,43 @@ export function ProjectBoardView({
 
                     {/* Badges footer */}
                     <div className="flex flex-wrap items-center gap-2 pt-1 text-[9px] font-bold uppercase tracking-wider">
-                      <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1 ${statusTheme.bg} ${statusTheme.text} ${statusTheme.border}`}>
+                      <span className={`relative px-2.5 py-1 rounded-md border flex items-center gap-1 ${statusTheme.bg} ${statusTheme.text} ${statusTheme.border}`}>
                         <div className={`h-1.5 w-1.5 rounded-full ${statusTheme.text.split(' ')[0].replace('text-', 'bg-')} shadow-[0_0_5px_currentColor]`} />
-                        {project.status}
+                        <span>{project.status}</span>
+                        <select
+                          value={project.status}
+                          disabled={isPendingProjectUpdate}
+                          onChange={(e) => {
+                            e.stopPropagation()
+                            handleUpdateProjectStatus(project.id, e.target.value)
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full disabled:cursor-not-allowed"
+                          aria-label="Change project status"
+                        >
+                          <option value="Planning" className="bg-background text-foreground">Planning</option>
+                          <option value="In Progress" className="bg-background text-foreground">In Progress</option>
+                          <option value="On Hold" className="bg-background text-foreground">On Hold</option>
+                          <option value="Completed" className="bg-background text-foreground">Completed</option>
+                        </select>
                       </span>
-                      <span className={`px-2.5 py-1 rounded-md border ${priorityTheme.bg} ${priorityTheme.text} ${priorityTheme.border}`}>
-                        {project.priority}
+                      <span className={`relative px-2.5 py-1 rounded-md border flex items-center ${priorityTheme.bg} ${priorityTheme.text} ${priorityTheme.border}`}>
+                        <span>{project.priority}</span>
+                        <select
+                          value={project.priority}
+                          disabled={isPendingProjectUpdate}
+                          onChange={(e) => {
+                            e.stopPropagation()
+                            handleUpdateProjectPriority(project.id, e.target.value)
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full disabled:cursor-not-allowed"
+                          aria-label="Change project priority"
+                        >
+                          <option value="Low" className="bg-background text-foreground">Low</option>
+                          <option value="Medium" className="bg-background text-foreground">Medium</option>
+                          <option value="High" className="bg-background text-foreground">High</option>
+                        </select>
                       </span>
                       {project.deadline && (
                         <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1.5 ${
@@ -468,11 +509,35 @@ export function ProjectBoardView({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-1.5 text-[9px] font-bold tracking-wider uppercase self-start">
-                  <span className={`px-2 py-0.5 rounded border ${STATUS_THEMES[activeProject.status]?.bg} ${STATUS_THEMES[activeProject.status]?.text} border-border/20`}>
-                    {activeProject.status}
+                  <span className={`relative px-2 py-0.5 rounded border flex items-center gap-1 ${STATUS_THEMES[activeProject.status]?.bg} ${STATUS_THEMES[activeProject.status]?.text} border-border/20`}>
+                    <div className={`h-1 w-1 rounded-full ${STATUS_THEMES[activeProject.status]?.text.split(' ')[0].replace('text-', 'bg-')} shadow-[0_0_3px_currentColor]`} />
+                    <span>{activeProject.status}</span>
+                    <select
+                      value={activeProject.status}
+                      disabled={isPendingProjectUpdate}
+                      onChange={(e) => handleUpdateProjectStatus(activeProject.id, e.target.value)}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full disabled:cursor-not-allowed"
+                      aria-label="Change project status"
+                    >
+                      <option value="Planning" className="bg-background text-foreground">Planning</option>
+                      <option value="In Progress" className="bg-background text-foreground">In Progress</option>
+                      <option value="On Hold" className="bg-background text-foreground">On Hold</option>
+                      <option value="Completed" className="bg-background text-foreground">Completed</option>
+                    </select>
                   </span>
-                  <span className={`px-2 py-0.5 rounded border ${PRIORITY_THEMES[activeProject.priority]?.bg} ${PRIORITY_THEMES[activeProject.priority]?.text} border-border/20`}>
-                    {activeProject.priority}
+                  <span className={`relative px-2 py-0.5 rounded border flex items-center ${PRIORITY_THEMES[activeProject.priority]?.bg} ${PRIORITY_THEMES[activeProject.priority]?.text} border-border/20`}>
+                    <span>{activeProject.priority}</span>
+                    <select
+                      value={activeProject.priority}
+                      disabled={isPendingProjectUpdate}
+                      onChange={(e) => handleUpdateProjectPriority(activeProject.id, e.target.value)}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full disabled:cursor-not-allowed"
+                      aria-label="Change project priority"
+                    >
+                      <option value="Low" className="bg-background text-foreground">Low</option>
+                      <option value="Medium" className="bg-background text-foreground">Medium</option>
+                      <option value="High" className="bg-background text-foreground">High</option>
+                    </select>
                   </span>
                 </div>
               </div>
@@ -546,8 +611,19 @@ export function ProjectBoardView({
                                 </span>
 
                                 <div className="flex flex-wrap items-center gap-1.5 mt-1 text-[8px] font-extrabold uppercase tracking-wide">
-                                  <span className={`px-1.5 py-0.5 rounded border ${taskPriorityTheme.bg} ${taskPriorityTheme.text} ${taskPriorityTheme.border}`}>
-                                    {task.priority}
+                                  <span className={`relative px-1.5 py-0.5 rounded border flex items-center ${taskPriorityTheme.bg} ${taskPriorityTheme.text} ${taskPriorityTheme.border}`}>
+                                    <span>{task.priority}</span>
+                                    <select
+                                      value={task.priority}
+                                      disabled={isPendingTaskUpdate}
+                                      onChange={(e) => handleUpdateTaskPriority(task.id, e.target.value)}
+                                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full text-foreground bg-background disabled:cursor-not-allowed"
+                                      aria-label="Change task priority"
+                                    >
+                                      <option value="Low" className="bg-background text-foreground">Low</option>
+                                      <option value="Medium" className="bg-background text-foreground">Medium</option>
+                                      <option value="High" className="bg-background text-foreground">High</option>
+                                    </select>
                                   </span>
                                   {task.deadline && (
                                     <span className={`px-1.5 py-0.5 rounded border flex items-center gap-1 ${

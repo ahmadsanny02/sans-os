@@ -384,3 +384,132 @@ export function useToggleSubTaskMutation() {
     }
   })
 }
+
+// 10. Update project
+async function updateProject(body: {
+  id: string
+  name?: string
+  description?: string | null
+  status?: string
+  priority?: string
+  deadline?: string | null
+}): Promise<Project> {
+  const res = await fetch("/api/projects", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    throw new Error("Failed to update project")
+  }
+  return res.json()
+}
+
+export function useUpdateProjectMutation() {
+  const queryClient = useQueryClient()
+  return useMutation<Project, Error, {
+    id: string
+    name?: string
+    description?: string | null
+    status?: string
+    priority?: string
+    deadline?: string | null
+  }, { previous: Project[] | undefined }>({
+    mutationFn: updateProject,
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ["projects"] })
+      const previous = queryClient.getQueryData<Project[]>(["projects"])
+      if (previous) {
+        queryClient.setQueryData<Project[]>(
+          ["projects"],
+          previous.map((p) =>
+            p.id === variables.id
+              ? {
+                  ...p,
+                  name: variables.name !== undefined ? variables.name : p.name,
+                  description: variables.description !== undefined ? variables.description : p.description,
+                  status: variables.status !== undefined ? variables.status : p.status,
+                  priority: variables.priority !== undefined ? variables.priority : p.priority,
+                  deadline: variables.deadline !== undefined ? variables.deadline : p.deadline,
+                }
+              : p
+          )
+        )
+      }
+      return { previous }
+    },
+    onError: (err, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["projects"], context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] })
+    },
+  })
+}
+
+// 11. Update task
+async function updateTask(body: {
+  id: string
+  name?: string
+  completed?: boolean
+  priority?: string
+  deadline?: string | null
+}): Promise<ProjectTask> {
+  const res = await fetch("/api/projects/tasks", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    throw new Error("Failed to update task")
+  }
+  return res.json()
+}
+
+export function useUpdateTaskMutation() {
+  const queryClient = useQueryClient()
+  return useMutation<ProjectTask, Error, {
+    id: string
+    name?: string
+    completed?: boolean
+    priority?: string
+    deadline?: string | null
+  }, { previous: Project[] | undefined }>({
+    mutationFn: updateTask,
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ["projects"] })
+      const previous = queryClient.getQueryData<Project[]>(["projects"])
+      if (previous) {
+        queryClient.setQueryData<Project[]>(
+          ["projects"],
+          previous.map((p) => ({
+            ...p,
+            tasks: p.tasks.map((t) =>
+              t.id === variables.id
+                ? {
+                    ...t,
+                    name: variables.name !== undefined ? variables.name : t.name,
+                    completed: variables.completed !== undefined ? variables.completed : t.completed,
+                    priority: variables.priority !== undefined ? variables.priority : t.priority,
+                    deadline: variables.deadline !== undefined ? variables.deadline : t.deadline,
+                  }
+                : t
+            ),
+          }))
+        )
+      }
+      return { previous }
+    },
+    onError: (err, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["projects"], context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] })
+    },
+  })
+}
+

@@ -11,6 +11,8 @@ import {
   useCreateSubTaskMutation,
   useDeleteSubTaskMutation,
   useToggleSubTaskMutation,
+  useUpdateProjectMutation,
+  useUpdateTaskMutation,
 } from "@/hooks/useProjects"
 import { format, isPast, isToday } from "date-fns"
 import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
@@ -45,6 +47,8 @@ export function useProjectsPage() {
   const createSubTaskMutation = useCreateSubTaskMutation()
   const deleteSubTaskMutation = useDeleteSubTaskMutation()
   const toggleSubTaskMutation = useToggleSubTaskMutation()
+  const updateProjectMutation = useUpdateProjectMutation()
+  const updateTaskMutation = useUpdateTaskMutation()
 
   // Selected project ID
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
@@ -190,6 +194,33 @@ export function useProjectsPage() {
     toggleSubTaskMutation.mutate({ id, completed: !completed })
   }
 
+  const handleUpdateProjectStatus = async (id: string, status: string): Promise<void> => {
+    try {
+      await updateProjectMutation.mutateAsync({ id, status })
+      showSuccessToast("Project status updated successfully")
+    } catch {
+      await showError("Update Failed", "Failed to update project status.")
+    }
+  }
+
+  const handleUpdateProjectPriority = async (id: string, priority: string): Promise<void> => {
+    try {
+      await updateProjectMutation.mutateAsync({ id, priority })
+      showSuccessToast("Project priority updated successfully")
+    } catch {
+      await showError("Update Failed", "Failed to update project priority.")
+    }
+  }
+
+  const handleUpdateTaskPriority = async (id: string, priority: string): Promise<void> => {
+    try {
+      await updateTaskMutation.mutateAsync({ id, priority })
+      showSuccessToast("Task priority updated successfully")
+    } catch {
+      await showError("Update Failed", "Failed to update task priority.")
+    }
+  }
+
   return {
     projectsList,
     isLoading,
@@ -222,6 +253,9 @@ export function useProjectsPage() {
     handleAddTask,
     handleDeleteTask,
     handleToggleTask,
+    handleUpdateProjectStatus,
+    handleUpdateProjectPriority,
+    handleUpdateTaskPriority,
     
     // Subtask helpers
     subTaskInputs,
@@ -239,6 +273,8 @@ export function useProjectsPage() {
     isPendingSubTaskCreate: createSubTaskMutation.isPending,
     isPendingSubTaskDelete: deleteSubTaskMutation.isPending,
     isPendingSubTaskToggle: toggleSubTaskMutation.isPending,
+    isPendingProjectUpdate: updateProjectMutation.isPending,
+    isPendingTaskUpdate: updateTaskMutation.isPending,
   }
 }
 
