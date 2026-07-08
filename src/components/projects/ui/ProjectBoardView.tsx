@@ -545,6 +545,9 @@ export function ProjectBoardView({
                       <span className={`px-2.5 py-1 rounded-md border ${priorityTheme.bg} ${priorityTheme.text} ${priorityTheme.border}`}>
                         {project.priority}
                       </span>
+                      <span className="px-2.5 py-1 rounded-md border border-border/30 bg-secondary/30 text-muted-foreground flex items-center gap-1 font-medium">
+                        Added: {formatDate(project.createdAt)}
+                      </span>
                       {project.deadline && (
                         <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1.5 ${
                           isOver
@@ -637,35 +640,44 @@ export function ProjectBoardView({
               </div>
 
               {/* Deadline alert row */}
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Calendar className="h-4 w-4 text-primary shrink-0" />
-                <span>Deadline: </span>
-                <span className="relative inline-block font-semibold text-foreground cursor-pointer hover:text-primary transition-colors underline decoration-dotted decoration-border/60 hover:decoration-primary">
-                  {activeProject.deadline ? formatDate(activeProject.deadline) : "No deadline"}
-                  <input
-                    type="date"
-                    value={activeProject.deadline ? (() => {
-                      try {
-                        return new Date(activeProject.deadline).toISOString().split('T')[0]
-                      } catch {
-                        return ""
-                      }
-                    })() : ""}
-                    onChange={(e) => handleUpdateProjectDeadline(activeProject.id, e.target.value)}
-                    onClick={(e) => {
-                      try {
-                        e.currentTarget.showPicker();
-                      } catch {}
-                    }}
-                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-                    aria-label="Change project deadline"
-                  />
-                </span>
-                {activeProject.deadline && isOverdue(activeProject.deadline, activeProject.status === "Completed") && (
-                  <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 ml-2 uppercase animate-pulse">
-                    <AlertTriangle className="h-3 w-3" /> Overdue
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4 text-primary shrink-0" />
+                  <span>Deadline: </span>
+                  <span className="relative inline-block font-semibold text-foreground cursor-pointer hover:text-primary transition-colors underline decoration-dotted decoration-border/60 hover:decoration-primary">
+                    {activeProject.deadline ? formatDate(activeProject.deadline) : "No deadline"}
+                    <input
+                      type="date"
+                      value={activeProject.deadline ? (() => {
+                        try {
+                          return new Date(activeProject.deadline).toISOString().split('T')[0]
+                        } catch {
+                          return ""
+                        }
+                      })() : ""}
+                      onChange={(e) => handleUpdateProjectDeadline(activeProject.id, e.target.value)}
+                      onClick={(e) => {
+                        try {
+                          e.currentTarget.showPicker();
+                        } catch {}
+                      }}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                      aria-label="Change project deadline"
+                    />
                   </span>
-                )}
+                  {activeProject.deadline && isOverdue(activeProject.deadline, activeProject.status === "Completed") && (
+                    <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 ml-2 uppercase animate-pulse">
+                      <AlertTriangle className="h-3 w-3" /> Overdue
+                    </span>
+                  )}
+                </div>
+
+                <span className="text-border/40 select-none">•</span>
+
+                <div className="flex items-center gap-1.5">
+                  <span className="font-medium">Added:</span>
+                  <span className="font-semibold text-foreground">{formatDate(activeProject.createdAt)}</span>
+                </div>
               </div>
             </div>
 
@@ -685,7 +697,8 @@ export function ProjectBoardView({
                   {[...activeProject.tasks]
                     .sort((a, b) => {
                       if (a.completed !== b.completed) return a.completed ? 1 : -1
-                      return a.name.localeCompare(b.name)
+                      // Sort by createdAt DESC (newest first)
+                      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
                     })
                     .map((task: ProjectTask) => {
                       const isTaskOver = isOverdue(task.deadline, task.completed)
@@ -741,6 +754,9 @@ export function ProjectBoardView({
                                       <span>{formatDate(task.deadline)}</span>
                                     </span>
                                   )}
+                                  <span className="px-1.5 py-0.5 rounded border border-border/30 bg-secondary/30 text-muted-foreground flex items-center gap-1">
+                                    Added: {formatDate(task.createdAt)}
+                                  </span>
                                 </div>
                               </div>
                             </div>
