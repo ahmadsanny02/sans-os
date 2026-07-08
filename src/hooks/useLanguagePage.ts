@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import {
   useVocabularyQuery,
   useCreateVocabularyMutation,
@@ -224,23 +224,29 @@ export function useLanguagePage() {
   }
 
   // Vocab metrics
-  const totalWords = vocabList.length
-  const memorizedCount = vocabList.filter((v) => v.memorized).length
-  const memorizedPercentage = totalWords > 0 ? Math.round((memorizedCount / totalWords) * 100) : 0
+  const { totalWords, memorizedCount, memorizedPercentage } = useMemo(() => {
+    const total = vocabList.length
+    const memorized = vocabList.filter((v) => v.memorized).length
+    const percentage = total > 0 ? Math.round((memorized / total) * 100) : 0
+    return { totalWords: total, memorizedCount: memorized, memorizedPercentage: percentage }
+  }, [vocabList])
 
   // Filtered vocab list
-  const filteredVocab = vocabList.filter((v) => {
-    const matchesQuery =
-      v.word.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      v.translation.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesMemorized =
-      memorizedFilter === "all" ||
-      (memorizedFilter === "memorized" && v.memorized) ||
-      (memorizedFilter === "unmemorized" && !v.memorized)
+  const filteredVocab = useMemo(() => {
+    const q = searchQuery.toLowerCase()
+    return vocabList.filter((v) => {
+      const matchesQuery =
+        v.word.toLowerCase().includes(q) ||
+        v.translation.toLowerCase().includes(q)
+      
+      const matchesMemorized =
+        memorizedFilter === "all" ||
+        (memorizedFilter === "memorized" && v.memorized) ||
+        (memorizedFilter === "unmemorized" && !v.memorized)
 
-    return matchesQuery && matchesMemorized
-  })
+      return matchesQuery && matchesMemorized
+    })
+  }, [vocabList, searchQuery, memorizedFilter])
 
   // ==========================================
   // Writing Handlers
@@ -375,45 +381,58 @@ export function useLanguagePage() {
   }
 
   // Auto-complete filtered list
-  const filteredVocabList = vocabList.filter(
-    (v) =>
-      v.word.toLowerCase().includes(searchVocabQuery.toLowerCase()) ||
-      v.translation.toLowerCase().includes(searchVocabQuery.toLowerCase())
-  )
+  const filteredVocabList = useMemo(() => {
+    const q = searchVocabQuery.toLowerCase()
+    return vocabList.filter(
+      (v) =>
+        v.word.toLowerCase().includes(q) ||
+        v.translation.toLowerCase().includes(q)
+    )
+  }, [vocabList, searchVocabQuery])
 
   // Separated writing logs lists
-  const vocabWritingLogs = writingList.filter((log) => log.vocabId !== null)
-  const freeWritingLogs = writingList.filter((log) => log.vocabId === null)
+  const { vocabWritingLogs, freeWritingLogs } = useMemo(() => {
+    return {
+      vocabWritingLogs: writingList.filter((log) => log.vocabId !== null),
+      freeWritingLogs: writingList.filter((log) => log.vocabId === null),
+    }
+  }, [writingList])
 
-  const groupedVocabLogs = groupVocabWritingLogs(vocabWritingLogs)
+  const groupedVocabLogs = useMemo(() => {
+    return groupVocabWritingLogs(vocabWritingLogs)
+  }, [vocabWritingLogs])
 
   // Search filter matching on active history list
-  const filteredGroupedHistory = groupedVocabLogs.filter((group) => {
+  const filteredGroupedHistory = useMemo(() => {
     const q = searchQueryWriting.toLowerCase()
-    const matchesSearch =
-      group.vocabWord.toLowerCase().includes(q) ||
-      (group.positive && (
-        group.positive.englishSentence.toLowerCase().includes(q) ||
-        group.positive.indonesianTranslation.toLowerCase().includes(q)
-      )) ||
-      (group.negative && (
-        group.negative.englishSentence.toLowerCase().includes(q) ||
-        group.negative.indonesianTranslation.toLowerCase().includes(q)
-      )) ||
-      (group.interrogative && (
-        group.interrogative.englishSentence.toLowerCase().includes(q) ||
-        group.interrogative.indonesianTranslation.toLowerCase().includes(q)
-      ))
-    return matchesSearch
-  })
+    return groupedVocabLogs.filter((group) => {
+      const matchesSearch =
+        group.vocabWord.toLowerCase().includes(q) ||
+        (group.positive && (
+          group.positive.englishSentence.toLowerCase().includes(q) ||
+          group.positive.indonesianTranslation.toLowerCase().includes(q)
+        )) ||
+        (group.negative && (
+          group.negative.englishSentence.toLowerCase().includes(q) ||
+          group.negative.indonesianTranslation.toLowerCase().includes(q)
+        )) ||
+        (group.interrogative && (
+          group.interrogative.englishSentence.toLowerCase().includes(q) ||
+          group.interrogative.indonesianTranslation.toLowerCase().includes(q)
+        ))
+      return matchesSearch
+    })
+  }, [groupedVocabLogs, searchQueryWriting])
 
-  const filteredFreeHistory = freeWritingLogs.filter((log) => {
+  const filteredFreeHistory = useMemo(() => {
     const q = searchQueryWriting.toLowerCase()
-    const matchesSearch =
-      log.englishSentence.toLowerCase().includes(q) ||
-      log.indonesianTranslation.toLowerCase().includes(q)
-    return matchesSearch
-  })
+    return freeWritingLogs.filter((log) => {
+      const matchesSearch =
+        log.englishSentence.toLowerCase().includes(q) ||
+        log.indonesianTranslation.toLowerCase().includes(q)
+      return matchesSearch
+    })
+  }, [freeWritingLogs, searchQueryWriting])
 
   // ==========================================
   // Dialogue Handlers
@@ -521,21 +540,27 @@ export function useLanguagePage() {
   }
 
   // Dialogue filter and autocomplete lists
-  const filteredDialogueVocabList = vocabList.filter(
-    (v) =>
-      v.word.toLowerCase().includes(searchDialogueVocabQuery.toLowerCase()) ||
-      v.translation.toLowerCase().includes(searchDialogueVocabQuery.toLowerCase())
-  )
+  const filteredDialogueVocabList = useMemo(() => {
+    const q = searchDialogueVocabQuery.toLowerCase()
+    return vocabList.filter(
+      (v) =>
+        v.word.toLowerCase().includes(q) ||
+        v.translation.toLowerCase().includes(q)
+    )
+  }, [vocabList, searchDialogueVocabQuery])
 
-  const filteredDialogues = dialogueList.filter((log) => {
-    const matchesSearch =
-      log.vocabWord.toLowerCase().includes(searchQueryDialogue.toLowerCase()) ||
-      log.englishQuestion.toLowerCase().includes(searchQueryDialogue.toLowerCase()) ||
-      log.indonesianQuestion.toLowerCase().includes(searchQueryDialogue.toLowerCase()) ||
-      log.englishAnswer.toLowerCase().includes(searchQueryDialogue.toLowerCase()) ||
-      log.indonesianAnswer.toLowerCase().includes(searchQueryDialogue.toLowerCase())
-    return matchesSearch
-  })
+  const filteredDialogues = useMemo(() => {
+    const q = searchQueryDialogue.toLowerCase()
+    return dialogueList.filter((log) => {
+      const matchesSearch =
+        log.vocabWord.toLowerCase().includes(q) ||
+        log.englishQuestion.toLowerCase().includes(q) ||
+        log.indonesianQuestion.toLowerCase().includes(q) ||
+        log.englishAnswer.toLowerCase().includes(q) ||
+        log.indonesianAnswer.toLowerCase().includes(q)
+      return matchesSearch
+    })
+  }, [dialogueList, searchQueryDialogue])
 
   return {
     activeTab,
