@@ -512,21 +512,13 @@ export function ProjectBoardView({
 
                     {/* Badges footer */}
                     <div className="flex flex-wrap items-center gap-2 pt-1 text-[9px] font-bold uppercase tracking-wider">
-                      <CustomBadgeDropdown
-                        value={project.status}
-                        options={PROJECT_STATUS_OPTIONS}
-                        onChange={(val) => handleUpdateProjectStatus(project.id, val)}
-                        disabled={isPendingProjectUpdate}
-                        theme={statusTheme}
-                        showDot={true}
-                      />
-                      <CustomBadgeDropdown
-                        value={project.priority}
-                        options={PROJECT_PRIORITY_OPTIONS}
-                        onChange={(val) => handleUpdateProjectPriority(project.id, val)}
-                        disabled={isPendingProjectUpdate}
-                        theme={priorityTheme}
-                      />
+                      <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1 ${statusTheme.bg} ${statusTheme.text} ${statusTheme.border}`}>
+                        <div className={`h-1.5 w-1.5 rounded-full ${statusTheme.text.split(' ')[0].replace('text-', 'bg-')} shadow-[0_0_5px_currentColor]`} />
+                        {project.status}
+                      </span>
+                      <span className={`px-2.5 py-1 rounded-md border ${priorityTheme.bg} ${priorityTheme.text} ${priorityTheme.border}`}>
+                        {project.priority}
+                      </span>
                       {project.deadline && (
                         <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1.5 ${
                           isOver
