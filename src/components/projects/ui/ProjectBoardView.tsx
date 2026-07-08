@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   ChevronLeft,
   ChevronDown,
+  Edit2,
 } from "lucide-react"
 import { ListSkeleton } from "@/components/ui/Skeletons"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -216,6 +217,9 @@ interface ProjectBoardViewProps {
   handleUpdateProjectPriority: (id: string, priority: string) => Promise<void>
   handleUpdateTaskPriority: (id: string, priority: string) => Promise<void>
   handleUpdateProjectDeadline: (id: string, deadline: string) => Promise<void>
+  handleUpdateProjectName: (id: string, name: string) => Promise<void>
+  handleUpdateProjectDesc: (id: string, description: string | null) => Promise<void>
+  handleUpdateTaskName: (id: string, name: string) => Promise<void>
   isPendingProjectCreate: boolean
   isPendingProjectDelete: boolean
   isPendingTaskCreate: boolean
@@ -270,6 +274,9 @@ export function ProjectBoardView({
   handleUpdateProjectPriority,
   handleUpdateTaskPriority,
   handleUpdateProjectDeadline,
+  handleUpdateProjectName,
+  handleUpdateProjectDesc,
+  handleUpdateTaskName,
   isPendingProjectCreate,
   isPendingProjectDelete,
   isPendingTaskCreate,
@@ -281,6 +288,41 @@ export function ProjectBoardView({
   isPendingProjectUpdate,
   isPendingTaskUpdate,
 }: ProjectBoardViewProps) {
+  // Local inline editing states for active project name & description
+  const [isEditingProjectName, setIsEditingProjectName] = useState(false)
+  const [tempProjectName, setTempProjectName] = useState("")
+
+  const [isEditingProjectDesc, setIsEditingProjectDesc] = useState(false)
+  const [tempProjectDesc, setTempProjectDesc] = useState("")
+
+  // Local inline editing states for tasks
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
+  const [tempTaskName, setTempTaskName] = useState("")
+
+  const handleSaveProjectName = () => {
+    if (activeProject && tempProjectName.trim() && tempProjectName.trim() !== activeProject.name) {
+      handleUpdateProjectName(activeProject.id, tempProjectName)
+    }
+    setIsEditingProjectName(false)
+  }
+
+  const handleSaveProjectDesc = () => {
+    if (activeProject) {
+      const descVal = tempProjectDesc.trim() || null
+      const originalDesc = activeProject.description
+      if (descVal !== originalDesc) {
+        handleUpdateProjectDesc(activeProject.id, descVal)
+      }
+    }
+    setIsEditingProjectDesc(false)
+  }
+
+  const handleSaveTaskName = (taskId: string) => {
+    if (tempTaskName.trim()) {
+      handleUpdateTaskName(taskId, tempTaskName)
+    }
+    setEditingTaskId(null)
+  }
   const sortedProjects = [...projectsList].sort((a, b) => {
     // 1. Completed projects always go to the bottom
     const aCompleted = a.status === "Completed"
@@ -604,12 +646,57 @@ export function ProjectBoardView({
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary uppercase tracking-widest">
                     <TrendingUp className="h-3.5 w-3.5" /> Workspace Agenda
                   </span>
-                  <h3 className="text-2xl font-black text-foreground tracking-tight">
-                    {activeProject.name}
-                  </h3>
-                  {activeProject.description && (
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {activeProject.description}
+                  {isEditingProjectName ? (
+                    <input
+                      type="text"
+                      value={tempProjectName}
+                      onChange={(e) => setTempProjectName(e.target.value)}
+                      onBlur={handleSaveProjectName}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSaveProjectName()
+                        if (e.key === "Escape") setIsEditingProjectName(false)
+                      }}
+                      className="bg-transparent text-2xl font-black text-foreground border-b border-dashed border-primary/50 outline-none py-0.5 w-full focus:border-primary transition-colors max-w-md"
+                      autoFocus
+                    />
+                  ) : (
+                    <h3
+                      onClick={() => {
+                        setTempProjectName(activeProject.name)
+                        setIsEditingProjectName(true)
+                      }}
+                      className="text-2xl font-black text-foreground tracking-tight cursor-pointer hover:text-primary transition-colors flex items-center gap-2 group w-fit"
+                    >
+                      {activeProject.name}
+                      <Edit2 className="h-4 w-4 opacity-0 group-hover:opacity-60 transition-opacity text-muted-foreground" />
+                    </h3>
+                  )}
+                  {isEditingProjectDesc ? (
+                    <textarea
+                      value={tempProjectDesc}
+                      onChange={(e) => setTempProjectDesc(e.target.value)}
+                      onBlur={handleSaveProjectDesc}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault()
+                          handleSaveProjectDesc()
+                        }
+                        if (e.key === "Escape") setIsEditingProjectDesc(false)
+                      }}
+                      rows={2}
+                      className="bg-transparent text-sm text-muted-foreground border-b border-dashed border-primary/50 outline-none py-0.5 w-full resize-none focus:border-primary transition-colors"
+                      autoFocus
+                    />
+                  ) : (
+                    <p
+                      onClick={() => {
+                        setTempProjectDesc(activeProject.description || "")
+                        setIsEditingProjectDesc(true)
+                      }}
+                      className="text-sm text-muted-foreground leading-relaxed cursor-pointer hover:text-primary transition-colors min-h-[1.5rem] flex items-center gap-2 group w-fit"
+                    >
+                      {activeProject.description || <span className="italic text-xs opacity-50">Add description...</span>}
+                      <Edit2 className="h-3.5 w-3.5 opacity-0 group-hover:opacity-60 transition-opacity text-muted-foreground" />
                     </p>
                   )}
                 </div>
@@ -722,12 +809,33 @@ export function ProjectBoardView({
                               </button>
 
                               <div className="flex flex-col min-w-0 pr-3">
-                                <span
-                                  className={`text-xs font-semibold break-words whitespace-normal leading-tight ${task.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
+                                {editingTaskId === task.id ? (
+                                  <input
+                                    type="text"
+                                    value={tempTaskName}
+                                    onChange={(e) => setTempTaskName(e.target.value)}
+                                    onBlur={() => handleSaveTaskName(task.id)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") handleSaveTaskName(task.id)
+                                      if (e.key === "Escape") setEditingTaskId(null)
+                                    }}
+                                    className="bg-transparent text-xs font-semibold text-foreground border-b border-dashed border-primary/50 outline-none py-0.5 w-full focus:border-primary transition-colors"
+                                    autoFocus
+                                  />
+                                ) : (
+                                  <span
+                                    onClick={() => {
+                                      setEditingTaskId(task.id)
+                                      setTempTaskName(task.name)
+                                    }}
+                                    className={`text-xs font-semibold break-words whitespace-normal leading-tight cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 group ${
+                                      task.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                                     }`}
-                                >
-                                  {task.name}
-                                </span>
+                                  >
+                                    {task.name}
+                                    <Edit2 className="h-3 w-3 opacity-0 group-hover:opacity-60 transition-opacity text-muted-foreground shrink-0" />
+                                  </span>
+                                )}
 
                                 <div className="flex flex-wrap items-center gap-1.5 mt-1 text-[8px] font-extrabold uppercase tracking-wide">
                                   <CustomBadgeDropdown

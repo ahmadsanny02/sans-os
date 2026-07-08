@@ -230,6 +230,35 @@ export function useProjectsPage() {
     }
   }
 
+  const handleUpdateProjectName = async (id: string, name: string): Promise<void> => {
+    if (!name.trim()) return
+    try {
+      await updateProjectMutation.mutateAsync({ id, name: name.trim() })
+      showSuccessToast("Project name updated successfully")
+    } catch {
+      await showError("Update Failed", "Failed to update project name.")
+    }
+  }
+
+  const handleUpdateProjectDesc = async (id: string, description: string | null): Promise<void> => {
+    try {
+      await updateProjectMutation.mutateAsync({ id, description: description ? description.trim() : null })
+      showSuccessToast("Project description updated successfully")
+    } catch {
+      await showError("Update Failed", "Failed to update project description.")
+    }
+  }
+
+  const handleUpdateTaskName = async (id: string, name: string): Promise<void> => {
+    if (!name.trim()) return
+    try {
+      await updateTaskMutation.mutateAsync({ id, name: name.trim() })
+      showSuccessToast("Task name updated successfully")
+    } catch {
+      await showError("Update Failed", "Failed to update task name.")
+    }
+  }
+
   return {
     projectsList,
     isLoading,
@@ -266,6 +295,9 @@ export function useProjectsPage() {
     handleUpdateProjectPriority,
     handleUpdateTaskPriority,
     handleUpdateProjectDeadline,
+    handleUpdateProjectName,
+    handleUpdateProjectDesc,
+    handleUpdateTaskName,
     
     // Subtask helpers
     subTaskInputs,
