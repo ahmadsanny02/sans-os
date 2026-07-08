@@ -531,7 +531,7 @@ export function LanguageBoardView({
                   <h3 className="text-sm font-bold text-foreground tracking-wide uppercase select-none">
                     {label}
                   </h3>
-                  <span className="text-[10px] font-extrabold text-muted-foreground px-2 py-0.5 rounded bg-secondary/50 border border-border/50 select-none">
+                  <span className="text-[10px] font-extrabold text-muted-foreground px-2 py-0.5 rounded-full bg-secondary/50 border border-border/50 select-none">
                     {count} words
                   </span>
                 </div>
@@ -603,7 +603,7 @@ export function LanguageBoardView({
                                                     return (
                                                       <span
                                                         key={cleanPos}
-                                                        className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider ${
+                                                        className={`px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-wider ${
                                                           cleanPos === "verb"
                                                             ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
                                                             : cleanPos === "noun"

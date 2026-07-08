@@ -17,7 +17,6 @@ import {
   Inbox,
   AlertTriangle,
   ChevronLeft,
-  ChevronDown,
   Edit2,
 } from "lucide-react"
 import { ListSkeleton } from "@/components/ui/Skeletons"
@@ -88,13 +87,12 @@ function CustomBadgeDropdown({
           e.stopPropagation()
           if (!disabled) setIsOpen(!isOpen)
         }}
-        className={`px-2 py-0.5 rounded border flex items-center gap-1.5 transition-all hover:scale-[1.02] active:scale-95 duration-200 select-none ${theme.bg} ${theme.text} ${theme.border} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+        className={`px-2 py-0.5 rounded-full border flex items-center gap-1.5 transition-all hover:scale-[1.02] active:scale-95 duration-200 select-none ${theme.bg} ${theme.text} ${theme.border} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
       >
         {showDot && (
           <div className={`h-1.5 w-1.5 rounded-full shadow-[0_0_5px_currentColor] ${selectedOption.dotClass || "bg-current"}`} />
         )}
         <span className="text-[9px] font-bold uppercase tracking-wider">{selectedOption.label}</span>
-        <ChevronDown className="h-2.5 w-2.5 opacity-60 transition-transform duration-200" style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }} />
       </button>
 
       {isOpen && (
@@ -548,7 +546,7 @@ export function ProjectBoardView({
                               {project.description}
                             </p>
                           )}
-                          <div className="px-2.5 py-1 text-[9px] rounded-md border border-border/30 bg-secondary/30 text-muted-foreground font-medium w-fit mt-100">
+                          <div className="px-2.5 py-1 text-[9px] rounded-full border border-border/30 bg-secondary/30 text-muted-foreground font-medium w-fit mt-100">
                             Added: {formatDate(project.createdAt)}
                           </div>
                         </div>
@@ -580,15 +578,15 @@ export function ProjectBoardView({
 
                     {/* Badges footer */}
                     <div className="flex flex-wrap items-center gap-2 pt-1 text-[9px] font-bold uppercase tracking-wider">
-                      <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1 ${statusTheme.bg} ${statusTheme.text} ${statusTheme.border}`}>
+                      <span className={`px-2.5 py-1 rounded-full border flex items-center gap-1 ${statusTheme.bg} ${statusTheme.text} ${statusTheme.border}`}>
                         <div className={`h-1.5 w-1.5 rounded-full ${statusTheme.text.split(' ')[0].replace('text-', 'bg-')} shadow-[0_0_5px_currentColor]`} />
                         {project.status}
                       </span>
-                      <span className={`px-2.5 py-1 rounded-md border ${priorityTheme.bg} ${priorityTheme.text} ${priorityTheme.border}`}>
+                      <span className={`px-2.5 py-1 rounded-full border ${priorityTheme.bg} ${priorityTheme.text} ${priorityTheme.border}`}>
                         {project.priority}
                       </span>
                       {project.deadline && (
-                        <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1.5 ${isOver
+                        <span className={`px-2.5 py-1 rounded-full border flex items-center gap-1.5 ${isOver
                           ? "bg-rose-500/10 text-rose-500 border-rose-500/20 dark:text-rose-400"
                           : "bg-slate-500/10 text-slate-500 border-slate-500/20"
                           }`}>
@@ -749,7 +747,7 @@ export function ProjectBoardView({
                     />
                   </span>
                   {activeProject.deadline && isOverdue(activeProject.deadline, activeProject.status === "Completed") && (
-                    <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 ml-2 uppercase animate-pulse">
+                    <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded-full border border-rose-500/20 ml-2 uppercase animate-pulse">
                       <AlertTriangle className="h-3 w-3" /> Overdue
                     </span>
                   )}
@@ -846,7 +844,7 @@ export function ProjectBoardView({
                                     theme={taskPriorityTheme}
                                   />
                                   {task.deadline && (
-                                    <span className={`px-1.5 py-0.5 rounded border flex items-center gap-1 ${isTaskOver
+                                    <span className={`px-1.5 py-0.5 rounded-full border flex items-center gap-1 ${isTaskOver
                                       ? "bg-rose-500/10 text-rose-500 border-rose-500/20"
                                       : "bg-slate-500/10 text-slate-500 border-slate-500/20"
                                       }`}>
@@ -854,7 +852,7 @@ export function ProjectBoardView({
                                       <span>{formatDate(task.deadline)}</span>
                                     </span>
                                   )}
-                                  <span className="px-1.5 py-0.5 rounded border border-border/30 bg-secondary/30 text-muted-foreground flex items-center gap-1">
+                                  <span className="px-1.5 py-0.5 rounded-full border border-border/30 bg-secondary/30 text-muted-foreground flex items-center gap-1">
                                     Added: {formatDate(task.createdAt)}
                                   </span>
                                 </div>

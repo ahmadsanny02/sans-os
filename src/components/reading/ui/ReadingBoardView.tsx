@@ -445,7 +445,7 @@ export function ReadingBoardView({
                   {/* Status Badge & Actions */}
                   <div className="flex items-center justify-between gap-2 border-b border-border/30 pb-3">
                     <span
-                      className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border ${badge.bg} ${badge.text} ${badge.border}`}
+                      className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${badge.bg} ${badge.text} ${badge.border}`}
                     >
                       {book.status}
                     </span>
