@@ -110,11 +110,10 @@ function CustomBadgeDropdown({
                     onChange(option.value)
                     setIsOpen(false)
                   }}
-                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[10px] font-bold transition-colors duration-150 ${
-                    isSelected
-                      ? "bg-primary/10 text-primary"
-                      : "text-foreground hover:bg-secondary/60 hover:text-foreground"
-                  }`}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[10px] font-bold transition-colors duration-150 ${isSelected
+                    ? "bg-primary/10 text-primary"
+                    : "text-foreground hover:bg-secondary/60 hover:text-foreground"
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     {showDot && option.dotClass && (
@@ -480,20 +479,18 @@ export function ProjectBoardView({
                 <div
                   key={project.id}
                   onClick={() => setSelectedProjectId(project.id)}
-                  className={`group relative rounded-2xl border p-5 transition-all duration-300 cursor-pointer select-none overflow-hidden min-w-0 ${
-                    isSelected
-                      ? "border-primary/50 bg-gradient-to-br from-primary/10 via-card to-card shadow-[0_0_30px_-5px_rgba(var(--primary),0.3)]"
-                      : "border-border/40 bg-card/40 hover:bg-card/80 shadow-sm hover:border-primary/30 hover:shadow-glow"
-                  }`}
+                  className={`group relative rounded-2xl border p-5 transition-all duration-300 cursor-pointer select-none overflow-hidden min-w-0 ${isSelected
+                    ? "border-primary/50 bg-gradient-to-br from-primary/10 via-card to-card shadow-[0_0_30px_-5px_rgba(var(--primary),0.3)]"
+                    : "border-border/40 bg-card/40 hover:bg-card/80 shadow-sm hover:border-primary/30 hover:shadow-glow"
+                    }`}
                 >
                   <div className="absolute top-0 right-0 p-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity opacity-0 group-hover:opacity-100" />
-                  
+
                   <div className="relative space-y-4 min-w-0">
                     <div className="flex items-start justify-between gap-3 min-w-0">
                       <div className="flex items-start gap-3 min-w-0">
-                        <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors ${
-                          isSelected ? "bg-primary/20 border-primary/30 text-primary" : "bg-secondary/50 border-border/50 text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 group-hover:border-primary/20"
-                        }`}>
+                        <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors ${isSelected ? "bg-primary/20 border-primary/30 text-primary" : "bg-secondary/50 border-border/50 text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 group-hover:border-primary/20"
+                          }`}>
                           {isSelected ? (
                             <FolderOpen className="h-5 w-5 animate-in fade-in" />
                           ) : (
@@ -504,13 +501,16 @@ export function ProjectBoardView({
                           <h4 className="text-[15px] font-bold text-foreground truncate leading-tight group-hover:text-primary transition-colors">
                             {project.name}
                           </h4>
-                        {project.description && (
-                          <p className="text-[11px] text-muted-foreground line-clamp-1 leading-normal">
-                            {project.description}
-                          </p>
-                        )}
+                          {project.description && (
+                            <p className="text-[11px] text-muted-foreground line-clamp-1 leading-normal">
+                              {project.description}
+                            </p>
+                          )}
+                          <div className="px-2.5 py-1 text-[9px] rounded-md border border-border/30 bg-secondary/30 text-muted-foreground font-medium w-fit mt-100">
+                            Added: {formatDate(project.createdAt)}
+                          </div>
+                        </div>
                       </div>
-                    </div>
 
                       <button
                         onClick={(e) => handleDeleteProject(project.id, e)}
@@ -545,15 +545,11 @@ export function ProjectBoardView({
                       <span className={`px-2.5 py-1 rounded-md border ${priorityTheme.bg} ${priorityTheme.text} ${priorityTheme.border}`}>
                         {project.priority}
                       </span>
-                      <span className="px-2.5 py-1 rounded-md border border-border/30 bg-secondary/30 text-muted-foreground flex items-center gap-1 font-medium">
-                        Added: {formatDate(project.createdAt)}
-                      </span>
                       {project.deadline && (
-                        <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1.5 ${
-                          isOver
-                            ? "bg-rose-500/10 text-rose-500 border-rose-500/20 dark:text-rose-400"
-                            : "bg-slate-500/10 text-slate-500 border-slate-500/20"
-                        }`}>
+                        <span className={`px-2.5 py-1 rounded-md border flex items-center gap-1.5 ${isOver
+                          ? "bg-rose-500/10 text-rose-500 border-rose-500/20 dark:text-rose-400"
+                          : "bg-slate-500/10 text-slate-500 border-slate-500/20"
+                          }`}>
                           <Calendar className="h-3 w-3 shrink-0" />
                           <span>{formatDate(project.deadline)}</span>
                           {isOver && <AlertTriangle className="h-3 w-3 shrink-0 animate-pulse text-rose-500" />}
@@ -602,7 +598,7 @@ export function ProjectBoardView({
                 <ChevronLeft className="h-4 w-4" />
                 Back to Projects
               </button>
-              
+
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="space-y-1">
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary uppercase tracking-widest">
@@ -659,7 +655,7 @@ export function ProjectBoardView({
                       onClick={(e) => {
                         try {
                           e.currentTarget.showPicker();
-                        } catch {}
+                        } catch { }
                       }}
                       className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                       aria-label="Change project deadline"
@@ -707,21 +703,19 @@ export function ProjectBoardView({
                       return (
                         <div key={task.id} className="space-y-2">
                           <div
-                            className={`flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 ${
-                              task.completed
-                                ? "border-border/40 bg-secondary/20 opacity-70"
-                                : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
-                            }`}
+                            className={`flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 ${task.completed
+                              ? "border-border/40 bg-secondary/20 opacity-70"
+                              : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
+                              }`}
                           >
                             <div className="flex items-center gap-3.5 flex-1 min-w-0">
                               <button
                                 onClick={() => handleToggleTask(task.id, task.completed)}
                                 disabled={isPendingTaskToggle}
-                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
-                                  task.completed
-                                    ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                                    : "border-border/65 hover:border-primary/50 bg-card"
-                                }`}
+                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${task.completed
+                                  ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                                  : "border-border/65 hover:border-primary/50 bg-card"
+                                  }`}
                                 aria-label="Toggle task completed"
                               >
                                 {task.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
@@ -729,9 +723,8 @@ export function ProjectBoardView({
 
                               <div className="flex flex-col min-w-0 pr-3">
                                 <span
-                                  className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
-                                    task.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
-                                  }`}
+                                  className={`text-xs font-semibold break-words whitespace-normal leading-tight ${task.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
+                                    }`}
                                 >
                                   {task.name}
                                 </span>
@@ -745,11 +738,10 @@ export function ProjectBoardView({
                                     theme={taskPriorityTheme}
                                   />
                                   {task.deadline && (
-                                    <span className={`px-1.5 py-0.5 rounded border flex items-center gap-1 ${
-                                      isTaskOver
-                                        ? "bg-rose-500/10 text-rose-500 border-rose-500/20"
-                                        : "bg-slate-500/10 text-slate-500 border-slate-500/20"
-                                    }`}>
+                                    <span className={`px-1.5 py-0.5 rounded border flex items-center gap-1 ${isTaskOver
+                                      ? "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                                      : "bg-slate-500/10 text-slate-500 border-slate-500/20"
+                                      }`}>
                                       <Calendar className="h-2.5 w-2.5 shrink-0" />
                                       <span>{formatDate(task.deadline)}</span>
                                     </span>
@@ -781,36 +773,34 @@ export function ProjectBoardView({
                                     return a.createdAt.localeCompare(b.createdAt)
                                   })
                                   .map((st) => (
-                                  <div key={st.id} className="group flex items-center justify-between py-1 px-2 -mx-2 rounded-lg hover:bg-secondary/40 transition-colors">
-                                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                                      <button
-                                        onClick={() => handleToggleSubTask(st.id, st.completed)}
-                                        disabled={isPendingSubTaskToggle}
-                                        className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[4px] border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
-                                          st.completed
+                                    <div key={st.id} className="group flex items-center justify-between py-1 px-2 -mx-2 rounded-lg hover:bg-secondary/40 transition-colors">
+                                      <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                                        <button
+                                          onClick={() => handleToggleSubTask(st.id, st.completed)}
+                                          disabled={isPendingSubTaskToggle}
+                                          className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[4px] border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${st.completed
                                             ? "bg-primary border-primary text-primary-foreground"
                                             : "border-border/65 hover:border-primary/50 bg-card"
-                                        }`}
+                                            }`}
+                                        >
+                                          {st.completed && <Check className="h-2.5 w-2.5 stroke-[4]" />}
+                                        </button>
+                                        <span
+                                          className={`text-[11px] min-w-0 break-words ${st.completed ? "line-through text-muted-foreground" : "text-foreground font-medium"
+                                            }`}
+                                        >
+                                          {st.name}
+                                        </span>
+                                      </div>
+                                      <button
+                                        onClick={() => handleDeleteSubTask(st.id)}
+                                        disabled={isPendingSubTaskDelete}
+                                        className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
                                       >
-                                        {st.completed && <Check className="h-2.5 w-2.5 stroke-[4]" />}
+                                        <Trash2 className="h-3 w-3" />
                                       </button>
-                                      <span
-                                        className={`text-[11px] min-w-0 break-words ${
-                                          st.completed ? "line-through text-muted-foreground" : "text-foreground font-medium"
-                                        }`}
-                                      >
-                                        {st.name}
-                                      </span>
                                     </div>
-                                    <button
-                                      onClick={() => handleDeleteSubTask(st.id)}
-                                      disabled={isPendingSubTaskDelete}
-                                      className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
-                                    >
-                                      <Trash2 className="h-3 w-3" />
-                                    </button>
-                                  </div>
-                                ))}
+                                  ))}
                               </div>
                             )}
 
