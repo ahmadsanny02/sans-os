@@ -641,8 +641,8 @@ export function ProjectBoardView({
                 Back to Projects
               </button>
 
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                <div className="space-y-1">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="flex flex-col gap-2 flex-1 min-w-0">
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary uppercase tracking-widest">
                     <TrendingUp className="h-3.5 w-3.5" /> Workspace Agenda
                   </span>
@@ -656,7 +656,7 @@ export function ProjectBoardView({
                         if (e.key === "Enter") handleSaveProjectName()
                         if (e.key === "Escape") setIsEditingProjectName(false)
                       }}
-                      className="bg-transparent text-2xl font-black text-foreground border-b border-dashed border-primary/50 outline-none py-0.5 w-full focus:border-primary transition-colors max-w-md"
+                      className="bg-secondary/40 border border-border/50 text-2xl font-black text-foreground rounded-xl px-3.5 py-1.5 w-full focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all max-w-md shadow-inner"
                       autoFocus
                     />
                   ) : (
@@ -684,7 +684,7 @@ export function ProjectBoardView({
                         if (e.key === "Escape") setIsEditingProjectDesc(false)
                       }}
                       rows={2}
-                      className="bg-transparent text-sm text-muted-foreground border-b border-dashed border-primary/50 outline-none py-0.5 w-full resize-none focus:border-primary transition-colors"
+                      className="bg-secondary/40 border border-border/50 text-sm text-foreground rounded-xl p-3 w-full resize-none focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all shadow-inner"
                       autoFocus
                     />
                   ) : (
@@ -819,7 +819,7 @@ export function ProjectBoardView({
                                       if (e.key === "Enter") handleSaveTaskName(task.id)
                                       if (e.key === "Escape") setEditingTaskId(null)
                                     }}
-                                    className="bg-transparent text-xs font-semibold text-foreground border-b border-dashed border-primary/50 outline-none py-0.5 w-full focus:border-primary transition-colors"
+                                    className="bg-secondary/35 border border-border/40 text-xs font-semibold text-foreground rounded-lg px-2.5 py-1 w-full focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
                                     autoFocus
                                   />
                                 ) : (
