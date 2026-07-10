@@ -67,19 +67,30 @@ export function useDashboardPage() {
   const toggleTodoMutation = useToggleDailyTodoMutation(activeDate)
   const toggleHabitMutation = useToggleLogMutation()
 
-  // 3. Greeting determination
+  // 3. Greeting determination (updates in real-time)
   const [greeting, setGreeting] = useState("Good Morning")
-  useEffect(() => {
-    const currentHour = new Date().getHours()
-    if (currentHour >= 12 && currentHour < 17) {
+  
+  const updateGreeting = (hour: number) => {
+    if (hour >= 12 && hour < 17) {
       setGreeting("Good Afternoon")
-    } else if (currentHour >= 17 && currentHour < 21) {
+    } else if (hour >= 17 && hour < 21) {
       setGreeting("Good Evening")
-    } else if (currentHour >= 21 || currentHour < 4) {
+    } else if (hour >= 21 || hour < 4) {
       setGreeting("Good Night")
     } else {
       setGreeting("Good Morning")
     }
+  }
+
+  useEffect(() => {
+    const d = new Date()
+    updateGreeting(d.getHours())
+
+    const timer = setInterval(() => {
+      const now = new Date()
+      updateGreeting(now.getHours())
+    }, 60000) // check greeting every minute
+    return () => clearInterval(timer)
   }, [])
 
   // 4. Formatted date string
@@ -96,16 +107,21 @@ export function useDashboardPage() {
     )
   }, [activeDate])
 
-  // 5. Timetable derived state
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, "0")
-  const day = String(now.getDate()).padStart(2, "0")
-  const realTodayStr = `${year}-${month}-${day}`
+  // 5. Timetable derived state (real-time updates)
+  const realTodayStr = useWorkspaceStore((state) => state.realTodayDate)
+  
+  const [currentTimeStr, setCurrentTimeStr] = useState(() => {
+    const d = new Date()
+    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`
+  })
 
-  const currentHourStr = String(now.getHours()).padStart(2, "0")
-  const currentMinStr = String(now.getMinutes()).padStart(2, "0")
-  const currentTimeStr = `${currentHourStr}:${currentMinStr}`
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const d = new Date()
+      setCurrentTimeStr(`${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`)
+    }, 10000) // update clock every 10 seconds
+    return () => clearInterval(timer)
+  }, [])
 
   const isTodayDate = activeDate === realTodayStr
 

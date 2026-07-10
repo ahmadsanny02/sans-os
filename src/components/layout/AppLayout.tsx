@@ -99,6 +99,49 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     updateUserConfig({ theme: userConfig.theme === "dark" ? "light" : "dark" })
   }
 
+  // Synchronize date and check for day rollover in real-time
+  useEffect(() => {
+    const getLocalDateStr = (): string => {
+      const d = new Date()
+      const year = d.getFullYear()
+      const month = String(d.getMonth() + 1).padStart(2, "0")
+      const day = String(d.getDate()).padStart(2, "0")
+      return `${year}-${month}-${day}`
+    }
+
+    const clientToday = getLocalDateStr()
+    const storeRealToday = useWorkspaceStore.getState().realTodayDate
+    const storeActiveDate = useWorkspaceStore.getState().activeDate
+    const setRealTodayDate = useWorkspaceStore.getState().setRealTodayDate
+    const setActiveDate = useWorkspaceStore.getState().setActiveDate
+
+    // 1. Initial client-side sync (correction for timezone difference from SSR)
+    if (clientToday !== storeRealToday) {
+      setRealTodayDate(clientToday)
+      if (storeActiveDate === storeRealToday) {
+        setActiveDate(clientToday)
+      }
+    }
+
+    // 2. Setup periodic check for midnight rollover
+    const interval = setInterval(() => {
+      const currentToday = getLocalDateStr()
+      const currentStoreRealToday = useWorkspaceStore.getState().realTodayDate
+      const currentStoreActive = useWorkspaceStore.getState().activeDate
+
+      if (currentToday !== currentStoreRealToday) {
+        setRealTodayDate(currentToday)
+        
+        // If user was viewing "today", automatically update activeDate to the new today
+        if (currentStoreActive === currentStoreRealToday) {
+          setActiveDate(currentToday)
+        }
+      }
+    }, 10000) // check every 10 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
   // Measure floating Pomodoro button coordinates when opening the modal or on resize
   useEffect(() => {
     const handleMeasure = () => {

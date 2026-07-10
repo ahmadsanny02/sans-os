@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 import {
   usePrioritiesQuery,
@@ -59,16 +59,21 @@ export function useCalendarPage() {
   const { data: rangePriorities = [], isLoading: isLoadingRangePriorities, isError: isErrorRangePriorities } =
     usePrioritiesRangeQuery(startDateStr, endDateStr)
 
-  // Compare ongoing/future blocks
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, "0")
-  const day = String(now.getDate()).padStart(2, "0")
-  const realTodayStr = `${year}-${month}-${day}`
+  // Compare ongoing/future blocks (real-time updates)
+  const realTodayStr = useWorkspaceStore((state) => state.realTodayDate)
 
-  const currentHour = String(now.getHours()).padStart(2, "0")
-  const currentMin = String(now.getMinutes()).padStart(2, "0")
-  const currentTimeStr = `${currentHour}:${currentMin}`
+  const [currentTimeStr, setCurrentTimeStr] = useState(() => {
+    const d = new Date()
+    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`
+  })
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const d = new Date()
+      setCurrentTimeStr(`${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`)
+    }, 10000) // update clock every 10 seconds
+    return () => clearInterval(timer)
+  }, [])
 
   const isSelectedDateToday = selectedDate === realTodayStr
 
