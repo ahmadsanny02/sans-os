@@ -86,11 +86,13 @@ export async function POST(request: Request): Promise<NextResponse> {
       indonesianQuestion,
       englishAnswer,
       indonesianAnswer,
+      formula,
     } = body
 
+    // Validation
+    const hasFormula = typeof formula === "string" && formula.trim().length > 0
     if (
-      !vocabId ||
-      !vocabWord ||
+      (!hasFormula && (!vocabId || !vocabWord)) ||
       !englishQuestion?.trim() ||
       !indonesianQuestion?.trim() ||
       !englishAnswer?.trim() ||
@@ -106,14 +108,15 @@ export async function POST(request: Request): Promise<NextResponse> {
       .insert(dialogueLogs)
       .values({
         userId: user.id,
-        vocabId,
-        vocabWord: vocabWord.trim(),
+        vocabId: vocabId || null,
+        vocabWord: vocabWord ? vocabWord.trim() : null,
         englishQuestion: englishQuestion.trim(),
         indonesianQuestion: indonesianQuestion.trim(),
         englishAnswer: englishAnswer.trim(),
         indonesianAnswer: indonesianAnswer.trim(),
         autoTranslationQuestion,
         autoTranslationAnswer,
+        formula: hasFormula ? formula.trim() : null,
       })
       .returning()
 

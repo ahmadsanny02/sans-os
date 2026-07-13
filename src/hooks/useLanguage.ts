@@ -52,14 +52,15 @@ export interface GroupedWritingLog {
 export interface DialogueLog {
   id: string
   userId: string
-  vocabId: string
-  vocabWord: string
+  vocabId: string | null
+  vocabWord: string | null
   englishQuestion: string
   indonesianQuestion: string
   englishAnswer: string
   indonesianAnswer: string
   autoTranslationQuestion: string | null
   autoTranslationAnswer: string | null
+  formula: string | null
   createdAt: string
 }
 
@@ -338,12 +339,13 @@ export function useDialogueQuery() {
 
 // 9. Create dialogue
 async function createDialogue(body: {
-  vocabId: string
-  vocabWord: string
+  vocabId: string | null
+  vocabWord: string | null
   englishQuestion: string
   indonesianQuestion: string
   englishAnswer: string
   indonesianAnswer: string
+  formula?: string | null
 }): Promise<DialogueLog> {
   const res = await fetch("/api/language/dialogue", {
     method: "POST",
@@ -363,12 +365,13 @@ export function useCreateDialogueMutation() {
     DialogueLog,
     Error,
     {
-      vocabId: string
-      vocabWord: string
+      vocabId: string | null
+      vocabWord: string | null
       englishQuestion: string
       indonesianQuestion: string
       englishAnswer: string
       indonesianAnswer: string
+      formula?: string | null
     }
   >({
     mutationFn: createDialogue,

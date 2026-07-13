@@ -136,6 +136,8 @@ export function useLanguagePage() {
   // Dialogue Practice States
   // ==========================================
   const [showDialogueForm, setShowDialogueForm] = useState(false)
+  const [dialoguePracticeMode, setDialoguePracticeMode] = useState<"vocab" | "formula">("vocab")
+  const [dialogueActiveHistoryTab, setDialogueActiveHistoryTab] = useState<"vocab" | "formula">("vocab")
   const [searchQueryDialogue, setSearchQueryDialogue] = useState("")
   const [selectedDialogueVocabId, setSelectedDialogueVocabId] = useState("")
   const [searchDialogueVocabQuery, setSearchDialogueVocabQuery] = useState("")
@@ -146,6 +148,7 @@ export function useLanguagePage() {
   const [dialogueTransQ, setDialogueTransQ] = useState("")
   const [dialogueEngA, setDialogueEngA] = useState("")
   const [dialogueTransA, setDialogueTransA] = useState("")
+  const [dialogueFormula, setDialogueFormula] = useState("")
   const [dialogueFormError, setDialogueFormError] = useState<string | null>(null)
 
   // Study reveal aids
@@ -553,6 +556,7 @@ export function useLanguagePage() {
       dialogueTransQ?: string
       dialogueEngA?: string
       dialogueTransA?: string
+      dialogueFormula?: string
     }
   ): Promise<void> => {
     e.preventDefault()
@@ -562,11 +566,7 @@ export function useLanguagePage() {
     const activeDialogueTransQ = formData?.dialogueTransQ ?? dialogueTransQ
     const activeDialogueEngA = formData?.dialogueEngA ?? dialogueEngA
     const activeDialogueTransA = formData?.dialogueTransA ?? dialogueTransA
-
-    if (!selectedDialogueVocabId) {
-      setDialogueFormError("Please select a vocabulary word.")
-      return
-    }
+    const activeDialogueFormula = formData?.dialogueFormula ?? dialogueFormula
 
     if (
       !activeDialogueEngQ.trim() || !activeDialogueTransQ.trim() ||
@@ -576,34 +576,79 @@ export function useLanguagePage() {
       return
     }
 
-    const selectedVocab = vocabList.find((v) => v.id === selectedDialogueVocabId)
-    if (!selectedVocab) {
-      setDialogueFormError("Selected vocabulary word not found.")
-      return
-    }
+    if (dialoguePracticeMode === "vocab") {
+      if (!selectedDialogueVocabId) {
+        setDialogueFormError("Please select a vocabulary word.")
+        return
+      }
 
-    try {
-      await createDialogueMutation.mutateAsync({
-        vocabId: selectedVocab.id,
-        vocabWord: selectedVocab.word,
-        englishQuestion: activeDialogueEngQ.trim(),
-        indonesianQuestion: activeDialogueTransQ.trim(),
-        englishAnswer: activeDialogueEngA.trim(),
-        indonesianAnswer: activeDialogueTransA.trim(),
-      })
+      const selectedVocab = vocabList.find((v) => v.id === selectedDialogueVocabId)
+      if (!selectedVocab) {
+        setDialogueFormError("Selected vocabulary word not found.")
+        return
+      }
 
-      // Reset form
-      setSelectedDialogueVocabId("")
-      setSearchDialogueVocabQuery("")
-      setDialogueEngQ("")
-      setDialogueTransQ("")
-      setDialogueEngA("")
-      setDialogueTransA("")
-      setShowDialogueForm(false)
-      showSuccessToast("Dialogue added successfully")
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : "Failed to add dialogue."
-      setDialogueFormError(errMsg)
+      try {
+        await createDialogueMutation.mutateAsync({
+          vocabId: selectedVocab.id,
+          vocabWord: selectedVocab.word,
+          englishQuestion: activeDialogueEngQ.trim(),
+          indonesianQuestion: activeDialogueTransQ.trim(),
+          englishAnswer: activeDialogueEngA.trim(),
+          indonesianAnswer: activeDialogueTransA.trim(),
+          formula: null,
+        })
+
+        // Reset form
+        setSelectedDialogueVocabId("")
+        setSearchDialogueVocabQuery("")
+        setDialogueEngQ("")
+        setDialogueTransQ("")
+        setDialogueEngA("")
+        setDialogueTransA("")
+        setDialogueFormula("")
+        setShowDialogueForm(false)
+        showSuccessToast("Dialogue added successfully")
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : "Failed to add dialogue."
+        setDialogueFormError(errMsg)
+      }
+    } else {
+      // dialoguePracticeMode === "formula"
+      if (!activeDialogueFormula.trim()) {
+        setDialogueFormError("Please enter the formula / rumus.")
+        return
+      }
+
+      const selectedVocab = selectedDialogueVocabId
+        ? vocabList.find((v) => v.id === selectedDialogueVocabId)
+        : null
+
+      try {
+        await createDialogueMutation.mutateAsync({
+          vocabId: selectedVocab?.id || null,
+          vocabWord: selectedVocab?.word || null,
+          englishQuestion: activeDialogueEngQ.trim(),
+          indonesianQuestion: activeDialogueTransQ.trim(),
+          englishAnswer: activeDialogueEngA.trim(),
+          indonesianAnswer: activeDialogueTransA.trim(),
+          formula: activeDialogueFormula.trim(),
+        })
+
+        // Reset form
+        setSelectedDialogueVocabId("")
+        setSearchDialogueVocabQuery("")
+        setDialogueEngQ("")
+        setDialogueTransQ("")
+        setDialogueEngA("")
+        setDialogueTransA("")
+        setDialogueFormula("")
+        setShowDialogueForm(false)
+        showSuccessToast("Dialogue added successfully")
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : "Failed to add dialogue."
+        setDialogueFormError(errMsg)
+      }
     }
   }
 
@@ -651,18 +696,39 @@ export function useLanguagePage() {
     )
   }, [vocabList, searchDialogueVocabQuery])
 
-  const filteredDialogues = useMemo(() => {
+  const { vocabDialogueLogs, formulaDialogueLogs } = useMemo(() => {
+    return {
+      vocabDialogueLogs: dialogueList.filter((log) => !log.formula),
+      formulaDialogueLogs: dialogueList.filter((log) => !!log.formula),
+    }
+  }, [dialogueList])
+
+  const filteredVocabDialogueHistory = useMemo(() => {
     const q = searchQueryDialogue.toLowerCase()
-    return dialogueList.filter((log) => {
+    return vocabDialogueLogs.filter((log) => {
       const matchesSearch =
-        log.vocabWord.toLowerCase().includes(q) ||
+        (log.vocabWord && log.vocabWord.toLowerCase().includes(q)) ||
         log.englishQuestion.toLowerCase().includes(q) ||
         log.indonesianQuestion.toLowerCase().includes(q) ||
         log.englishAnswer.toLowerCase().includes(q) ||
         log.indonesianAnswer.toLowerCase().includes(q)
       return matchesSearch
     })
-  }, [dialogueList, searchQueryDialogue])
+  }, [vocabDialogueLogs, searchQueryDialogue])
+
+  const filteredFormulaDialogueHistory = useMemo(() => {
+    const q = searchQueryDialogue.toLowerCase()
+    return formulaDialogueLogs.filter((log) => {
+      const matchesSearch =
+        (log.formula && log.formula.toLowerCase().includes(q)) ||
+        (log.vocabWord && log.vocabWord.toLowerCase().includes(q)) ||
+        log.englishQuestion.toLowerCase().includes(q) ||
+        log.indonesianQuestion.toLowerCase().includes(q) ||
+        log.englishAnswer.toLowerCase().includes(q) ||
+        log.indonesianAnswer.toLowerCase().includes(q)
+      return matchesSearch
+    })
+  }, [formulaDialogueLogs, searchQueryDialogue])
 
   return {
     activeTab,
@@ -755,6 +821,10 @@ export function useLanguagePage() {
     dialogueIsError,
     showDialogueForm,
     setShowDialogueForm,
+    dialoguePracticeMode,
+    setDialoguePracticeMode,
+    dialogueActiveHistoryTab,
+    setDialogueActiveHistoryTab,
     searchQueryDialogue,
     setSearchQueryDialogue,
     selectedDialogueVocabId,
@@ -771,6 +841,8 @@ export function useLanguagePage() {
     setDialogueEngA,
     dialogueTransA,
     setDialogueTransA,
+    dialogueFormula,
+    setDialogueFormula,
     dialogueFormError,
     revealedDialogueTranslationIds,
     handleSelectDialogueVocab,
@@ -780,7 +852,10 @@ export function useLanguagePage() {
     revealAllDialogueTranslations,
     hideAllDialogueTranslations,
     filteredDialogueVocabList,
-    filteredDialogues,
+    vocabDialogueLogs,
+    formulaDialogueLogs,
+    filteredVocabDialogueHistory,
+    filteredFormulaDialogueHistory,
     dialogueCreatePending: createDialogueMutation.isPending,
     dialogueDeletePending: deleteDialogueMutation.isPending,
   }

@@ -143,16 +143,15 @@ export const writingLogs = pgTable("writing_logs", {
 export const dialogueLogs = pgTable("dialogue_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id").notNull(),
-  vocabId: uuid("vocab_id")
-    .references(() => vocabularyLogs.id, { onDelete: "cascade" })
-    .notNull(),
-  vocabWord: text("vocab_word").notNull(),
+  vocabId: uuid("vocab_id").references(() => vocabularyLogs.id, { onDelete: "cascade" }),
+  vocabWord: text("vocab_word"),
   englishQuestion: text("english_question").notNull(),
   indonesianQuestion: text("indonesian_question").notNull(),
   englishAnswer: text("english_answer").notNull(),
   indonesianAnswer: text("indonesian_answer").notNull(),
   autoTranslationQuestion: text("auto_translation_question"),
   autoTranslationAnswer: text("auto_translation_answer"),
+  formula: text("formula"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 

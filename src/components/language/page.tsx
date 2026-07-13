@@ -149,6 +149,10 @@ export default function LanguageComponent() {
           isError={languageData.dialogueIsError}
           showDialogueForm={languageData.showDialogueForm}
           setShowDialogueForm={languageData.setShowDialogueForm}
+          dialoguePracticeMode={languageData.dialoguePracticeMode}
+          setDialoguePracticeMode={languageData.setDialoguePracticeMode}
+          dialogueActiveHistoryTab={languageData.dialogueActiveHistoryTab}
+          setDialogueActiveHistoryTab={languageData.setDialogueActiveHistoryTab}
           searchQueryDialogue={languageData.searchQueryDialogue}
           setSearchQueryDialogue={languageData.setSearchQueryDialogue}
           selectedDialogueVocabId={languageData.selectedDialogueVocabId}
@@ -165,6 +169,8 @@ export default function LanguageComponent() {
           setDialogueEngA={languageData.setDialogueEngA}
           dialogueTransA={languageData.dialogueTransA}
           setDialogueTransA={languageData.setDialogueTransA}
+          dialogueFormula={languageData.dialogueFormula}
+          setDialogueFormula={languageData.setDialogueFormula}
           dialogueFormError={languageData.dialogueFormError}
           revealedDialogueTranslationIds={languageData.revealedDialogueTranslationIds}
           handleSelectDialogueVocab={languageData.handleSelectDialogueVocab}
@@ -174,7 +180,10 @@ export default function LanguageComponent() {
           revealAllDialogueTranslations={languageData.revealAllDialogueTranslations}
           hideAllDialogueTranslations={languageData.hideAllDialogueTranslations}
           filteredDialogueVocabList={languageData.filteredDialogueVocabList}
-          filteredDialogues={languageData.filteredDialogues}
+          vocabDialogueLogs={languageData.vocabDialogueLogs}
+          formulaDialogueLogs={languageData.formulaDialogueLogs}
+          filteredVocabDialogueHistory={languageData.filteredVocabDialogueHistory}
+          filteredFormulaDialogueHistory={languageData.filteredFormulaDialogueHistory}
           dialogueCreatePending={languageData.dialogueCreatePending}
           dialogueDeletePending={languageData.dialogueDeletePending}
         />
