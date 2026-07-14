@@ -8,6 +8,7 @@ A personalized, all-in-one life operating system and career workspace designed t
 
 ### 1. Dashboard Hub
 *   **Bento Grid Widgets:** Quick metrics at a glance, including a daily timetable timeline, memory box visual highlights, priorities checklist, and todo items.
+*   **Pomodoro Focus Bar:** Full-width control panel integrated directly on the main hub with live state progress and toggle triggers.
 *   **Timezone & Sync Banner:** Automatically syncs display active dates and user timezone bounds globally.
 
 ### 2. Daily Flow & Timetable
