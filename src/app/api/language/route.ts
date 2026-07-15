@@ -5,6 +5,7 @@ import { eq, and, asc, sql } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { translateText } from "@/lib/translate"
 import { conjugateVerb } from "@/lib/verbs"
+import { detectPartOfSpeech, SPECIAL_WORDS } from "@/lib/languageUtils"
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -28,6 +29,13 @@ export async function GET(): Promise<NextResponse> {
       logs.map(async (log) => {
         let needsUpdate = false
         const updateFields: Record<string, string | null> = {}
+
+        const cleanWord = log.word.trim().toLowerCase()
+        if (SPECIAL_WORDS[cleanWord] && log.partOfSpeech !== SPECIAL_WORDS[cleanWord]) {
+          updateFields.partOfSpeech = SPECIAL_WORDS[cleanWord]
+          needsUpdate = true
+          log.partOfSpeech = SPECIAL_WORDS[cleanWord]
+        }
 
         if (!log.autoTranslation) {
           const auto = await translateText(log.word)
@@ -81,101 +89,6 @@ export async function GET(): Promise<NextResponse> {
   }
 }
 
-
-const SPECIAL_WORDS: Record<string, string> = {
-  "at": "preposition",
-  "in": "preposition",
-  "on": "preposition",
-  "of": "preposition",
-  "to": "preposition",
-  "by": "preposition",
-  "for": "preposition",
-  "with": "preposition",
-  "about": "preposition",
-  "against": "preposition",
-  "between": "preposition",
-  "into": "preposition",
-  "through": "preposition",
-  "during": "preposition",
-  "before": "preposition",
-  "after": "preposition",
-  "above": "preposition",
-  "below": "preposition",
-  "from": "preposition",
-  "up": "preposition",
-  "down": "preposition",
-  "out": "preposition",
-  "over": "preposition",
-  "under": "preposition",
-  "off": "preposition",
-  "and": "conjunction",
-  "but": "conjunction",
-  "or": "conjunction",
-  "so": "conjunction",
-  "because": "conjunction",
-  "although": "conjunction",
-  "while": "conjunction",
-  "as": "conjunction",
-  "if": "conjunction",
-  "unless": "conjunction",
-  "until": "conjunction",
-  "since": "conjunction",
-  "than": "conjunction",
-  "i": "pronoun",
-  "me": "pronoun",
-  "my": "pronoun",
-  "you": "pronoun",
-  "he": "pronoun",
-  "him": "pronoun",
-  "she": "pronoun",
-  "her": "pronoun",
-  "it": "pronoun",
-  "we": "pronoun",
-  "us": "pronoun",
-  "they": "pronoun",
-  "them": "pronoun",
-  "who": "pronoun",
-  "which": "pronoun",
-  "that": "pronoun",
-  "this": "pronoun",
-  "the": "determiner",
-  "a": "determiner",
-  "an": "determiner"
-}
-
-async function detectPartOfSpeech(englishWord: string): Promise<string> {
-  const cleanWord = englishWord.split(/[,;]/)[0].trim().toLowerCase()
-  if (!cleanWord) return "noun"
-
-  if (SPECIAL_WORDS[cleanWord]) {
-    return SPECIAL_WORDS[cleanWord]
-  }
-
-  try {
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`)
-    if (res.ok) {
-      const data = await res.json()
-      if (Array.isArray(data)) {
-        const partsSet = new Set<string>()
-        for (const entry of data) {
-          if (entry.meanings) {
-            for (const m of entry.meanings) {
-              if (m.partOfSpeech) {
-                partsSet.add(m.partOfSpeech.toLowerCase())
-              }
-            }
-          }
-        }
-        if (partsSet.size > 0) {
-          return Array.from(partsSet).join(", ")
-        }
-      }
-    }
-  } catch (error) {
-    console.error("Error auto-detecting part of speech:", error)
-  }
-  return "noun" // default fallback
-}
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {

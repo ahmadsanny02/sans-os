@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { SPECIAL_WORDS } from "@/lib/languageUtils"
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -55,11 +56,16 @@ export async function GET(request: Request): Promise<NextResponse> {
       const partsSet = new Set<string>()
       let definition = "No definition found."
       
+      if (SPECIAL_WORDS[cleanWord]) {
+        partsSet.add(SPECIAL_WORDS[cleanWord])
+      }
+      
       if (dictionaryData && Array.isArray(dictionaryData) && dictionaryData[0]) {
         const entry = dictionaryData[0]
         if (entry.meanings) {
           for (const m of entry.meanings) {
             if (m.partOfSpeech) {
+              if (SPECIAL_WORDS[cleanWord]) continue
               partsSet.add(m.partOfSpeech.toLowerCase())
             }
           }
