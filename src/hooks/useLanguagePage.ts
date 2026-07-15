@@ -500,12 +500,8 @@ export function useLanguagePage() {
         return
       }
 
-      if (
-        !activeVocabEngPos.trim() || !activeVocabTransPos.trim() ||
-        !activeVocabEngNeg.trim() || !activeVocabTransNeg.trim() ||
-        !activeVocabEngInt.trim() || !activeVocabTransInt.trim()
-      ) {
-        setWritingFormError("Please write sentences and translations for all three types (Positive, Negative, and Interrogative).")
+      if (!activeFreeEnglish.trim() || !activeFreeTranslation.trim()) {
+        setWritingFormError("Please fill out both English sentence and translation.")
         return
       }
 
@@ -514,51 +510,27 @@ export function useLanguagePage() {
         : null
 
       try {
-        await Promise.all([
-          createWritingMutation.mutateAsync({
-            vocabId: selectedVocabObj?.id || null,
-            vocabWord: selectedVocabObj?.word || null,
-            sentenceType: "Positive",
-            englishSentence: activeVocabEngPos.trim(),
-            indonesianTranslation: activeVocabTransPos.trim(),
-            formulaId: selectedFormulaObj.id,
-            formula: selectedFormulaObj.formula,
-          }),
-          createWritingMutation.mutateAsync({
-            vocabId: selectedVocabObj?.id || null,
-            vocabWord: selectedVocabObj?.word || null,
-            sentenceType: "Negative",
-            englishSentence: activeVocabEngNeg.trim(),
-            indonesianTranslation: activeVocabTransNeg.trim(),
-            formulaId: selectedFormulaObj.id,
-            formula: selectedFormulaObj.formula,
-          }),
-          createWritingMutation.mutateAsync({
-            vocabId: selectedVocabObj?.id || null,
-            vocabWord: selectedVocabObj?.word || null,
-            sentenceType: "Interrogative",
-            englishSentence: activeVocabEngInt.trim(),
-            indonesianTranslation: activeVocabTransInt.trim(),
-            formulaId: selectedFormulaObj.id,
-            formula: selectedFormulaObj.formula,
-          }),
-        ])
+        await createWritingMutation.mutateAsync({
+          vocabId: selectedVocabObj?.id || null,
+          vocabWord: selectedVocabObj?.word || null,
+          sentenceType: null,
+          englishSentence: activeFreeEnglish.trim(),
+          indonesianTranslation: activeFreeTranslation.trim(),
+          formulaId: selectedFormulaObj.id,
+          formula: selectedFormulaObj.formula,
+        })
 
         setSelectedWritingFormulaId("")
         setSearchWritingFormulaQuery("")
         setSelectedVocabId("")
         setSearchVocabQuery("")
-        setVocabEngPos("")
-        setVocabTransPos("")
-        setVocabEngNeg("")
-        setVocabTransNeg("")
-        setVocabEngInt("")
-        setVocabTransInt("")
+        setFreeEnglish("")
+        setFreeTranslation("")
         setWritingFormError(null)
         setShowWritingForm(false)
-        showSuccessToast("Formula practice sentences added successfully")
+        showSuccessToast("Formula practice sentence added successfully")
       } catch {
-        setWritingFormError("Failed to save some or all sentences. Please try again.")
+        setWritingFormError("Failed to save sentence. Please try again.")
       }
     }
   }
@@ -598,19 +570,15 @@ export function useLanguagePage() {
   // Separated writing logs lists
   const { vocabWritingLogs, formulaWritingLogs, freeWritingLogs } = useMemo(() => {
     return {
-      vocabWritingLogs: writingList.filter((log) => log.sentenceType !== null && !log.formula),
-      formulaWritingLogs: writingList.filter((log) => log.sentenceType !== null && log.formula),
-      freeWritingLogs: writingList.filter((log) => log.sentenceType === null),
+      vocabWritingLogs: writingList.filter((log) => log.vocabId && !log.formula),
+      formulaWritingLogs: writingList.filter((log) => !!log.formula),
+      freeWritingLogs: writingList.filter((log) => !log.vocabId && !log.formula),
     }
   }, [writingList])
 
   const groupedVocabLogs = useMemo(() => {
     return groupVocabWritingLogs(vocabWritingLogs)
   }, [vocabWritingLogs])
-
-  const groupedFormulaLogs = useMemo(() => {
-    return groupVocabWritingLogs(formulaWritingLogs)
-  }, [formulaWritingLogs])
 
   // Search filter matching on active history list
   const filteredGroupedHistory = useMemo(() => {
@@ -636,25 +604,15 @@ export function useLanguagePage() {
 
   const filteredFormulaHistory = useMemo(() => {
     const q = searchQueryWriting.toLowerCase()
-    return groupedFormulaLogs.filter((group) => {
-      return (
-        (group.formula && group.formula.toLowerCase().includes(q)) ||
-        (group.vocabWord && group.vocabWord.toLowerCase().includes(q)) ||
-        (group.positive && (
-          group.positive.englishSentence.toLowerCase().includes(q) ||
-          group.positive.indonesianTranslation.toLowerCase().includes(q)
-        )) ||
-        (group.negative && (
-          group.negative.englishSentence.toLowerCase().includes(q) ||
-          group.negative.indonesianTranslation.toLowerCase().includes(q)
-        )) ||
-        (group.interrogative && (
-          group.interrogative.englishSentence.toLowerCase().includes(q) ||
-          group.interrogative.indonesianTranslation.toLowerCase().includes(q)
-        ))
-      )
+    return formulaWritingLogs.filter((log) => {
+      const matchesSearch =
+        (log.formula && log.formula.toLowerCase().includes(q)) ||
+        (log.vocabWord && log.vocabWord.toLowerCase().includes(q)) ||
+        log.englishSentence.toLowerCase().includes(q) ||
+        log.indonesianTranslation.toLowerCase().includes(q)
+      return matchesSearch
     })
-  }, [groupedFormulaLogs, searchQueryWriting])
+  }, [formulaWritingLogs, searchQueryWriting])
 
   const filteredFreeHistory = useMemo(() => {
     const q = searchQueryWriting.toLowerCase()
@@ -978,7 +936,7 @@ export function useLanguagePage() {
     handleSelectVocab,
     filteredVocabList,
     vocabWritingLogs: groupedVocabLogs,
-    formulaWritingLogs: groupedFormulaLogs,
+    formulaWritingLogs,
     freeWritingLogs,
     filteredGroupedHistory,
     filteredFormulaHistory,
