@@ -2,7 +2,8 @@
 
 import React from "react"
 import { Priority } from "@/hooks/useDaily"
-import { Trash2, Check, RefreshCw, Link2 } from "lucide-react"
+import { Trash2, Check, RefreshCw, Link2, Pencil, X } from "lucide-react"
+import { useState } from "react"
 
 interface PrioritiesListProps {
   listPriorities: Priority[]
@@ -10,6 +11,7 @@ interface PrioritiesListProps {
   isError: boolean
   handleToggleCompleted: (id: string, completed: boolean) => void
   handleDeletePriority: (id: string) => Promise<void>
+  handleUpdatePriority: (id: string, text: string, link: string) => Promise<void>
   isPendingToggle?: boolean
 }
 
@@ -19,8 +21,13 @@ export function PrioritiesList({
   isError,
   handleToggleCompleted,
   handleDeletePriority,
+  handleUpdatePriority,
   isPendingToggle = false,
 }: PrioritiesListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editText, setEditText] = useState("")
+  const [editLink, setEditLink] = useState("")
+
   const sortedPriorities = [...listPriorities].sort((a, b) => {
     if (a.completed === b.completed) {
       return a.orderIndex - b.orderIndex
@@ -76,55 +83,116 @@ export function PrioritiesList({
               >
                 <div className="flex items-center gap-3.5 flex-1 min-w-0">
                   <button
-                    disabled={isPendingToggle}
+                    disabled={isPendingToggle || editingId === priority.id}
                     onClick={() => handleToggleCompleted(priority.id, priority.completed)}
                     className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
                       priority.completed
                         ? "bg-primary border-primary text-primary-foreground shadow-glow"
                         : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
-                    } ${isPendingToggle ? "cursor-not-allowed" : "cursor-pointer"}`}
+                    } ${isPendingToggle || editingId === priority.id ? "cursor-not-allowed" : "cursor-pointer"}`}
                     aria-label="Toggle task completed"
                   >
                     {priority.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                   </button>
 
-                  <div className="flex flex-col min-w-0 pr-2">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span
-                        className={`text-sm font-semibold break-words whitespace-normal leading-snug ${
-                          priority.completed ? "line-through text-muted-foreground" : "text-foreground"
-                        }`}
-                      >
-                        {priority.text}
-                      </span>
-                      {priority.link && (
-                        <a
-                          href={priority.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-                          title="Open Link"
-                        >
-                          <Link2 className="h-3.5 w-3.5" />
-                        </a>
-                      )}
-                    </div>
-                    {priority.rolloverCount > 0 && !priority.completed && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-500 mt-0.5">
-                        <RefreshCw className="h-3 w-3 animate-spin-slow" />
-                        Rolled over {priority.rolloverCount}x
-                      </span>
+                  <div className="flex flex-col min-w-0 pr-2 flex-1">
+                    {editingId === priority.id ? (
+                      <div className="flex flex-col gap-2 w-full">
+                        <input
+                          type="text"
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          className="w-full rounded-xl border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                          placeholder="Priority text"
+                          autoFocus
+                        />
+                        <input
+                          type="url"
+                          value={editLink}
+                          onChange={(e) => setEditLink(e.target.value)}
+                          className="w-full rounded-xl border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                          placeholder="Reference Link (optional)"
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span
+                            className={`text-sm font-semibold break-words whitespace-normal leading-snug ${
+                              priority.completed ? "line-through text-muted-foreground" : "text-foreground"
+                            }`}
+                          >
+                            {priority.text}
+                          </span>
+                          {priority.link && (
+                            <a
+                              href={priority.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
+                              title="Open Link"
+                            >
+                              <Link2 className="h-3.5 w-3.5" />
+                            </a>
+                          )}
+                        </div>
+                        {priority.rolloverCount > 0 && !priority.completed && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-500 mt-0.5">
+                            <RefreshCw className="h-3 w-3 animate-spin-slow" />
+                            Rolled over {priority.rolloverCount}x
+                          </span>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
 
-                <button
-                  onClick={() => handleDeletePriority(priority.id)}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                  aria-label="Delete priority"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <div className="flex items-center gap-1 shrink-0 ml-2">
+                  {editingId === priority.id ? (
+                    <>
+                      <button
+                        onClick={async () => {
+                          if (!editText.trim()) return
+                          await handleUpdatePriority(priority.id, editText.trim(), editLink.trim())
+                          setEditingId(null)
+                        }}
+                        disabled={!editText.trim()}
+                        className="p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-500/10 transition-colors disabled:opacity-50"
+                        aria-label="Save priority changes"
+                      >
+                        <Check className="h-4 w-4 stroke-[3]" />
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                        aria-label="Cancel editing"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => {
+                          setEditingId(priority.id)
+                          setEditText(priority.text)
+                          setEditLink(priority.link || "")
+                        }}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                        aria-label="Edit priority"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeletePriority(priority.id)}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        aria-label="Delete priority"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             ))}
           </div>

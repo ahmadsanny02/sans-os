@@ -99,6 +99,7 @@ export default function DailyComponent() {
             isError={dailyData.prioritiesError}
             handleToggleCompleted={dailyData.handleTogglePriority}
             handleDeletePriority={dailyData.handleDeletePriority}
+            handleUpdatePriority={dailyData.handleUpdatePriority}
             isPendingToggle={dailyData.priorityTogglePending}
           />
         </div>
@@ -111,6 +112,7 @@ export default function DailyComponent() {
             isError={dailyData.todosError || dailyData.habitsError}
             handleToggleCompleted={dailyData.handleToggleTodo}
             handleDeleteTodo={dailyData.handleDeleteTodo}
+            handleUpdateTodo={dailyData.handleUpdateTodo}
             isPendingToggleTodo={dailyData.todoTogglePending}
             habits={dailyData.habits}
             handleToggleHabit={dailyData.handleToggleHabit}
@@ -125,6 +127,7 @@ export default function DailyComponent() {
           isLoading={dailyData.timetableLoading}
           isError={dailyData.timetableError}
           handleDeleteBlock={dailyData.handleDeleteTimetableBlock}
+          handleUpdateBlock={dailyData.handleUpdateTimetableBlock}
           activeDayBlocks={dailyData.activeDayBlocks}
         />
       </div>

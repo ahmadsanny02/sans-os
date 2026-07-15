@@ -2,7 +2,8 @@
 
 import React from "react"
 import { DailyTodo } from "@/hooks/useDailyLogs"
-import { Trash2, Check, ListTodo, Link2 } from "lucide-react"
+import { Trash2, Check, ListTodo, Link2, Pencil, X } from "lucide-react"
+import { useState } from "react"
 
 interface HabitItem {
   id: string
@@ -17,6 +18,7 @@ interface DailyTodosProps {
   isError: boolean
   handleToggleCompleted: (id: string, completed: boolean) => void
   handleDeleteTodo: (id: string) => Promise<void>
+  handleUpdateTodo: (id: string, text: string, link: string) => Promise<void>
   isPendingToggleTodo?: boolean
   habits?: HabitItem[]
   handleToggleHabit?: (id: string) => void
@@ -29,11 +31,16 @@ export function DailyTodos({
   isError,
   handleToggleCompleted,
   handleDeleteTodo,
+  handleUpdateTodo,
   isPendingToggleTodo = false,
   habits = [],
   handleToggleHabit,
   isPendingToggleHabit = false,
 }: DailyTodosProps) {
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editText, setEditText] = useState("")
+  const [editLink, setEditLink] = useState("")
+
   const completedTodos = todos.filter((t) => t.completed).length
   const completedHabits = habits.filter((h) => h.completed).length
   const totalTodos = todos.length
@@ -150,47 +157,108 @@ export function DailyTodos({
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <button
-                          disabled={isPendingToggleTodo}
+                          disabled={isPendingToggleTodo || editingId === todo.id}
                           onClick={() => handleToggleCompleted(todo.id, todo.completed)}
                           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
                             todo.completed
                               ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                              : "border-border/60 hover:border-primary/50 bg-card"
-                          } ${isPendingToggleTodo ? "cursor-not-allowed" : "cursor-pointer"}`}
+                              : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
+                          } ${isPendingToggleTodo || editingId === todo.id ? "cursor-not-allowed" : "cursor-pointer"}`}
                           aria-label="Toggle task completion"
                         >
                           {todo.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                         </button>
 
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span
-                            className={`text-sm font-medium break-words whitespace-normal ${
-                              todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
-                            }`}
-                          >
-                            {todo.text}
-                          </span>
-                          {todo.link && (
-                            <a
-                              href={todo.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-                              title="Open Link"
-                            >
-                              <Link2 className="h-3.5 w-3.5" />
-                            </a>
+                        <div className="flex flex-col min-w-0 pr-2 flex-1">
+                          {editingId === todo.id ? (
+                            <div className="flex flex-col gap-2 w-full">
+                              <input
+                                type="text"
+                                value={editText}
+                                onChange={(e) => setEditText(e.target.value)}
+                                className="w-full rounded-xl border border-border bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                                placeholder="Task text"
+                                autoFocus
+                              />
+                              <input
+                                type="url"
+                                value={editLink}
+                                onChange={(e) => setEditLink(e.target.value)}
+                                className="w-full rounded-xl border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                                placeholder="Reference Link (optional)"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span
+                                className={`text-sm font-medium break-words whitespace-normal ${
+                                  todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
+                                }`}
+                              >
+                                {todo.text}
+                              </span>
+                              {todo.link && (
+                                <a
+                                  href={todo.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
+                                  title="Open Link"
+                                >
+                                  <Link2 className="h-3.5 w-3.5" />
+                                </a>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => handleDeleteTodo(todo.id)}
-                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                        aria-label="Delete todo item"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center gap-1 shrink-0 ml-2">
+                        {editingId === todo.id ? (
+                          <>
+                            <button
+                              onClick={async () => {
+                                if (!editText.trim()) return
+                                await handleUpdateTodo(todo.id, editText.trim(), editLink.trim())
+                                setEditingId(null)
+                              }}
+                              disabled={!editText.trim()}
+                              className="p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-500/10 transition-colors disabled:opacity-50"
+                              aria-label="Save todo changes"
+                            >
+                              <Check className="h-4 w-4 stroke-[3]" />
+                            </button>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                              aria-label="Cancel editing"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => {
+                                setEditingId(todo.id)
+                                setEditText(todo.text)
+                                setEditLink(todo.link || "")
+                              }}
+                              className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                              aria-label="Edit todo item"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTodo(todo.id)}
+                              className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              aria-label="Delete todo item"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
