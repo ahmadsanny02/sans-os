@@ -166,9 +166,9 @@ export function useLearningPage() {
   const handleToggleMaterialStatus = async (id: string, currentStatus: string) => {
     const nextStatus =
       currentStatus === "Completed"
-        ? "In Progress"
-        : currentStatus === "In Progress"
         ? "Not Started"
+        : currentStatus === "In Progress"
+        ? "Completed"
         : "In Progress"
 
     try {
