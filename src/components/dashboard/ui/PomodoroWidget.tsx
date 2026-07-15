@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo } from "react"
 import { usePomodoroStore, PomodoroPhase } from "@/store/pomodoroStore"
+import { Badge } from "@/components/ui/Badge"
 import { TimetableBlock } from "@/hooks/useDaily"
 import { showError, showErrorToast } from "@/lib/sweetalert"
 import {
@@ -156,9 +157,9 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-secondary border border-border/80 text-muted-foreground">
+          <Badge>
             {integrationMode === "auto" ? "Auto Sync" : "Manual"}
-          </span>
+          </Badge>
           <button
             onClick={openModal}
             className="p-1 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground transition-all cursor-pointer"

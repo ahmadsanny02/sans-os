@@ -1,4 +1,7 @@
+"use client"
+
 import React from "react"
+import { useRouter } from "next/navigation"
 import {
   GraduationCap,
   Plus,
@@ -11,13 +14,14 @@ import {
 } from "lucide-react"
 import { useLearningPage } from "@/hooks/useLearningPage"
 import { SubjectFormModal } from "./SubjectFormModal"
-import { SubjectDetailModal } from "./SubjectDetailModal"
 import { StatCard } from "@/components/ui/StatCard"
 import { GridCardSkeleton } from "@/components/ui/Skeletons"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { ErrorState } from "@/components/ui/ErrorState"
+import { Badge } from "@/components/ui/Badge"
 
 export function LearningWorkspace() {
+  const router = useRouter()
   const {
     filteredSubjects,
     isLoading,
@@ -26,8 +30,6 @@ export function LearningWorkspace() {
     setSearchQuery,
     statusFilter,
     setStatusFilter,
-    activeSubject,
-    setActiveSubjectId,
     showAddSubjectModal,
     setShowAddSubjectModal,
     editingSubject,
@@ -42,36 +44,12 @@ export function LearningWorkspace() {
     subjectColor,
     setSubjectColor,
 
-    // Form inputs Material
-    matTitle,
-    setMatTitle,
-    matNotes,
-    setMatNotes,
-    matLink,
-    setMatLink,
-
-    // Form inputs Task
-    taskTitle,
-    setTaskTitle,
-    taskDueDate,
-    setTaskDueDate,
-
     // Subject Handlers
     handleOpenAddSubject,
     handleOpenEditSubject,
     handleSaveSubject,
     handleDeleteSubject,
     isSaveSubjectPending,
-
-    // Material Handlers
-    handleAddMaterial,
-    handleToggleMaterialStatus,
-    handleDeleteMaterial,
-
-    // Task Handlers
-    handleAddTask,
-    handleToggleTask,
-    handleDeleteTask,
   } = useLearningPage()
 
   // Calculate high-level stats
@@ -138,7 +116,7 @@ export function LearningWorkspace() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search learning subjects..."
-            className="w-full rounded-xl border border-border/60 bg-card/40 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+            className="w-full rounded-xl border border-border/60 bg-card/40 pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
           />
         </div>
 
@@ -195,8 +173,8 @@ export function LearningWorkspace() {
             return (
               <div
                 key={subj.id}
-                onClick={() => setActiveSubjectId(subj.id)}
-                className="group relative rounded-2xl border border-border bg-card/45 dark:bg-card/15 p-5 shadow-sm backdrop-blur-md hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 hover:translate-y-[-2px] transition-all duration-300 flex flex-col justify-between cursor-pointer"
+                onClick={() => router.push(`/learning/${subj.id}`)}
+                className="group relative rounded-2xl border border-border bg-card/45 dark:bg-card/15 p-5 shadow-sm backdrop-blur-md hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 hover:translate-y-[-2px] transition-all duration-300 flex flex-col justify-between cursor-pointer animate-in zoom-in-95 duration-200"
               >
                 {/* Accent Side Ribbon */}
                 <div
@@ -211,29 +189,31 @@ export function LearningWorkspace() {
                       <h3 className="text-base font-black tracking-tight text-foreground leading-snug">
                         {subj.name}
                       </h3>
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-wider ${
-                        subj.status === "Completed"
-                          ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
-                          : subj.status === "Learning"
-                          ? "bg-primary/10 text-primary border border-primary/20"
-                          : "bg-secondary text-muted-foreground border border-border/60"
-                      }`}>
-                        {subj.status === "Planned" ? "Planned" : subj.status === "Learning" ? "Learning" : "Completed"}
-                      </span>
+                      <Badge
+                        variant={
+                          subj.status === "Completed"
+                            ? "success"
+                            : subj.status === "Learning"
+                            ? "primary"
+                            : "default"
+                        }
+                      >
+                        {subj.status}
+                      </Badge>
                     </div>
 
                     {/* Edit/Delete Actions */}
                     <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
                       <button
                         onClick={(e) => handleOpenEditSubject(subj, e)}
-                        className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 cursor-pointer"
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 cursor-pointer transition-all"
                         title="Edit Subject"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={(e) => handleDeleteSubject(subj.id, subj.name, e)}
-                        className="p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer transition-all"
                         title="Delete Subject"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -290,29 +270,6 @@ export function LearningWorkspace() {
         color={subjectColor}
         setColor={setSubjectColor}
         isPending={isSaveSubjectPending}
-      />
-
-      {/* Subject Detail Overlay Modal */}
-      <SubjectDetailModal
-        isOpen={!!activeSubject}
-        onClose={() => setActiveSubjectId(null)}
-        subject={activeSubject}
-        matTitle={matTitle}
-        setMatTitle={setMatTitle}
-        matNotes={matNotes}
-        setMatNotes={setMatNotes}
-        matLink={matLink}
-        setMatLink={setMatLink}
-        taskTitle={taskTitle}
-        setTaskTitle={setTaskTitle}
-        taskDueDate={taskDueDate}
-        setTaskDueDate={setTaskDueDate}
-        onAddMaterial={handleAddMaterial}
-        onToggleMaterial={handleToggleMaterialStatus}
-        onDeleteMaterial={handleDeleteMaterial}
-        onAddTask={handleAddTask}
-        onToggleTask={handleToggleTask}
-        onDeleteTask={handleDeleteTask}
       />
     </div>
   )

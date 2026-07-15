@@ -23,6 +23,7 @@ import {
 import { GridCardSkeleton } from "@/components/ui/Skeletons"
 import { StatCard } from "@/components/ui/StatCard"
 import { EmptyState } from "@/components/ui/EmptyState"
+import { Badge } from "@/components/ui/Badge"
 import { ErrorState } from "@/components/ui/ErrorState"
 const capitalizeFirstLetter = (str: string | null | undefined): string => {
   if (!str) return ""
@@ -642,9 +643,9 @@ const VocabCard = React.memo(function VocabCard({
       <div>
         <div className="flex items-center justify-between gap-2 border-b border-border/40 pb-2.5">
           <div className="flex items-center gap-1.5">
-            <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 select-none">
+            <Badge variant="primary">
               VOCAB
-            </span>
+            </Badge>
           </div>
           <div className="flex items-center gap-2">
             {/* Memorized Checklist Toggle */}

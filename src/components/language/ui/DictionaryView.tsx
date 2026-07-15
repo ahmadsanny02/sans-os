@@ -11,6 +11,7 @@ import {
   WordDetails,
 } from "@/hooks/useLanguage"
 import { showError, showSuccessToast } from "@/lib/sweetalert"
+import { Badge } from "@/components/ui/Badge"
 import { Search, Loader2, BookOpen, Plus, Check, ChevronDown, Sparkles, BookMarked } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -355,9 +356,9 @@ function WordCard({
 
         <div className="flex items-center gap-3">
           {isAlreadySaved && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <BookMarked className="h-3 w-3" /> Saved
-            </span>
+            <Badge variant="success">
+              <BookMarked className="h-3 w-3 mr-0.5" /> Saved
+            </Badge>
           )}
           <ChevronDown
             className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${

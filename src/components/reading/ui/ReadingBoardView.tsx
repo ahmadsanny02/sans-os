@@ -23,24 +23,7 @@ import { StatCard } from "@/components/ui/StatCard"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { ErrorState } from "@/components/ui/ErrorState"
 import { Modal } from "@/components/ui/Modal"
-
-const STATUS_THEMES: Record<string, { bg: string; text: string; border: string }> = {
-  "To Read": {
-    bg: "bg-amber-500/10",
-    text: "text-amber-500 dark:text-amber-400",
-    border: "border-amber-500/20",
-  },
-  Reading: {
-    bg: "bg-blue-500/10",
-    text: "text-blue-500 dark:text-blue-400",
-    border: "border-blue-500/20",
-  },
-  Completed: {
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-500 dark:text-emerald-400",
-    border: "border-emerald-500/20",
-  },
-}
+import { Badge } from "@/components/ui/Badge"
 
 const STATUS_OPTIONS = ["All", "To Read", "Reading", "Completed"]
 
@@ -435,7 +418,6 @@ export function ReadingBoardView({
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredBooks.map((book) => {
-            const badge = STATUS_THEMES[book.status] || STATUS_THEMES["To Read"]
             return (
               <div
                 key={book.id}
@@ -444,11 +426,9 @@ export function ReadingBoardView({
                 <div>
                   {/* Status Badge & Actions */}
                   <div className="flex items-center justify-between gap-2 border-b border-border/30 pb-3">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${badge.bg} ${badge.text} ${badge.border}`}
-                    >
+                    <Badge variant={book.status === "Completed" ? "success" : book.status === "Reading" ? "info" : "warning"}>
                       {book.status}
-                    </span>
+                    </Badge>
 
                     <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                       <button
