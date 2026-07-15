@@ -17,7 +17,7 @@ import {
 import { UsePomodoroPageReturn } from "@/hooks/usePomodoroPage"
 import { IntegrationMode } from "@/store/pomodoroStore"
 import { TimetableBlock } from "@/hooks/useDaily"
-import { playPomodoroSound } from "@/lib/pomodoroSound"
+import { playPomodoroSound } from "@/lib/pomodoro-sound"
 
 function timeToMinutes(t: string): number {
   const [h, m] = t.split(":").map(Number)

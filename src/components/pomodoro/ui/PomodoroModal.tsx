@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useMemo, useState } from "react"
 import { usePomodoroStore, PomodoroPhase } from "@/store/pomodoroStore"
 import { useTimetableQuery, TimetableBlock } from "@/hooks/useDaily"
-import { playPomodoroSound } from "@/lib/pomodoroSound"
+import { playPomodoroSound } from "@/lib/pomodoro-sound"
 import { motion, useDragControls } from "framer-motion"
 import {
   Play,
@@ -77,7 +77,7 @@ function ProgressRing({ progress, phase, children }: RingProps) {
   const meta = PHASE_META[phase]
 
   return (
-    <div className="relative flex items-center justify-center" style={{ width: 144, height: 144 }}>
+    <div className="relative flex items-center justify-center w-36 h-36">
       <svg
         width={144}
         height={144}
