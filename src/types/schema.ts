@@ -259,3 +259,57 @@ export const dailyLogs = pgTable("daily_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
+// 14. Learning Hub
+export const learningSubjects = pgTable("learning_subjects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  status: text("status").default("Learning").notNull(), // Planned, Learning, Completed
+  color: text("color").default("hsl(var(--primary))").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export const learningMaterials = pgTable("learning_materials", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  subjectId: uuid("subject_id")
+    .references(() => learningSubjects.id, { onDelete: "cascade" })
+    .notNull(),
+  title: text("title").notNull(),
+  status: text("status").default("Not Started").notNull(), // Not Started, In Progress, Completed
+  notes: text("notes"),
+  linkUrl: text("link_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export const learningTasks = pgTable("learning_tasks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  subjectId: uuid("subject_id")
+    .references(() => learningSubjects.id, { onDelete: "cascade" })
+    .notNull(),
+  title: text("title").notNull(),
+  completed: boolean("completed").default(false).notNull(),
+  dueDate: timestamp("due_date"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+// Relations for Learning Subjects, Materials, and Tasks
+export const learningSubjectsRelations = relations(learningSubjects, ({ many }) => ({
+  materials: many(learningMaterials),
+  tasks: many(learningTasks),
+}))
+
+export const learningMaterialsRelations = relations(learningMaterials, ({ one }) => ({
+  subject: one(learningSubjects, {
+    fields: [learningMaterials.subjectId],
+    references: [learningSubjects.id],
+  }),
+}))
+
+export const learningTasksRelations = relations(learningTasks, ({ one }) => ({
+  subject: one(learningSubjects, {
+    fields: [learningTasks.subjectId],
+    references: [learningSubjects.id],
+  }),
+}))
+

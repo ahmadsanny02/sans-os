@@ -27,6 +27,7 @@ import {
   Clock,
   Trophy,
   Timer,
+  GraduationCap,
 } from "lucide-react"
 
 interface SidebarItem {
@@ -43,6 +44,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Projects & Tasks", href: "/projects", icon: Briefcase },
   { name: "Reading Journal", href: "/reading", icon: BookOpen },
   { name: "Language Logs", href: "/language", icon: Languages },
+  { name: "Learning Hub", href: "/learning", icon: GraduationCap },
   { name: "Vision Board", href: "/vision-board", icon: ImageIcon },
   { name: "Bucket List", href: "/bucket-list", icon: Trophy },
   { name: "Pomodoro", href: "/pomodoro", icon: Timer },
