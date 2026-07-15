@@ -7,15 +7,18 @@ import {
   useCreatePriorityMutation,
   useTogglePriorityMutation,
   useDeletePriorityMutation,
+  useUpdatePriorityMutation,
   useTimetableQuery,
   useCreateTimetableBlockMutation,
   useDeleteTimetableBlockMutation,
+  useUpdateTimetableBlockMutation,
 } from "@/hooks/useDaily"
 import {
   useDailyTodosQuery,
   useCreateDailyTodoMutation,
   useToggleDailyTodoMutation,
   useDeleteDailyTodoMutation,
+  useUpdateDailyTodoMutation,
   useDailyLogQuery,
   useSaveDailyLogMutation,
 } from "@/hooks/useDailyLogs"
@@ -184,6 +187,17 @@ export function useDailyPage() {
     togglePriorityMutation.mutate({ id, completed: !completed })
   }
 
+  const updatePriorityMutation = useUpdatePriorityMutation(activeDate)
+
+  const handleUpdatePriority = async (id: string, text: string, link: string): Promise<void> => {
+    try {
+      await updatePriorityMutation.mutateAsync({ id, text, link: link || undefined })
+      showSuccessToast("Priority updated")
+    } catch {
+      await showError("Error", "Failed to update priority.")
+    }
+  }
+
   const handleDeletePriority = async (id: string): Promise<void> => {
     const isConfirmed = await confirmDestructive(
       "Delete Priority",
@@ -208,6 +222,17 @@ export function useDailyPage() {
 
   const handleToggleTodo = (id: string, completed: boolean): void => {
     toggleTodoMutation.mutate({ id, completed: !completed })
+  }
+
+  const updateTodoMutation = useUpdateDailyTodoMutation(activeDate)
+
+  const handleUpdateTodo = async (id: string, text: string, link: string): Promise<void> => {
+    try {
+      await updateTodoMutation.mutateAsync({ id, text, link: link || undefined })
+      showSuccessToast("Todo updated")
+    } catch {
+      await showError("Error", "Failed to update todo.")
+    }
   }
 
   const handleDeleteTodo = async (id: string): Promise<void> => {
@@ -308,6 +333,28 @@ export function useDailyPage() {
     .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
 
+
+  const updateBlockMutation = useUpdateTimetableBlockMutation()
+
+  const handleUpdateTimetableBlock = async (body: {
+    id: string
+    dayOfWeek?: number
+    startTime?: string
+    endTime?: string
+    title?: string
+    category?: string
+    color?: string
+    date?: string | null
+    isTodo?: boolean
+    link?: string
+  }): Promise<void> => {
+    try {
+      await updateBlockMutation.mutateAsync(body)
+      showSuccessToast("Schedule block updated")
+    } catch {
+      await showError("Error", "Failed to update schedule block.")
+    }
+  }
 
   const handleDeleteTimetableBlock = async (id: string): Promise<void> => {
     const isConfirmed = await confirmDestructive(
@@ -451,6 +498,7 @@ export function useDailyPage() {
     prioritiesError,
     handleTogglePriority,
     handleDeletePriority,
+    handleUpdatePriority,
     priorityCreatePending: createPriorityMutation.isPending,
     priorityTogglePending: togglePriorityMutation.isPending,
 
@@ -460,6 +508,7 @@ export function useDailyPage() {
     todosError,
     handleToggleTodo,
     handleDeleteTodo,
+    handleUpdateTodo,
     todoCreatePending: createTodoMutation.isPending,
     todoTogglePending: toggleTodoMutation.isPending,
 
@@ -484,6 +533,7 @@ export function useDailyPage() {
     timetableDayOfWeek,
     setTimetableDayOfWeek,
     handleDeleteTimetableBlock,
+    handleUpdateTimetableBlock,
     activeDayBlocks,
     timetableCreatePending: createBlockMutation.isPending,
 

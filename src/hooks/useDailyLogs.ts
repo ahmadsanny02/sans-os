@@ -209,3 +209,30 @@ export function useSaveDailyLogMutation() {
     },
   })
 }
+
+async function updateDailyTodo(body: { id: string; text?: string; link?: string; completed?: boolean }): Promise<DailyTodo> {
+  const res = await fetch("/api/daily-todos", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.error || "Failed to update daily todo")
+  }
+  return res.json()
+}
+
+export function useUpdateDailyTodoMutation(date: string) {
+  const queryClient = useQueryClient()
+  return useMutation<DailyTodo, Error, { id: string; text?: string; link?: string; completed?: boolean }>({
+    mutationFn: updateDailyTodo,
+    onSuccess: (updatedTodo) => {
+      queryClient.setQueryData<DailyTodo[]>(["daily-todos", date], (old) => {
+        if (!old) return [updatedTodo]
+        return old.map((t) => (t.id === updatedTodo.id ? updatedTodo : t))
+      })
+      queryClient.invalidateQueries({ queryKey: ["daily-todos"] })
+    },
+  })
+}

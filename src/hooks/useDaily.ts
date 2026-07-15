@@ -305,3 +305,86 @@ export function useDeleteTimetableBlockMutation() {
     },
   })
 }
+
+async function updatePriority(body: { id: string; text?: string; link?: string }): Promise<Priority> {
+  const res = await fetch("/api/priorities", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.error || "Failed to update priority")
+  }
+  return res.json()
+}
+
+export function useUpdatePriorityMutation(date: string) {
+  const queryClient = useQueryClient()
+  return useMutation<Priority, Error, { id: string; text?: string; link?: string }>({
+    mutationFn: updatePriority,
+    onSuccess: (updatedPriority) => {
+      queryClient.setQueryData<Priority[]>(["priorities", date], (old) => {
+        if (!old) return [updatedPriority]
+        return old.map((p) => (p.id === updatedPriority.id ? updatedPriority : p))
+      })
+      queryClient.invalidateQueries({ queryKey: ["priorities"] })
+      queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
+    },
+  })
+}
+
+async function updateTimetableBlock(body: {
+  id: string
+  dayOfWeek?: number
+  startTime?: string
+  endTime?: string
+  title?: string
+  category?: string
+  color?: string
+  date?: string | null
+  isTodo?: boolean
+  link?: string
+}): Promise<TimetableBlock> {
+  const res = await fetch("/api/timetable", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.error || "Failed to update timetable block")
+  }
+  return res.json()
+}
+
+export function useUpdateTimetableBlockMutation() {
+  const queryClient = useQueryClient()
+  return useMutation<
+    TimetableBlock,
+    Error,
+    {
+      id: string
+      dayOfWeek?: number
+      startTime?: string
+      endTime?: string
+      title?: string
+      category?: string
+      color?: string
+      date?: string | null
+      isTodo?: boolean
+      link?: string
+    }
+  >({
+    mutationFn: updateTimetableBlock,
+    onSuccess: (updatedBlock) => {
+      queryClient.setQueryData<TimetableBlock[]>(["timetable"], (old) => {
+        if (!old) return [updatedBlock]
+        return old.map((b) => (b.id === updatedBlock.id ? updatedBlock : b))
+      })
+      queryClient.invalidateQueries({ queryKey: ["timetable"] })
+      queryClient.invalidateQueries({ queryKey: ["priorities"] })
+      queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
+    },
+  })
+}
