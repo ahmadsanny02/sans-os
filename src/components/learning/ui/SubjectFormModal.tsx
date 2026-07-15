@@ -86,20 +86,31 @@ export function SubjectFormModal({
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-muted-foreground">Tracking Status</label>
           <div className="grid grid-cols-3 gap-2">
-            {(["Planned", "Learning", "Completed"] as const).map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setStatus(s)}
-                className={`py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                  status === s
-                    ? "bg-primary border-primary text-primary-foreground shadow-sm"
-                    : "border-border hover:border-primary/45 bg-secondary/20 hover:bg-secondary/40 text-foreground/80"
-                }`}
-              >
-                {s === "Planned" ? "Planned" : s === "Learning" ? "Learning" : "Completed"}
-              </button>
-            ))}
+            {(["Planned", "Learning", "Completed"] as const).map((s) => {
+              const isActive = status === s
+              let activeClass = ""
+              if (isActive) {
+                if (s === "Planned") {
+                  activeClass = "bg-primary border-primary text-primary-foreground shadow-sm"
+                } else if (s === "Learning") {
+                  activeClass = "bg-amber-500 border-amber-500 text-white shadow-sm dark:bg-amber-600 dark:border-amber-600"
+                } else if (s === "Completed") {
+                  activeClass = "bg-emerald-500 border-emerald-500 text-white shadow-sm dark:bg-emerald-600 dark:border-emerald-600"
+                }
+              } else {
+                activeClass = "border-border hover:border-primary/45 bg-secondary/20 hover:bg-secondary/40 text-foreground/80"
+              }
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStatus(s)}
+                  className={`py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${activeClass}`}
+                >
+                  {s}
+                </button>
+              )
+            })}
           </div>
         </div>
 

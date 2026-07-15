@@ -160,8 +160,8 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                   subject.status === "Completed"
                     ? "success"
                     : subject.status === "Learning"
-                    ? "primary"
-                    : "default"
+                    ? "warning"
+                    : "primary"
                 }
               >
                 {subject.status}
@@ -573,35 +573,49 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-muted-foreground">Status</label>
-                <select
-                  value={subjectStatus}
-                  onChange={(e) =>
-                    setSubjectStatus(e.target.value as "Planned" | "Learning" | "Completed")
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Tracking Status</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(["Planned", "Learning", "Completed"] as const).map((s) => {
+                  const isActive = subjectStatus === s
+                  let activeClass = ""
+                  if (isActive) {
+                    if (s === "Planned") {
+                      activeClass = "bg-primary border-primary text-primary-foreground shadow-sm"
+                    } else if (s === "Learning") {
+                      activeClass = "bg-amber-500 border-amber-500 text-white shadow-sm dark:bg-amber-600 dark:border-amber-600"
+                    } else if (s === "Completed") {
+                      activeClass = "bg-emerald-500 border-emerald-500 text-white shadow-sm dark:bg-emerald-600 dark:border-emerald-600"
+                    }
+                  } else {
+                    activeClass = "border-border hover:border-primary/45 bg-secondary/20 hover:bg-secondary/40 text-foreground/80"
                   }
-                  className="rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm text-foreground"
-                >
-                  <option value="Planned">Planned</option>
-                  <option value="Learning">Learning</option>
-                  <option value="Completed">Completed</option>
-                </select>
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setSubjectStatus(s)}
+                      className={`py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${activeClass}`}
+                    >
+                      {s}
+                    </button>
+                  )
+                })}
               </div>
+            </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-muted-foreground">Card Accent Color</label>
-                <div className="flex items-center gap-2 h-[42px]">
-                  <input
-                    type="color"
-                    value={subjectColor}
-                    onChange={(e) => setSubjectColor(e.target.value)}
-                    className="w-10 h-8 rounded border border-border/65 bg-transparent p-0 overflow-hidden cursor-pointer"
-                  />
-                  <span className="text-xs font-semibold text-muted-foreground select-none uppercase">
-                    {subjectColor}
-                  </span>
-                </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Card Theme Color</label>
+              <div className="flex items-center gap-2 h-[42px]">
+                <input
+                  type="color"
+                  value={subjectColor}
+                  onChange={(e) => setSubjectColor(e.target.value)}
+                  className="w-10 h-8 rounded border border-border/65 bg-transparent p-0 overflow-hidden cursor-pointer"
+                />
+                <span className="text-xs font-semibold text-muted-foreground select-none uppercase">
+                  {subjectColor}
+                </span>
               </div>
             </div>
 

@@ -80,8 +80,8 @@ export function LearningWorkspace() {
           title="Learning"
           value={stats.active}
           icon={<GraduationCap className="h-6 w-6" />}
-          iconBgClass="bg-primary/10"
-          iconTextClass="text-primary"
+          iconBgClass="bg-amber-500/10"
+          iconTextClass="text-amber-500"
           isLoading={isLoading}
           description="Subjects in progress"
         />
@@ -90,8 +90,8 @@ export function LearningWorkspace() {
           title="Planned"
           value={stats.planned}
           icon={<CheckSquare className="h-6 w-6" />}
-          iconBgClass="bg-amber-500/10"
-          iconTextClass="text-amber-500"
+          iconBgClass="bg-primary/10"
+          iconTextClass="text-primary"
           isLoading={isLoading}
           description="Subjects planned"
         />
@@ -194,8 +194,8 @@ export function LearningWorkspace() {
                           subj.status === "Completed"
                             ? "success"
                             : subj.status === "Learning"
-                            ? "primary"
-                            : "default"
+                            ? "warning"
+                            : "primary"
                         }
                       >
                         {subj.status}
