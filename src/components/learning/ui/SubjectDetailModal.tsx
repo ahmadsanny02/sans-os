@@ -9,6 +9,7 @@ import {
   CheckCircle,
   Clock,
   HelpCircle,
+  Check,
 } from "lucide-react"
 import { LearningSubject, LearningMaterial, LearningTask } from "@/hooks/useLearning"
 import { Modal } from "@/components/ui/Modal"
@@ -177,14 +178,14 @@ export function SubjectDetailModal({
                     value={matTitle}
                     onChange={(e) => setMatTitle(e.target.value)}
                     placeholder="Material title..."
-                    className="rounded-xl border border-border/60 bg-background px-3.5 py-2 text-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
+                    className="rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
                   />
                   <input
                     type="url"
                     value={matLink}
                     onChange={(e) => setMatLink(e.target.value)}
                     placeholder="Reference URL link (optional)..."
-                    className="rounded-xl border border-border/60 bg-background px-3.5 py-2 text-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
+                    className="rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
                   />
                 </div>
                 <div className="flex items-center gap-3">
@@ -193,11 +194,11 @@ export function SubjectDetailModal({
                     value={matNotes}
                     onChange={(e) => setMatNotes(e.target.value)}
                     placeholder="Brief notes about the material..."
-                    className="flex-1 rounded-xl border border-border/60 bg-background px-3.5 py-2 text-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
+                    className="flex-1 rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer shrink-0"
+                    className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer shrink-0"
                   >
                     <Plus className="h-3.5 w-3.5" /> Add
                   </button>
@@ -288,17 +289,17 @@ export function SubjectDetailModal({
                     value={taskTitle}
                     onChange={(e) => setTaskTitle(e.target.value)}
                     placeholder="Task/todo title..."
-                    className="flex-1 min-w-[200px] rounded-xl border border-border/60 bg-background px-3.5 py-2 text-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
+                    className="flex-1 min-w-[200px] rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
                   />
                   <input
                     type="date"
                     value={taskDueDate}
                     onChange={(e) => setTaskDueDate(e.target.value)}
-                    className="rounded-xl border border-border/60 bg-background px-3.5 py-2 text-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm text-muted-foreground"
+                    className="rounded-xl border border-border/60 bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm text-muted-foreground"
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer shrink-0"
+                    className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer shrink-0"
                   >
                     <Plus className="h-3.5 w-3.5" /> Add
                   </button>
@@ -323,14 +324,14 @@ export function SubjectDetailModal({
                           <button
                             type="button"
                             onClick={() => onToggleTask(task.id, task.completed)}
-                            className="mt-0.5 cursor-pointer text-muted-foreground hover:text-foreground"
+                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 mt-0.5 cursor-pointer ${
+                              task.completed
+                                ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                                : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
+                            }`}
+                            aria-label="Toggle task completion"
                           >
-                            <input
-                              type="checkbox"
-                              checked={task.completed}
-                              onChange={() => {}}
-                              className="h-4 w-4 rounded border-border/60 accent-primary cursor-pointer"
-                            />
+                            {task.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                           </button>
 
                           <div className="min-w-0 flex-1 space-y-0.5">
