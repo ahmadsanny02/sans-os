@@ -113,7 +113,7 @@ export function SubjectDetailModal({
     >
       <div className="space-y-4">
         {/* Overall Progress */}
-        <div className="bg-secondary/15 rounded-2xl p-4 border border-border/60 space-y-2 select-none">
+        <div className="bg-card/45 dark:bg-card/15 border border-border shadow-sm rounded-2xl p-4.5 space-y-2 backdrop-blur-md select-none">
           <div className="flex items-center justify-between text-xs font-bold">
             <span className="text-muted-foreground">Overall Progress</span>
             <span className="text-foreground">{progressPercent}% ({completedItems}/{totalItems} Completed)</span>
@@ -216,7 +216,7 @@ export function SubjectDetailModal({
                     return (
                       <div
                         key={mat.id}
-                        className="group flex items-start justify-between gap-3 p-3 bg-secondary/10 dark:bg-card/5 hover:bg-secondary/25 border border-border/40 rounded-xl transition-all"
+                        className="group flex items-start justify-between gap-3 p-3 bg-card/30 dark:bg-card/5 hover:bg-card/50 hover:border-primary/10 border border-border/40 rounded-xl transition-all shadow-sm"
                       >
                         <div className="flex items-start gap-2.5 min-w-0 flex-1">
                           {/* 3-State Status Button */}
@@ -318,7 +318,7 @@ export function SubjectDetailModal({
                     return (
                       <div
                         key={task.id}
-                        className="group flex items-start justify-between gap-3 p-3 bg-secondary/10 dark:bg-card/5 hover:bg-secondary/25 border border-border/40 rounded-xl transition-all"
+                        className="group flex items-start justify-between gap-3 p-3 bg-card/30 dark:bg-card/5 hover:bg-card/50 hover:border-primary/10 border border-border/40 rounded-xl transition-all shadow-sm"
                       >
                         <div className="flex items-start gap-2.5 min-w-0 flex-1">
                           <button
