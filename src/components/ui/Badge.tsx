@@ -19,7 +19,7 @@ const VARIANT_MAP = {
 export function Badge({ children, variant = "default", className = "", ...props }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border select-none transition-all leading-none ${VARIANT_MAP[variant]} ${className}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded-xl text-[9px] font-black uppercase tracking-wider border select-none transition-all leading-none ${VARIANT_MAP[variant]} ${className}`}
       {...props}
     >
       {children}
