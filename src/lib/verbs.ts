@@ -121,8 +121,8 @@ const IRREGULAR_VERBS: Record<string, { v2: string; v3: string }> = {
   write: { v2: "wrote", v3: "written" },
 }
 
-const isVowel = (c: string): boolean => /[aeiou]/i.test(c)
-const isConsonant = (c: string): boolean => /[bcdfghjklmnpqrstvwxyz]/i.test(c)
+const isVowel = (c: string): boolean => typeof c === "string" && c.length === 1 && /[aeiou]/i.test(c)
+const isConsonant = (c: string): boolean => typeof c === "string" && c.length === 1 && /[bcdfghjklmnpqrstvwxyz]/i.test(c)
 
 function matchCase(base: string, target: string): string {
   if (base === base.toUpperCase()) return target.toUpperCase()
@@ -134,7 +134,8 @@ function matchCase(base: string, target: string): string {
 
 function shouldDoubleConsonant(word: string): boolean {
   const len = word.length
-  if (len <= 3) {
+  if (len < 3) return false
+  if (len === 3) {
     const last = word[len - 1]
     const prev = word[len - 2]
     const prev2 = word[len - 3]

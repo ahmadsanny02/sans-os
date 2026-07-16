@@ -143,6 +143,23 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
 
   const isPipSupported = typeof window !== "undefined" && "documentPictureInPicture" in window
   const dragControls = useDragControls()
+  const modalRef = useRef<HTMLDivElement>(null)
+
+  // --- Click outside to close modal ---
+  useEffect(() => {
+    if (!isModalOpen) return
+
+    const handleOutsideClick = (e: PointerEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        closeModal()
+      }
+    }
+
+    document.addEventListener("pointerdown", handleOutsideClick)
+    return () => {
+      document.removeEventListener("pointerdown", handleOutsideClick)
+    }
+  }, [isModalOpen, closeModal])
 
   const { data: timetableList = [] } = useTimetableQuery()
 
@@ -312,6 +329,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
 
   return (
     <motion.div
+      ref={modalRef}
       drag
       dragControls={dragControls}
       dragListener={false}

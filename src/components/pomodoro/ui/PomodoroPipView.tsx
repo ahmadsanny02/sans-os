@@ -34,7 +34,7 @@ const PHASE_META: Record<
   idle: {
     label: "Ready",
     emoji: "🎯",
-    color: "text-violet-400",
+    color: "text-primary",
     border: "border-zinc-700/60",
     bg: "bg-zinc-800/10",
     glow: "shadow-zinc-500/5",
@@ -42,10 +42,10 @@ const PHASE_META: Record<
   focus: {
     label: "Focus",
     emoji: "🎯",
-    color: "text-violet-400",
-    border: "border-violet-500",
-    bg: "bg-violet-500/10",
-    glow: "shadow-violet-500/20",
+    color: "text-primary",
+    border: "border-primary",
+    bg: "bg-primary/10",
+    glow: "shadow-primary/20",
   },
   break: {
     label: "Break",
@@ -148,7 +148,7 @@ export function PomodoroPipView() {
             {formatSeconds(remainingSeconds)}
           </span>
           <span className="text-[9px] font-bold text-white/40 leading-none flex items-center gap-0.5 justify-center">
-            {sessionCount} <Target className="h-2.5 w-2.5 text-violet-400" />
+            {sessionCount} <Target className="h-2.5 w-2.5 text-primary" />
           </span>
         </button>
       </div>
@@ -161,7 +161,7 @@ export function PomodoroPipView() {
       {/* Header */}
       <div className="flex items-center justify-between px-3.5 py-2 border-b border-white/5 bg-zinc-900/60 shrink-0">
         <div className="flex items-center gap-1.5">
-          <Timer className="h-3.5 w-3.5 text-violet-400" />
+          <Timer className="h-3.5 w-3.5 text-primary" />
           <span className="text-[10px] font-black text-white/80 tracking-widest uppercase">
             Pomodoro
           </span>
@@ -194,7 +194,7 @@ export function PomodoroPipView() {
               key={i}
               className={`h-1.5 w-1.5 rounded-full transition-colors ${
                 i < (sessionCount % totalSessions)
-                  ? "bg-violet-400"
+                  ? "bg-primary"
                   : "bg-white/15"
               }`}
             />
@@ -220,9 +220,9 @@ export function PomodoroPipView() {
                   showErrorToast("No active timetable schedule block right now!")
                 }
               }}
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold py-2 transition-all"
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold py-2 transition-all"
             >
-              <Play className="h-3.5 w-3.5 fill-white" />
+              <Play className="h-3.5 w-3.5 fill-current" />
               Start Focus
             </button>
           ) : (
@@ -239,13 +239,13 @@ export function PomodoroPipView() {
                     }
                   }
                 }}
-                className={`flex-1 flex items-center justify-center gap-1.5 rounded-xl text-white text-xs font-bold py-2 transition-all ${
+                className={`flex-1 flex items-center justify-center gap-1.5 rounded-xl text-xs font-bold py-2 transition-all ${
                   isRunning
-                    ? "bg-amber-600 hover:bg-amber-500"
-                    : "bg-violet-600 hover:bg-violet-500"
+                    ? "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
+                    : "bg-primary hover:bg-primary/90 text-primary-foreground"
                 }`}
               >
-                {isRunning ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 fill-white" />}
+                {isRunning ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 fill-current" />}
                 {isRunning ? "Pause" : "Resume"}
               </button>
 

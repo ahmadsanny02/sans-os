@@ -52,7 +52,7 @@ export function useDashboardPage() {
 
   const todayHabits = (habitsData?.habits || []).map((habit) => {
     const isCompleted = (habitsData?.logs || []).some(
-      (log) => log.habitId === habit.id && log.date === activeDate
+      (log) => log.habitId === habit.id && log.date === activeDate && log.status?.toLowerCase() === "completed"
     )
     return {
       id: habit.id,
