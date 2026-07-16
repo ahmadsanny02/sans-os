@@ -352,19 +352,40 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         }`}
       >
         {/* Sidebar Header */}
-        <div className="flex h-14 items-center justify-between border-b border-sidebar-border/20 px-4 shrink-0">
+        <div className="flex h-14 items-center justify-between border-b border-sidebar-border/20 px-3.5 shrink-0">
           {sidebarOpen ? (
-            <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-lg font-bold tracking-wider text-transparent">
-              SansOS
-            </span>
-          ) : null}
-          <button
-            onClick={toggleSidebar}
-            className="rounded-lg p-1 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground cursor-pointer"
-            aria-label="Toggle Sidebar"
-          >
-            {sidebarOpen ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
-          </button>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-black text-sm shadow-md shadow-primary/25 shrink-0 select-none">
+                S
+              </div>
+              <div className="flex flex-col text-left min-w-0">
+                <span className="text-xs font-black tracking-wide text-foreground truncate">
+                  SansOS
+                </span>
+                <span className="text-[9px] text-muted-foreground font-semibold truncate leading-none mt-0.5 select-none">
+                  Personal OS
+                </span>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={toggleSidebar}
+              className="mx-auto h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-black text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-all duration-200 shadow-sm"
+              title="Expand Sidebar"
+            >
+              S
+            </button>
+          )}
+
+          {sidebarOpen && (
+            <button
+              onClick={toggleSidebar}
+              className="rounded-lg p-1 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground cursor-pointer transition-colors"
+              aria-label="Collapse Sidebar"
+            >
+              <ChevronLeft className="h-4.5 w-4.5 text-muted-foreground" />
+            </button>
+          )}
         </div>
 
         {/* Sidebar Navigation */}
