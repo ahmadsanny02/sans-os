@@ -10,6 +10,7 @@ A personalized, all-in-one life operating system and career workspace designed t
 *   **Bento Grid Widgets:** Quick metrics at a glance, including a daily timetable timeline, memory box visual highlights, priorities checklist, and todo items.
 *   **Pomodoro Focus Bar:** Full-width control panel integrated directly on the main hub with live state progress and toggle triggers.
 *   **Timezone & Sync Banner:** Automatically syncs display active dates and user timezone bounds globally.
+*   **Premium SaaS Sidebar:** Grouped menu sections (Overview, Productivity, Knowledge Hub, Habits & Vision), collapsible submenus, and a profile popover menu (toggles Light/Dark mode & triggers logout).
 
 ### 2. Daily Flow & Timetable
 *   **Flexible Time Blocks:** Timeline blocks with custom start/end hour boundaries (no pre-computed slots).
@@ -24,6 +25,7 @@ A personalized, all-in-one life operating system and career workspace designed t
 *   **Smart Dictionary & Vocab Logs:** Searches words using Datamuse and Free Dictionary APIs. Incorporates automatic translation via Google Translate, and automatically conjugates irregular English verbs (V1 to V-Ing) with Indonesian definitions.
 *   **Grammar Formula Builder:** Create and manage active sentence formulas.
 *   **Writing & Dialogue Practices:** Practice positive, negative, and interrogative sentences linked to grammar structures and vocabulary.
+*   **Collapsible Sidebar Submenus:** Directly expand language logs to navigate tab states (`tab=vocab`, `tab=formula`, `tab=writing`, `tab=dialogue`) using search query parameters.
 
 ### 5. Project & Task Workspace
 *   **Two-Tiered Relations:** Multi-tier tracking mapping Projects ➔ Tasks ➔ Sub-tasks.
@@ -37,6 +39,12 @@ A personalized, all-in-one life operating system and career workspace designed t
 *   **Store Engine:** Calibrates remaining time by adjusting for elapsed visibility periods if browser tabs are minimized.
 *   **Audio Synthesis:** Generates focus/break transition tones using the Web Audio API.
 *   **Document Picture-in-Picture:** Portals a fully reactive timer interface (including mini-circle and expanded control modes) into a separate browser-level floating window using the experimental Document PiP API.
+
+### 8. Learning Hub
+*   **Dynamic Route Pages:** Full-page detail views (`/learning/[id]`) replacing legacy modal overlays, with layout consistency.
+*   **Split Progress Bars:** Two separate progress metrics tracking reference materials completed and tasks done independently.
+*   **Integrated Editing:** Ability to add, edit, toggle, or delete subjects, materials, and tasks with responsive modal overlays.
+*   **Unified Badge UI:** Standardized status badges (`Planned` = Purple, `Learning` = Yellow, `Completed` = Green) mapped across all pages.
 
 ---
 
