@@ -15,6 +15,7 @@ import {
   Clock,
   BookMarked,
   CheckCircle2,
+  BookOpenCheck,
   Edit2,
   MessageSquare,
   TrendingUp,
@@ -145,6 +146,29 @@ export function ReadingBoardView({
 }: ReadingBoardViewProps) {
   const [selectedProgressBook, setSelectedProgressBook] = React.useState<ReadingItem | null>(null)
 
+  // Optional multi-item batch creation state
+  const [extraBookRows, setExtraBookRows] = React.useState<Array<{ id: string; title: string; author: string; status: string }>>([])
+
+  const handleBookBatchSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!addTitle.trim() || !addAuthor.trim()) return
+
+    await handleAddBook(e)
+
+    if (extraBookRows.length > 0) {
+      for (const row of extraBookRows) {
+        if (row.title.trim() && row.author.trim()) {
+          setAddTitle(row.title.trim())
+          setAddAuthor(row.author.trim())
+          setAddStatus(row.status || "To Read")
+          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
+          await handleAddBook(fakeEvent)
+        }
+      }
+      setExtraBookRows([])
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* 1. Statistics Cards */}
@@ -181,17 +205,32 @@ export function ReadingBoardView({
 
         <StatCard
           title="Average Rating"
+          description="In your personal library"
+        />
+
+        <StatCard
+          title="Books Completed"
           value={
             <>
-              {averageRating}
-              <span className="text-sm font-bold text-muted-foreground">/ 5.0</span>
+              {completedCount}
+              <span className="text-sm font-bold text-muted-foreground">/ {totalBooks}</span>
             </>
           }
-          icon={<Star className="h-6 w-6 fill-amber-500 text-amber-500" />}
+          icon={<CheckCircle2 className="h-6 w-6" />}
+          iconBgClass="bg-emerald-500/10"
+          iconTextClass="text-emerald-500"
+          isLoading={isLoading}
+          description={totalBooks > 0 ? `${Math.round((completedCount / totalBooks) * 100)}% completion rate` : "0% completion rate"}
+        />
+
+        <StatCard
+          title="Currently Reading"
+          value={readingCount}
+          icon={<BookOpenCheck className="h-6 w-6" />}
           iconBgClass="bg-amber-500/10"
           iconTextClass="text-amber-500"
           isLoading={isLoading}
-          description="Rating overall"
+          description="Active reading status"
         />
       </div>
 
@@ -220,7 +259,7 @@ export function ReadingBoardView({
       {/* 3. Add Book Form */}
       {showAddForm && (
         <form
-          onSubmit={handleAddBook}
+          onSubmit={handleBookBatchSubmit}
           className="bento-card p-5 space-y-4 animate-in slide-in-from-top-4 duration-200"
         >
           <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5 border-b border-border/40 pb-2">
@@ -355,6 +394,97 @@ export function ReadingBoardView({
             </div>
           )}
 
+          {/* Extra Book Rows (Optional Multi-Item Batch Creation) */}
+          {extraBookRows.map((row, idx) => (
+            <div key={row.id} className="pt-3 border-t border-dashed border-border/40 space-y-3 relative">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-primary">Book #{idx + 2}</span>
+                <button
+                  type="button"
+                  onClick={() => setExtraBookRows(extraBookRows.filter((r) => r.id !== row.id))}
+                  className="p-1 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
+                  title="Remove book"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-muted-foreground">
+                    Title #{idx + 2} *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={row.title}
+                    onChange={(e) => {
+                      const updated = [...extraBookRows]
+                      updated[idx].title = e.target.value
+                      setExtraBookRows(updated)
+                    }}
+                    placeholder="Book Title..."
+                    className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-muted-foreground">
+                    Author #{idx + 2} *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={row.author}
+                    onChange={(e) => {
+                      const updated = [...extraBookRows]
+                      updated[idx].author = e.target.value
+                      setExtraBookRows(updated)
+                    }}
+                    placeholder="Author..."
+                    className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-muted-foreground">
+                    Status #{idx + 2} *
+                  </label>
+                  <select
+                    value={row.status}
+                    onChange={(e) => {
+                      const updated = [...extraBookRows]
+                      updated[idx].status = e.target.value
+                      setExtraBookRows(updated)
+                    }}
+                    className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+                  >
+                    <option value="To Read">To Read</option>
+                    <option value="Reading">Reading</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* + Add Another Book Button */}
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={() =>
+                setExtraBookRows([
+                  ...extraBookRows,
+                  { id: Math.random().toString(), title: "", author: "", status: "To Read" },
+                ])
+              }
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1 cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>+ Add Another Book</span>
+            </button>
+          </div>
+
           {addError && (
             <p className="text-xs text-destructive flex items-center gap-1 font-semibold">
               <AlertCircle className="h-3.5 w-3.5" />
@@ -365,7 +495,10 @@ export function ReadingBoardView({
           <div className="flex justify-end gap-2 border-t border-border/40 pt-3">
             <button
               type="button"
-              onClick={() => setShowAddForm(false)}
+              onClick={() => {
+                setShowAddForm(false)
+                setExtraBookRows([])
+              }}
               className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border/80 bg-secondary/30 px-4 py-2.5 text-xs font-semibold text-muted-foreground shadow-sm transition-all hover:bg-secondary/60 hover:text-foreground hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
             >
               Cancel
@@ -377,6 +510,8 @@ export function ReadingBoardView({
             >
               {isPendingCreate ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : extraBookRows.length > 0 ? (
+                `Save ${extraBookRows.length + 1} Books`
               ) : (
                 "Save Book"
               )}
