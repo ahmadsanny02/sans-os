@@ -73,6 +73,28 @@ export function AddDailyEntryCard({
   setTimetableDayOfWeek,
   onClose,
 }: AddDailyEntryCardProps) {
+  // Optional multi-item batch creation state
+  const [extraDailyRows, setExtraDailyRows] = React.useState<Array<{ id: string; title: string; link: string }>>([])
+
+  const handleDailyBatchSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!entryTitle.trim()) return
+
+    await handleAddDailyEntry(e)
+
+    if (extraDailyRows.length > 0) {
+      for (const row of extraDailyRows) {
+        if (row.title.trim()) {
+          setEntryTitle(row.title.trim())
+          setEntryLink(row.link.trim())
+          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
+          await handleAddDailyEntry(fakeEvent)
+        }
+      }
+      setExtraDailyRows([])
+    }
+  }
+
   return (
     <div className="border border-border bg-card/45 dark:bg-card/20 rounded-2xl p-6 shadow-sm backdrop-blur-md">
       <div className="flex items-center gap-2 mb-4">
@@ -89,12 +111,12 @@ export function AddDailyEntryCard({
         </div>
       </div>
 
-      <form onSubmit={handleAddDailyEntry} className="space-y-5">
+      <form onSubmit={handleDailyBatchSubmit} className="space-y-5">
         {/* Title and Link Fields */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-1.5">
             <label htmlFor="entryTitle" className="text-xs font-bold text-muted-foreground">
-              What are you planning to do?
+              What are you planning to do? *
             </label>
             <input
               id="entryTitle"
@@ -121,6 +143,68 @@ export function AddDailyEntryCard({
               className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
+        </div>
+
+        {/* Extra Daily Flow Item Rows (Optional Multi-Item Batch Creation) */}
+        {extraDailyRows.map((row, idx) => (
+          <div key={row.id} className="grid gap-4 md:grid-cols-2 pt-3 border-t border-dashed border-border/40 relative">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground">
+                Task Title #{idx + 2} *
+              </label>
+              <input
+                type="text"
+                required
+                value={row.title}
+                onChange={(e) => {
+                  const updated = [...extraDailyRows]
+                  updated[idx].title = e.target.value
+                  setExtraDailyRows(updated)
+                }}
+                placeholder="Flow title..."
+                className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground flex items-center gap-1">
+                Reference Link #{idx + 2} (Optional)
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="url"
+                  value={row.link}
+                  onChange={(e) => {
+                    const updated = [...extraDailyRows]
+                    updated[idx].link = e.target.value
+                    setExtraDailyRows(updated)
+                  }}
+                  placeholder="https://..."
+                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setExtraDailyRows(extraDailyRows.filter((r) => r.id !== row.id))}
+                  className="p-2.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer"
+                  title="Remove item"
+                >
+                  <Plus className="h-4 w-4 rotate-45" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* + Add Another Flow Item Button */}
+        <div className="pt-1">
+          <button
+            type="button"
+            onClick={() => setExtraDailyRows([...extraDailyRows, { id: Math.random().toString(), title: "", link: "" }])}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1 cursor-pointer"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>+ Add Another Flow Item</span>
+          </button>
         </div>
 
         {/* Destination Toggles */}
