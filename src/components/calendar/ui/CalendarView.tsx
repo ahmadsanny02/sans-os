@@ -141,10 +141,10 @@ export function CalendarView({
         dayPrios = dayPrios.filter((p) => p.text.toLowerCase().includes(searchLower))
       }
 
-      // 2. Timetable Blocks
+      // 2. Timetable Blocks (Exclude "every day" blocks where dayOfWeek === -1)
       let dayBlocks = timetableList.filter((b) => {
+        if (b.dayOfWeek === -1) return false
         return (
-          b.dayOfWeek === -1 ||
           b.date === dayStr ||
           (b.dayOfWeek === dayOfWeek && !b.date)
         )
