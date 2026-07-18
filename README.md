@@ -1,95 +1,139 @@
-# SansOS Workspace 🚀
+# SansOS Workspace — Technical Project Documentation 🚀
 
-A personalized, all-in-one life operating system and career workspace designed to eliminate the rigid cell-and-formula constraints of legacy spreadsheets. It provides a modular, visually premium, and responsive ecosystem for habit tracking, language acquisition, timetable schedules, project tracking, and focus sessions.
-
----
-
-## 🌟 Key Features & Modules
-
-### 1. Dashboard Hub
-*   **Bento Grid Widgets:** Quick metrics at a glance, including a daily timetable timeline, memory box visual highlights, priorities checklist, and todo items.
-*   **Pomodoro Focus Bar:** Full-width control panel integrated directly on the main hub with live state progress and toggle triggers.
-*   **Timezone & Sync Banner:** Automatically syncs display active dates and user timezone bounds globally.
-*   **Premium SaaS Sidebar:** Grouped menu sections (Overview, Productivity, Knowledge Hub, Habits & Vision), collapsible submenus, and a profile popover menu (toggles Light/Dark mode & triggers logout).
-
-### 2. Daily Flow & Timetable
-*   **Flexible Time Blocks:** Timeline blocks with custom start/end hour boundaries (no pre-computed slots).
-*   **Top 5 Priorities:** Real-time automatic rollover pushing incomplete yesterday's priorities to the current date, respecting the top-5 slots limit.
-*   **Daily Log:** Gratitude journal logs and a native OS emoji mood tracker with daily pic uploads.
-
-### 3. Habit Tracker
-*   **Check-in Matrix:** Check off habits in an optimistic check-in grid.
-*   **Performance Recaps:** Interactive Recharts charts detailing weekly progress and monthly completion rates.
-
-### 4. Language Workspace
-*   **Smart Dictionary & Vocab Logs:** Searches words using Datamuse and Free Dictionary APIs. Incorporates automatic translation via Google Translate, and automatically conjugates irregular English verbs (V1 to V-Ing) with Indonesian definitions.
-*   **Grammar Formula Builder:** Create and manage active sentence formulas.
-*   **Writing & Dialogue Practices:** Practice positive, negative, and interrogative sentences linked to grammar structures and vocabulary.
-*   **Collapsible Sidebar Submenus:** Directly expand language logs to navigate tab states (`tab=vocab`, `tab=formula`, `tab=writing`, `tab=dialogue`) using search query parameters.
-
-### 5. Project & Task Workspace
-*   **Two-Tiered Relations:** Multi-tier tracking mapping Projects ➔ Tasks ➔ Sub-tasks.
-*   **Dynamic sorting:** Categorized by deadlines and priority badges (`Low`, `Medium`, `High`).
-
-### 6. Vision Board & Bucket List
-*   **Vision Board Canvas:** Drag-and-drop goal wallpaper canvas. Absolute coordinates are automatically clamped and saved to the database.
-*   **Bucket List:** Visual image gallery tracking life goals, completion timestamps, and preset templates.
-
-### 7. Pomodoro Timer
-*   **Store Engine:** Calibrates remaining time by adjusting for elapsed visibility periods if browser tabs are minimized.
-*   **Audio Synthesis:** Generates focus/break transition tones using the Web Audio API.
-*   **Document Picture-in-Picture:** Portals a fully reactive timer interface (including mini-circle and expanded control modes) into a separate browser-level floating window using the experimental Document PiP API.
-
-### 8. Learning Hub
-*   **Dynamic Route Pages:** Full-page detail views (`/learning/[id]`) replacing legacy modal overlays, with layout consistency.
-*   **Split Progress Bars:** Two separate progress metrics tracking reference materials completed and tasks done independently.
-*   **Integrated Editing:** Ability to add, edit, toggle, or delete subjects, materials, and tasks with responsive modal overlays.
-*   **Unified Badge UI:** Standardized status badges (`Planned` = Purple, `Learning` = Yellow, `Completed` = Green) mapped across all pages.
+A personalized, modular, all-in-one life operating system and engineering workspace. Built to eliminate the rigid cell-and-formula constraints of legacy spreadsheets, **SansOS** provides a unified, mobile-first, pixel-perfect environment incorporating habit check-in matrices, foreign language logs with auto-translation and verb conjugation, dynamic timetable schedules, project/task tracking, reading journals, and pomodoro focus sessions.
 
 ---
 
-## 🛠️ Technology Stack
+## 1. Project Overview
 
-*   **Framework:** Next.js (App Router)
-*   **Language:** TypeScript
-*   **Styling:** Tailwind CSS + Vanilla CSS (Custom HSL tokens, Glassmorphism, Poppins font)
-*   **Database:** PostgreSQL via Supabase
-*   **ORM:** Drizzle ORM
-*   **State Management:** Zustand
-*   **Data Fetching:** TanStack React Query + Supabase Client SDK
-*   **Auth:** Supabase Auth (Email & Password)
-*   **Libraries:** Recharts, SweetAlert2, Framer Motion, Lucide React
+### Purpose & Vision
+SansOS serves as a single-user personal operating system designed for productivity, habit reinforcement, language acquisition, and career project management. It brings together modular Bento UI widgets with real-time optimistic state updates, glassmorphism design tokens, and local timezone synchronization.
+
+### Key Capabilities
+* **Dashboard Bento Grid:** Centralized metrics, pomodoro timer bar, timeline snapshot, top priorities, and active memory box highlights.
+* **Daily Flow & Timetable:** Timeline blocks with custom start/end hour boundaries, daily gratitude logs, emoji mood tracking, and automatic midnight priority rollover.
+* **Habit Check-In Matrix:** Optimistic weekly/monthly habit tracking grid backed by PostgreSQL aggregation and Recharts visualization.
+* **Language Hub:** Smart dictionary search powered by Datamuse & Free Dictionary APIs, automated Google Translate fallbacks, English irregular verb conjugations (V1 ➔ V-Ing), manual vs. auto-translation synchronization, and grammar sentence drills (Writing & Dialogue practices).
+* **Project & Task Board:** Multi-tier tracking (Projects ➔ Tasks ➔ Sub-tasks) sorted by deadlines, status, and priority badges (`Low`, `Medium`, `High`).
+* **Learning Hub:** Full-page detail views (`/learning/[id]`), dual progress bars (reference materials vs. tasks done), and standardized status badges (`Planned`, `Learning`, `Completed`).
+* **Pomodoro Timer Engine:** Document Picture-in-Picture (PiP) floating window portal, Web Audio API audio synthesis, and visibility period time calibration.
+* **Vision Board & Bucket List:** Drag-and-drop wallpaper canvas saving absolute coordinates, and interactive life bucket list gallery.
 
 ---
 
-## ⚡ Development Commands
+## 2. Tech Stack & Prerequisites
 
-First, set up your local `.env` variables containing:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+### Technology Stack
+* **Framework:** [Next.js 16 (App Router)](https://nextjs.org/)
+* **Language:** [TypeScript 5](https://www.typescriptlang.org/) (Strict Mode)
+* **Styling & UI:** [Tailwind CSS v3](https://tailwindcss.com/), Custom HSL tokens, Glassmorphism backdrop-blur, [Framer Motion](https://www.framer.com/motion/), [Lucide React](https://lucide.dev/), [SweetAlert2](https://sweetalert2.github.io/)
+* **Database & ORM:** PostgreSQL via [Supabase](https://supabase.com/), [Drizzle ORM](https://orm.drizzle.team/) & `drizzle-kit`
+* **State Management:** [Zustand](https://zustand-demo.pmnd.rs/) (Timezone states, active dates, midnight rollover checks)
+* **Data Fetching & Caching:** [TanStack React Query v5](https://tanstack.com/query) + Supabase SSR Client (`@supabase/ssr`)
+* **Authentication:** Supabase Auth (Email & Password)
+* **Analytics & Charts:** [Recharts](https://recharts.org/)
+
+### Prerequisites
+* **Node.js:** `>= 18.17.0`
+* **Package Manager:** `npm` (or `pnpm` / `yarn`)
+* **Database:** Supabase PostgreSQL instance
+
+---
+
+## 3. Directory & Folder Structure
+
+```text
+sans-os/
+├── src/
+│   ├── app/                         # Next.js App Router (Pages, layouts, and REST API routes)
+│   ├── components/                  # Feature-driven UI Modules (Daily, Habits, Language, Projects, etc.)
+│   ├── hooks/                       # Custom React Query Hooks for data queries & mutations
+│   ├── lib/                         # Core utilities (Drizzle ORM, Supabase configs, translation/verb engines)
+│   ├── store/                       # Global Zustand stores (active date, timezone, Pomodoro states)
+│   ├── types/                       # Drizzle database schemas and TypeScript interfaces
+│   └── proxy.ts                     # Authentication & routing guard logic
+├── public/                          # Static assets
+├── drizzle.config.ts                # Drizzle migration settings
+├── package.json                     # Dependency manifests & scripts
+└── tailwind.config.ts               # Tailwind CSS theme tokens & glassmorphism config
 ```
 
-### Dev Server
+---
+
+## 4. Setup & Local Development Installation
+
+### Step 1: Clone Repository & Install Dependencies
+```bash
+git clone https://github.com/ahmadsanny02/sans-os.git
+cd sans-os
+npm install
+```
+
+### Step 2: Configure Environment Variables
+Create a `.env.local` file in the root directory:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+### Step 3: Database Schema Migration
+Push Drizzle ORM table definitions (`src/types/schema.ts`) to your Supabase PostgreSQL database:
+```bash
+npm run db:push
+```
+To open the Drizzle Studio database GUI:
+```bash
+npm run db:studio
+```
+
+### Step 4: Run Development Server
 ```bash
 npm run dev
 ```
-Start the local development server at `http://localhost:3000`.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Database Schema Updates
+### Step 5: Build & Production Verification
 ```bash
-npm run db:push     # Push schema changes (schema.ts) directly to Supabase
-npm run db:studio   # Open Drizzle GUI database Studio manager
+# Execute ESLint checks
+npm run lint
+
+# Build production bundle
+npm run build
+
+# Start production server locally
+npm run start
 ```
 
-### Production Build
-```bash
-npm run build       # Build application for production
-npm run start       # Run production build locally
-```
+---
 
-### Linter
-```bash
-npm run lint        # Execute ESLint checks
-```
+## 5. Core Architecture & API Endpoints
+
+### Key Architectural Patterns
+1. **No `src/middleware.ts`:** Route guards and authentication checks reside exclusively in [proxy.ts](file:///home/ahmadsanny02/Workspace/02_coding/web/fullstack/projects/sans-os/src/proxy.ts) to prevent crash loops.
+2. **React Query State Isolation:** UI components do not use `useEffect` for data fetching. Data queries, invalidations, and optimistic state mutations route strictly through custom hooks in `src/hooks/`.
+3. **Glassmorphic Token Standardization:** Card containers use `bg-card/45 dark:bg-card/15 border border-border/60 shadow-sm rounded-2xl backdrop-blur-md`.
+4. **Automatic Auto-Translation Sync:** When a user marks a vocabulary word as memorized (`memorized: true`), if the manual translation differs from the AI auto-translation, the system synchronizes `translation` to `autoTranslation` in PostgreSQL and updates UI state optimistically.
+5. **Verb Conjugation Engine:** [verbs.ts](file:///home/ahmadsanny02/Workspace/02_coding/web/fullstack/projects/sans-os/src/lib/verbs.ts) implements syllable stress boundary checks (`shouldDoubleConsonant`) to bypass invalid doubling (e.g. `visit` ➔ `visited`/`visiting`, `listen` ➔ `listened`/`listening`).
+
+### Primary REST API Routes
+
+| HTTP Method | Route Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/language` | Vocabulary log CRUD & auto-translation sync |
+| `GET` / `POST` / `DELETE` | `/api/language/writing` | Writing practice sentence exercises |
+| `GET` / `POST` / `DELETE` | `/api/language/dialogue` | Dialogue practice Q&A logs |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/habits` | Habit metadata & ordering |
+| `GET` / `POST` / `DELETE` | `/api/habits/logs` | Habit check-in grid logs |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/daily/priorities` | Top 5 priorities & midnight rollover status |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/daily/timetable` | Dynamic schedule timeline blocks |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/projects` | Project workspaces & deadline metrics |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/projects/tasks` | Two-tiered task & sub-task items |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/reading` | Reading journal entries & rating/reviews |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/vision` | Drag-and-drop canvas item coordinates |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/learning` | Subject modules, reference links & task checklists |
+
+---
+
+## 📄 License & Attribution
+Designed and built exclusively for **Ahmad Sani Jabarulloh** as a personalized life operating system (**SansOS**). All rights reserved.
