@@ -154,6 +154,36 @@ export function DialoguePracticeView({
     })
   }
 
+  // Optional multi-item batch creation state for dialogue practice
+  const [extraDialogueRows, setExtraDialogueRows] = useState<Array<{
+    id: string
+    dialogueEngQ: string
+    dialogueTransQ: string
+    dialogueEngA: string
+    dialogueTransA: string
+  }>>([])
+
+  const handleDialogueBatchSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await handleSubmit(e)
+
+    if (extraDialogueRows.length > 0) {
+      for (const row of extraDialogueRows) {
+        if (row.dialogueEngQ.trim() && row.dialogueEngA.trim()) {
+          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
+          await handleAddDialogue(fakeEvent, {
+            dialogueEngQ: row.dialogueEngQ.trim(),
+            dialogueTransQ: row.dialogueTransQ.trim(),
+            dialogueEngA: row.dialogueEngA.trim(),
+            dialogueTransA: row.dialogueTransA.trim(),
+            dialogueFormula: localDialogueFormula,
+          })
+        }
+      }
+      setExtraDialogueRows([])
+    }
+  }
+
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -257,7 +287,7 @@ export function DialoguePracticeView({
             <h3 className="text-lg font-bold text-foreground">Add Conversation</h3>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleDialogueBatchSubmit} className="space-y-4">
             {/* Practice Mode Selector Toggle */}
             <div className="grid grid-cols-2 gap-2 p-1 bg-secondary/30 rounded-xl mb-5 border border-border/30 select-none max-w-sm">
               <button
@@ -559,6 +589,100 @@ export function DialoguePracticeView({
 
             </div>
 
+            {/* Extra Conversation Rows (Optional Multi-Item Batch Creation) */}
+            {extraDialogueRows.map((row, idx) => (
+              <div key={row.id} className="pt-3 border-t border-dashed border-border/40 relative space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-muted-foreground">
+                    Conversation #{idx + 2}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setExtraDialogueRows(extraDialogueRows.filter((r) => r.id !== row.id))}
+                    className="p-1 rounded-lg border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer text-xs flex items-center gap-1"
+                    title="Remove conversation row"
+                  >
+                    <Plus className="h-3.5 w-3.5 rotate-45" /> Remove
+                  </button>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5 border-l-2 border-primary/60 pl-3">
+                    <span className="text-[11px] font-bold text-primary">User A (Question) #{idx + 2}</span>
+                    <input
+                      type="text"
+                      required
+                      value={row.dialogueEngQ}
+                      onChange={(e) => {
+                        const updated = [...extraDialogueRows]
+                        updated[idx].dialogueEngQ = e.target.value
+                        setExtraDialogueRows(updated)
+                      }}
+                      placeholder="English question..."
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    />
+                    <input
+                      type="text"
+                      required
+                      value={row.dialogueTransQ}
+                      onChange={(e) => {
+                        const updated = [...extraDialogueRows]
+                        updated[idx].dialogueTransQ = e.target.value
+                        setExtraDialogueRows(updated)
+                      }}
+                      placeholder="Indonesian translation..."
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 border-l-2 border-emerald-500/60 pl-3">
+                    <span className="text-[11px] font-bold text-emerald-500">User B (Answer) #{idx + 2}</span>
+                    <input
+                      type="text"
+                      required
+                      value={row.dialogueEngA}
+                      onChange={(e) => {
+                        const updated = [...extraDialogueRows]
+                        updated[idx].dialogueEngA = e.target.value
+                        setExtraDialogueRows(updated)
+                      }}
+                      placeholder="English answer..."
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    />
+                    <input
+                      type="text"
+                      required
+                      value={row.dialogueTransA}
+                      onChange={(e) => {
+                        const updated = [...extraDialogueRows]
+                        updated[idx].dialogueTransA = e.target.value
+                        setExtraDialogueRows(updated)
+                      }}
+                      placeholder="Indonesian translation..."
+                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* + Add Another Conversation Button */}
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={() =>
+                  setExtraDialogueRows([
+                    ...extraDialogueRows,
+                    { id: Math.random().toString(), dialogueEngQ: "", dialogueTransQ: "", dialogueEngA: "", dialogueTransA: "" },
+                  ])
+                }
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1 cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>+ Add Another Conversation</span>
+              </button>
+            </div>
+
             {dialogueFormError && (
               <p className="text-xs text-destructive flex items-center gap-1 font-semibold animate-in slide-in-from-top-1">
                 <AlertCircle className="h-3.5 w-3.5" />
@@ -585,6 +709,8 @@ export function DialoguePracticeView({
               >
                 {dialogueCreatePending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
+                ) : extraDialogueRows.length > 0 ? (
+                  `Save ${extraDialogueRows.length + 1} Dialogues`
                 ) : (
                   <>
                     <Plus className="h-4 w-4" /> Save Dialogue
