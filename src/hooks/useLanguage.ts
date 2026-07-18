@@ -136,6 +136,7 @@ async function updateVocabulary(body: {
   id: string
   masteryLevel?: number
   memorized?: boolean
+  translation?: string
 }): Promise<VocabularyLog> {
   const res = await fetch("/api/language", {
     method: "PATCH",
@@ -153,7 +154,7 @@ export function useUpdateVocabularyMutation() {
   return useMutation<
     VocabularyLog,
     Error,
-    { id: string; masteryLevel?: number; memorized?: boolean },
+    { id: string; masteryLevel?: number; memorized?: boolean; translation?: string },
     { previous: VocabularyLog[] | undefined }
   >({
     mutationFn: updateVocabulary,
@@ -166,8 +167,12 @@ export function useUpdateVocabularyMutation() {
           previous.map((item) => {
             if (item.id === variables.id) {
               const updatedItem = { ...item, ...variables }
-              if (variables.memorized === true && item.translation.trim() !== (item.autoTranslation || "").trim()) {
-                updatedItem.translation = item.autoTranslation || item.translation
+              if (
+                variables.memorized === true &&
+                item.autoTranslation &&
+                item.translation.trim().toLowerCase() !== item.autoTranslation.trim().toLowerCase()
+              ) {
+                updatedItem.translation = item.autoTranslation
               }
               return updatedItem
             }
