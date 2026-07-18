@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 import { usePomodoroStore } from "@/store/pomodoroStore"
 import { PomodoroModal } from "@/components/pomodoro/ui/PomodoroModal"
+import { PomodoroExtendModal } from "@/components/pomodoro/ui/PomodoroExtendModal"
 import { PomodoroPipController } from "@/components/pomodoro/ui/PomodoroPipController"
 import { createBrowserSupabaseClient } from "@/lib/supabase/client"
 import {
@@ -694,6 +695,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </motion.button>
       {/* Pomodoro Floating Modal (global - persists across pages) */}
       <PomodoroModal buttonRect={buttonRect} />
+      {/* Pomodoro Time Extension Modal (triggers when focus session ends) */}
+      <PomodoroExtendModal />
       {/* Pomodoro Picture-in-Picture Controller */}
       <PomodoroPipController />
     </div>
