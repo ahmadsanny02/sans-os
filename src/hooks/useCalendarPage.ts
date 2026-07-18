@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 import {
   usePrioritiesQuery,
@@ -8,7 +8,17 @@ import {
   useTogglePriorityMutation,
   useTimetableQuery,
 } from "@/hooks/useDaily"
-import { format, parseISO, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
+import { useProjectsQuery } from "@/hooks/useProjects"
+import {
+  format,
+  parseISO,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+} from "date-fns"
 
 export function useCalendarPage() {
   const activeDate = useWorkspaceStore((state) => state.activeDate)
@@ -45,6 +55,7 @@ export function useCalendarPage() {
   // Load details for selected date
   const { data: dayPriorities = [], isLoading: isLoadingPriorities } = usePrioritiesQuery(selectedDate)
   const { data: timetableList = [], isLoading: isLoadingTimetable, isError: isErrorTimetable } = useTimetableQuery()
+  const { data: projectsList = [], isLoading: isLoadingProjects } = useProjectsQuery()
   const togglePriorityMutation = useTogglePriorityMutation(selectedDate)
 
   // Generate date bounds for range query (for calendar grid)
@@ -58,6 +69,31 @@ export function useCalendarPage() {
 
   const { data: rangePriorities = [], isLoading: isLoadingRangePriorities, isError: isErrorRangePriorities } =
     usePrioritiesRangeQuery(startDateStr, endDateStr)
+
+  // --- Master Schedule / All Agendas (Month & Year filtering) ---
+  const [agendaMonth, setAgendaMonth] = useState<number>(() => currentMonth.getMonth())
+  const [agendaYear, setAgendaYear] = useState<number>(() => currentMonth.getFullYear())
+  const [prevNavMonth, setPrevNavMonth] = useState<Date>(currentMonth)
+  const [agendaTypeFilter, setAgendaTypeFilter] = useState<string>("all")
+  const [agendaSearch, setAgendaSearch] = useState<string>("")
+
+  // Keep agenda month/year aligned when calendar navigation month changes
+  if (currentMonth !== prevNavMonth) {
+    setPrevNavMonth(currentMonth)
+    setAgendaMonth(currentMonth.getMonth())
+    setAgendaYear(currentMonth.getFullYear())
+  }
+
+  // Date range for All Agendas section
+  const agendaMonthDate = useMemo(() => new Date(agendaYear, agendaMonth, 1), [agendaYear, agendaMonth])
+  const agendaMonthStart = useMemo(() => startOfMonth(agendaMonthDate), [agendaMonthDate])
+  const agendaMonthEnd = useMemo(() => endOfMonth(agendaMonthStart), [agendaMonthStart])
+
+  const agendaStartDateStr = useMemo(() => format(agendaMonthStart, "yyyy-MM-dd"), [agendaMonthStart])
+  const agendaEndDateStr = useMemo(() => format(agendaMonthEnd, "yyyy-MM-dd"), [agendaMonthEnd])
+
+  const { data: agendaPriorities = [], isLoading: isLoadingAgendaPriorities } =
+    usePrioritiesRangeQuery(agendaStartDateStr, agendaEndDateStr)
 
   // Compare ongoing/future blocks (real-time updates)
   const realTodayStr = useWorkspaceStore((state) => state.realTodayDate)
@@ -120,6 +156,21 @@ export function useCalendarPage() {
     isPendingToggle: togglePriorityMutation.isPending,
     gridLoading,
     gridError,
+    // Master Schedule / All Agendas
+    agendaMonth,
+    setAgendaMonth,
+    agendaYear,
+    setAgendaYear,
+    agendaTypeFilter,
+    setAgendaTypeFilter,
+    agendaSearch,
+    setAgendaSearch,
+    agendaMonthStart,
+    agendaMonthEnd,
+    agendaPriorities,
+    isLoadingAgendaPriorities,
+    projectsList,
+    isLoadingProjects,
   }
 }
 
