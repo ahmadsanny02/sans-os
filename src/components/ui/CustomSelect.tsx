@@ -44,7 +44,7 @@ export function CustomSelect({
   return (
     <div ref={containerRef} className={`relative inline-flex items-center gap-1.5 ${className}`}>
       {label && (
-        <span className="text-xs font-bold text-muted-foreground select-none">
+        <span className="text-xs font-bold text-muted-foreground select-none shrink-0">
           {label}
         </span>
       )}
@@ -53,7 +53,7 @@ export function CustomSelect({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="inline-flex items-center justify-between gap-2.5 rounded-xl border border-border/80 bg-card/60 hover:bg-card/90 px-3.5 py-1.5 text-xs font-bold text-foreground transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/40 cursor-pointer min-w-[110px]"
+        className="w-full inline-flex items-center justify-between gap-2.5 rounded-xl border border-border/80 bg-card/60 hover:bg-card/90 px-3 py-1.5 text-xs font-bold text-foreground transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/40 cursor-pointer min-w-[90px]"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
