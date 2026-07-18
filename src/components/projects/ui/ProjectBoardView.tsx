@@ -22,6 +22,7 @@ import {
 import { ListSkeleton } from "@/components/ui/Skeletons"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { ErrorState } from "@/components/ui/ErrorState"
+import { CustomSelect } from "@/components/ui/CustomSelect"
 
 interface DropdownOption {
   value: string
@@ -1008,19 +1009,17 @@ export function ProjectBoardView({
                   onChange={(e) => setTaskName(e.target.value)}
                   placeholder="Add new subtask deliverables..."
                   className="flex-1 rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 min-w-0 shadow-sm"
-                />
-
-                <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-2 shrink-0">
-                  <select
+                />                <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-2 shrink-0 select-none">
+                  <CustomSelect
                     value={taskPriority}
-                    onChange={(e) => setTaskPriority(e.target.value)}
-                    className="col-span-1 sm:w-auto rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
-                    aria-label="Task priority selection"
-                  >
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                  </select>
+                    onChange={(val) => setTaskPriority(val as string)}
+                    options={[
+                      { value: "Low", label: "Low" },
+                      { value: "Medium", label: "Medium" },
+                      { value: "High", label: "High" },
+                    ]}
+                    className="col-span-1 sm:w-auto"
+                  />
 
                   <input
                     type="date"
@@ -1060,20 +1059,21 @@ export function ProjectBoardView({
                     className="flex-1 rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 min-w-0 shadow-sm"
                   />
 
-                  <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-2 shrink-0">
-                    <select
+                  <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-2 shrink-0 select-none">
+                    <CustomSelect
                       value={row.priority}
-                      onChange={(e) => {
+                      onChange={(val) => {
                         const updated = [...extraProjectTaskRows]
-                        updated[idx].priority = e.target.value
+                        updated[idx].priority = val as string
                         setExtraProjectTaskRows(updated)
                       }}
-                      className="col-span-1 sm:w-auto rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
-                    >
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
-                    </select>
+                      options={[
+                        { value: "Low", label: "Low" },
+                        { value: "Medium", label: "Medium" },
+                        { value: "High", label: "High" },
+                      ]}
+                      className="col-span-1 sm:w-auto"
+                    />
 
                     <input
                       type="date"
