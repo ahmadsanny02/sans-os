@@ -904,10 +904,17 @@ export function ProjectBoardView({
                                     return a.createdAt.localeCompare(b.createdAt)
                                   })
                                   .map((st) => (
-                                    <div key={st.id} className="group flex items-center justify-between py-1 px-2 -mx-2 rounded-lg hover:bg-secondary/40 transition-colors">
+                                    <div
+                                      key={st.id}
+                                      onClick={() => !isPendingSubTaskToggle && handleToggleSubTask(st.id, st.completed)}
+                                      className="group flex items-center justify-between py-1 px-2 -mx-2 rounded-lg hover:bg-secondary/40 cursor-pointer transition-colors"
+                                    >
                                       <div className="flex items-center gap-2.5 flex-1 min-w-0">
                                         <button
-                                          onClick={() => handleToggleSubTask(st.id, st.completed)}
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleToggleSubTask(st.id, st.completed)
+                                          }}
                                           disabled={isPendingSubTaskToggle}
                                           className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[4px] border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${st.completed
                                             ? "bg-primary border-primary text-primary-foreground"
@@ -924,7 +931,10 @@ export function ProjectBoardView({
                                         </span>
                                       </div>
                                       <button
-                                        onClick={() => handleDeleteSubTask(st.id)}
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          handleDeleteSubTask(st.id)
+                                        }}
                                         disabled={isPendingSubTaskDelete}
                                         className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
                                       >
