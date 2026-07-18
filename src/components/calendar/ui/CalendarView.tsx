@@ -21,6 +21,7 @@ import {
   isToday,
 } from "date-fns"
 import { Badge } from "@/components/ui/Badge"
+import { CustomSelect } from "@/components/ui/CustomSelect"
 
 const TIMETABLE_COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
   blue: { bg: "bg-blue-500/10", text: "text-blue-500 dark:text-blue-400", border: "border-blue-500/20", bullet: "bg-blue-500" },
@@ -382,41 +383,21 @@ export function CalendarView({
             </p>
           </div>
 
-          {/* Month & Year Selectors */}
-          <div className="flex flex-wrap items-center gap-2.5 select-none">
-            {/* Month Dropdown */}
-            <div className="flex items-center gap-1.5">
-              <label htmlFor="agendaMonthSelect" className="text-xs font-bold text-muted-foreground">Month:</label>
-              <select
-                id="agendaMonthSelect"
-                value={agendaMonth}
-                onChange={(e) => setAgendaMonth(Number(e.target.value))}
-                className="rounded-xl border border-border bg-background/60 px-3 py-1.5 text-xs font-bold text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm cursor-pointer"
-              >
-                {MONTH_NAMES.map((mName, idx) => (
-                  <option key={mName} value={idx}>
-                    {mName}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Month & Year Custom Selectors */}
+          <div className="flex flex-wrap items-center gap-3 select-none">
+            <CustomSelect
+              label="Month:"
+              value={agendaMonth}
+              onChange={(val) => setAgendaMonth(Number(val))}
+              options={MONTH_NAMES.map((mName, idx) => ({ value: idx, label: mName }))}
+            />
 
-            {/* Year Dropdown */}
-            <div className="flex items-center gap-1.5">
-              <label htmlFor="agendaYearSelect" className="text-xs font-bold text-muted-foreground">Year:</label>
-              <select
-                id="agendaYearSelect"
-                value={agendaYear}
-                onChange={(e) => setAgendaYear(Number(e.target.value))}
-                className="rounded-xl border border-border bg-background/60 px-3 py-1.5 text-xs font-bold text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm cursor-pointer"
-              >
-                {YEARS_LIST.map((yVal) => (
-                  <option key={yVal} value={yVal}>
-                    {yVal}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CustomSelect
+              label="Year:"
+              value={agendaYear}
+              onChange={(val) => setAgendaYear(Number(val))}
+              options={YEARS_LIST.map((yVal) => ({ value: yVal, label: String(yVal) }))}
+            />
 
             {/* Reset to Current Month */}
             <button
