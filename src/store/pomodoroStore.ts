@@ -33,6 +33,7 @@ interface PomodoroState {
   remainingSeconds: number
   sessionCount: number // completed focus sessions
   isModalOpen: boolean
+  showExtendModal: boolean
   lastActiveTimestamp: number | null
   isPipActive: boolean
   isPipExpanded: boolean
@@ -51,6 +52,9 @@ interface PomodoroState {
   openModal: () => void
   closeModal: () => void
   toggleModal: () => void
+  extendFocusTime: (extraMinutes: number) => void
+  proceedToBreak: () => void
+  closeExtendModal: () => void
   adjustForElapsedTime: (timetableList?: TimetableBlock[]) => void
   setIsPipActive: (active: boolean) => void
   setIsPipExpanded: (expanded: boolean) => void
@@ -202,6 +206,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       remainingSeconds: 25 * 60,
       sessionCount: 0,
       isModalOpen: false,
+      showExtendModal: false,
       lastActiveTimestamp: null,
       isPipActive: false,
       isPipExpanded: false,
@@ -261,6 +266,7 @@ export const usePomodoroStore = create<PomodoroState>()(
             sessionCount: 0,
             isRunning: true,
             isModalOpen: true,
+            showExtendModal: false,
             lastActiveTimestamp: now,
             activeBlockEndTime: null,
             activeBlockDate: null,
@@ -304,6 +310,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           phase: "idle",
           remainingSeconds: config.focusDuration * 60,
           sessionCount: 0,
+          showExtendModal: false,
           lastActiveTimestamp: null,
           activeBlockEndTime: null,
           activeBlockDate: null,
@@ -330,12 +337,14 @@ export const usePomodoroStore = create<PomodoroState>()(
             remainingSeconds:
               (isLong ? config.longBreakDuration : config.breakDuration) * 60,
             sessionCount: newCount,
+            showExtendModal: false,
             lastActiveTimestamp: isRunning ? now : null,
           })
         } else if (phase === "break" || phase === "long-break") {
           set({
             phase: "focus",
             remainingSeconds: config.focusDuration * 60,
+            showExtendModal: false,
             lastActiveTimestamp: isRunning ? now : null,
             isLongBreakAfterBlock: false,
           })
@@ -350,7 +359,6 @@ export const usePomodoroStore = create<PomodoroState>()(
           config,
           sessionCount,
           integrationMode,
-          activeBlockSessions,
         } = get()
         if (!isRunning || phase === "idle") return
 
@@ -373,19 +381,14 @@ export const usePomodoroStore = create<PomodoroState>()(
           return
         }
 
-        const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
-
-        // Remaining === 1 → transition (manual mode only)
+        // Focus session finished -> Prompt Extend Time Modal!
         if (phase === "focus") {
           const newCount = sessionCount + 1
-          const isLong = newCount % totalSessions === 0
-          const nextPhase: PomodoroPhase = isLong ? "long-break" : "break"
           set({
-            phase: nextPhase,
-            remainingSeconds:
-              (isLong ? config.longBreakDuration : config.breakDuration) * 60,
             sessionCount: newCount,
-            lastActiveTimestamp: now,
+            isRunning: false,
+            lastActiveTimestamp: null,
+            showExtendModal: true,
           })
         } else if (phase === "long-break" && get().isLongBreakAfterBlock) {
           // Finished the post-block long break! Stop the timer.
@@ -394,6 +397,7 @@ export const usePomodoroStore = create<PomodoroState>()(
             remainingSeconds: config.focusDuration * 60,
             sessionCount: 0,
             isRunning: false,
+            showExtendModal: false,
             lastActiveTimestamp: null,
             activeBlockSessions: null,
             isLongBreakAfterBlock: false,
@@ -411,6 +415,31 @@ export const usePomodoroStore = create<PomodoroState>()(
       openModal: () => set({ isModalOpen: true }),
       closeModal: () => set({ isModalOpen: false }),
       toggleModal: () => set((s) => ({ isModalOpen: !s.isModalOpen })),
+      extendFocusTime: (extraMinutes) => {
+        const now = Date.now()
+        set({
+          phase: "focus",
+          remainingSeconds: Math.max(1, extraMinutes * 60),
+          isRunning: true,
+          showExtendModal: false,
+          lastActiveTimestamp: now,
+        })
+      },
+      proceedToBreak: () => {
+        const { config, sessionCount, activeBlockSessions } = get()
+        const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
+        const isLong = sessionCount % totalSessions === 0
+        const nextPhase: PomodoroPhase = isLong ? "long-break" : "break"
+        const now = Date.now()
+        set({
+          phase: nextPhase,
+          remainingSeconds: (isLong ? config.longBreakDuration : config.breakDuration) * 60,
+          isRunning: true,
+          showExtendModal: false,
+          lastActiveTimestamp: now,
+        })
+      },
+      closeExtendModal: () => set({ showExtendModal: false }),
       setIsPipActive: (isPipActive) => set({ isPipActive }),
       setIsPipExpanded: (isPipExpanded) => set({ isPipExpanded }),
 
@@ -423,7 +452,6 @@ export const usePomodoroStore = create<PomodoroState>()(
           config,
           sessionCount,
           integrationMode,
-          activeBlockSessions,
         } = get()
         if (!isRunning || phase === "idle" || !lastActiveTimestamp) return
 
@@ -449,16 +477,12 @@ export const usePomodoroStore = create<PomodoroState>()(
           })
         } else {
           // Time exceeded
-          const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
           if (phase === "focus") {
             const newCount = sessionCount + 1
-            const isLong = newCount % totalSessions === 0
-            const nextPhase: PomodoroPhase = isLong ? "long-break" : "break"
             set({
-              phase: nextPhase,
-              remainingSeconds: (isLong ? config.longBreakDuration : config.breakDuration) * 60,
               sessionCount: newCount,
               isRunning: false,
+              showExtendModal: true,
               lastActiveTimestamp: null,
             })
           } else {
