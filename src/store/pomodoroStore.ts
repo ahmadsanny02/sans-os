@@ -382,7 +382,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           return
         }
 
-        // Focus session finished -> Prompt Extend Time Modal ONLY if entering long-break
+        // Focus session finished -> Enter long-break mode AND show Extend Time Modal simultaneously!
         if (phase === "focus") {
           const newCount = sessionCount + 1
           const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
@@ -390,9 +390,11 @@ export const usePomodoroStore = create<PomodoroState>()(
 
           if (isLong) {
             set({
+              phase: "long-break",
+              remainingSeconds: config.longBreakDuration * 60,
               sessionCount: newCount,
-              isRunning: false,
-              lastActiveTimestamp: null,
+              isRunning: true,
+              lastActiveTimestamp: now,
               showExtendModal: true,
             })
           } else {
@@ -401,7 +403,9 @@ export const usePomodoroStore = create<PomodoroState>()(
               phase: "break",
               remainingSeconds: config.breakDuration * 60,
               sessionCount: newCount,
+              isRunning: true,
               lastActiveTimestamp: now,
+              showExtendModal: false,
             })
           }
         } else if (phase === "long-break" && get().isLongBreakAfterBlock) {
@@ -440,7 +444,15 @@ export const usePomodoroStore = create<PomodoroState>()(
         })
       },
       proceedToBreak: () => {
-        const { config, sessionCount, activeBlockSessions } = get()
+        const { config, sessionCount, activeBlockSessions, phase } = get()
+        if (phase === "long-break" || phase === "break") {
+          set({
+            showExtendModal: false,
+            isRunning: true,
+            lastActiveTimestamp: Date.now(),
+          })
+          return
+        }
         const totalSessions = activeBlockSessions || config.sessionsBeforeLongBreak
         const isLong = sessionCount % totalSessions === 0
         const nextPhase: PomodoroPhase = isLong ? "long-break" : "break"
@@ -499,18 +511,21 @@ export const usePomodoroStore = create<PomodoroState>()(
 
             if (isLong) {
               set({
+                phase: "long-break",
+                remainingSeconds: config.longBreakDuration * 60,
                 sessionCount: newCount,
-                isRunning: false,
+                isRunning: true,
+                lastActiveTimestamp: now,
                 showExtendModal: true,
-                lastActiveTimestamp: null,
               })
             } else {
               set({
                 phase: "break",
                 remainingSeconds: config.breakDuration * 60,
                 sessionCount: newCount,
-                isRunning: false,
-                lastActiveTimestamp: null,
+                isRunning: true,
+                lastActiveTimestamp: now,
+                showExtendModal: false,
               })
             }
           } else {
