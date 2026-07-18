@@ -299,6 +299,29 @@ export function ProjectBoardView({
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
   const [tempTaskName, setTempTaskName] = useState("")
 
+  // Optional multi-item batch creation state for tasks
+  const [extraProjectTaskRows, setExtraProjectTaskRows] = useState<Array<{ id: string; name: string; priority: string; deadline: string }>>([])
+
+  const handleTaskBatchSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!taskName.trim()) return
+
+    await handleAddTask(e)
+
+    if (extraProjectTaskRows.length > 0) {
+      for (const row of extraProjectTaskRows) {
+        if (row.name.trim()) {
+          setTaskName(row.name.trim())
+          setTaskPriority(row.priority || "Medium")
+          setTaskDeadline(row.deadline || "")
+          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
+          await handleAddTask(fakeEvent)
+        }
+      }
+      setExtraProjectTaskRows([])
+    }
+  }
+
   const handleSaveProjectName = () => {
     if (activeProject && tempProjectName.trim() && tempProjectName.trim() !== activeProject.name) {
       handleUpdateProjectName(activeProject.id, tempProjectName)
@@ -976,7 +999,7 @@ export function ProjectBoardView({
             </div>
 
             {/* Add task inline form */}
-            <form onSubmit={handleAddTask} className="border-t border-border/40 pt-5 space-y-3">
+            <form onSubmit={handleTaskBatchSubmit} className="border-t border-border/40 pt-5 space-y-3">
               <div className="flex flex-col gap-3 lg:flex-row">
                 <input
                   type="text"
@@ -1019,6 +1042,77 @@ export function ProjectBoardView({
                     )}
                   </button>
                 </div>
+              </div>
+
+              {/* Extra Task Rows (Optional Multi-Item Batch Creation) */}
+              {extraProjectTaskRows.map((row, idx) => (
+                <div key={row.id} className="flex flex-col gap-3 lg:flex-row pt-2 border-t border-dashed border-border/30 relative">
+                  <input
+                    type="text"
+                    required
+                    value={row.name}
+                    onChange={(e) => {
+                      const updated = [...extraProjectTaskRows]
+                      updated[idx].name = e.target.value
+                      setExtraProjectTaskRows(updated)
+                    }}
+                    placeholder={`Deliverable #${idx + 2}...`}
+                    className="flex-1 rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 min-w-0 shadow-sm"
+                  />
+
+                  <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-2 shrink-0">
+                    <select
+                      value={row.priority}
+                      onChange={(e) => {
+                        const updated = [...extraProjectTaskRows]
+                        updated[idx].priority = e.target.value
+                        setExtraProjectTaskRows(updated)
+                      }}
+                      className="col-span-1 sm:w-auto rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+                    >
+                      <option value="Low">Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
+                    </select>
+
+                    <input
+                      type="date"
+                      value={row.deadline}
+                      onChange={(e) => {
+                        const updated = [...extraProjectTaskRows]
+                        updated[idx].deadline = e.target.value
+                        setExtraProjectTaskRows(updated)
+                      }}
+                      className="col-span-1 w-full sm:w-[130px] rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setExtraProjectTaskRows(extraProjectTaskRows.filter((r) => r.id !== row.id))}
+                      className="p-2.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer"
+                      title="Remove task"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {/* + Add Another Task Button */}
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setExtraProjectTaskRows([
+                      ...extraProjectTaskRows,
+                      { id: Math.random().toString(), name: "", priority: "Medium", deadline: "" },
+                    ])
+                  }
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1 cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>+ Add Another Task</span>
+                </button>
               </div>
 
               {taskError && (
