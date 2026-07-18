@@ -412,43 +412,58 @@ export function CalendarView({
           </div>
 
           {/* Month & Year Custom Selectors */}
-          <div className="flex flex-wrap items-center gap-3 select-none">
+          <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto select-none">
             <CustomSelect
               label="Month:"
               value={agendaMonth}
               onChange={(val) => setAgendaMonth(Number(val))}
               options={MONTH_NAMES.map((mName, idx) => ({ value: idx, label: mName }))}
+              className="w-full sm:w-auto"
             />
 
-            <CustomSelect
-              label="Year:"
-              value={agendaYear}
-              onChange={(val) => setAgendaYear(Number(val))}
-              options={YEARS_LIST.map((yVal) => ({ value: yVal, label: String(yVal) }))}
-            />
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <CustomSelect
+                label="Year:"
+                value={agendaYear}
+                onChange={(val) => setAgendaYear(Number(val))}
+                options={YEARS_LIST.map((yVal) => ({ value: yVal, label: String(yVal) }))}
+                className="flex-1 sm:w-auto"
+              />
 
-            {/* Reset to Current Month */}
-            <button
-              onClick={handleResetToCurrentMonth}
-              className="inline-flex items-center gap-1 rounded-xl border border-border/80 bg-secondary/30 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all shadow-sm cursor-pointer"
-              title="Reset to current month"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-primary" /> Today
-            </button>
+              <button
+                onClick={handleResetToCurrentMonth}
+                className="inline-flex items-center justify-center gap-1 rounded-xl border border-border/80 bg-secondary/30 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all shadow-sm cursor-pointer shrink-0"
+                title="Reset to current month"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-primary" /> Today
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Filter Controls (Search, Type Pills & Status Filter) */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          {/* Type & Status Filter Pills */}
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col gap-3">
+          {/* Search Input */}
+          <div className="relative w-full">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              value={agendaSearch}
+              onChange={(e) => setAgendaSearch(e.target.value)}
+              placeholder="Search agenda by title, project, or category..."
+              className="w-full rounded-xl border border-border/80 bg-background/60 pl-10 pr-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+            />
+          </div>
+
+          {/* Filter Pills Scrollable Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 overflow-x-auto no-scrollbar pb-1">
             {/* Type Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto min-w-max">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
               {[
                 { id: "all", label: "All Agendas", icon: Layers },
                 { id: "priority", label: "Top Priorities", icon: ListTodo },
-                { id: "timetable", label: "Timetable Blocks", icon: Clock },
-                { id: "project", label: "Project Deadlines", icon: Briefcase },
+                { id: "timetable", label: "Timetable", icon: Clock },
+                { id: "project", label: "Projects", icon: Briefcase },
               ].map((tab) => {
                 const Icon = tab.icon
                 const isActive = agendaTypeFilter === tab.id
@@ -456,7 +471,7 @@ export function CalendarView({
                   <button
                     key={tab.id}
                     onClick={() => setAgendaTypeFilter(tab.id)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border shrink-0 cursor-pointer ${
                       isActive
                         ? "bg-primary text-primary-foreground border-primary shadow-glass shadow-glow"
                         : "bg-secondary/20 hover:bg-secondary/50 border-border/60 text-muted-foreground"
@@ -470,7 +485,7 @@ export function CalendarView({
             </div>
 
             {/* Status Filter Toggle */}
-            <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-full border border-border/50">
+            <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-full border border-border/50 shrink-0 self-start sm:self-auto">
               {[
                 { id: "pending", label: "Upcoming & Pending" },
                 { id: "all", label: "All Status" },
@@ -479,7 +494,7 @@ export function CalendarView({
                 <button
                   key={statusTab.id}
                   onClick={() => setAgendaStatusFilter(statusTab.id as "pending" | "all" | "completed")}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all shrink-0 cursor-pointer ${
                     agendaStatusFilter === statusTab.id
                       ? "bg-card text-foreground shadow-sm border border-border/60"
                       : "text-muted-foreground hover:text-foreground"
@@ -489,18 +504,6 @@ export function CalendarView({
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Search Input */}
-          <div className="relative w-full lg:w-60">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <input
-              type="text"
-              value={agendaSearch}
-              onChange={(e) => setAgendaSearch(e.target.value)}
-              placeholder="Search agenda..."
-              className="w-full rounded-xl border border-border bg-background/50 pl-9 pr-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
-            />
           </div>
         </div>
 
