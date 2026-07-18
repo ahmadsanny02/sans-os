@@ -53,7 +53,7 @@ export function CustomSelect({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full inline-flex items-center justify-between gap-2.5 rounded-xl border border-border/80 bg-card/60 hover:bg-card/90 px-3 py-1.5 text-xs font-bold text-foreground transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/40 cursor-pointer min-w-[90px]"
+        className="w-full inline-flex items-center justify-between gap-1.5 rounded-xl border border-border/80 bg-card/60 hover:bg-card/90 px-2.5 py-1.5 text-xs font-bold text-foreground transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/40 cursor-pointer min-w-[75px]"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -69,7 +69,7 @@ export function CustomSelect({
 
       {/* Dropdown Popover */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1.5 z-50 min-w-[140px] max-h-60 overflow-y-auto rounded-xl border border-border/80 bg-card/95 p-1.5 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute top-full right-0 sm:left-0 mt-1.5 z-50 min-w-[130px] max-h-60 overflow-y-auto rounded-xl border border-border/80 bg-card/95 p-1.5 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-150">
           <div role="listbox" className="space-y-0.5">
             {options.map((option) => {
               const isSelected = option.value === value
