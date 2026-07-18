@@ -210,45 +210,45 @@ export function WritingPracticeView({
           </div>
           
           {/* History Category Selector */}
-          <div className="flex flex-wrap gap-1.5 p-0.5 bg-secondary/35 border border-border/30 rounded-xl select-none shrink-0 self-start sm:self-auto">
+          <div className="flex items-center gap-1 p-1 bg-secondary/35 border border-border/40 rounded-xl overflow-x-auto no-scrollbar w-full sm:w-auto shrink-0 select-none">
             <button
               onClick={() => {
                 setActiveHistoryTab("vocab")
                 setSearchQueryWriting("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
                 activeHistoryTab === "vocab"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <BookOpen className="h-3.5 w-3.5" /> Vocab-Based ({vocabWritingLogs.length})
+              <BookOpen className="h-3.5 w-3.5" /> Vocab ({vocabWritingLogs.length})
             </button>
             <button
               onClick={() => {
                 setActiveHistoryTab("formula")
                 setSearchQueryWriting("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
                 activeHistoryTab === "formula"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <PencilLine className="h-3.5 w-3.5" /> Formula-Based ({formulaWritingLogs.length})
+              <PencilLine className="h-3.5 w-3.5" /> Formula ({formulaWritingLogs.length})
             </button>
             <button
               onClick={() => {
                 setActiveHistoryTab("free")
                 setSearchQueryWriting("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
                 activeHistoryTab === "free"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <PencilLine className="h-3.5 w-3.5" /> Free Writing ({freeWritingLogs.length})
+              <PencilLine className="h-3.5 w-3.5" /> Free ({freeWritingLogs.length})
             </button>
           </div>
         </div>
@@ -256,7 +256,7 @@ export function WritingPracticeView({
         {/* Toggle Form Button */}
         <button
           onClick={() => setShowWritingForm(!showWritingForm)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 self-start md:self-auto"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 self-start md:self-auto cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           {showWritingForm ? "Cancel Add" : "Add Writing"}
@@ -725,7 +725,7 @@ export function WritingPracticeView({
                         <button
                           onClick={() => handleDeleteWriting(group.allIds.join(","))}
                           disabled={writingDeletePending}
-                          className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete sentence group"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -841,7 +841,7 @@ export function WritingPracticeView({
                         <button
                           onClick={() => handleDeleteWriting(log.id)}
                           disabled={writingDeletePending}
-                          className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete sentence log"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -917,7 +917,7 @@ export function WritingPracticeView({
                         <button
                           onClick={() => handleDeleteWriting(log.id)}
                           disabled={writingDeletePending}
-                          className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete sentence log"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
