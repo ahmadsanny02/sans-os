@@ -4,6 +4,7 @@ import React from "react"
 import { TimetableBlock } from "@/hooks/useDaily"
 import { Trash2, Clock, CalendarRange, Link2, Pencil } from "lucide-react"
 import { useState } from "react"
+import { useCategories } from "@/hooks/useCategories"
 
 const COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
   blue: { bg: "bg-blue-500/10", text: "text-blue-500 dark:text-blue-400", border: "border-blue-500/20", bullet: "bg-blue-500" },
@@ -95,6 +96,9 @@ export function Timetable({
   const [editScheduleType, setEditScheduleType] = useState<"custom" | "weekly" | "fixed">("custom")
   const [editDate, setEditDate] = useState("")
   const [editDayOfWeek, setEditDayOfWeek] = useState(0)
+  const { categories } = useCategories()
+  const timetableCategories = categories.filter((c) => c.module === "timetable" || c.module === "general")
+  const defaultFallbackCategories = ["Deep Work", "Personal", "Work", "Leisure & Rest", "Education", "General"]
 
   const handleStartEdit = (block: TimetableBlock) => {
     setEditingId(block.id)
@@ -250,17 +254,21 @@ export function Timetable({
                               setEditCategory(cat)
                               setEditColor(CATEGORY_COLORS[cat] || "blue")
                             }}
-                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 cursor-pointer"
                           >
-                            <option value="Personal">Personal</option>
-                            <option value="Work">Work</option>
-                            <option value="Business">Business</option>
-                            <option value="Playing">Playing</option>
-                            <option value="Social">Social</option>
-                            <option value="Education">Education</option>
-                            <option value="Project">Project</option>
-                            <option value="Family">Family</option>
-                            <option value="General">General</option>
+                            {timetableCategories.length > 0 ? (
+                              timetableCategories.map((c) => (
+                                <option key={c.id} value={c.name}>
+                                  {c.name}
+                                </option>
+                              ))
+                            ) : (
+                              defaultFallbackCategories.map((catName) => (
+                                <option key={catName} value={catName}>
+                                  {catName}
+                                </option>
+                              ))
+                            )}
                           </select>
                         </div>
 
