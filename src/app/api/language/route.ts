@@ -216,7 +216,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       }
     }
 
-    if (translation !== undefined) {
+    if (translation !== undefined && !updateData.translation) {
       updateData.translation = String(translation)
     }
 
