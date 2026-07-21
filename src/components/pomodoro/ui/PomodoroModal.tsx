@@ -336,13 +336,13 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
       dragMomentum={false}
       dragElastic={0}
       style={modalStyle}
-      className="fixed z-50 w-72 rounded-2xl border border-white/10 bg-zinc-900/95 shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom-4 duration-300"
+      className="fixed z-50 w-72 max-w-[calc(100vw-2rem)] rounded-2xl border border-border/60 bg-card/95 shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom-4 duration-300"
       role="dialog"
       aria-label="Pomodoro Timer"
     >
       {/* Header */}
       <div
-        className="flex items-center justify-between px-4 py-3 border-b border-white/5 cursor-grab active:cursor-grabbing select-none"
+        className="flex items-center justify-between px-4 py-3 border-b border-border/40 cursor-grab active:cursor-grabbing select-none"
         onPointerDown={(e) => {
           const target = e.target as HTMLElement
           if (target.closest("button") || target.closest("a")) {
