@@ -59,14 +59,47 @@ export function useCategories() {
     return created
   }
 
-  const updateCategory = (id: string, patch: Partial<Omit<CategoryItem, "id" | "isSystemDefault">>) => {
+  const updateCategory = async (id: string, patch: Partial<Omit<CategoryItem, "id" | "isSystemDefault">>) => {
+    const oldCategory = categories.find((cat) => cat.id === id)
     const updated = categories.map((cat) => (cat.id === id ? { ...cat, ...patch } : cat))
     saveCategories(updated)
+
+    if (oldCategory && patch.name && patch.name !== oldCategory.name) {
+      try {
+        await fetch("/api/categories/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "rename",
+            oldName: oldCategory.name,
+            newName: patch.name,
+          }),
+        })
+      } catch (err) {
+        console.error("Failed to sync category rename to DB:", err)
+      }
+    }
   }
 
-  const deleteCategory = (id: string) => {
+  const deleteCategory = async (id: string) => {
+    const targetCategory = categories.find((cat) => cat.id === id)
     const updated = categories.filter((cat) => cat.id !== id || cat.isSystemDefault)
     saveCategories(updated)
+
+    if (targetCategory) {
+      try {
+        await fetch("/api/categories/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "delete",
+            oldName: targetCategory.name,
+          }),
+        })
+      } catch (err) {
+        console.error("Failed to sync category delete to DB:", err)
+      }
+    }
   }
 
   const resetToDefault = () => {
