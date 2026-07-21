@@ -122,6 +122,7 @@ export async function GET(request: Request): Promise<NextResponse> {
               userId: user.id,
               date: dateParam,
               text: block.title,
+              category: block.category || "General",
               orderIndex: currentPriorities.length,
               completed: false,
               rolloverCount: 0,
@@ -158,7 +159,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { date, text, orderIndex, link } = body
+    const { date, text, orderIndex, link, category } = body
 
     if (!date || !text) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -185,6 +186,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         userId: user.id,
         date,
         text,
+        category: category || "General",
         orderIndex: finalOrderIndex,
         completed: false,
         rolloverCount: 0,
@@ -211,7 +213,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, text, link } = body
+    const { id, text, link, category } = body
 
     if (!id) {
       return NextResponse.json({ error: "Missing priority ID" }, { status: 400 })
@@ -223,6 +225,9 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
     if (link !== undefined) {
       updateData.link = link || null
+    }
+    if (category !== undefined) {
+      updateData.category = category
     }
 
     const [updatedPriority] = await db
