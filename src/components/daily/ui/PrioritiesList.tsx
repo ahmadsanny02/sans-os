@@ -2,8 +2,9 @@
 
 import React from "react"
 import { Priority } from "@/hooks/useDaily"
-import { Trash2, Check, RefreshCw, Link2, Pencil, X } from "lucide-react"
+import { Trash2, Check, RefreshCw, Link2, Pencil, X, Tag } from "lucide-react"
 import { useState } from "react"
+import { useCategories } from "@/hooks/useCategories"
 
 interface PrioritiesListProps {
   listPriorities: Priority[]
@@ -11,7 +12,7 @@ interface PrioritiesListProps {
   isError: boolean
   handleToggleCompleted: (id: string, completed: boolean) => void
   handleDeletePriority: (id: string) => Promise<void>
-  handleUpdatePriority: (id: string, text: string, link: string) => Promise<void>
+  handleUpdatePriority: (id: string, text: string, link: string, category: string) => Promise<void>
   isPendingToggle?: boolean
 }
 
@@ -27,6 +28,11 @@ export function PrioritiesList({
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState("")
   const [editLink, setEditLink] = useState("")
+  const [editCategory, setEditCategory] = useState("General")
+
+  const { categories } = useCategories()
+  const priorityCategories = categories.filter((c) => c.module === "timetable" || c.module === "general")
+  const defaultFallbackCategories = ["Deep Work", "Personal", "Work", "Leisure & Rest", "Education", "General"]
 
   const sortedPriorities = [...listPriorities].sort((a, b) => {
     if (a.completed === b.completed) {
@@ -116,17 +122,44 @@ export function PrioritiesList({
                           placeholder="Priority text"
                           autoFocus
                         />
-                        <input
-                          type="url"
-                          value={editLink}
-                          onChange={(e) => setEditLink(e.target.value)}
-                          className="w-full rounded-xl border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
-                          placeholder="Reference Link (optional)"
-                        />
+                        <div className="flex gap-2">
+                          <input
+                            type="url"
+                            value={editLink}
+                            onChange={(e) => setEditLink(e.target.value)}
+                            className="flex-1 rounded-xl border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            placeholder="Reference Link (optional)"
+                          />
+                          <select
+                            value={editCategory}
+                            onChange={(e) => setEditCategory(e.target.value)}
+                            className="rounded-xl border border-border bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 cursor-pointer"
+                          >
+                            {priorityCategories.length > 0 ? (
+                              priorityCategories.map((c) => (
+                                <option key={c.id} value={c.name}>
+                                  {c.name}
+                                </option>
+                              ))
+                            ) : (
+                              defaultFallbackCategories.map((catName) => (
+                                <option key={catName} value={catName}>
+                                  {catName}
+                                </option>
+                              ))
+                            )}
+                          </select>
+                        </div>
                       </div>
                     ) : (
                       <>
                         <div className="flex items-center gap-1.5 flex-wrap">
+                          {priority.category && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-[9px] font-bold text-primary">
+                              <Tag className="h-2 w-2" />
+                              {priority.category}
+                            </span>
+                          )}
                           <span
                             className={`text-sm font-semibold break-words whitespace-normal leading-snug ${
                               priority.completed ? "line-through text-muted-foreground" : "text-foreground"
@@ -165,7 +198,7 @@ export function PrioritiesList({
                         onClick={async (e) => {
                           e.stopPropagation()
                           if (!editText.trim()) return
-                          await handleUpdatePriority(priority.id, editText.trim(), editLink.trim())
+                          await handleUpdatePriority(priority.id, editText.trim(), editLink.trim(), editCategory)
                           setEditingId(null)
                         }}
                         disabled={!editText.trim()}
@@ -193,6 +226,7 @@ export function PrioritiesList({
                           setEditingId(priority.id)
                           setEditText(priority.text)
                           setEditLink(priority.link || "")
+                          setEditCategory(priority.category || "General")
                         }}
                         className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                         aria-label="Edit priority"
