@@ -117,7 +117,7 @@ export function usePomodoroPage() {
     if (mode === "auto") setSelectedBlock(null)
   }
 
-  const handleSelectBlock = (blockId: string): void => {
+  const handleSelectBlock = (blockId: string | null): void => {
     setSelectedBlock(blockId)
   }
 
