@@ -53,6 +53,7 @@ export function useHabitsPage() {
 
   // Form states
   const [newHabitName, setNewHabitName] = useState("")
+  const [newHabitCategory, setNewHabitCategory] = useState("Health & Fitness")
   const [showAddForm, setShowAddForm] = useState(false)
 
   const handleAddHabit = async (e: React.FormEvent): Promise<void> => {
@@ -62,6 +63,7 @@ export function useHabitsPage() {
     try {
       await createHabitMutation.mutateAsync({
         name: newHabitName,
+        category: newHabitCategory,
       })
       setNewHabitName("")
       setShowAddForm(false)
@@ -147,6 +149,8 @@ export function useHabitsPage() {
     isLogged,
     newHabitName,
     setNewHabitName,
+    newHabitCategory,
+    setNewHabitCategory,
     showAddForm,
     setShowAddForm,
     handleAddHabit,
