@@ -30,6 +30,7 @@ import {
   Trophy,
   Timer,
   GraduationCap,
+  Settings,
 } from "lucide-react"
 
 interface SidebarItemChild {
@@ -89,6 +90,12 @@ const SIDEBAR_GROUPS: SidebarGroup[] = [
       { name: "Habits", href: "/habits", icon: CheckSquare },
       { name: "Vision Board", href: "/vision-board", icon: ImageIcon },
       { name: "Bucket List", href: "/bucket-list", icon: Trophy },
+    ],
+  },
+  {
+    title: "System",
+    items: [
+      { name: "Settings", href: "/settings", icon: Settings },
     ],
   },
 ]
