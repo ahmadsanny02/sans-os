@@ -6,6 +6,7 @@ export interface Priority {
   userId: string
   date: string
   text: string
+  category: string
   orderIndex: number
   completed: boolean
   rolloverCount: number
@@ -67,7 +68,7 @@ export function usePrioritiesRangeQuery(startDate: string, endDate: string) {
   })
 }
 
-async function createPriority(body: { date: string; text: string; orderIndex?: number; link?: string }): Promise<Priority> {
+async function createPriority(body: { date: string; text: string; orderIndex?: number; link?: string; category?: string }): Promise<Priority> {
   const res = await fetch("/api/priorities", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -82,7 +83,7 @@ async function createPriority(body: { date: string; text: string; orderIndex?: n
 
 export function useCreatePriorityMutation() {
   const queryClient = useQueryClient()
-  return useMutation<Priority, Error, { date: string; text: string; orderIndex?: number; link?: string }>({
+  return useMutation<Priority, Error, { date: string; text: string; orderIndex?: number; link?: string; category?: string }>({
     mutationFn: createPriority,
     onSuccess: (newPriority, variables) => {
       queryClient.setQueryData<Priority[]>(["priorities", variables.date], (old) => {
@@ -303,7 +304,7 @@ export function useDeleteTimetableBlockMutation() {
   })
 }
 
-async function updatePriority(body: { id: string; text?: string; link?: string }): Promise<Priority> {
+async function updatePriority(body: { id: string; text?: string; link?: string; category?: string }): Promise<Priority> {
   const res = await fetch("/api/priorities", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -318,7 +319,7 @@ async function updatePriority(body: { id: string; text?: string; link?: string }
 
 export function useUpdatePriorityMutation(date: string) {
   const queryClient = useQueryClient()
-  return useMutation<Priority, Error, { id: string; text?: string; link?: string }>({
+  return useMutation<Priority, Error, { id: string; text?: string; link?: string; category?: string }>({
     mutationFn: updatePriority,
     onSuccess: (updatedPriority) => {
       queryClient.setQueryData<Priority[]>(["priorities", date], (old) => {
