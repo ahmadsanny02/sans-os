@@ -31,6 +31,8 @@ interface AddDailyEntryCardProps {
   setTimetableIsTodo: (t: boolean) => void
   timetableCategory: string
   setTimetableCategory: (c: string) => void
+  priorityCategory: string
+  setPriorityCategory: (c: string) => void
   timetableScheduleType: "custom" | "weekly" | "fixed"
   setTimetableScheduleType: (t: "custom" | "weekly" | "fixed") => void
   chooseDate: string
@@ -66,6 +68,8 @@ export function AddDailyEntryCard({
   setTimetableIsTodo,
   timetableCategory,
   setTimetableCategory,
+  priorityCategory,
+  setPriorityCategory,
   timetableScheduleType,
   setTimetableScheduleType,
   chooseDate,
@@ -288,15 +292,15 @@ export function AddDailyEntryCard({
                   />
                 </div>
 
-                {!targetTimetable && targetPriority && (
+                {targetPriority && (
                   <div className="space-y-1.5 animate-in fade-in duration-200">
                     <label htmlFor="priorityCategory" className="text-xs font-bold text-muted-foreground">
                       Priority Category
                     </label>
                     <select
                       id="priorityCategory"
-                      value={timetableCategory}
-                      onChange={(e) => setTimetableCategory(e.target.value)}
+                      value={priorityCategory}
+                      onChange={(e) => setPriorityCategory(e.target.value)}
                       className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 cursor-pointer"
                     >
                       {timetableCategories.length > 0 ? (
