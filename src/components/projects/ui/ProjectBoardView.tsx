@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import { Project, ProjectTask } from "@/hooks/useProjects"
 import { formatDate, isOverdue } from "@/hooks/useProjectsPage"
+import { useCategories } from "@/hooks/useCategories"
 import {
   Plus,
   Trash2,
@@ -192,6 +193,8 @@ interface ProjectBoardViewProps {
   setProjectStatus: (status: string) => void
   projectDeadline: string
   setProjectDeadline: (deadline: string) => void
+  projectCategory: string
+  setProjectCategory: (category: string) => void
   projectError: string | null
   taskName: string
   setTaskName: (name: string) => void
@@ -219,6 +222,7 @@ interface ProjectBoardViewProps {
   handleUpdateTaskDeadline: (id: string, deadline: string) => Promise<void>
   handleUpdateProjectName: (id: string, name: string) => Promise<void>
   handleUpdateProjectDesc: (id: string, description: string | null) => Promise<void>
+  handleUpdateProjectCategory: (id: string, category: string) => Promise<void>
   handleUpdateTaskName: (id: string, name: string) => Promise<void>
   isPendingProjectCreate: boolean
   isPendingProjectDelete: boolean
@@ -250,6 +254,8 @@ export function ProjectBoardView({
   setProjectStatus,
   projectDeadline,
   setProjectDeadline,
+  projectCategory,
+  setProjectCategory,
   projectError,
   taskName,
   setTaskName,
@@ -277,6 +283,7 @@ export function ProjectBoardView({
   handleUpdateTaskDeadline,
   handleUpdateProjectName,
   handleUpdateProjectDesc,
+  handleUpdateProjectCategory,
   handleUpdateTaskName,
   isPendingProjectCreate,
   isPendingProjectDelete,
@@ -289,6 +296,13 @@ export function ProjectBoardView({
   isPendingProjectUpdate,
   isPendingTaskUpdate,
 }: ProjectBoardViewProps) {
+  const { categories } = useCategories()
+  const projectCategories = categories.filter((c) => c.module === "projects" || c.module === "general")
+  const defaultFallbackCategories = ["Software Development", "Personal", "Work", "General"]
+  const categoryOptions = projectCategories.length > 0
+    ? projectCategories.map((c) => ({ value: c.name, label: c.name }))
+    : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
+
   // Local inline editing states for active project name & description
   const [isEditingProjectName, setIsEditingProjectName] = useState(false)
   const [tempProjectName, setTempProjectName] = useState("")
@@ -437,6 +451,32 @@ export function ProjectBoardView({
               />
             </div>
 
+            <div className="space-y-1.5">
+              <label htmlFor="projectCategory" className="text-xs font-bold text-muted-foreground">
+                Category
+              </label>
+              <select
+                id="projectCategory"
+                value={projectCategory}
+                onChange={(e) => setProjectCategory(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm cursor-pointer"
+              >
+                {projectCategories.length > 0 ? (
+                  projectCategories.map((c) => (
+                    <option key={c.id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))
+                ) : (
+                  defaultFallbackCategories.map((catName) => (
+                    <option key={catName} value={catName}>
+                      {catName}
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <label htmlFor="projectPriority" className="text-xs font-bold text-muted-foreground">
@@ -572,8 +612,15 @@ export function ProjectBoardView({
                               {project.description}
                             </p>
                           )}
-                          <div className="px-2.5 py-1 text-[9px] rounded-full border border-border/30 bg-secondary/30 text-muted-foreground font-medium w-fit mt-100">
-                            Added: {formatDate(project.createdAt)}
+                          <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+                            <div className="px-2.5 py-1 text-[9px] rounded-full border border-border/30 bg-secondary/30 text-muted-foreground font-medium w-fit">
+                              Added: {formatDate(project.createdAt)}
+                            </div>
+                            {project.category && (
+                              <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold text-primary border border-primary/20 uppercase tracking-wider">
+                                {project.category}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -726,6 +773,18 @@ export function ProjectBoardView({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-1.5 text-[9px] font-bold tracking-wider uppercase self-start">
+                  <CustomBadgeDropdown
+                    value={activeProject.category || "General"}
+                    options={categoryOptions}
+                    onChange={(val) => handleUpdateProjectCategory(activeProject.id, val)}
+                    disabled={isPendingProjectUpdate}
+                    theme={{
+                      bg: "bg-primary/10",
+                      text: "text-primary",
+                      border: "border-primary/20",
+                    }}
+                    align="right"
+                  />
                   <CustomBadgeDropdown
                     value={activeProject.status}
                     options={PROJECT_STATUS_OPTIONS}

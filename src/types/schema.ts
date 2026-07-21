@@ -198,6 +198,7 @@ export const projects = pgTable("projects", {
   userId: text("user_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
+  category: text("category").default("General").notNull(),
   status: text("status").default("Planning").notNull(), // Planning, In Progress, On Hold, Completed
   priority: text("priority").default("Medium").notNull(), // Low, Medium, High
   deadline: timestamp("deadline"),
@@ -290,6 +291,7 @@ export const learningSubjects = pgTable("learning_subjects", {
   userId: text("user_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
+  category: text("category").default("General").notNull(),
   status: text("status").default("Learning").notNull(), // Planned, Learning, Completed
   color: text("color").default("hsl(var(--primary))").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

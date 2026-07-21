@@ -42,6 +42,7 @@ export function useLearningPage() {
   // Form states - Subject
   const [subjectName, setSubjectName] = useState("")
   const [subjectDesc, setSubjectDesc] = useState("")
+  const [subjectCategory, setSubjectCategory] = useState("Computer Science")
   const [subjectStatus, setSubjectStatus] = useState<"Planned" | "Learning" | "Completed">("Learning")
 
   // Form states - Material Add
@@ -77,6 +78,7 @@ export function useLearningPage() {
     setEditingSubject(null)
     setSubjectName("")
     setSubjectDesc("")
+    setSubjectCategory("Computer Science")
     setSubjectStatus("Learning")
     setShowAddSubjectModal(true)
   }
@@ -86,6 +88,7 @@ export function useLearningPage() {
     setEditingSubject(subj)
     setSubjectName(subj.name)
     setSubjectDesc(subj.description || "")
+    setSubjectCategory(subj.category || "Computer Science")
     setSubjectStatus(subj.status)
     setShowAddSubjectModal(true)
   }
@@ -102,6 +105,7 @@ export function useLearningPage() {
           description: subjectDesc.trim() || null,
           status: subjectStatus,
           color: "#8b5cf6",
+          category: subjectCategory,
         })
         showSuccessToast("Subject updated successfully")
       } else {
@@ -110,11 +114,13 @@ export function useLearningPage() {
           description: subjectDesc.trim() || null,
           status: subjectStatus,
           color: "#8b5cf6",
+          category: subjectCategory,
         })
         showSuccessToast("Subject added successfully")
       }
       setShowAddSubjectModal(false)
-    } catch {
+    } catch (err) {
+      console.error(err)
       showErrorToast("Failed to save subject")
     }
   }
@@ -261,6 +267,8 @@ export function useLearningPage() {
     setSubjectName,
     subjectDesc,
     setSubjectDesc,
+    subjectCategory,
+    setSubjectCategory,
     subjectStatus,
     setSubjectStatus,
 

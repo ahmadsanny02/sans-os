@@ -2,6 +2,7 @@ import React from "react"
 import { Loader2 } from "lucide-react"
 import { LearningSubject } from "@/hooks/useLearning"
 import { Modal } from "@/components/ui/Modal"
+import { useCategories } from "@/hooks/useCategories"
 
 interface SubjectFormModalProps {
   isOpen: boolean
@@ -12,6 +13,8 @@ interface SubjectFormModalProps {
   setName: (s: string) => void
   description: string
   setDescription: (s: string) => void
+  category: string
+  setCategory: (s: string) => void
   status: "Planned" | "Learning" | "Completed"
   setStatus: (s: "Planned" | "Learning" | "Completed") => void
   isPending: boolean
@@ -26,10 +29,16 @@ export function SubjectFormModal({
   setName,
   description,
   setDescription,
+  category,
+  setCategory,
   status,
   setStatus,
   isPending,
 }: SubjectFormModalProps) {
+  const { categories } = useCategories()
+  const learningCategories = categories.filter((c) => c.module === "learning" || c.module === "general")
+  const defaultFallbackCategories = ["Computer Science", "Languages", "Mathematics", "Science", "General"]
+
   return (
     <Modal
       isOpen={isOpen}
@@ -52,6 +61,33 @@ export function SubjectFormModal({
             placeholder="E.g., Web Development, Deep Learning..."
             className="w-full rounded-xl border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
           />
+        </div>
+
+        {/* Category */}
+        <div className="space-y-1.5">
+          <label htmlFor="subjCategory" className="text-xs font-bold text-muted-foreground">
+            Category
+          </label>
+          <select
+            id="subjCategory"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full rounded-xl border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 cursor-pointer"
+          >
+            {learningCategories.length > 0 ? (
+              learningCategories.map((c) => (
+                <option key={c.id} value={c.name}>
+                  {c.name}
+                </option>
+              ))
+            ) : (
+              defaultFallbackCategories.map((catName) => (
+                <option key={catName} value={catName}>
+                  {catName}
+                </option>
+              ))
+            )}
+          </select>
         </div>
 
         {/* Description */}

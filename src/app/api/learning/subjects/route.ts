@@ -47,7 +47,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { name, description, status, color } = body
+    const { name, description, status, color, category } = body
 
     if (!name) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -61,6 +61,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         description: description || null,
         status: status || "Learning",
         color: color || "hsl(var(--primary))",
+        category: category || "General",
       })
       .returning()
 
@@ -117,7 +118,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, name, description, status, color } = body
+    const { id, name, description, status, color, category } = body
 
     if (!id) {
       return NextResponse.json({ error: "Missing subject ID" }, { status: 400 })
@@ -128,12 +129,14 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       description?: string | null
       status?: string
       color?: string
+      category?: string
     } = {}
 
     if (name !== undefined) updateFields.name = name
     if (description !== undefined) updateFields.description = description
     if (status !== undefined) updateFields.status = status
     if (color !== undefined) updateFields.color = color
+    if (category !== undefined) updateFields.category = category
 
     const [updatedSubject] = await db
       .update(learningSubjects)

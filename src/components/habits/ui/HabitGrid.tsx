@@ -303,9 +303,16 @@ export function HabitGrid({
                             </button>
                           </div>
 
-                          <p className="text-sm font-semibold text-foreground leading-tight truncate ml-1" title={habit.name}>
-                            {habit.name}
-                          </p>
+                          <div className="flex flex-col min-w-0 flex-1 ml-1">
+                            <p className="text-sm font-semibold text-foreground leading-tight truncate" title={habit.name}>
+                              {habit.name}
+                            </p>
+                            {habit.category && (
+                              <span className="inline-flex items-center text-[9px] font-bold text-primary opacity-80 uppercase tracking-wider mt-0.5">
+                                {habit.category}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <button
                           onClick={() => handleDeleteHabit(habit.id)}

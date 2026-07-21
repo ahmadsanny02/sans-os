@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { habits, timetableBlocks, priorities } from "@/types/schema"
+import { habits, timetableBlocks, priorities, learningSubjects, projects } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -42,6 +42,16 @@ export async function POST(request: Request): Promise<NextResponse> {
         .update(priorities)
         .set({ category: newName })
         .where(and(eq(priorities.userId, user.id), eq(priorities.category, oldName)))
+
+      await db
+        .update(learningSubjects)
+        .set({ category: newName })
+        .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.category, oldName)))
+
+      await db
+        .update(projects)
+        .set({ category: newName })
+        .where(and(eq(projects.userId, user.id), eq(projects.category, oldName)))
     } else if (action === "delete") {
       // Fallback deleted categories to 'General'
       await db
@@ -58,6 +68,16 @@ export async function POST(request: Request): Promise<NextResponse> {
         .update(priorities)
         .set({ category: "General" })
         .where(and(eq(priorities.userId, user.id), eq(priorities.category, oldName)))
+
+      await db
+        .update(learningSubjects)
+        .set({ category: "General" })
+        .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.category, oldName)))
+
+      await db
+        .update(projects)
+        .set({ category: "General" })
+        .where(and(eq(projects.userId, user.id), eq(projects.category, oldName)))
     } else {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 })
     }

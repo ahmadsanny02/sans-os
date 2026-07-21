@@ -26,6 +26,7 @@ export interface Project {
   userId: string
   name: string
   description: string | null
+  category: string
   status: string
   priority: string
   deadline: string | null
@@ -56,6 +57,7 @@ async function createProject(body: {
   status?: string
   priority?: string
   deadline?: string
+  category?: string
 }): Promise<Project> {
   const res = await fetch("/api/projects", {
     method: "POST",
@@ -76,6 +78,7 @@ export function useCreateProjectMutation() {
     status?: string
     priority?: string
     deadline?: string
+    category?: string
   }>({
     mutationFn: createProject,
     onSuccess: (newProject) => {
@@ -393,6 +396,7 @@ async function updateProject(body: {
   status?: string
   priority?: string
   deadline?: string | null
+  category?: string
 }): Promise<Project> {
   const res = await fetch("/api/projects", {
     method: "PATCH",
@@ -414,6 +418,7 @@ export function useUpdateProjectMutation() {
     status?: string
     priority?: string
     deadline?: string | null
+    category?: string
   }, { previous: Project[] | undefined }>({
     mutationFn: updateProject,
     onMutate: async (variables) => {
@@ -431,6 +436,7 @@ export function useUpdateProjectMutation() {
                   status: variables.status !== undefined ? variables.status : p.status,
                   priority: variables.priority !== undefined ? variables.priority : p.priority,
                   deadline: variables.deadline !== undefined ? variables.deadline : p.deadline,
+                  category: variables.category !== undefined ? variables.category : p.category,
                 }
               : p
           )

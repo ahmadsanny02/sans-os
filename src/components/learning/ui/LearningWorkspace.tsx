@@ -39,6 +39,8 @@ export function LearningWorkspace() {
     setSubjectName,
     subjectDesc,
     setSubjectDesc,
+    subjectCategory,
+    setSubjectCategory,
     subjectStatus,
     setSubjectStatus,
 
@@ -198,17 +200,24 @@ export function LearningWorkspace() {
                       <h3 className="text-base font-black tracking-tight text-foreground leading-snug">
                         {subj.name}
                       </h3>
-                      <Badge
-                        variant={
-                          subj.status === "Completed"
-                            ? "success"
-                            : subj.status === "Learning"
-                            ? "warning"
-                            : "primary"
-                        }
-                      >
-                        {subj.status}
-                      </Badge>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Badge
+                          variant={
+                            subj.status === "Completed"
+                              ? "success"
+                              : subj.status === "Learning"
+                              ? "warning"
+                              : "primary"
+                          }
+                        >
+                          {subj.status}
+                        </Badge>
+                        {subj.category && (
+                          <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-[9px] font-bold text-muted-foreground border border-border/40 uppercase tracking-wider">
+                            {subj.category}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Edit/Delete Actions */}
@@ -274,6 +283,8 @@ export function LearningWorkspace() {
         setName={setSubjectName}
         description={subjectDesc}
         setDescription={setSubjectDesc}
+        category={subjectCategory}
+        setCategory={setSubjectCategory}
         status={subjectStatus}
         setStatus={setSubjectStatus}
         isPending={isSaveSubjectPending}
