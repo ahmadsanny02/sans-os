@@ -17,6 +17,8 @@ const ToastSwal = Swal.mixin({
   showConfirmButton: false,
   timer: 2500,
   timerProgressBar: true,
+  backdrop: false,
+  heightAuto: false,
 })
 
 export async function confirmDestructive(title: string, text: string): Promise<boolean> {
