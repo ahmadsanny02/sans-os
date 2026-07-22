@@ -560,7 +560,7 @@ export function FormulaListView({
                             )}
                           </>
                         ) : (
-                          <span className="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
+                          <span className="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase bg-muted text-muted-foreground border border-border/50">
                             Unpracticed
                           </span>
                         )}
