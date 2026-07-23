@@ -172,6 +172,7 @@ export function useHabitsPage() {
     handlePrevMonth,
     handleNextMonth,
     handleGoToToday,
+    setActiveDate,
 
     // Reorder
     handleReorderHabits,
