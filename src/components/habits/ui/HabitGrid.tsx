@@ -25,6 +25,8 @@ interface HabitGridProps {
   setNewHabitName: (name: string) => void
   newHabitCategory?: string
   setNewHabitCategory?: (c: string) => void
+  newHabitSubCategory?: string
+  setNewHabitSubCategory?: (c: string) => void
   showAddForm: boolean
   setShowAddForm: (show: boolean) => void
   handleAddHabit: (e: React.FormEvent) => Promise<void>
@@ -49,6 +51,8 @@ export function HabitGrid({
   setNewHabitName,
   newHabitCategory = "Health & Fitness",
   setNewHabitCategory,
+  newHabitSubCategory = "",
+  setNewHabitSubCategory,
   showAddForm,
   setShowAddForm,
   handleAddHabit,
@@ -61,9 +65,12 @@ export function HabitGrid({
   isPendingReorder,
   onSelectDate,
 }: HabitGridProps) {
-  const { categories } = useCategories()
+  const { categories, subCategories } = useCategories()
   const habitCategories = categories.filter((c) => c.module === "habits" || c.module === "general")
   const defaultFallbackCategories = ["General"]
+
+  const activeCatId = categories.find((c) => c.name.toLowerCase() === newHabitCategory.toLowerCase())?.id
+  const availableSubs = activeCatId ? subCategories.filter((sc) => sc.categoryId === activeCatId) : []
 
   const [draggedId, setDraggedId] = React.useState<string | null>(null)
 
@@ -203,8 +210,8 @@ export function HabitGrid({
           onSubmit={handleAddHabit}
           className="bento-card p-4 space-y-4 animate-in slide-in-from-top-4 duration-200"
         >
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            <div className="space-y-1.5 md:col-span-1">
               <label htmlFor="habitName" className="text-xs font-bold text-muted-foreground">
                 Habit Name
               </label>
@@ -226,7 +233,10 @@ export function HabitGrid({
               <CustomSelect
                 id="habitCategory"
                 value={newHabitCategory || ""}
-                onChange={(val) => setNewHabitCategory && setNewHabitCategory(val)}
+                onChange={(val) => {
+                  setNewHabitCategory && setNewHabitCategory(val)
+                  setNewHabitSubCategory && setNewHabitSubCategory("")
+                }}
                 options={
                   habitCategories.length > 0
                     ? habitCategories.map((c) => ({ value: c.name, label: c.name }))
@@ -235,6 +245,24 @@ export function HabitGrid({
                 fullWidth
               />
             </div>
+
+            {availableSubs.length > 0 && (
+              <div className="space-y-1.5 animate-in fade-in duration-200">
+                <label htmlFor="habitSubCategory" className="text-xs font-bold text-muted-foreground">
+                  Sub-category
+                </label>
+                <CustomSelect
+                  id="habitSubCategory"
+                  value={newHabitSubCategory || ""}
+                  onChange={(val) => setNewHabitSubCategory && setNewHabitSubCategory(val)}
+                  options={[
+                    { value: "", label: "None (No sub-category)" },
+                    ...availableSubs.map((sc) => ({ value: sc.name, label: sc.name }))
+                  ]}
+                  fullWidth
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-2">
@@ -381,6 +409,7 @@ export function HabitGrid({
                             {habit.category && (
                               <span className={`inline-flex items-center text-[8px] sm:text-[9px] font-bold opacity-90 uppercase tracking-wider mt-0.5 truncate max-w-full ${getCategoryStyle(habit.category, categories).text}`}>
                                 {habit.category}
+                                {habit.subCategory && <span className="opacity-70 font-medium"> • {habit.subCategory}</span>}
                               </span>
                             )}
                           </div>
