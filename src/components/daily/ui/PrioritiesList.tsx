@@ -166,11 +166,11 @@ export function PrioritiesList({
                     ) : (
                       <div className="space-y-1.5">
                         {priority.category && (
-                          <div className="flex">
-                            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${getCategoryStyle(priority.category, categories).badgeBg}`}>
-                              <Tag className="h-2 w-2" />
-                              {priority.category}
-                              {priority.subCategory && <span className="opacity-70 font-medium"> • {priority.subCategory}</span>}
+                          <div className="flex max-w-full">
+                            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider truncate max-w-full ${getCategoryStyle(priority.category, categories).badgeBg}`}>
+                              <Tag className="h-2 w-2 shrink-0" />
+                              <span className="truncate">{priority.category}</span>
+                              {priority.subCategory && <span className="opacity-70 font-medium truncate"> • {priority.subCategory}</span>}
                             </span>
                           </div>
                         )}
