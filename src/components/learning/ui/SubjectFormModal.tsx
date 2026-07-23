@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react"
 import { LearningSubject } from "@/hooks/useLearning"
 import { Modal } from "@/components/ui/Modal"
 import { useCategories } from "@/hooks/useCategories"
+import { CustomSelect } from "@/components/ui/CustomSelect"
 
 interface SubjectFormModalProps {
   isOpen: boolean
@@ -68,26 +69,17 @@ export function SubjectFormModal({
           <label htmlFor="subjCategory" className="text-xs font-bold text-muted-foreground">
             Category
           </label>
-          <select
+          <CustomSelect
             id="subjCategory"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full rounded-xl border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 cursor-pointer"
-          >
-            {learningCategories.length > 0 ? (
-              learningCategories.map((c) => (
-                <option key={c.id} value={c.name}>
-                  {c.name}
-                </option>
-              ))
-            ) : (
-              defaultFallbackCategories.map((catName) => (
-                <option key={catName} value={catName}>
-                  {catName}
-                </option>
-              ))
-            )}
-          </select>
+            onChange={(val) => setCategory(val)}
+            options={
+              learningCategories.length > 0
+                ? learningCategories.map((c) => ({ value: c.name, label: c.name }))
+                : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
+            }
+            fullWidth
+          />
         </div>
 
         {/* Description */}
