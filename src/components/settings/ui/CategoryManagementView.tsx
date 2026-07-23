@@ -62,6 +62,7 @@ export function CategoryManagementView() {
   const [description, setDescription] = useState("")
 
   const filteredCategories = categories.filter((cat) => {
+    if (cat.isSystemDefault) return false
     if (selectedModule === "all") return true
     return cat.module === selectedModule
   })
@@ -117,28 +118,20 @@ export function CategoryManagementView() {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Overview Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="bento-card p-5 space-y-1">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Total Categories</span>
           <div className="text-2xl font-extrabold text-foreground flex items-center gap-2">
             <Tag className="h-5 w-5 text-primary" />
-            {categories.length}
-          </div>
-        </div>
-
-        <div className="bento-card p-5 space-y-1">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Custom Created</span>
-          <div className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-emerald-500" />
             {categories.filter((c) => !c.isSystemDefault).length}
           </div>
         </div>
 
         <div className="bento-card p-5 space-y-1">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">System Presets</span>
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Active Modules</span>
           <div className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-            <Folder className="h-5 w-5 text-cyan-500" />
-            {categories.filter((c) => c.isSystemDefault).length}
+            <Folder className="h-5 w-5 text-emerald-500" />
+            {new Set(categories.filter((c) => !c.isSystemDefault).map((c) => c.module)).size}
           </div>
         </div>
       </div>
@@ -169,14 +162,6 @@ export function CategoryManagementView() {
 
         {/* Buttons */}
         <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={handleReset}
-            className="flex items-center gap-1.5 rounded-xl border border-border/60 bg-secondary/30 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all cursor-pointer"
-            title="Reset to defaults"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            Reset Defaults
-          </button>
           <button
             onClick={handleOpenAddModal}
             className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground shadow-sm hover:bg-primary/95 transition-all cursor-pointer"
