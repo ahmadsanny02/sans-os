@@ -12,31 +12,8 @@ export interface CategoryItem {
 }
 
 const DEFAULT_CATEGORIES: CategoryItem[] = [
-  // General / Universal
+  // General / Universal (The only preset allowed)
   { id: "default_general", name: "General", module: "general", color: "primary", description: "General or unclassified tasks", isSystemDefault: true },
-  
-  // Habits
-  { id: "1", name: "Health & Fitness", module: "habits", color: "emerald", description: "Habits for physical & mental health", isSystemDefault: true },
-  { id: "5", name: "Mindset & Reading", module: "habits", color: "rose", description: "Daily reading and mindfulness", isSystemDefault: true },
-  
-  // Timetable / Daily Flow
-  { id: "2", name: "Deep Work", module: "timetable", color: "blue", description: "High focus coding & engineering blocks", isSystemDefault: true },
-  { id: "6", name: "Leisure & Rest", module: "timetable", color: "cyan", description: "Breaks, social, and hobbies", isSystemDefault: true },
-  { id: "timetable_personal", name: "Personal", module: "timetable", color: "orange", description: "Personal daily routines", isSystemDefault: true },
-  { id: "timetable_work", name: "Work", module: "timetable", color: "violet", description: "Professional work hours", isSystemDefault: true },
-  { id: "timetable_education", name: "Education", module: "timetable", color: "amber", description: "Study sessions and lectures", isSystemDefault: true },
-  
-  // Learning
-  { id: "4", name: "Computer Science", module: "learning", color: "amber", description: "Algorithms, system design, and AI", isSystemDefault: true },
-  { id: "learn_languages", name: "Languages", module: "learning", color: "rose", description: "Language learning and practice", isSystemDefault: true },
-  { id: "learn_mathematics", name: "Mathematics", module: "learning", color: "blue", description: "Math study and practice", isSystemDefault: true },
-  { id: "learn_science", name: "Science", module: "learning", color: "emerald", description: "Scientific learning resources", isSystemDefault: true },
-
-  // Projects
-  { id: "3", name: "Software Development", module: "projects", color: "violet", description: "Fullstack web app development", isSystemDefault: true },
-  { id: "proj_design", name: "Design", module: "projects", color: "pink", description: "UI/UX design and assets creation", isSystemDefault: true },
-  { id: "proj_research", name: "Research", module: "projects", color: "cyan", description: "Investigation and analysis projects", isSystemDefault: true },
-  { id: "proj_marketing", name: "Marketing", module: "projects", color: "orange", description: "Marketing and growth tasks", isSystemDefault: true },
 ]
 
 const STORAGE_KEY = "sansos_custom_categories_v1"
@@ -48,8 +25,11 @@ export function useCategories() {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
         const parsed = JSON.parse(saved) as CategoryItem[]
-        // Ensure "General" is present
-        const hasGeneral = parsed.some((c) => c.name.toLowerCase() === "general")
+        // Filter out all system default presets except "General"
+        const filtered = parsed.filter(
+          (c) => !c.isSystemDefault || c.name.toLowerCase() === "general"
+        )
+        const hasGeneral = filtered.some((c) => c.name.toLowerCase() === "general")
         if (!hasGeneral) {
           const generalItem: CategoryItem = {
             id: "default_general",
@@ -59,11 +39,12 @@ export function useCategories() {
             description: "General or unclassified tasks",
             isSystemDefault: true
           }
-          const merged = [generalItem, ...parsed]
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
-          return merged
+          filtered.unshift(generalItem)
         }
-        return parsed
+        if (parsed.length !== filtered.length) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered))
+        }
+        return filtered
       }
       return DEFAULT_CATEGORIES
     } catch (e) {
