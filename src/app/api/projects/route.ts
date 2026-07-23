@@ -47,7 +47,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { name, description, status, priority, deadline, category } = body
+    const { name, description, status, priority, deadline, category, subCategory } = body
 
     if (!name) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -63,6 +63,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         priority: priority || "Medium",
         deadline: deadline ? new Date(deadline) : null,
         category: category || "General",
+        subCategory: subCategory || null,
       })
       .returning()
 
@@ -119,7 +120,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, name, description, status, priority, deadline, category } = body
+    const { id, name, description, status, priority, deadline, category, subCategory } = body
 
     if (!id) {
       return NextResponse.json({ error: "Missing project ID" }, { status: 400 })
@@ -132,6 +133,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       priority?: string
       deadline?: Date | null
       category?: string
+      subCategory?: string | null
     } = {}
 
     if (name !== undefined) updateFields.name = name
@@ -139,6 +141,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     if (status !== undefined) updateFields.status = status
     if (priority !== undefined) updateFields.priority = priority
     if (category !== undefined) updateFields.category = category
+    if (subCategory !== undefined) updateFields.subCategory = subCategory || null
     if (deadline !== undefined) {
       updateFields.deadline = deadline ? new Date(deadline) : null
     }
