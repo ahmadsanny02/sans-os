@@ -149,10 +149,10 @@ export function PomodoroTimerView({
           </div>
 
           {/* Timer Action Controls */}
-          <div className="flex items-center gap-4 pt-2">
+          <div className="flex items-center justify-center gap-2.5 sm:gap-4 pt-2 w-full">
             <button
               onClick={() => store.stopTimer()}
-              className="p-3 rounded-xl border border-border/60 bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+              className="p-3 rounded-xl border border-border/60 bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer shrink-0"
               title="Reset Timer"
             >
               <RotateCcw className="h-5 w-5" />
@@ -167,24 +167,24 @@ export function PomodoroTimerView({
                     store.startTimer(todayBlocks)
                   }
                 }}
-                className="flex items-center gap-2.5 px-8 py-3.5 rounded-2xl bg-primary text-primary-foreground font-black text-sm shadow-glow hover:bg-primary/95 transition-all active:scale-95 cursor-pointer"
+                className="flex items-center justify-center gap-2 px-5 sm:px-8 py-3 rounded-2xl bg-primary text-primary-foreground font-black text-sm shadow-glow hover:bg-primary/95 transition-all active:scale-95 cursor-pointer whitespace-nowrap min-w-[120px] sm:min-w-[160px]"
               >
-                <Play className="h-5 w-5 fill-current" />
-                {phase === "idle" ? "Start Sprint" : "Resume"}
+                <Play className="h-4 w-4 sm:h-5 sm:w-5 fill-current shrink-0" />
+                <span>{phase === "idle" ? "Start Sprint" : "Resume"}</span>
               </button>
             ) : (
               <button
                 onClick={() => store.pauseTimer()}
-                className="flex items-center gap-2.5 px-8 py-3.5 rounded-2xl bg-amber-500 text-white font-black text-sm shadow-md hover:bg-amber-600 transition-all active:scale-95 cursor-pointer"
+                className="flex items-center justify-center gap-2 px-5 sm:px-8 py-3 rounded-2xl bg-amber-500 text-white font-black text-sm shadow-md hover:bg-amber-600 transition-all active:scale-95 cursor-pointer whitespace-nowrap min-w-[120px] sm:min-w-[160px]"
               >
-                <Pause className="h-5 w-5 fill-current" />
-                Pause
+                <Pause className="h-4 w-4 sm:h-5 sm:w-5 fill-current shrink-0" />
+                <span>Pause</span>
               </button>
             )}
 
             <button
               onClick={() => store.skipPhase()}
-              className="p-3 rounded-xl border border-border/60 bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+              className="p-3 rounded-xl border border-border/60 bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer shrink-0"
               title="Skip to Next Phase"
             >
               <SkipForward className="h-5 w-5" />
