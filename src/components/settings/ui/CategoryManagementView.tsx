@@ -177,15 +177,12 @@ export function CategoryManagementView() {
         {filteredCategories.map((cat) => {
           const badgeClass = getBadgeStyle(cat.color)
           return (
-            <div key={cat.id} className="bento-card p-5 space-y-3 flex flex-col justify-between">
+            <div key={cat.id} className="bento-card p-5 space-y-3 flex flex-col justify-between hover:border-primary/20 transition-all">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                   <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${badgeClass}`}>
                     <Tag className="h-3 w-3" />
                     {cat.name}
-                  </span>
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider bg-secondary/80 px-2 py-0.5 rounded-md">
-                    {cat.module}
                   </span>
                 </div>
                 {cat.description && (
@@ -195,7 +192,11 @@ export function CategoryManagementView() {
                 )}
               </div>
 
-              <div className="flex items-center justify-end pt-3 border-t border-border/40 text-xs">
+              <div className="flex items-center justify-between pt-1 text-xs">
+                <span className="text-[9px] uppercase font-bold text-muted-foreground tracking-wider bg-secondary/60 dark:bg-card/60 px-2 py-0.5 rounded-md border border-border/40">
+                  {cat.module}
+                </span>
+
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleOpenEditModal(cat)}
