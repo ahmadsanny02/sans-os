@@ -104,19 +104,37 @@ export function HabitGrid({
     newHabits.splice(idx + 1, 0, item)
     handleReorderHabits(newHabits.map((h) => h.id))
   }
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null)
+
+  // Auto scroll table to active date column on load or date change
+  React.useEffect(() => {
+    if (!scrollContainerRef.current) return
+    const activeEl = scrollContainerRef.current.querySelector<HTMLElement>("[data-active-date='true']")
+    if (activeEl) {
+      const container = scrollContainerRef.current
+      const containerWidth = container.clientWidth
+      const elLeft = activeEl.offsetLeft
+      const elWidth = activeEl.clientWidth
+      container.scrollTo({
+        left: Math.max(0, elLeft - containerWidth / 2 + elWidth / 2),
+        behavior: "smooth",
+      })
+    }
+  }, [activeDate, listHabits.length])
+
   return (
     <div className="space-y-6">
       {/* Header and Toggle Button */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
+        <h3 className="text-lg sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
           Habits List
         </h3>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           {showAddForm ? "Cancel" : "Add Habit"}
         </button>
       </div>
@@ -194,27 +212,29 @@ export function HabitGrid({
       ) : null}
 
       {/* Habits Grid Table Card */}
-      <div className="overflow-x-auto bento-card">
-        <table className="w-full border-collapse text-center text-sm min-w-[1200px]">
+      <div ref={scrollContainerRef} className="overflow-x-auto bento-card scroll-smooth">
+        <table className="w-full border-collapse text-center text-sm min-w-[900px] sm:min-w-[1200px]">
           <thead>
             <tr className="bg-secondary/50 text-xs font-bold text-muted-foreground border-b border-border/60 uppercase tracking-wider">
-              <th className="px-6 py-4 text-left font-bold text-muted-foreground w-64 select-none sticky left-0 bg-card/95 backdrop-blur-md z-10 border-r border-border/60">
+              <th className="px-2.5 sm:px-6 py-3 sm:py-4 text-left font-bold text-muted-foreground w-36 sm:w-64 min-w-[144px] sm:min-w-[256px] select-none sticky left-0 bg-card/95 backdrop-blur-md z-10 border-r border-border/60">
                 Habit
               </th>
               {monthDays.map((day) => {
-                const isSel = format(day, "yyyy-MM-dd") === activeDate
+                const dayStr = format(day, "yyyy-MM-dd")
+                const isSel = dayStr === activeDate
                 return (
                   <th
                     key={day.toISOString()}
-                    className={`px-1 py-3 font-bold select-none min-w-[36px] ${
+                    data-active-date={isSel ? "true" : undefined}
+                    className={`px-0.5 sm:px-1 py-2 sm:py-3 font-bold select-none min-w-[32px] sm:min-w-[36px] ${
                       isSel ? "text-primary bg-primary/5 font-black" : ""
                     }`}
                   >
                     <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[9px] uppercase tracking-normal opacity-75 font-semibold">
+                      <span className="text-[8px] sm:text-[9px] uppercase tracking-normal opacity-75 font-semibold">
                         {format(day, "EE").slice(0, 2)}
                       </span>
-                      <span className={`text-xs h-6 w-6 flex items-center justify-center rounded-full ${
+                      <span className={`text-[11px] sm:text-xs h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center rounded-full ${
                         isSel ? "bg-primary text-primary-foreground font-black shadow-glow" : ""
                       }`}>
                         {format(day, "d")}
@@ -265,15 +285,15 @@ export function HabitGrid({
                     }`}
                   >
                     {/* Habit Info Cell (Sticky left) */}
-                    <td className="px-4 py-3 text-left w-64 sticky left-0 bg-card/95 backdrop-blur-md z-10 border-r border-border/60 select-none">
-                      <div className="flex items-center justify-between gap-1.5">
-                        <div className="flex items-center gap-1 min-w-0 flex-1">
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-left w-36 sm:w-64 min-w-[144px] sm:min-w-[256px] sticky left-0 bg-card/95 backdrop-blur-md z-10 border-r border-border/60 select-none">
+                      <div className="flex items-center justify-between gap-1 sm:gap-1.5">
+                        <div className="flex items-center gap-0.5 sm:gap-1 min-w-0 flex-1">
                           {/* Drag handle */}
                           <div
                             draggable
                             onDragStart={(e) => handleDragStart(e, habit.id)}
                             onDragEnd={() => setDraggedId(null)}
-                            className="cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground transition-colors p-0.5 shrink-0"
+                            className="hidden sm:block cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground transition-colors p-0.5 shrink-0"
                             title="Drag to reorder"
                           >
                             <GripVertical className="h-4 w-4" />
@@ -285,30 +305,30 @@ export function HabitGrid({
                               type="button"
                               onClick={() => handleMoveUp(idx)}
                               disabled={isFirst || isPendingReorder}
-                              className="text-muted-foreground/30 hover:text-foreground hover:bg-secondary rounded p-0.5 disabled:opacity-20 disabled:pointer-events-none transition-all"
+                              className="text-muted-foreground/40 hover:text-foreground hover:bg-secondary rounded p-0.5 disabled:opacity-20 disabled:pointer-events-none transition-all"
                               title="Move up"
                               aria-label="Move habit up"
                             >
-                              <ChevronUp className="h-3.5 w-3.5" />
+                              <ChevronUp className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                             </button>
                             <button
                               type="button"
                               onClick={() => handleMoveDown(idx)}
                               disabled={isLast || isPendingReorder}
-                              className="text-muted-foreground/30 hover:text-foreground hover:bg-secondary rounded p-0.5 disabled:opacity-20 disabled:pointer-events-none transition-all"
+                              className="text-muted-foreground/40 hover:text-foreground hover:bg-secondary rounded p-0.5 disabled:opacity-20 disabled:pointer-events-none transition-all"
                               title="Move down"
                               aria-label="Move habit down"
                             >
-                              <ChevronDown className="h-3.5 w-3.5" />
+                              <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                             </button>
                           </div>
 
-                          <div className="flex flex-col min-w-0 flex-1 ml-1">
-                            <p className="text-sm font-semibold text-foreground leading-tight truncate" title={habit.name}>
+                          <div className="flex flex-col min-w-0 flex-1 ml-0.5 sm:ml-1">
+                            <p className="text-xs sm:text-sm font-semibold text-foreground leading-tight truncate" title={habit.name}>
                               {habit.name}
                             </p>
                             {habit.category && (
-                              <span className="inline-flex items-center text-[9px] font-bold text-primary opacity-80 uppercase tracking-wider mt-0.5">
+                              <span className="inline-flex items-center text-[8px] sm:text-[9px] font-bold text-primary opacity-80 uppercase tracking-wider mt-0.5 truncate max-w-full">
                                 {habit.category}
                               </span>
                             )}
@@ -316,10 +336,10 @@ export function HabitGrid({
                         </div>
                         <button
                           onClick={() => handleDeleteHabit(habit.id)}
-                          className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
+                          className="opacity-100 sm:opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 sm:p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
                           aria-label={`Delete ${habit.name}`}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </button>
                       </div>
                     </td>
@@ -336,7 +356,7 @@ export function HabitGrid({
                       return (
                         <td
                           key={dayStr}
-                          className={`px-1 py-3 text-center ${
+                          className={`px-0.5 sm:px-1 py-2 sm:py-3 text-center ${
                             isSelColumn ? "bg-primary/5" : ""
                           }`}
                         >
@@ -344,7 +364,7 @@ export function HabitGrid({
                             <button
                               onClick={() => handleToggleLog(habit.id, dayStr)}
                               disabled={isPending}
-                              className={`flex h-7 w-7 items-center justify-center rounded-lg border text-transparent transition-all hover:scale-105 active:scale-95 disabled:opacity-50 ${
+                              className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg border text-transparent transition-all hover:scale-105 active:scale-95 disabled:opacity-50 ${
                                 checked
                                   ? `${CHECKED_THEME.bg} ${CHECKED_THEME.color} ${CHECKED_THEME.border} border-2 !text-current`
                                   : "border-border/60 hover:border-primary/50 dark:hover:bg-slate-800"
@@ -352,9 +372,9 @@ export function HabitGrid({
                               aria-label={`Mark ${habit.name} check-in`}
                             >
                               {isPending ? (
-                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin text-primary" />
                               ) : checked ? (
-                                <Check className="h-3.5 w-3.5 stroke-[3]" />
+                                <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5 stroke-[3]" />
                               ) : null}
                             </button>
                           </div>
