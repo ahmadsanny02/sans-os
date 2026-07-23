@@ -102,7 +102,8 @@ export function useCategories() {
       queryClient.invalidateQueries({ queryKey: ["timetable"] })
       queryClient.invalidateQueries({ queryKey: ["habits"] })
       queryClient.invalidateQueries({ queryKey: ["priorities"] })
-      queryClient.invalidateQueries({ queryKey: ["learning-subjects"] })
+      queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
+      queryClient.invalidateQueries({ queryKey: ["learningSubjects"] })
       queryClient.invalidateQueries({ queryKey: ["projects"] })
     },
   })
@@ -135,7 +136,8 @@ export function useCategories() {
       queryClient.invalidateQueries({ queryKey: ["timetable"] })
       queryClient.invalidateQueries({ queryKey: ["habits"] })
       queryClient.invalidateQueries({ queryKey: ["priorities"] })
-      queryClient.invalidateQueries({ queryKey: ["learning-subjects"] })
+      queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
+      queryClient.invalidateQueries({ queryKey: ["learningSubjects"] })
       queryClient.invalidateQueries({ queryKey: ["projects"] })
     },
   })
