@@ -207,7 +207,8 @@ export function Timetable({
         ) : (
           <div className="relative border-l border-border/40 pl-6 space-y-6">
             {activeDayBlocks.map((block) => {
-              const theme = COLORS[block.color] || COLORS.blue
+              const blockColor = categories.find((c) => c.name.toLowerCase() === block.category?.toLowerCase())?.color || block.color
+              const theme = COLORS[blockColor] || COLORS.blue
               const duration = calculateDuration(block.startTime, block.endTime)
               const isEditing = editingId === block.id
 
@@ -253,7 +254,7 @@ export function Timetable({
                             onChange={(val) => {
                               const cat = String(val)
                               setEditCategory(cat)
-                              setEditColor(categories.find((c) => c.name === cat)?.color || "blue")
+                              setEditColor(categories.find((c) => c.name.toLowerCase() === cat.toLowerCase())?.color || "blue")
                             }}
                             options={
                               timetableCategories.length > 0
