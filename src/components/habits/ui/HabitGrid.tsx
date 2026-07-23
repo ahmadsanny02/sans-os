@@ -33,6 +33,7 @@ interface HabitGridProps {
   isPendingCreate: boolean
   handleReorderHabits: (orderedIds: string[]) => Promise<void>
   isPendingReorder: boolean
+  onSelectDate?: (dateStr: string) => void
 }
 
 export function HabitGrid({
@@ -56,13 +57,13 @@ export function HabitGrid({
   isPendingCreate,
   handleReorderHabits,
   isPendingReorder,
+  onSelectDate,
 }: HabitGridProps) {
   const { categories } = useCategories()
   const habitCategories = categories.filter((c) => c.module === "habits" || c.module === "general")
   const defaultFallbackCategories = ["Health & Fitness", "Mindset & Reading", "Personal", "Work", "General"]
 
   const [draggedId, setDraggedId] = React.useState<string | null>(null)
-
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     setDraggedId(id)
@@ -105,22 +106,29 @@ export function HabitGrid({
     handleReorderHabits(newHabits.map((h) => h.id))
   }
   const scrollContainerRef = React.useRef<HTMLDivElement>(null)
+  const prevActiveDateRef = React.useRef<string | null>(null)
 
-  // Auto scroll table to active date column on load or date change
+  // Auto scroll table to active date column ONLY when activeDate explicitly changes
   React.useEffect(() => {
     if (!scrollContainerRef.current) return
+    if (prevActiveDateRef.current === activeDate) return
+    prevActiveDateRef.current = activeDate
+
     const activeEl = scrollContainerRef.current.querySelector<HTMLElement>("[data-active-date='true']")
     if (activeEl) {
       const container = scrollContainerRef.current
       const containerWidth = container.clientWidth
+      const stickyWidth = window.innerWidth < 640 ? 144 : 256
       const elLeft = activeEl.offsetLeft
       const elWidth = activeEl.clientWidth
+      
+      const targetLeft = Math.max(0, elLeft - stickyWidth - (containerWidth - stickyWidth) / 2 + elWidth / 2)
       container.scrollTo({
-        left: Math.max(0, elLeft - containerWidth / 2 + elWidth / 2),
+        left: targetLeft,
         behavior: "smooth",
       })
     }
-  }, [activeDate, listHabits.length])
+  }, [activeDate])
 
   return (
     <div className="space-y-6">
@@ -216,7 +224,7 @@ export function HabitGrid({
         <table className="w-full border-collapse text-center text-sm min-w-[900px] sm:min-w-[1200px]">
           <thead>
             <tr className="bg-secondary/50 text-xs font-bold text-muted-foreground border-b border-border/60 uppercase tracking-wider">
-              <th className="px-2.5 sm:px-6 py-3 sm:py-4 text-left font-bold text-muted-foreground w-36 sm:w-64 min-w-[144px] sm:min-w-[256px] select-none sticky left-0 bg-card/95 backdrop-blur-md z-10 border-r border-border/60">
+              <th className="px-2.5 sm:px-6 py-3 sm:py-4 text-left font-bold text-muted-foreground w-36 sm:w-64 min-w-[144px] sm:min-w-[256px] select-none sticky left-0 bg-card/95 backdrop-blur-md z-20 border-r border-border/60 shadow-sm">
                 Habit
               </th>
               {monthDays.map((day) => {
@@ -226,9 +234,11 @@ export function HabitGrid({
                   <th
                     key={day.toISOString()}
                     data-active-date={isSel ? "true" : undefined}
-                    className={`px-0.5 sm:px-1 py-2 sm:py-3 font-bold select-none min-w-[32px] sm:min-w-[36px] ${
+                    onClick={() => onSelectDate?.(dayStr)}
+                    className={`px-0.5 sm:px-1 py-2 sm:py-3 font-bold select-none min-w-[32px] sm:min-w-[36px] cursor-pointer hover:bg-secondary/40 transition-colors ${
                       isSel ? "text-primary bg-primary/5 font-black" : ""
                     }`}
+                    title={`Select ${format(day, "MMMM d, yyyy")}`}
                   >
                     <div className="flex flex-col items-center gap-0.5">
                       <span className="text-[8px] sm:text-[9px] uppercase tracking-normal opacity-75 font-semibold">
