@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, timestamp, integer, boolean } from "drizzle-orm/pg-core"
+import { pgTable, text, uuid, timestamp, integer, boolean, index } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // 1. Profiles (user info linked to Supabase Auth.users)
@@ -19,7 +19,9 @@ export const habits = pgTable("habits", {
   frequency: text("frequency").default("daily").notNull(), // daily, weekly, or specific days
   orderIndex: integer("order_index").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_habits_user").on(t.userId),
+])
 
 // 3. Habit Logs (Individual check-ins)
 export const habitLogs = pgTable("habit_logs", {
@@ -32,7 +34,9 @@ export const habitLogs = pgTable("habit_logs", {
   status: text("status").default("completed").notNull(), // completed, missed
   notes: text("notes"),
   loggedAt: timestamp("logged_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_habit_logs_user_date").on(t.userId, t.date),
+])
 
 // Relations for Habits & Logs
 export const habitsRelations = relations(habits, ({ many }) => ({
@@ -112,7 +116,9 @@ export const timetableBlocks = pgTable("timetable_blocks", {
   isTodo: boolean("is_todo").default(false).notNull(),
   link: text("link"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_timetable_user_day").on(t.userId, t.dayOfWeek),
+])
 
 // 7. Priorities (Top 5 priorities supporting rollover logic)
 export const priorities = pgTable("priorities", {
@@ -127,7 +133,9 @@ export const priorities = pgTable("priorities", {
   rolloverCount: integer("rollover_count").default(0).notNull(), // keeps track of rollovers
   link: text("link"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_priorities_user_date").on(t.userId, t.date),
+])
 
 // 8. Vocabulary Logs (Language learning)
 export const vocabularyLogs = pgTable("vocabulary_logs", {
@@ -207,7 +215,9 @@ export const projects = pgTable("projects", {
   priority: text("priority").default("Medium").notNull(), // Low, Medium, High
   deadline: timestamp("deadline"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_projects_user").on(t.userId),
+])
 
 // 10. Project Tasks (Hierarchical child relation)
 export const projectTasks = pgTable("project_tasks", {
@@ -300,7 +310,9 @@ export const learningSubjects = pgTable("learning_subjects", {
   status: text("status").default("Learning").notNull(), // Planned, Learning, Completed
   color: text("color").default("hsl(var(--primary))").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_learning_subjects_user").on(t.userId),
+])
 
 export const learningMaterials = pgTable("learning_materials", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -355,7 +367,9 @@ export const categories = pgTable("categories", {
   description: text("description"),
   isSystemDefault: boolean("is_system_default").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_categories_user").on(t.userId),
+])
 
 // 16. Custom Sub-Categories Table
 export const subCategories = pgTable("sub_categories", {
@@ -366,5 +380,7 @@ export const subCategories = pgTable("sub_categories", {
     .notNull(),
   name: text("name").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_sub_categories_category").on(t.categoryId),
+])
 
