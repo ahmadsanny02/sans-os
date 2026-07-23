@@ -63,7 +63,7 @@ export function HabitGrid({
 }: HabitGridProps) {
   const { categories } = useCategories()
   const habitCategories = categories.filter((c) => c.module === "habits" || c.module === "general")
-  const defaultFallbackCategories = ["Health & Fitness", "Mindset & Reading", "Personal", "Work", "General"]
+  const defaultFallbackCategories = ["General"]
 
   const [draggedId, setDraggedId] = React.useState<string | null>(null)
 
