@@ -99,7 +99,7 @@ export function Timetable({
   const [editDayOfWeek, setEditDayOfWeek] = useState(0)
   const { categories } = useCategories()
   const timetableCategories = categories.filter((c) => c.module === "timetable" || c.module === "general")
-  const defaultFallbackCategories = ["Deep Work", "Personal", "Work", "Leisure & Rest", "Education", "General"]
+  const defaultFallbackCategories = ["General"]
 
   const handleStartEdit = (block: TimetableBlock) => {
     setEditingId(block.id)
