@@ -61,7 +61,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { name, category, frequency } = body
+    const { name, category, subCategory, frequency } = body
 
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
@@ -81,6 +81,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         userId: user.id,
         name,
         category: category || "General",
+        subCategory: subCategory || null,
         frequency: frequency || "daily",
         orderIndex: nextOrder,
       })
