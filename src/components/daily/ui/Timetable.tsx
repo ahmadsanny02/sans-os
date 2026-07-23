@@ -5,6 +5,7 @@ import { TimetableBlock } from "@/hooks/useDaily"
 import { Trash2, Clock, CalendarRange, Link2, Pencil } from "lucide-react"
 import { useState } from "react"
 import { useCategories } from "@/hooks/useCategories"
+import { CustomSelect } from "@/components/ui/CustomSelect"
 
 const COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
   blue: { bg: "bg-blue-500/10", text: "text-blue-500 dark:text-blue-400", border: "border-blue-500/20", bullet: "bg-blue-500" },
@@ -247,29 +248,20 @@ export function Timetable({
                         {/* Category */}
                         <div className="space-y-1.5">
                           <label className="text-xs font-bold text-muted-foreground">Category</label>
-                          <select
+                          <CustomSelect
                             value={editCategory}
-                            onChange={(e) => {
-                              const cat = e.target.value
+                            onChange={(val) => {
+                              const cat = String(val)
                               setEditCategory(cat)
                               setEditColor(CATEGORY_COLORS[cat] || "blue")
                             }}
-                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 cursor-pointer"
-                          >
-                            {timetableCategories.length > 0 ? (
-                              timetableCategories.map((c) => (
-                                <option key={c.id} value={c.name}>
-                                  {c.name}
-                                </option>
-                              ))
-                            ) : (
-                              defaultFallbackCategories.map((catName) => (
-                                <option key={catName} value={catName}>
-                                  {catName}
-                                </option>
-                              ))
-                            )}
-                          </select>
+                            options={
+                              timetableCategories.length > 0
+                                ? timetableCategories.map((c) => ({ value: c.name, label: c.name }))
+                                : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
+                            }
+                            fullWidth
+                          />
                         </div>
 
                         {/* Start Time */}
@@ -311,18 +303,16 @@ export function Timetable({
                         {/* Schedule Type */}
                         <div className="space-y-1.5">
                           <label className="text-xs font-bold text-muted-foreground">Schedule Type</label>
-                          <select
+                          <CustomSelect
                             value={editScheduleType}
-                            onChange={(e) => {
-                              const type = e.target.value as "custom" | "weekly" | "fixed"
-                              setEditScheduleType(type)
-                            }}
-                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
-                          >
-                            <option value="custom">Specific Date (One-off)</option>
-                            <option value="weekly">Specific Day (Weekly)</option>
-                            <option value="fixed">Every Day (Fixed)</option>
-                          </select>
+                            onChange={(val) => setEditScheduleType(val as "custom" | "weekly" | "fixed")}
+                            options={[
+                              { value: "custom", label: "Specific Date (One-off)" },
+                              { value: "weekly", label: "Specific Day (Weekly)" },
+                              { value: "fixed", label: "Every Day (Fixed)" },
+                            ]}
+                            fullWidth
+                          />
                         </div>
 
                         {/* Date Choice if custom */}
@@ -343,19 +333,20 @@ export function Timetable({
                         {editScheduleType === "weekly" && (
                           <div className="space-y-1.5">
                             <label className="text-xs font-bold text-muted-foreground">Choose Day</label>
-                            <select
+                            <CustomSelect
                               value={editDayOfWeek}
-                              onChange={(e) => setEditDayOfWeek(Number(e.target.value))}
-                              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
-                            >
-                              <option value={0}>Sunday</option>
-                              <option value={1}>Monday</option>
-                              <option value={2}>Tuesday</option>
-                              <option value={3}>Wednesday</option>
-                              <option value={4}>Thursday</option>
-                              <option value={5}>Friday</option>
-                              <option value={6}>Saturday</option>
-                            </select>
+                              onChange={(val) => setEditDayOfWeek(Number(val))}
+                              options={[
+                                { value: 0, label: "Sunday" },
+                                { value: 1, label: "Monday" },
+                                { value: 2, label: "Tuesday" },
+                                { value: 3, label: "Wednesday" },
+                                { value: 4, label: "Thursday" },
+                                { value: 5, label: "Friday" },
+                                { value: 6, label: "Saturday" },
+                              ]}
+                              fullWidth
+                            />
                           </div>
                         )}
 
