@@ -5,6 +5,7 @@ import { Habit } from "@/hooks/useHabits"
 import { format } from "date-fns"
 import { Plus, Trash2, Check, Loader2, Sparkles, GripVertical, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { useCategories } from "@/hooks/useCategories"
+import { CustomSelect } from "@/components/ui/CustomSelect"
 
 const CHECKED_THEME = {
   color: "text-primary",
@@ -221,26 +222,17 @@ export function HabitGrid({
               <label htmlFor="habitCategory" className="text-xs font-bold text-muted-foreground">
                 Category
               </label>
-              <select
+              <CustomSelect
                 id="habitCategory"
-                value={newHabitCategory}
-                onChange={(e) => setNewHabitCategory && setNewHabitCategory(e.target.value)}
-                className="w-full rounded-lg border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 cursor-pointer"
-              >
-                {habitCategories.length > 0 ? (
-                  habitCategories.map((c) => (
-                    <option key={c.id} value={c.name}>
-                      {c.name}
-                    </option>
-                  ))
-                ) : (
-                  defaultFallbackCategories.map((catName) => (
-                    <option key={catName} value={catName}>
-                      {catName}
-                    </option>
-                  ))
-                )}
-              </select>
+                value={newHabitCategory || ""}
+                onChange={(val) => setNewHabitCategory && setNewHabitCategory(val)}
+                options={
+                  habitCategories.length > 0
+                    ? habitCategories.map((c) => ({ value: c.name, label: c.name }))
+                    : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
+                }
+                fullWidth
+              />
             </div>
           </div>
 
