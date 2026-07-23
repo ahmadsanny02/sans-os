@@ -54,6 +54,7 @@ export function useHabitsPage() {
   // Form states
   const [newHabitName, setNewHabitName] = useState("")
   const [newHabitCategory, setNewHabitCategory] = useState("Health & Fitness")
+  const [newHabitSubCategory, setNewHabitSubCategory] = useState("")
   const [showAddForm, setShowAddForm] = useState(false)
 
   const handleAddHabit = async (e: React.FormEvent): Promise<void> => {
@@ -64,8 +65,10 @@ export function useHabitsPage() {
       await createHabitMutation.mutateAsync({
         name: newHabitName,
         category: newHabitCategory,
+        subCategory: newHabitSubCategory || null,
       })
       setNewHabitName("")
+      setNewHabitSubCategory("")
       setShowAddForm(false)
       showSuccessToast("Habit added successfully")
     } catch (err) {
@@ -151,6 +154,8 @@ export function useHabitsPage() {
     setNewHabitName,
     newHabitCategory,
     setNewHabitCategory,
+    newHabitSubCategory,
+    setNewHabitSubCategory,
     showAddForm,
     setShowAddForm,
     handleAddHabit,
