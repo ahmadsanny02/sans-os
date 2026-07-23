@@ -25,6 +25,7 @@ export interface LearningSubject {
   name: string
   description: string | null
   category: string
+  subCategory?: string | null
   status: "Planned" | "Learning" | "Completed"
   color: string
   createdAt: string
@@ -57,6 +58,7 @@ async function createSubject(body: {
   status?: "Planned" | "Learning" | "Completed"
   color?: string
   category?: string
+  subCategory?: string | null
 }): Promise<LearningSubject> {
   const res = await fetch("/api/learning/subjects", {
     method: "POST",
@@ -78,6 +80,7 @@ export function useCreateSubjectMutation() {
     status?: "Planned" | "Learning" | "Completed"
     color?: string
     category?: string
+    subCategory?: string | null
   }>({
     mutationFn: createSubject,
     onSuccess: (newSubject) => {
@@ -98,6 +101,7 @@ async function updateSubject(body: {
   status?: "Planned" | "Learning" | "Completed"
   color?: string
   category?: string
+  subCategory?: string | null
 }): Promise<LearningSubject> {
   const res = await fetch("/api/learning/subjects", {
     method: "PATCH",
@@ -122,6 +126,7 @@ export function useUpdateSubjectMutation() {
       status?: "Planned" | "Learning" | "Completed"
       color?: string
       category?: string
+      subCategory?: string | null
     },
     { previous: LearningSubject[] | undefined }
   >({
