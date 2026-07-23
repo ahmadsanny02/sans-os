@@ -15,6 +15,7 @@ import {
   Sparkles,
   Layers,
   Check,
+  X,
 } from "lucide-react"
 import { useCategories, CategoryItem } from "@/hooks/useCategories"
 import { confirmDestructive, showSuccessToast } from "@/lib/sweetalert"
@@ -71,6 +72,12 @@ export function CategoryManagementView() {
   const [selectedTargetModules, setSelectedTargetModules] = useState<string[]>(["habits"])
   const [color, setColor] = useState("primary")
   const [description, setDescription] = useState("")
+
+  // Sub-category inline state
+  const [addingSubCategoryId, setAddingSubCategoryId] = useState<string | null>(null)
+  const [newSubName, setNewSubName] = useState("")
+  const [editingSubId, setEditingSubId] = useState<string | null>(null)
+  const [editSubName, setEditSubName] = useState("")
 
   const filteredCategories = categories.filter((cat) => {
     if (cat.isSystemDefault) return false
@@ -253,44 +260,134 @@ export function CategoryManagementView() {
               </div>
 
               {/* Sub-categories List */}
-              <div className="space-y-1.5 border-t border-border/40 pt-2.5">
+              <div className="space-y-2 border-t border-border/40 pt-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sub-categories</span>
                   <button
-                    onClick={() => handleCreateSub(cat.id)}
+                    onClick={() => {
+                      setAddingSubCategoryId(addingSubCategoryId === cat.id ? null : cat.id)
+                      setNewSubName("")
+                    }}
                     className="p-1 rounded-md hover:bg-secondary text-primary hover:text-primary/80 transition-all cursor-pointer"
                     title="Add sub-category"
                   >
-                    <Plus className="h-3 w-3" />
+                    <Plus className="h-3.5 w-3.5" />
                   </button>
                 </div>
-                
-                {subCategories.filter((sc) => sc.categoryId === cat.id).length === 0 ? (
+
+                {addingSubCategoryId === cat.id && (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      if (!newSubName.trim()) return
+                      addSubCategory(cat.id, newSubName.trim())
+                      showSuccessToast("Sub-category created")
+                      setAddingSubCategoryId(null)
+                      setNewSubName("")
+                    }}
+                    className="flex items-center gap-1.5 animate-in fade-in duration-150 py-1"
+                  >
+                    <input
+                      type="text"
+                      autoFocus
+                      value={newSubName}
+                      onChange={(e) => setNewSubName(e.target.value)}
+                      placeholder="Sub-category name..."
+                      className="flex-1 rounded-xl border border-border/80 bg-background px-3 py-1 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 text-foreground"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!newSubName.trim()}
+                      className="p-1.5 rounded-xl bg-primary text-primary-foreground disabled:opacity-50 transition-colors cursor-pointer"
+                      title="Save"
+                    >
+                      <Check className="h-3.5 w-3.5 stroke-[3]" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddingSubCategoryId(null)
+                        setNewSubName("")
+                      }}
+                      className="p-1.5 rounded-xl text-muted-foreground hover:bg-secondary transition-colors cursor-pointer"
+                      title="Cancel"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </form>
+                )}
+
+                {subCategories.filter((sc) => sc.categoryId === cat.id).length === 0 && addingSubCategoryId !== cat.id ? (
                   <p className="text-[10px] text-muted-foreground italic pl-0.5">No sub-categories</p>
                 ) : (
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {subCategories
                       .filter((sc) => sc.categoryId === cat.id)
-                      .map((sc) => (
-                        <div
-                          key={sc.id}
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${badgeClass} group/sub`}
-                        >
-                          <span>{sc.name}</span>
-                          <button
-                            onClick={() => handleEditSub(sc.id, sc.name)}
-                            className="opacity-0 group-hover/sub:opacity-100 transition-opacity hover:text-foreground cursor-pointer"
+                      .map((sc) => {
+                        if (editingSubId === sc.id) {
+                          return (
+                            <form
+                              key={sc.id}
+                              onSubmit={(e) => {
+                                e.preventDefault()
+                                if (!editSubName.trim() || editSubName.trim() === sc.name) {
+                                  setEditingSubId(null)
+                                  return
+                                }
+                                updateSubCategory(sc.id, editSubName.trim())
+                                showSuccessToast("Sub-category updated")
+                                setEditingSubId(null)
+                              }}
+                              className="flex items-center gap-1 animate-in fade-in duration-150"
+                            >
+                              <input
+                                type="text"
+                                autoFocus
+                                value={editSubName}
+                                onChange={(e) => setEditSubName(e.target.value)}
+                                className="w-28 rounded-lg border border-border/80 bg-background px-2 py-0.5 text-xs outline-none focus:border-primary text-foreground"
+                              />
+                              <button
+                                type="submit"
+                                className="p-1 text-emerald-500 hover:bg-emerald-500/10 rounded cursor-pointer"
+                              >
+                                <Check className="h-3 w-3 stroke-[3]" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingSubId(null)}
+                                className="p-1 text-muted-foreground hover:bg-secondary rounded cursor-pointer"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </form>
+                          )
+                        }
+
+                        return (
+                          <div
+                            key={sc.id}
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${badgeClass} group/sub`}
                           >
-                            <Edit2 className="h-2.5 w-2.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteSub(sc.id, sc.name)}
-                            className="opacity-0 group-hover/sub:opacity-100 transition-opacity hover:text-destructive cursor-pointer"
-                          >
-                            <Trash2 className="h-2.5 w-2.5" />
-                          </button>
-                        </div>
-                      ))}
+                            <span>{sc.name}</span>
+                            <button
+                              onClick={() => {
+                                setEditingSubId(sc.id)
+                                setEditSubName(sc.name)
+                              }}
+                              className="opacity-0 group-hover/sub:opacity-100 transition-opacity hover:text-foreground cursor-pointer"
+                            >
+                              <Edit2 className="h-2.5 w-2.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteSub(sc.id, sc.name)}
+                              className="opacity-0 group-hover/sub:opacity-100 transition-opacity hover:text-destructive cursor-pointer"
+                            >
+                              <Trash2 className="h-2.5 w-2.5" />
+                            </button>
+                          </div>
+                        )
+                      })}
                   </div>
                 )}
               </div>
@@ -381,50 +478,72 @@ export function CategoryManagementView() {
               {/* Target Modules Checklist */}
               <div className="space-y-2">
                 <label className="block text-xs font-bold text-foreground">Target Modules (Check all that apply)</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-secondary/20 border border-border/60 p-3 rounded-xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-secondary/20 dark:bg-card/30 border border-border/60 p-3 rounded-2xl">
                   {[
                     { id: "timetable", label: "Daily Flow / Timetable", icon: Clock },
                     { id: "habits", label: "Habits", icon: CheckSquare },
                     { id: "learning", label: "Learning Hub", icon: GraduationCap },
                     { id: "projects", label: "Projects", icon: Briefcase },
-                    { id: "general", label: "General / Universal", icon: Layers },
                   ].map((item) => {
                     const isChecked = selectedTargetModules.includes(item.id)
                     const Icon = item.icon
                     return (
-                      <label
+                      <button
                         key={item.id}
-                        className={`flex items-center gap-2.5 p-2 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${
+                        type="button"
+                        onClick={() => {
+                          let updated = isChecked
+                            ? selectedTargetModules.filter((m) => m !== item.id)
+                            : [...selectedTargetModules.filter((m) => m !== "general"), item.id]
+                          if (updated.length === 0) updated = ["general"]
+                          setSelectedTargetModules(updated)
+                        }}
+                        className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all ${
                           isChecked
-                            ? "bg-primary/10 border-primary/40 text-primary shadow-xs"
-                            : "bg-background/60 border-border/60 text-muted-foreground hover:bg-card hover:text-foreground"
+                            ? "bg-primary/15 border-primary/40 text-primary shadow-xs"
+                            : "bg-background/50 dark:bg-background/30 border-border/60 text-muted-foreground hover:bg-card hover:text-foreground"
                         }`}
                       >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(e) => {
-                            if (item.id === "general") {
-                              if (e.target.checked) {
-                                setSelectedTargetModules(["general"])
-                              } else {
-                                setSelectedTargetModules([])
-                              }
-                            } else {
-                              let updated = isChecked
-                                ? selectedTargetModules.filter((m) => m !== item.id)
-                                : [...selectedTargetModules.filter((m) => m !== "general"), item.id]
-                              if (updated.length === 0) updated = ["general"]
-                              setSelectedTargetModules(updated)
-                            }
-                          }}
-                          className="rounded border-border text-primary focus:ring-primary h-4 w-4"
-                        />
+                        <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                          isChecked ? "bg-primary border-primary text-primary-foreground" : "border-border/80 bg-background/80"
+                        }`}>
+                          {isChecked && <Check className="h-3 w-3 stroke-[3]" />}
+                        </div>
                         <Icon className="h-4 w-4 shrink-0" />
-                        <span>{item.label}</span>
-                      </label>
+                        <span className="truncate">{item.label}</span>
+                      </button>
                     )
                   })}
+
+                  {/* General / Universal spanning col-span-2 */}
+                  {(() => {
+                    const isGeneralChecked = selectedTargetModules.includes("general")
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isGeneralChecked) {
+                            setSelectedTargetModules(["habits"])
+                          } else {
+                            setSelectedTargetModules(["general"])
+                          }
+                        }}
+                        className={`sm:col-span-2 flex items-center gap-2.5 p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all ${
+                          isGeneralChecked
+                            ? "bg-primary/15 border-primary/40 text-primary shadow-xs"
+                            : "bg-background/50 dark:bg-background/30 border-border/60 text-muted-foreground hover:bg-card hover:text-foreground"
+                        }`}
+                      >
+                        <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                          isGeneralChecked ? "bg-primary border-primary text-primary-foreground" : "border-border/80 bg-background/80"
+                        }`}>
+                          {isGeneralChecked && <Check className="h-3 w-3 stroke-[3]" />}
+                        </div>
+                        <Layers className="h-4 w-4 shrink-0" />
+                        <span>General / Universal (Applies to all modules)</span>
+                      </button>
+                    )
+                  })()}
                 </div>
               </div>
 
