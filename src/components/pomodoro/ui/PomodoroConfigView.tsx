@@ -18,6 +18,7 @@ import { UsePomodoroPageReturn } from "@/hooks/usePomodoroPage"
 import { IntegrationMode } from "@/store/pomodoroStore"
 import { TimetableBlock } from "@/hooks/useDaily"
 import { playPomodoroSound } from "@/lib/pomodoro-sound"
+import { CustomSelect } from "@/components/ui/CustomSelect"
 
 function timeToMinutes(t: string): number {
   const [h, m] = t.split(":").map(Number)
@@ -457,16 +458,17 @@ export function PomodoroConfigView({
                   <span className="block text-xs font-bold text-foreground">
                     Sound Style (Tone Type)
                   </span>
-                  <select
+                  <CustomSelect
                     value={localConfig.soundType}
-                    onChange={(e) => handleUpdateLocalConfig({ soundType: e.target.value as "sine" | "triangle" | "square" | "sawtooth" })}
-                    className="w-full rounded-xl border border-border bg-card px-3.5 py-2 text-xs text-foreground focus:border-primary outline-none transition-colors cursor-pointer"
-                  >
-                    <option value="sine">Sine (Soft Chime)</option>
-                    <option value="triangle">Triangle (Retro Warm)</option>
-                    <option value="square">Square (Retro Arcade)</option>
-                    <option value="sawtooth">Sawtooth (Bright Alarm)</option>
-                  </select>
+                    onChange={(val) => handleUpdateLocalConfig({ soundType: val as "sine" | "triangle" | "square" | "sawtooth" })}
+                    options={[
+                      { value: "sine", label: "Sine (Soft Chime)" },
+                      { value: "triangle", label: "Triangle (Retro Warm)" },
+                      { value: "square", label: "Square (Retro Arcade)" },
+                      { value: "sawtooth", label: "Sawtooth (Bright Alarm)" },
+                    ]}
+                    fullWidth
+                  />
                 </div>
               </div>
             )}
