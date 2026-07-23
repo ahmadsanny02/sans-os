@@ -19,6 +19,7 @@ import {
 import { useCategories, CategoryItem } from "@/hooks/useCategories"
 import { confirmDestructive, showSuccessToast } from "@/lib/sweetalert"
 import { CustomSelect } from "@/components/ui/CustomSelect"
+import { CATEGORY_COLOR_MAP } from "@/lib/categoryUtils"
 
 const MODULE_OPTIONS = [
   { value: "all", label: "All Modules", icon: Layers },
@@ -44,8 +45,8 @@ const COLOR_OPTIONS = [
 ]
 
 function getBadgeStyle(color: string) {
-  const match = COLOR_OPTIONS.find((c) => c.value === color)
-  return match ? match.badgeBg : "bg-primary/10 text-primary border-primary/20"
+  const match = CATEGORY_COLOR_MAP[color]
+  return match ? match.badgeBg : CATEGORY_COLOR_MAP.primary.badgeBg
 }
 
 export function CategoryManagementView() {
