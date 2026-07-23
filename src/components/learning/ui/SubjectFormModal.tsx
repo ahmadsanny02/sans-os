@@ -38,7 +38,7 @@ export function SubjectFormModal({
 }: SubjectFormModalProps) {
   const { categories } = useCategories()
   const learningCategories = categories.filter((c) => c.module === "learning" || c.module === "general")
-  const defaultFallbackCategories = ["Computer Science", "Languages", "Mathematics", "Science", "General"]
+  const defaultFallbackCategories = ["General"]
 
   return (
     <Modal
