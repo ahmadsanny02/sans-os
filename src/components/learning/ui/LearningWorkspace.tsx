@@ -44,6 +44,8 @@ export function LearningWorkspace() {
     setSubjectDesc,
     subjectCategory,
     setSubjectCategory,
+    subjectSubCategory,
+    setSubjectSubCategory,
     subjectStatus,
     setSubjectStatus,
 
@@ -218,6 +220,7 @@ export function LearningWorkspace() {
                         {subj.category && (
                           <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[9px] font-bold border uppercase tracking-wider ${getCategoryStyle(subj.category, categories).badgeBg}`}>
                             {subj.category}
+                            {subj.subCategory && <span className="opacity-70 font-medium"> • {subj.subCategory}</span>}
                           </span>
                         )}
                       </div>
@@ -288,6 +291,8 @@ export function LearningWorkspace() {
         setDescription={setSubjectDesc}
         category={subjectCategory}
         setCategory={setSubjectCategory}
+        subCategory={subjectSubCategory}
+        setSubCategory={setSubjectSubCategory}
         status={subjectStatus}
         setStatus={setSubjectStatus}
         isPending={isSaveSubjectPending}
