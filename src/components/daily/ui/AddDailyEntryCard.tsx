@@ -287,7 +287,7 @@ export function AddDailyEntryCard({
         <AnimatePresence initial={false}>
           {(targetTodo || targetPriority || (targetTimetable && timetableScheduleType === "custom")) && (
             <motion.div
-              className="relative z-30 pb-2"
+              className="relative z-30 pb-24"
               initial={{ height: 0, opacity: 0, overflow: "hidden" }}
               animate={{ height: "auto", opacity: 1, transitionEnd: { overflow: "visible" } }}
               exit={{ height: 0, opacity: 0, overflow: "hidden" }}
