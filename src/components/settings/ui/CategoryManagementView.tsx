@@ -20,6 +20,7 @@ import { useCategories, CategoryItem } from "@/hooks/useCategories"
 import { confirmDestructive, showSuccessToast } from "@/lib/sweetalert"
 import { CustomSelect } from "@/components/ui/CustomSelect"
 import { CATEGORY_COLOR_MAP } from "@/lib/categoryUtils"
+import Swal from "sweetalert2"
 
 const MODULE_OPTIONS = [
   { value: "all", label: "All Modules", icon: Layers },
@@ -50,7 +51,17 @@ function getBadgeStyle(color: string) {
 }
 
 export function CategoryManagementView() {
-  const { categories, addCategory, updateCategory, deleteCategory, resetToDefault } = useCategories()
+  const {
+    categories,
+    subCategories,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+    addSubCategory,
+    updateSubCategory,
+    deleteSubCategory,
+    resetToDefault,
+  } = useCategories()
   const [selectedModule, setSelectedModule] = useState<string>("all")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -112,6 +123,54 @@ export function CategoryManagementView() {
     if (confirmed) {
       resetToDefault()
       showSuccessToast("Categories reset to default")
+    }
+  }
+
+  const handleCreateSub = async (categoryId: string) => {
+    const { value: name } = await Swal.fire({
+      title: "Add Sub-category",
+      input: "text",
+      inputPlaceholder: "Enter sub-category name...",
+      showCancelButton: true,
+      confirmButtonText: "Create",
+      cancelButtonText: "Cancel",
+      inputValidator: (value) => {
+        if (!value) {
+          return "Name is required!"
+        }
+      }
+    })
+    if (name) {
+      addSubCategory(categoryId, name)
+      showSuccessToast("Sub-category created")
+    }
+  }
+
+  const handleEditSub = async (id: string, currentName: string) => {
+    const { value: name } = await Swal.fire({
+      title: "Edit Sub-category",
+      input: "text",
+      inputValue: currentName,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      cancelButtonText: "Cancel",
+      inputValidator: (value) => {
+        if (!value) {
+          return "Name is required!"
+        }
+      }
+    })
+    if (name && name !== currentName) {
+      updateSubCategory(id, name)
+      showSuccessToast("Sub-category updated")
+    }
+  }
+
+  const handleDeleteSub = async (id: string, name: string) => {
+    const confirmed = await confirmDestructive("Delete Sub-category", `Are you sure you want to delete "${name}"?`)
+    if (confirmed) {
+      deleteSubCategory(id)
+      showSuccessToast("Sub-category deleted")
     }
   }
 
@@ -189,6 +248,49 @@ export function CategoryManagementView() {
                   <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                     {cat.description}
                   </p>
+                )}
+              </div>
+
+              {/* Sub-categories List */}
+              <div className="space-y-1.5 border-t border-border/40 pt-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sub-categories</span>
+                  <button
+                    onClick={() => handleCreateSub(cat.id)}
+                    className="p-1 rounded-md hover:bg-secondary text-primary hover:text-primary/80 transition-all cursor-pointer"
+                    title="Add sub-category"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
+                </div>
+                
+                {subCategories.filter((sc) => sc.categoryId === cat.id).length === 0 ? (
+                  <p className="text-[10px] text-muted-foreground italic pl-0.5">No sub-categories</p>
+                ) : (
+                  <div className="flex flex-wrap gap-1">
+                    {subCategories
+                      .filter((sc) => sc.categoryId === cat.id)
+                      .map((sc) => (
+                        <div
+                          key={sc.id}
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${badgeClass} group/sub`}
+                        >
+                          <span>{sc.name}</span>
+                          <button
+                            onClick={() => handleEditSub(sc.id, sc.name)}
+                            className="opacity-0 group-hover/sub:opacity-100 transition-opacity hover:text-foreground cursor-pointer"
+                          >
+                            <Edit2 className="h-2.5 w-2.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteSub(sc.id, sc.name)}
+                            className="opacity-0 group-hover/sub:opacity-100 transition-opacity hover:text-destructive cursor-pointer"
+                          >
+                            <Trash2 className="h-2.5 w-2.5" />
+                          </button>
+                        </div>
+                      ))}
+                  </div>
                 )}
               </div>
 
