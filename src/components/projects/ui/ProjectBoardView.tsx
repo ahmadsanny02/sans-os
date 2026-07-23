@@ -455,26 +455,17 @@ export function ProjectBoardView({
               <label htmlFor="projectCategory" className="text-xs font-bold text-muted-foreground">
                 Category
               </label>
-              <select
+              <CustomSelect
                 id="projectCategory"
                 value={projectCategory}
-                onChange={(e) => setProjectCategory(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm cursor-pointer"
-              >
-                {projectCategories.length > 0 ? (
-                  projectCategories.map((c) => (
-                    <option key={c.id} value={c.name}>
-                      {c.name}
-                    </option>
-                  ))
-                ) : (
-                  defaultFallbackCategories.map((catName) => (
-                    <option key={catName} value={catName}>
-                      {catName}
-                    </option>
-                  ))
-                )}
-              </select>
+                onChange={(val) => setProjectCategory(val)}
+                options={
+                  projectCategories.length > 0
+                    ? projectCategories.map((c) => ({ value: c.name, label: c.name }))
+                    : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
+                }
+                fullWidth
+              />
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -482,33 +473,35 @@ export function ProjectBoardView({
                 <label htmlFor="projectPriority" className="text-xs font-bold text-muted-foreground">
                   Priority
                 </label>
-                <select
+                <CustomSelect
                   id="projectPriority"
                   value={projectPriority}
-                  onChange={(e) => setProjectPriority(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
+                  onChange={(val) => setProjectPriority(val)}
+                  options={[
+                    { value: "Low", label: "Low", dotClass: "bg-slate-400 dark:bg-slate-500" },
+                    { value: "Medium", label: "Medium", dotClass: "bg-indigo-400 dark:bg-indigo-500" },
+                    { value: "High", label: "High", dotClass: "bg-rose-400 dark:bg-rose-500" },
+                  ]}
+                  fullWidth
+                />
               </div>
 
               <div className="space-y-1.5">
                 <label htmlFor="projectStatus" className="text-xs font-bold text-muted-foreground">
                   Status
                 </label>
-                <select
+                <CustomSelect
                   id="projectStatus"
                   value={projectStatus}
-                  onChange={(e) => setProjectStatus(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
-                >
-                  <option value="Planning">Planning</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="On Hold">On Hold</option>
-                  <option value="Completed">Completed</option>
-                </select>
+                  onChange={(val) => setProjectStatus(val)}
+                  options={[
+                    { value: "Planning", label: "Planning", dotClass: "bg-slate-400 dark:bg-slate-500" },
+                    { value: "In Progress", label: "In Progress", dotClass: "bg-blue-400 dark:bg-blue-500" },
+                    { value: "On Hold", label: "On Hold", dotClass: "bg-amber-400 dark:bg-amber-500" },
+                    { value: "Completed", label: "Completed", dotClass: "bg-emerald-400 dark:bg-emerald-500" },
+                  ]}
+                  fullWidth
+                />
               </div>
             </div>
 
