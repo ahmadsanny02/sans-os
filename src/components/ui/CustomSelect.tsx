@@ -118,7 +118,7 @@ export function CustomSelect({
       {/* Dropdown Popover */}
       {isOpen && (
         <div
-          className={`absolute top-full left-0 mt-1.5 z-50 max-h-60 overflow-y-auto rounded-xl border border-border/80 bg-card/95 p-1.5 shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 ${
+          className={`absolute top-full left-0 mt-1.5 z-50 max-h-60 overflow-y-auto rounded-xl border border-border/80 bg-card p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
             isFullWidth ? "w-full min-w-full" : "min-w-[140px] right-0 sm:left-auto"
           } ${dropdownClassName}`}
         >
