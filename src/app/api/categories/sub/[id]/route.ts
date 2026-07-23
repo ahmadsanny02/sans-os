@@ -37,39 +37,43 @@ export async function PUT(
       return NextResponse.json({ error: "Sub-category not found" }, { status: 404 })
     }
 
-    const [updatedSub] = await db
-      .update(subCategories)
-      .set({ name })
-      .where(and(eq(subCategories.id, id), eq(subCategories.userId, user.id)))
-      .returning()
+    let updatedSub
+    await db.transaction(async (tx) => {
+      const [res] = await tx
+        .update(subCategories)
+        .set({ name })
+        .where(and(eq(subCategories.id, id), eq(subCategories.userId, user.id)))
+        .returning()
+      updatedSub = res
 
-    // 2. If name changed, rename references in other tables
-    if (name !== existing.name) {
-      await db
-        .update(habits)
-        .set({ subCategory: name })
-        .where(and(eq(habits.userId, user.id), eq(habits.subCategory, existing.name)))
+      // 2. If name changed, rename references in other tables
+      if (name !== existing.name) {
+        await tx
+          .update(habits)
+          .set({ subCategory: name })
+          .where(and(eq(habits.userId, user.id), eq(habits.subCategory, existing.name)))
 
-      await db
-        .update(timetableBlocks)
-        .set({ subCategory: name })
-        .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.subCategory, existing.name)))
+        await tx
+          .update(timetableBlocks)
+          .set({ subCategory: name })
+          .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.subCategory, existing.name)))
 
-      await db
-        .update(priorities)
-        .set({ subCategory: name })
-        .where(and(eq(priorities.userId, user.id), eq(priorities.subCategory, existing.name)))
+        await tx
+          .update(priorities)
+          .set({ subCategory: name })
+          .where(and(eq(priorities.userId, user.id), eq(priorities.subCategory, existing.name)))
 
-      await db
-        .update(learningSubjects)
-        .set({ subCategory: name })
-        .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.subCategory, existing.name)))
+        await tx
+          .update(learningSubjects)
+          .set({ subCategory: name })
+          .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.subCategory, existing.name)))
 
-      await db
-        .update(projects)
-        .set({ subCategory: name })
-        .where(and(eq(projects.userId, user.id), eq(projects.subCategory, existing.name)))
-    }
+        await tx
+          .update(projects)
+          .set({ subCategory: name })
+          .where(and(eq(projects.userId, user.id), eq(projects.subCategory, existing.name)))
+      }
+    })
 
     return NextResponse.json(updatedSub)
   } catch (error) {
@@ -105,36 +109,37 @@ export async function DELETE(
       return NextResponse.json({ error: "Sub-category not found" }, { status: 404 })
     }
 
-    // 2. Delete sub-category
-    await db
-      .delete(subCategories)
-      .where(and(eq(subCategories.id, id), eq(subCategories.userId, user.id)))
+    // 2. Delete sub-category and clear references atomically
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(subCategories)
+        .where(and(eq(subCategories.id, id), eq(subCategories.userId, user.id)))
 
-    // 3. Clear references (set to null) in other tables
-    await db
-      .update(habits)
-      .set({ subCategory: null })
-      .where(and(eq(habits.userId, user.id), eq(habits.subCategory, existing.name)))
+      await tx
+        .update(habits)
+        .set({ subCategory: null })
+        .where(and(eq(habits.userId, user.id), eq(habits.subCategory, existing.name)))
 
-    await db
-      .update(timetableBlocks)
-      .set({ subCategory: null })
-      .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.subCategory, existing.name)))
+      await tx
+        .update(timetableBlocks)
+        .set({ subCategory: null })
+        .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.subCategory, existing.name)))
 
-    await db
-      .update(priorities)
-      .set({ subCategory: null })
-      .where(and(eq(priorities.userId, user.id), eq(priorities.subCategory, existing.name)))
+      await tx
+        .update(priorities)
+        .set({ subCategory: null })
+        .where(and(eq(priorities.userId, user.id), eq(priorities.subCategory, existing.name)))
 
-    await db
-      .update(learningSubjects)
-      .set({ subCategory: null })
-      .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.subCategory, existing.name)))
+      await tx
+        .update(learningSubjects)
+        .set({ subCategory: null })
+        .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.subCategory, existing.name)))
 
-    await db
-      .update(projects)
-      .set({ subCategory: null })
-      .where(and(eq(projects.userId, user.id), eq(projects.subCategory, existing.name)))
+      await tx
+        .update(projects)
+        .set({ subCategory: null })
+        .where(and(eq(projects.userId, user.id), eq(projects.subCategory, existing.name)))
+    })
 
     return NextResponse.json({ success: true })
   } catch (error) {
