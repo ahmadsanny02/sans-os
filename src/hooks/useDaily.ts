@@ -224,6 +224,7 @@ async function createTimetableBlock(body: {
   date?: string
   isTodo?: boolean
   link?: string
+  subCategory?: string | null
 }): Promise<TimetableBlock> {
   const res = await fetch("/api/timetable", {
     method: "POST",
@@ -251,6 +252,7 @@ export function useCreateTimetableBlockMutation() {
       date?: string
       isTodo?: boolean
       link?: string
+      subCategory?: string | null
     }
   >({
     mutationFn: createTimetableBlock,
