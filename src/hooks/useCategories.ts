@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 
 export interface CategoryItem {
   id: string
@@ -11,119 +11,154 @@ export interface CategoryItem {
   isSystemDefault?: boolean
 }
 
-const DEFAULT_CATEGORIES: CategoryItem[] = [
-  // General / Universal (The only preset allowed)
-  { id: "default_general", name: "General", module: "general", color: "primary", description: "General or unclassified tasks", isSystemDefault: true },
-]
+async function fetchCategories(): Promise<CategoryItem[]> {
+  const res = await fetch("/api/categories")
+  if (!res.ok) {
+    throw new Error("Failed to fetch categories")
+  }
+  return res.json()
+}
 
-const STORAGE_KEY = "sansos_custom_categories_v1"
+async function createCategory(body: Omit<CategoryItem, "id" | "isSystemDefault">): Promise<CategoryItem> {
+  const res = await fetch("/api/categories", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    throw new Error("Failed to create category")
+  }
+  return res.json()
+}
+
+async function updateCategoryApi(params: { id: string; patch: Partial<Omit<CategoryItem, "id" | "isSystemDefault">> }): Promise<CategoryItem> {
+  const res = await fetch(`/api/categories/${params.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params.patch),
+  })
+  if (!res.ok) {
+    throw new Error("Failed to update category")
+  }
+  return res.json()
+}
+
+async function deleteCategoryApi(id: string): Promise<{ success: boolean }> {
+  const res = await fetch(`/api/categories/${id}`, {
+    method: "DELETE",
+  })
+  if (!res.ok) {
+    throw new Error("Failed to delete category")
+  }
+  return res.json()
+}
 
 export function useCategories() {
-  const [categories, setCategories] = useState<CategoryItem[]>(() => {
-    if (typeof window === "undefined") return DEFAULT_CATEGORIES
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        const parsed = JSON.parse(saved) as CategoryItem[]
-        // Filter out all system default presets except "General"
-        const filtered = parsed.filter(
-          (c) => !c.isSystemDefault || c.name.toLowerCase() === "general"
-        )
-        const hasGeneral = filtered.some((c) => c.name.toLowerCase() === "general")
-        if (!hasGeneral) {
-          const generalItem: CategoryItem = {
-            id: "default_general",
-            name: "General",
-            module: "general",
-            color: "primary",
-            description: "General or unclassified tasks",
-            isSystemDefault: true
-          }
-          filtered.unshift(generalItem)
-        }
-        if (parsed.length !== filtered.length) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered))
-        }
-        return filtered
-      }
-      return DEFAULT_CATEGORIES
-    } catch (e) {
-      console.error("Failed to load categories from localStorage:", e)
-      return DEFAULT_CATEGORIES
-    }
-  })
-  const [isLoaded] = useState(true)
+  const queryClient = useQueryClient()
 
-  const saveCategories = (items: CategoryItem[]) => {
-    setCategories(items)
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
-    } catch (e) {
-      console.error("Failed to save categories to localStorage:", e)
-    }
-  }
+  const { data: categories = [], isLoading } = useQuery<CategoryItem[]>({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  })
+
+  const createMutation = useMutation<CategoryItem, Error, Omit<CategoryItem, "id" | "isSystemDefault">>({
+    mutationFn: createCategory,
+    onSuccess: (newItem) => {
+      queryClient.setQueryData<CategoryItem[]>(["categories"], (old) => {
+        if (!old) return [newItem]
+        return [...old.filter((item) => item.id !== newItem.id), newItem]
+      })
+      queryClient.invalidateQueries({ queryKey: ["categories"] })
+    },
+  })
+
+  const updateMutation = useMutation<
+    CategoryItem,
+    Error,
+    { id: string; patch: Partial<Omit<CategoryItem, "id" | "isSystemDefault">> },
+    { previous: CategoryItem[] | undefined }
+  >({
+    mutationFn: updateCategoryApi,
+    onMutate: async ({ id, patch }) => {
+      await queryClient.cancelQueries({ queryKey: ["categories"] })
+      const previous = queryClient.getQueryData<CategoryItem[]>(["categories"])
+      if (previous) {
+        queryClient.setQueryData<CategoryItem[]>(
+          ["categories"],
+          previous.map((item) =>
+            item.id === id ? { ...item, ...patch } : item
+          )
+        )
+      }
+      return { previous }
+    },
+    onError: (err, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["categories"], context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] })
+      queryClient.invalidateQueries({ queryKey: ["timetable"] })
+      queryClient.invalidateQueries({ queryKey: ["habits"] })
+      queryClient.invalidateQueries({ queryKey: ["priorities"] })
+      queryClient.invalidateQueries({ queryKey: ["learning-subjects"] })
+      queryClient.invalidateQueries({ queryKey: ["projects"] })
+    },
+  })
+
+  const deleteMutation = useMutation<
+    { success: boolean },
+    Error,
+    string,
+    { previous: CategoryItem[] | undefined }
+  >({
+    mutationFn: deleteCategoryApi,
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["categories"] })
+      const previous = queryClient.getQueryData<CategoryItem[]>(["categories"])
+      if (previous) {
+        queryClient.setQueryData<CategoryItem[]>(
+          ["categories"],
+          previous.filter((item) => item.id !== id)
+        )
+      }
+      return { previous }
+    },
+    onError: (err, id, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["categories"], context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] })
+      queryClient.invalidateQueries({ queryKey: ["timetable"] })
+      queryClient.invalidateQueries({ queryKey: ["habits"] })
+      queryClient.invalidateQueries({ queryKey: ["priorities"] })
+      queryClient.invalidateQueries({ queryKey: ["learning-subjects"] })
+      queryClient.invalidateQueries({ queryKey: ["projects"] })
+    },
+  })
 
   const addCategory = (newItem: Omit<CategoryItem, "id" | "isSystemDefault">) => {
-    const created: CategoryItem = {
-      ...newItem,
-      id: "cat_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
-      isSystemDefault: false,
-    }
-    const updated = [...categories, created]
-    saveCategories(updated)
-    return created
+    createMutation.mutate(newItem)
   }
 
   const updateCategory = async (id: string, patch: Partial<Omit<CategoryItem, "id" | "isSystemDefault">>) => {
-    const oldCategory = categories.find((cat) => cat.id === id)
-    const updated = categories.map((cat) => (cat.id === id ? { ...cat, ...patch } : cat))
-    saveCategories(updated)
-
-    if (oldCategory && patch.name && patch.name !== oldCategory.name) {
-      try {
-        await fetch("/api/categories/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "rename",
-            oldName: oldCategory.name,
-            newName: patch.name,
-          }),
-        })
-      } catch (err) {
-        console.error("Failed to sync category rename to DB:", err)
-      }
-    }
+    updateMutation.mutate({ id, patch })
   }
 
   const deleteCategory = async (id: string) => {
-    const targetCategory = categories.find((cat) => cat.id === id)
-    const updated = categories.filter((cat) => cat.id !== id || cat.isSystemDefault)
-    saveCategories(updated)
-
-    if (targetCategory) {
-      try {
-        await fetch("/api/categories/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "delete",
-            oldName: targetCategory.name,
-          }),
-        })
-      } catch (err) {
-        console.error("Failed to sync category delete to DB:", err)
-      }
-    }
+    deleteMutation.mutate(id)
   }
 
   const resetToDefault = () => {
-    saveCategories(DEFAULT_CATEGORIES)
+    // No-op since we deleted the UI button and defaults are handled
   }
 
   return {
     categories,
-    isLoaded,
+    isLoaded: !isLoading,
     addCategory,
     updateCategory,
     deleteCategory,
