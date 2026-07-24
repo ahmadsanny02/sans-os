@@ -14,7 +14,7 @@ interface PrioritiesListProps {
   isError: boolean
   handleToggleCompleted: (id: string, completed: boolean) => void
   handleDeletePriority: (id: string) => Promise<void>
-  handleUpdatePriority: (id: string, text: string, link: string, category: string, subCategory: string | null) => Promise<void>
+  handleUpdatePriority: (id: string, text: string, link: string, category: string, subCategory: string | null, date?: string) => Promise<void>
   isPendingToggle?: boolean
 }
 
@@ -32,6 +32,7 @@ export function PrioritiesList({
   const [editLink, setEditLink] = useState("")
   const [editCategory, setEditCategory] = useState("General")
   const [editSubCategory, setEditSubCategory] = useState<string | null>(null)
+  const [editDate, setEditDate] = useState("")
   const { categories, subCategories } = useCategories()
   const priorityCategories = categories.filter((c) => isCategoryInModule(c.module, "timetable"))
   const defaultFallbackCategories = ["General"]
@@ -173,17 +174,32 @@ export function PrioritiesList({
                           )}
                         </div>
 
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                            Reference Link (Optional)
-                          </label>
-                          <input
-                            type="url"
-                            value={editLink}
-                            onChange={(e) => setEditLink(e.target.value)}
-                            className="w-full rounded-xl border border-border/80 bg-background px-3.5 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/15"
-                            placeholder="https://..."
-                          />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                              Target Date
+                            </label>
+                            <input
+                              type="date"
+                              value={editDate}
+                              onChange={(e) => setEditDate(e.target.value)}
+                              className="w-full rounded-xl border border-border/80 bg-background px-3.5 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/15 [color-scheme:dark]"
+                              required
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                              Reference Link (Optional)
+                            </label>
+                            <input
+                              type="url"
+                              value={editLink}
+                              onChange={(e) => setEditLink(e.target.value)}
+                              className="w-full rounded-xl border border-border/80 bg-background px-3.5 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/15"
+                              placeholder="https://..."
+                            />
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-end gap-2 pt-1">
@@ -202,7 +218,14 @@ export function PrioritiesList({
                             onClick={async (e) => {
                               e.stopPropagation()
                               if (!editText.trim()) return
-                              await handleUpdatePriority(priority.id, editText.trim(), editLink.trim(), editCategory, editSubCategory || null)
+                              await handleUpdatePriority(
+                                priority.id,
+                                editText.trim(),
+                                editLink.trim(),
+                                editCategory,
+                                editSubCategory || null,
+                                editDate || undefined
+                              )
                               setEditingId(null)
                             }}
                             disabled={!editText.trim()}
@@ -266,6 +289,7 @@ export function PrioritiesList({
                         setEditLink(priority.link || "")
                         setEditCategory(priority.category || "General")
                         setEditSubCategory(priority.subCategory || "")
+                        setEditDate(priority.date)
                       }}
                       className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                       aria-label="Edit priority"
