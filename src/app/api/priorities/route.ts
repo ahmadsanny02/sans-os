@@ -214,10 +214,19 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, text, link, category, subCategory } = body
+    const { id, text, link, category, subCategory, date } = body
 
     if (!id) {
       return NextResponse.json({ error: "Missing priority ID" }, { status: 400 })
+    }
+
+    const [existing] = await db
+      .select()
+      .from(priorities)
+      .where(and(eq(priorities.id, id), eq(priorities.userId, user.id)))
+
+    if (!existing) {
+      return NextResponse.json({ error: "Priority not found" }, { status: 404 })
     }
 
     const updateData: Partial<typeof priorities.$inferInsert> = {}
@@ -233,16 +242,27 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     if (subCategory !== undefined) {
       updateData.subCategory = subCategory || null
     }
+    if (date !== undefined && date !== existing.date) {
+      const targetPriorities = await db
+        .select()
+        .from(priorities)
+        .where(and(eq(priorities.userId, user.id), eq(priorities.date, date)))
+
+      if (targetPriorities.length >= 5) {
+        return NextResponse.json(
+          { error: "Only 5 priorities are allowed per day" },
+          { status: 400 }
+        )
+      }
+      updateData.date = date
+      updateData.orderIndex = targetPriorities.length
+    }
 
     const [updatedPriority] = await db
       .update(priorities)
       .set(updateData)
       .where(and(eq(priorities.id, id), eq(priorities.userId, user.id)))
       .returning()
-
-    if (!updatedPriority) {
-      return NextResponse.json({ error: "Priority not found" }, { status: 404 })
-    }
 
     return NextResponse.json(updatedPriority)
   } catch (error) {
