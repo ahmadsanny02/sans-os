@@ -120,6 +120,35 @@ export const timetableBlocks = pgTable("timetable_blocks", {
   index("idx_timetable_user_day").on(t.userId, t.dayOfWeek),
 ])
 
+// 6.5 Timetable Sub-Schedules (Nested breakdown of daily schedule blocks)
+export const timetableSubSchedules = pgTable("timetable_sub_schedules", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull(),
+  timetableBlockId: uuid("timetable_block_id")
+    .references(() => timetableBlocks.id, { onDelete: "cascade" })
+    .notNull(),
+  title: text("title").notNull(),
+  startTime: text("start_time"), // e.g. "08:00"
+  endTime: text("end_time"), // e.g. "08:30"
+  completed: boolean("completed").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => [
+  index("idx_timetable_sub_block").on(t.timetableBlockId),
+])
+
+// Relations for Timetable Blocks & Sub-Schedules
+export const timetableBlocksRelations = relations(timetableBlocks, ({ many }) => ({
+  subSchedules: many(timetableSubSchedules),
+}))
+
+export const timetableSubSchedulesRelations = relations(timetableSubSchedules, ({ one }) => ({
+  timetableBlock: one(timetableBlocks, {
+    fields: [timetableSubSchedules.timetableBlockId],
+    references: [timetableBlocks.id],
+  }),
+}))
+
+
 // 7. Priorities (Top 5 priorities supporting rollover logic)
 export const priorities = pgTable("priorities", {
   id: uuid("id").primaryKey().defaultRandom(),
