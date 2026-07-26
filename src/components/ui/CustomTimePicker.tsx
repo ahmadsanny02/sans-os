@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, useSyncExternalStore } from "react"
+import { createPortal } from "react-dom"
 import { Clock } from "lucide-react"
 
 interface CustomTimePickerProps {
@@ -15,6 +16,10 @@ interface CustomTimePickerProps {
   id?: string
 }
 
+const subscribe = () => () => {}
+const getSnapshot = () => true
+const getServerSnapshot = () => false
+
 export function CustomTimePicker({
   value,
   onChange,
@@ -27,7 +32,12 @@ export function CustomTimePicker({
   id,
 }: CustomTimePickerProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const isMounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null)
+
   const containerRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const popoverRef = useRef<HTMLDivElement>(null)
   const hourScrollRef = useRef<HTMLDivElement>(null)
   const minuteScrollRef = useRef<HTMLDivElement>(null)
 
@@ -36,10 +46,40 @@ export function CustomTimePicker({
   const currentHour = hourStr ? parseInt(hourStr, 10) : null
   const currentMinute = minuteStr ? parseInt(minuteStr, 10) : null
 
-  // Close popover when clicking outside
+  // Position updates on scroll / resize / open
+  useEffect(() => {
+    if (!isOpen || !isMounted) return
+
+    const updatePosition = () => {
+      if (inputRef.current) {
+        const rect = inputRef.current.getBoundingClientRect()
+        setCoords({
+          top: rect.bottom + window.scrollY + 8,
+          left: rect.left + window.scrollX,
+        })
+      }
+    }
+
+    // Set initial position immediately
+    updatePosition()
+
+    window.addEventListener("scroll", updatePosition, true)
+    window.addEventListener("resize", updatePosition)
+
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true)
+      window.removeEventListener("resize", updatePosition)
+    }
+  }, [isOpen, isMounted])
+
+  // Close popover when clicking outside (supporting React Portal)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      const clickedInsideInput = containerRef.current && containerRef.current.contains(target)
+      const clickedInsidePopover = popoverRef.current && popoverRef.current.contains(target)
+
+      if (!clickedInsideInput && !clickedInsidePopover) {
         setIsOpen(false)
       }
     }
@@ -114,10 +154,78 @@ export function CustomTimePicker({
         showIcon ? "pl-10 pr-3.5" : "px-3"
       }`
 
+  const popoverContent = isOpen && coords && (
+    <div
+      ref={popoverRef}
+      style={{
+        position: "absolute",
+        top: `${coords.top}px`,
+        left: `${coords.left}px`,
+        opacity: 1,
+        zIndex: 9999,
+      }}
+      className="flex gap-2 rounded-2xl border border-border bg-white dark:bg-slate-950 p-3 shadow-2xl w-52 justify-between"
+    >
+      {/* Hours Column */}
+      <div className="flex flex-col gap-1 w-[46%]">
+        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground text-center pb-1 select-none border-b border-border/40">Hour</span>
+        <div ref={hourScrollRef} className="h-40 overflow-y-auto space-y-0.5 scroll-smooth pr-1">
+          {hours.map((h) => {
+            const isSelected = currentHour === h
+            const valStr = h.toString().padStart(2, "0")
+            return (
+              <button
+                key={h}
+                type="button"
+                onClick={() => handleHourSelect(h)}
+                className={`w-full text-center py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
+                  isSelected
+                    ? "bg-primary text-primary-foreground font-black"
+                    : "text-foreground hover:bg-primary/10 hover:text-primary font-medium"
+                }`}
+              >
+                {valStr}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="w-[1px] bg-border/60 self-stretch my-2 shrink-0" />
+
+      {/* Minutes Column */}
+      <div className="flex flex-col gap-1 w-[46%]">
+        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground text-center pb-1 select-none border-b border-border/40">Min</span>
+        <div ref={minuteScrollRef} className="h-40 overflow-y-auto space-y-0.5 scroll-smooth pr-1">
+          {minutes.map((m) => {
+            const isSelected = currentMinute === m
+            const valStr = m.toString().padStart(2, "0")
+            return (
+              <button
+                key={m}
+                type="button"
+                onClick={() => handleMinuteSelect(m)}
+                className={`w-full text-center py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
+                  isSelected
+                    ? "bg-primary text-primary-foreground font-black"
+                    : "text-foreground hover:bg-primary/10 hover:text-primary font-medium"
+                }`}
+              >
+                {valStr}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
       <div className="relative flex items-center">
         <input
+          ref={inputRef}
           id={id}
           type="text"
           value={value}
@@ -132,65 +240,7 @@ export function CustomTimePicker({
         {showIcon && <Clock className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />}
       </div>
 
-      {isOpen && (
-        <div
-          style={{ opacity: 1 }}
-          className="absolute top-full left-0 mt-2 z-50 flex gap-2 rounded-2xl border border-border bg-white dark:bg-slate-950 p-3 shadow-2xl w-52 justify-between"
-        >
-          {/* Hours Column */}
-          <div className="flex flex-col gap-1 w-[46%]">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground text-center pb-1 select-none border-b border-border/40">Hour</span>
-            <div ref={hourScrollRef} className="h-40 overflow-y-auto space-y-0.5 scroll-smooth pr-1">
-              {hours.map((h) => {
-                const isSelected = currentHour === h
-                const valStr = h.toString().padStart(2, "0")
-                return (
-                  <button
-                    key={h}
-                    type="button"
-                    onClick={() => handleHourSelect(h)}
-                    className={`w-full text-center py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
-                      isSelected
-                        ? "bg-primary text-primary-foreground font-black"
-                        : "text-foreground hover:bg-primary/10 hover:text-primary font-medium"
-                    }`}
-                  >
-                    {valStr}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="w-[1px] bg-border/60 self-stretch my-2 shrink-0" />
-
-          {/* Minutes Column */}
-          <div className="flex flex-col gap-1 w-[46%]">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground text-center pb-1 select-none border-b border-border/40">Min</span>
-            <div ref={minuteScrollRef} className="h-40 overflow-y-auto space-y-0.5 scroll-smooth pr-1">
-              {minutes.map((m) => {
-                const isSelected = currentMinute === m
-                const valStr = m.toString().padStart(2, "0")
-                return (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => handleMinuteSelect(m)}
-                    className={`w-full text-center py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
-                      isSelected
-                        ? "bg-primary text-primary-foreground font-black"
-                        : "text-foreground hover:bg-primary/10 hover:text-primary font-medium"
-                    }`}
-                  >
-                    {valStr}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      )}
+      {isMounted && isOpen && coords && createPortal(popoverContent, document.body)}
     </div>
   )
 }
