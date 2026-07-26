@@ -73,6 +73,7 @@ export function CategoryManagementView() {
   const [newSubName, setNewSubName] = useState("")
   const [editingSubId, setEditingSubId] = useState<string | null>(null)
   const [editSubName, setEditSubName] = useState("")
+  const [editingSubModeCategoryId, setEditingSubModeCategoryId] = useState<string | null>(null)
 
   const filteredCategories = categories.filter((cat) => {
     if (cat.isSystemDefault) return false
@@ -210,16 +211,31 @@ export function CategoryManagementView() {
               <div className="space-y-2 border-t border-border/40 pt-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sub-categories</span>
-                  <button
-                    onClick={() => {
-                      setAddingSubCategoryId(addingSubCategoryId === cat.id ? null : cat.id)
-                      setNewSubName("")
-                    }}
-                    className="p-1 rounded-md hover:bg-secondary text-primary hover:text-primary/80 transition-all cursor-pointer"
-                    title="Add sub-category"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => {
+                        setEditingSubModeCategoryId(editingSubModeCategoryId === cat.id ? null : cat.id)
+                      }}
+                      className={`p-1 rounded-md transition-all cursor-pointer ${
+                        editingSubModeCategoryId === cat.id
+                          ? "bg-primary/10 text-primary hover:bg-primary/20"
+                          : "hover:bg-secondary text-muted-foreground hover:text-foreground"
+                      }`}
+                      title="Edit sub-categories"
+                    >
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setAddingSubCategoryId(addingSubCategoryId === cat.id ? null : cat.id)
+                        setNewSubName("")
+                      }}
+                      className="p-1 rounded-md hover:bg-secondary text-primary hover:text-primary/80 transition-all cursor-pointer"
+                      title="Add sub-category"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 {addingSubCategoryId === cat.id && (
@@ -311,27 +327,34 @@ export function CategoryManagementView() {
                           )
                         }
 
+                        const isEditModeActive = editingSubModeCategoryId === cat.id
                         return (
                           <div
                             key={sc.id}
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${badgeClass} group/sub`}
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${badgeClass}`}
                           >
                             <span>{sc.name}</span>
-                            <button
-                              onClick={() => {
-                                setEditingSubId(sc.id)
-                                setEditSubName(sc.name)
-                              }}
-                              className="opacity-0 group-hover/sub:opacity-100 transition-opacity hover:text-foreground cursor-pointer"
-                            >
-                              <Edit2 className="h-2.5 w-2.5" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteSub(sc.id, sc.name)}
-                              className="opacity-0 group-hover/sub:opacity-100 transition-opacity hover:text-destructive cursor-pointer"
-                            >
-                              <Trash2 className="h-2.5 w-2.5" />
-                            </button>
+                            {isEditModeActive && (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    setEditingSubId(sc.id)
+                                    setEditSubName(sc.name)
+                                  }}
+                                  className="transition-colors text-muted-foreground hover:text-foreground cursor-pointer ml-1"
+                                  title="Rename sub-category"
+                                >
+                                  <Edit2 className="h-2.5 w-2.5" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteSub(sc.id, sc.name)}
+                                  className="transition-colors text-muted-foreground hover:text-destructive cursor-pointer"
+                                  title="Delete sub-category"
+                                >
+                                  <Trash2 className="h-2.5 w-2.5" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         )
                       })}
