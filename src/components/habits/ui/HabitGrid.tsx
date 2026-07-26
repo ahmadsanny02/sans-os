@@ -234,8 +234,8 @@ export function HabitGrid({
                 id="habitCategory"
                 value={newHabitCategory || ""}
                 onChange={(val) => {
-                  setNewHabitCategory && setNewHabitCategory(val)
-                  setNewHabitSubCategory && setNewHabitSubCategory("")
+                  if (setNewHabitCategory) setNewHabitCategory(val)
+                  if (setNewHabitSubCategory) setNewHabitSubCategory("")
                 }}
                 options={
                   habitCategories.length > 0
