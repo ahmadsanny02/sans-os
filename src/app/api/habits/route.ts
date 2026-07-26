@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { habits, habitLogs } from "@/types/schema"
-import { eq, and, gte, lte, asc, sql } from "drizzle-orm"
+import { eq, and, gte, lte, asc, sql, inArray } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 export async function GET(request: Request): Promise<NextResponse> {
@@ -141,15 +141,22 @@ export async function PUT(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "orderedIds is required and must be an array" }, { status: 400 })
     }
 
-    // Update each habit with its new orderIndex
+    // Update all habits with their new orderIndex in a single batch query
     await db.transaction(async (tx) => {
+      if (orderedIds.length === 0) return
+
+      const sqlChunks = [sql`CASE`]
       for (let i = 0; i < orderedIds.length; i++) {
-        const id = orderedIds[i]
-        await tx
-          .update(habits)
-          .set({ orderIndex: i })
-          .where(and(eq(habits.id, id), eq(habits.userId, user.id)))
+        sqlChunks.push(sql`WHEN ${habits.id} = ${orderedIds[i]} THEN ${i}::integer`)
       }
+      sqlChunks.push(sql`END`)
+
+      const finalSql = sql.join(sqlChunks, sql` `)
+
+      await tx
+        .update(habits)
+        .set({ orderIndex: finalSql })
+        .where(and(inArray(habits.id, orderedIds), eq(habits.userId, user.id)))
     })
 
     return NextResponse.json({ success: true })
