@@ -133,7 +133,10 @@ export function CustomTimePicker({
       </div>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 z-50 flex gap-2 rounded-2xl border border-border bg-white dark:bg-slate-950 p-3 shadow-2xl w-52 justify-between">
+        <div
+          style={{ opacity: 1 }}
+          className="absolute top-full left-0 mt-2 z-50 flex gap-2 rounded-2xl border border-border bg-white dark:bg-slate-950 p-3 shadow-2xl w-52 justify-between"
+        >
           {/* Hours Column */}
           <div className="flex flex-col gap-1 w-[46%]">
             <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground text-center pb-1 select-none border-b border-border/40">Hour</span>

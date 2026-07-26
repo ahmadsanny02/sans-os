@@ -176,7 +176,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
 
             if (isEditingThis) {
               return (
-                <div key={sub.id} className="flex flex-col gap-2 p-2.5 rounded-xl bg-background/90 border border-border text-xs shadow-sm">
+                <div key={sub.id} className="flex flex-col gap-2 p-2.5 rounded-xl bg-background border border-border text-xs shadow-sm">
                   <input
                     type="text"
                     value={editTitle}
@@ -281,7 +281,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
 
       {/* Add Sub Schedule Form */}
       {isAdding && (
-        <form onSubmit={handleCreateSub} className="flex flex-col gap-2 p-2.5 rounded-xl bg-background/90 border border-primary/30 text-xs shadow-sm animate-in fade-in duration-150">
+        <form onSubmit={handleCreateSub} className="flex flex-col gap-2 p-2.5 rounded-xl bg-background border border-primary/30 text-xs shadow-sm">
           <input
             type="text"
             value={newTitle}
