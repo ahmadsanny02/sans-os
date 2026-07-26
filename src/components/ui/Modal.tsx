@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useSyncExternalStore } from "react"
 import { createPortal } from "react-dom"
 import { X } from "lucide-react"
 
@@ -11,6 +11,10 @@ interface ModalProps {
   maxWidth?: string // e.g. "max-w-lg", "max-w-md", "max-w-xl", "max-w-2xl"
 }
 
+const subscribe = () => () => {}
+const getSnapshot = () => true
+const getServerSnapshot = () => false
+
 export function Modal({
   isOpen,
   onClose,
@@ -20,13 +24,7 @@ export function Modal({
   maxWidth = "max-w-lg",
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
-  const [mounted, setMounted] = useState(false)
-
-  // Avoid hydration mismatch in Next.js SSR
-  useEffect(() => {
-    setMounted(true)
-    return () => setMounted(false)
-  }, [])
+  const isMounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -43,7 +41,7 @@ export function Modal({
     }
   }, [isOpen, onClose])
 
-  if (!isOpen || !mounted) return null
+  if (!isOpen || !isMounted) return null
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
