@@ -1,9 +1,15 @@
 "use client"
 
-import React from "react"
-import { TimetableBlock } from "@/hooks/useDaily"
-import { Trash2, Clock, CalendarRange, Link2, Pencil } from "lucide-react"
-import { useState } from "react"
+import React, { useState } from "react"
+import {
+  TimetableBlock,
+  TimetableSubSchedule,
+  useCreateTimetableSubScheduleMutation,
+  useUpdateTimetableSubScheduleMutation,
+  useToggleTimetableSubScheduleMutation,
+  useDeleteTimetableSubScheduleMutation,
+} from "@/hooks/useDaily"
+import { Trash2, Clock, CalendarRange, Link2, Pencil, Plus, CheckSquare, Square, X, Check, ListChecks } from "lucide-react"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
 import { isCategoryInModule } from "@/lib/categoryUtils"
@@ -61,18 +67,6 @@ interface TimetableProps {
   activeDayBlocks: TimetableBlock[]
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Personal: "teal",
-  Work: "blue",
-  Business: "indigo",
-  Playing: "pink",
-  Social: "purple",
-  Education: "orange",
-  Project: "red",
-  Family: "green",
-  General: "slate",
-}
-
 function timeToMinutes(t: string): number {
   const [h, m] = t.split(":").map(Number)
   return h * 60 + m
@@ -84,6 +78,257 @@ function minutesToTime(mins: number): string {
   const hStr = h.toString().padStart(2, "0")
   const mStr = m.toString().padStart(2, "0")
   return `${hStr}:${mStr}`
+}
+
+function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
+  const createSubMutation = useCreateTimetableSubScheduleMutation()
+  const updateSubMutation = useUpdateTimetableSubScheduleMutation()
+  const toggleSubMutation = useToggleTimetableSubScheduleMutation()
+  const deleteSubMutation = useDeleteTimetableSubScheduleMutation()
+
+  const [isAdding, setIsAdding] = useState(false)
+  const [newTitle, setNewTitle] = useState("")
+  const [newStart, setNewStart] = useState("")
+  const [newEnd, setNewEnd] = useState("")
+
+  const [editingSubId, setEditingSubId] = useState<string | null>(null)
+  const [editTitle, setEditTitle] = useState("")
+  const [editStart, setEditStart] = useState("")
+  const [editEnd, setEditEnd] = useState("")
+
+  const subSchedules = block.subSchedules || []
+  const completedCount = subSchedules.filter((s) => s.completed).length
+  const totalCount = subSchedules.length
+  const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
+
+  const handleCreateSub = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newTitle.trim()) return
+    await createSubMutation.mutateAsync({
+      timetableBlockId: block.id,
+      title: newTitle.trim(),
+      startTime: newStart || null,
+      endTime: newEnd || null,
+    })
+    setNewTitle("")
+    setNewStart("")
+    setNewEnd("")
+    setIsAdding(false)
+  }
+
+  const handleStartEditSub = (sub: TimetableSubSchedule) => {
+    setEditingSubId(sub.id)
+    setEditTitle(sub.title)
+    setEditStart(sub.startTime || "")
+    setEditEnd(sub.endTime || "")
+  }
+
+  const handleSaveEditSub = async (id: string) => {
+    if (!editTitle.trim()) return
+    await updateSubMutation.mutateAsync({
+      id,
+      title: editTitle.trim(),
+      startTime: editStart || null,
+      endTime: editEnd || null,
+    })
+    setEditingSubId(null)
+  }
+
+  return (
+    <div className="mt-3 pt-3 border-t border-border/40 space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
+          <ListChecks className="h-3.5 w-3.5 text-primary" />
+          <span>Sub Schedules</span>
+          {totalCount > 0 && (
+            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary font-extrabold">
+              {completedCount}/{totalCount} ({progress}%)
+            </span>
+          )}
+        </div>
+        {!isAdding && (
+          <button
+            type="button"
+            onClick={() => setIsAdding(true)}
+            className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:text-primary/80 transition-colors py-0.5 px-1.5 rounded-lg hover:bg-primary/10 cursor-pointer"
+          >
+            <Plus className="h-3 w-3" />
+            <span>Add Sub</span>
+          </button>
+        )}
+      </div>
+
+      {totalCount > 0 && (
+        <div className="w-full h-1.5 rounded-full bg-secondary/80 overflow-hidden">
+          <div
+            className="h-full bg-primary transition-all duration-300 rounded-full"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
+
+      {/* Sub-schedules list */}
+      {subSchedules.length > 0 && (
+        <div className="space-y-1.5 pt-1">
+          {subSchedules.map((sub) => {
+            const isEditingThis = editingSubId === sub.id
+
+            if (isEditingThis) {
+              return (
+                <div key={sub.id} className="flex flex-col gap-2 p-2.5 rounded-xl bg-background/90 border border-border text-xs shadow-sm">
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    placeholder="Sub-schedule title..."
+                    className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 outline-none text-xs focus:border-primary"
+                    autoFocus
+                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      value={editStart}
+                      onChange={(e) => setEditStart(e.target.value)}
+                      className="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+                    />
+                    <span className="text-muted-foreground text-[10px]">to</span>
+                    <input
+                      type="time"
+                      value={editEnd}
+                      onChange={(e) => setEditEnd(e.target.value)}
+                      className="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+                    />
+                    <div className="flex items-center gap-1 ml-auto">
+                      <button
+                        type="button"
+                        onClick={() => handleSaveEditSub(sub.id)}
+                        disabled={!editTitle.trim() || updateSubMutation.isPending}
+                        className="p-1 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer disabled:opacity-50"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingSubId(null)}
+                        className="p-1 rounded-md bg-secondary text-muted-foreground hover:text-foreground cursor-pointer"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
+            return (
+              <div
+                key={sub.id}
+                className="group/sub flex items-center justify-between p-2 rounded-xl bg-background/50 hover:bg-background/90 border border-border/40 transition-all text-xs"
+              >
+                <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleSubMutation.mutate({ id: sub.id, completed: !sub.completed })}
+                    className="text-muted-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
+                    title={sub.completed ? "Mark incomplete" : "Mark completed"}
+                  >
+                    {sub.completed ? (
+                      <CheckSquare className="h-4 w-4 text-emerald-500" />
+                    ) : (
+                      <Square className="h-4 w-4" />
+                    )}
+                  </button>
+                  <span
+                    className={`break-words ${
+                      sub.completed ? "line-through text-muted-foreground/70" : "text-foreground font-medium"
+                    }`}
+                  >
+                    {sub.title}
+                  </span>
+                  {(sub.startTime || sub.endTime) && (
+                    <span className="shrink-0 text-[10px] font-semibold text-muted-foreground bg-secondary/60 px-1.5 py-0.5 rounded-md">
+                      {sub.startTime || "..."} - {sub.endTime || "..."}
+                    </span>
+                  )}
+                </div>
+
+                <div className="opacity-0 group-hover/sub:opacity-100 flex items-center gap-1 shrink-0 transition-opacity">
+                  <button
+                    type="button"
+                    onClick={() => handleStartEditSub(sub)}
+                    className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                    title="Edit sub-schedule"
+                  >
+                    <Pencil className="h-3 w-3" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteSubMutation.mutate({ id: sub.id, timetableBlockId: block.id })}
+                    className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+                    title="Delete sub-schedule"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Add Sub Schedule Form */}
+      {isAdding && (
+        <form onSubmit={handleCreateSub} className="flex flex-col gap-2 p-2.5 rounded-xl bg-background/90 border border-primary/30 text-xs shadow-sm animate-in fade-in duration-150">
+          <input
+            type="text"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            placeholder="Sub-schedule title..."
+            className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 outline-none text-xs focus:border-primary"
+            autoFocus
+            required
+          />
+          <div className="flex items-center gap-2">
+            <input
+              type="time"
+              value={newStart}
+              onChange={(e) => setNewStart(e.target.value)}
+              className="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+              title="Start Time (Optional)"
+            />
+            <span className="text-muted-foreground text-[10px]">to</span>
+            <input
+              type="time"
+              value={newEnd}
+              onChange={(e) => setNewEnd(e.target.value)}
+              className="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+              title="End Time (Optional)"
+            />
+            <div className="flex items-center gap-1 ml-auto">
+              <button
+                type="submit"
+                disabled={!newTitle.trim() || createSubMutation.isPending}
+                className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 cursor-pointer"
+              >
+                <Plus className="h-3 w-3" />
+                Add
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAdding(false)
+                  setNewTitle("")
+                }}
+                className="p-1 rounded-lg border border-border bg-secondary text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        </form>
+      )}
+    </div>
+  )
 }
 
 export function Timetable({
@@ -460,71 +705,76 @@ export function Timetable({
                     </div>
                   ) : (
                     /* Scheduled Block Box */
-                    <div className={`flex items-start justify-between rounded-xl border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm ${theme.bg} ${theme.border}`}>
-                      <div className="space-y-1 flex-1 min-w-0 pr-2">
-                        <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-muted-foreground">
-                          <Clock className="h-3.5 w-3.5" />
-                          <span>
-                            {block.startTime} - {block.endTime}
-                          </span>
-                          {duration && (
-                            <span className="rounded-full bg-background/50 px-2 py-0.5 text-[10px]">
-                              {duration}
+                    <div className={`flex flex-col rounded-xl border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm ${theme.bg} ${theme.border}`}>
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1 flex-1 min-w-0 pr-2">
+                          <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-muted-foreground">
+                            <Clock className="h-3.5 w-3.5" />
+                            <span>
+                              {block.startTime} - {block.endTime}
                             </span>
-                          )}
-                          {block.dayOfWeek === -1 && (
-                            <span className="rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-violet-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
-                              Every Day
-                            </span>
-                          )}
-                          {block.isTodo && (
-                            <span className="rounded-full bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/20 dark:text-emerald-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
-                              To-Do
+                            {duration && (
+                              <span className="rounded-full bg-background/50 px-2 py-0.5 text-[10px]">
+                                {duration}
+                              </span>
+                            )}
+                            {block.dayOfWeek === -1 && (
+                              <span className="rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-violet-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
+                                Every Day
+                              </span>
+                            )}
+                            {block.isTodo && (
+                              <span className="rounded-full bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/20 dark:text-emerald-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
+                                To-Do
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <h4 className="text-base font-bold text-foreground break-words whitespace-normal max-w-full">
+                              {block.title}
+                            </h4>
+                            {block.link && (
+                              <a
+                                href={block.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
+                                title="Open Link"
+                              >
+                                <Link2 className="h-3.5 w-3.5" />
+                              </a>
+                            )}
+                          </div>
+                          
+                          {block.category && (
+                            <span className={`inline-block text-[10px] font-bold tracking-wide uppercase ${theme.text}`}>
+                              {block.category}
+                              {block.subCategory && <span className="opacity-70 font-medium"> • {block.subCategory}</span>}
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <h4 className="text-base font-bold text-foreground break-words whitespace-normal max-w-full">
-                            {block.title}
-                          </h4>
-                          {block.link && (
-                            <a
-                              href={block.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-                              title="Open Link"
-                            >
-                              <Link2 className="h-3.5 w-3.5" />
-                            </a>
-                          )}
+                        <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-1 transition-all shrink-0">
+                          <button
+                            onClick={() => handleStartEdit(block)}
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                            aria-label="Edit schedule block"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBlock(block.id)}
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                            aria-label="Delete schedule block"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
-                        
-                        {block.category && (
-                          <span className={`inline-block text-[10px] font-bold tracking-wide uppercase ${theme.text}`}>
-                            {block.category}
-                            {block.subCategory && <span className="opacity-70 font-medium"> • {block.subCategory}</span>}
-                          </span>
-                        )}
                       </div>
 
-                      <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-1 transition-all shrink-0">
-                        <button
-                          onClick={() => handleStartEdit(block)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
-                          aria-label="Edit schedule block"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteBlock(block.id)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
-                          aria-label="Delete schedule block"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                      {/* Sub-Schedules Breakdown Section */}
+                      <TimetableSubSchedulesSection block={block} />
                     </div>
                   )}
                 </div>
