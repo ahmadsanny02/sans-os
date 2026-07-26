@@ -3,17 +3,17 @@
 import React, { useState, useRef, useEffect } from "react"
 import { ChevronDown, Check } from "lucide-react"
 
-export interface SelectOption {
-  value: string | number
+export interface SelectOption<T = string | number> {
+  value: T
   label: string
   icon?: React.ReactNode
   dotClass?: string
 }
 
-interface CustomSelectProps {
-  value: string | number
-  onChange: (value: any) => void
-  options: SelectOption[]
+interface CustomSelectProps<T = string | number> {
+  value: T
+  onChange: (value: T) => void
+  options: SelectOption<T>[]
   label?: string
   placeholder?: string
   className?: string
@@ -25,7 +25,7 @@ interface CustomSelectProps {
   id?: string
 }
 
-export function CustomSelect({
+export function CustomSelect<T extends string | number = string | number>({
   value,
   onChange,
   options,
@@ -38,7 +38,7 @@ export function CustomSelect({
   fullWidth = false,
   disabled = false,
   id,
-}: CustomSelectProps) {
+}: CustomSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
