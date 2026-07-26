@@ -157,6 +157,7 @@ export function CustomTimePicker({
   const popoverContent = isOpen && coords && (
     <div
       ref={popoverRef}
+      id={`${id || "time-picker"}-popover`}
       style={{
         position: "absolute",
         top: `${coords.top}px`,
@@ -228,6 +229,11 @@ export function CustomTimePicker({
           ref={inputRef}
           id={id}
           type="text"
+          role="combobox"
+          aria-label="Select or enter time in HH:MM format"
+          aria-expanded={isOpen}
+          aria-controls={`${id || "time-picker"}-popover`}
+          aria-haspopup="dialog"
           value={value}
           onChange={handleInputChange}
           onClick={() => !disabled && setIsOpen(true)}
