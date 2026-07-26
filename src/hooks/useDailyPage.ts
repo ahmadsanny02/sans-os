@@ -45,18 +45,6 @@ function minutesToTime(mins: number): string {
   return `${hStr}:${mStr}`
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Personal: "teal",
-  Work: "blue",
-  Business: "indigo",
-  Playing: "pink",
-  Social: "purple",
-  Education: "orange",
-  Project: "red",
-  Family: "green",
-  General: "slate",
-}
-
 export function useDailyPage() {
   const { categories } = useCategories()
   const activeDate = useWorkspaceStore((state) => state.activeDate)
