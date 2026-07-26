@@ -219,7 +219,10 @@ export function LanguageBoardView({
     const todayStr = new Date().toDateString()
     return vocabList.filter((vocab) => {
       if (!vocab.memorized) return false
-      return new Date(vocab.createdAt).toDateString() === todayStr
+      const checkDateStr = vocab.memorizedAt
+        ? new Date(vocab.memorizedAt).toDateString()
+        : new Date(vocab.createdAt).toDateString()
+      return checkDateStr === todayStr
     }).length
   }, [vocabList])
 
