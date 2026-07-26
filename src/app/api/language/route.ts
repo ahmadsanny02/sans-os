@@ -185,6 +185,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     const updateData: {
       masteryLevel?: number
       memorized?: boolean
+      memorizedAt?: Date | null
       translation?: string
       autoTranslation?: string | null
     } = {}
@@ -193,6 +194,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     if (memorized !== undefined) {
       const isMemorized = Boolean(memorized)
       updateData.memorized = isMemorized
+      updateData.memorizedAt = isMemorized ? new Date() : null
 
       if (isMemorized) {
         let autoTrans = existingLog.autoTranslation
