@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Calendar, Clock, Loader2, Link2, AlertCircle } from "lucide-react"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
+import { CustomTimePicker } from "@/components/ui/CustomTimePicker"
 import { isCategoryInModule } from "@/lib/categoryUtils"
 
 interface AddDailyEntryCardProps {
@@ -371,13 +372,11 @@ export function AddDailyEntryCard({
                     <label htmlFor="startTime" className="text-xs font-bold text-muted-foreground">
                       Start Time
                     </label>
-                    <input
+                    <CustomTimePicker
                       id="startTime"
-                      type="time"
                       required={targetTimetable}
                       value={timetableStartTime}
-                      onChange={(e) => setTimetableStartTime(e.target.value)}
-                      className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      onChange={(val) => setTimetableStartTime(val)}
                     />
                   </div>
 
@@ -402,13 +401,11 @@ export function AddDailyEntryCard({
                     <label htmlFor="endTime" className="text-xs font-bold text-muted-foreground">
                       End Time
                     </label>
-                    <input
+                    <CustomTimePicker
                       id="endTime"
-                      type="time"
                       required={targetTimetable}
                       value={timetableEndTime}
-                      onChange={(e) => setTimetableEndTime(e.target.value)}
-                      className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      onChange={(val) => setTimetableEndTime(val)}
                     />
                   </div>
 
