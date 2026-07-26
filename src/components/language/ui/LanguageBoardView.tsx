@@ -222,8 +222,8 @@ export function LanguageBoardView({
           title="Total Vocabulary"
           value={totalWords}
           icon={<BookOpen className="h-6 w-6" />}
-          iconBgClass="bg-violet-500/10"
-          iconTextClass="text-violet-500"
+          iconBgClass="bg-primary/10"
+          iconTextClass="text-primary"
           isLoading={isLoading}
           description="Words registered"
         />
