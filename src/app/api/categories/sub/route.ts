@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { subCategories } from "@/types/schema"
-import { eq, and, asc } from "drizzle-orm"
+import { eq, asc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
-export async function GET(request: Request): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   try {
     const supabase = await createServerSupabaseClient()
     const {
