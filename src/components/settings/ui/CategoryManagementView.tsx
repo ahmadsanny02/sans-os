@@ -11,17 +11,13 @@ import {
   Briefcase,
   Trash2,
   Edit2,
-  RotateCcw,
-  Sparkles,
   Layers,
   Check,
   X,
 } from "lucide-react"
 import { useCategories, CategoryItem } from "@/hooks/useCategories"
 import { confirmDestructive, showSuccessToast } from "@/lib/sweetalert"
-import { CustomSelect } from "@/components/ui/CustomSelect"
 import { CATEGORY_COLOR_MAP, isCategoryInModule } from "@/lib/categoryUtils"
-import Swal from "sweetalert2"
 
 const MODULE_OPTIONS = [
   { value: "all", label: "All Modules", icon: Layers },
@@ -61,7 +57,6 @@ export function CategoryManagementView() {
     addSubCategory,
     updateSubCategory,
     deleteSubCategory,
-    resetToDefault,
   } = useCategories()
   const [selectedModule, setSelectedModule] = useState<string>("all")
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -123,54 +118,6 @@ export function CategoryManagementView() {
     if (confirmed) {
       deleteCategory(id)
       showSuccessToast("Category deleted")
-    }
-  }
-
-  const handleReset = async () => {
-    const confirmed = await confirmDestructive("Reset Categories", "Reset all categories back to system defaults?")
-    if (confirmed) {
-      resetToDefault()
-      showSuccessToast("Categories reset to default")
-    }
-  }
-
-  const handleCreateSub = async (categoryId: string) => {
-    const { value: name } = await Swal.fire({
-      title: "Add Sub-category",
-      input: "text",
-      inputPlaceholder: "Enter sub-category name...",
-      showCancelButton: true,
-      confirmButtonText: "Create",
-      cancelButtonText: "Cancel",
-      inputValidator: (value) => {
-        if (!value) {
-          return "Name is required!"
-        }
-      }
-    })
-    if (name) {
-      addSubCategory(categoryId, name)
-      showSuccessToast("Sub-category created")
-    }
-  }
-
-  const handleEditSub = async (id: string, currentName: string) => {
-    const { value: name } = await Swal.fire({
-      title: "Edit Sub-category",
-      input: "text",
-      inputValue: currentName,
-      showCancelButton: true,
-      confirmButtonText: "Save",
-      cancelButtonText: "Cancel",
-      inputValidator: (value) => {
-        if (!value) {
-          return "Name is required!"
-        }
-      }
-    })
-    if (name && name !== currentName) {
-      updateSubCategory(id, name)
-      showSuccessToast("Sub-category updated")
     }
   }
 
