@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { categories } from "@/types/schema"
-import { eq, and, asc } from "drizzle-orm"
+import { eq, asc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
-export async function GET(request: Request): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   try {
     const supabase = await createServerSupabaseClient()
     const {
@@ -24,15 +24,17 @@ export async function GET(request: Request): Promise<NextResponse> {
     // Prepend General if it is not present in the DB
     const hasGeneral = items.some((c) => c.name.toLowerCase() === "general")
     if (!hasGeneral) {
-      const generalItem = {
+      const generalItem: typeof categories.$inferSelect = {
         id: "default_general",
+        userId: user.id,
         name: "General",
         module: "general",
         color: "primary",
         description: "General or unclassified tasks",
         isSystemDefault: true,
+        createdAt: new Date(),
       }
-      items.unshift(generalItem as any)
+      items.unshift(generalItem)
     }
 
     return NextResponse.json(items)
