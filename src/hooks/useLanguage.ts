@@ -21,6 +21,7 @@ export interface VocabularyLog {
   vIngTranslation: string | null
   langDirection: string
   createdAt: string
+  memorizedAt: string | null
 }
 
 export interface WritingLog {
