@@ -780,7 +780,7 @@ const VocabCard = React.memo(function VocabCard({
       }`}
     >
       {/* Header row */}
-      <div>
+      <div className="space-y-2">
         <div className="flex items-center justify-between gap-2 border-b border-border/40 pb-2.5">
           <div className="flex items-center gap-1.5 flex-wrap">
             <Badge variant="primary">VOCAB</Badge>
