@@ -136,8 +136,8 @@ export function BucketListBoardView({
           title="Total Bucket List Goals"
           value={totalCount}
           icon={<Compass className="h-6 w-6" />}
-          iconBgClass="bg-violet-500/10"
-          iconTextClass="text-violet-500"
+          iconBgClass="bg-primary/10"
+          iconTextClass="text-primary"
           isLoading={isLoading}
           description="Dreams registered"
         />
