@@ -15,6 +15,17 @@ export interface Priority {
   createdAt: string
 }
 
+export interface TimetableSubSchedule {
+  id: string
+  userId: string
+  timetableBlockId: string
+  title: string
+  startTime?: string | null
+  endTime?: string | null
+  completed: boolean
+  createdAt: string
+}
+
 export interface TimetableBlock {
   id: string
   userId: string
@@ -29,6 +40,7 @@ export interface TimetableBlock {
   createdAt: string
   date: string | null
   isTodo: boolean
+  subSchedules?: TimetableSubSchedule[]
 }
 
 // --- PRIORITIES ---
@@ -225,6 +237,7 @@ async function createTimetableBlock(body: {
   isTodo?: boolean
   link?: string
   subCategory?: string | null
+  subSchedules?: Array<{ title: string; startTime?: string; endTime?: string }>
 }): Promise<TimetableBlock> {
   const res = await fetch("/api/timetable", {
     method: "POST",
@@ -253,6 +266,7 @@ export function useCreateTimetableBlockMutation() {
       isTodo?: boolean
       link?: string
       subCategory?: string | null
+      subSchedules?: Array<{ title: string; startTime?: string; endTime?: string }>
     }
   >({
     mutationFn: createTimetableBlock,
@@ -392,6 +406,194 @@ export function useUpdateTimetableBlockMutation() {
       queryClient.invalidateQueries({ queryKey: ["timetable"] })
       queryClient.invalidateQueries({ queryKey: ["priorities"] })
       queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
+    },
+  })
+}
+
+// --- TIMETABLE SUB-SCHEDULES ---
+
+async function createTimetableSubSchedule(body: {
+  timetableBlockId: string
+  title: string
+  startTime?: string | null
+  endTime?: string | null
+}): Promise<TimetableSubSchedule> {
+  const res = await fetch("/api/timetable/sub", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.error || "Failed to create sub-schedule")
+  }
+  return res.json()
+}
+
+export function useCreateTimetableSubScheduleMutation() {
+  const queryClient = useQueryClient()
+  return useMutation<
+    TimetableSubSchedule,
+    Error,
+    { timetableBlockId: string; title: string; startTime?: string | null; endTime?: string | null }
+  >({
+    mutationFn: createTimetableSubSchedule,
+    onSuccess: (newSub) => {
+      queryClient.setQueryData<TimetableBlock[]>(["timetable"], (old) => {
+        if (!old) return old
+        return old.map((b) => {
+          if (b.id === newSub.timetableBlockId) {
+            const subs = b.subSchedules || []
+            return { ...b, subSchedules: [...subs, newSub] }
+          }
+          return b
+        })
+      })
+      queryClient.invalidateQueries({ queryKey: ["timetable"] })
+    },
+  })
+}
+
+async function updateTimetableSubSchedule(body: {
+  id: string
+  title?: string
+  startTime?: string | null
+  endTime?: string | null
+}): Promise<TimetableSubSchedule> {
+  const res = await fetch("/api/timetable/sub", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.error || "Failed to update sub-schedule")
+  }
+  return res.json()
+}
+
+export function useUpdateTimetableSubScheduleMutation() {
+  const queryClient = useQueryClient()
+  return useMutation<
+    TimetableSubSchedule,
+    Error,
+    { id: string; title?: string; startTime?: string | null; endTime?: string | null }
+  >({
+    mutationFn: updateTimetableSubSchedule,
+    onSuccess: (updatedSub) => {
+      queryClient.setQueryData<TimetableBlock[]>(["timetable"], (old) => {
+        if (!old) return old
+        return old.map((b) => {
+          if (b.id === updatedSub.timetableBlockId) {
+            const subs = (b.subSchedules || []).map((s) => (s.id === updatedSub.id ? updatedSub : s))
+            return { ...b, subSchedules: subs }
+          }
+          return b
+        })
+      })
+      queryClient.invalidateQueries({ queryKey: ["timetable"] })
+    },
+  })
+}
+
+async function toggleTimetableSubSchedule(body: {
+  id: string
+  completed: boolean
+}): Promise<TimetableSubSchedule> {
+  const res = await fetch("/api/timetable/sub/toggle", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.error || "Failed to toggle sub-schedule")
+  }
+  return res.json()
+}
+
+export function useToggleTimetableSubScheduleMutation() {
+  const queryClient = useQueryClient()
+  return useMutation<
+    TimetableSubSchedule,
+    Error,
+    { id: string; completed: boolean },
+    { previous: TimetableBlock[] | undefined }
+  >({
+    mutationFn: toggleTimetableSubSchedule,
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ["timetable"] })
+      const previous = queryClient.getQueryData<TimetableBlock[]>(["timetable"])
+      if (previous) {
+        queryClient.setQueryData<TimetableBlock[]>(
+          ["timetable"],
+          previous.map((b) => ({
+            ...b,
+            subSchedules: (b.subSchedules || []).map((s) =>
+              s.id === variables.id ? { ...s, completed: variables.completed } : s
+            ),
+          }))
+        )
+      }
+      return { previous }
+    },
+    onError: (err, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["timetable"], context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["timetable"] })
+    },
+  })
+}
+
+async function deleteTimetableSubSchedule(id: string): Promise<{ success: boolean }> {
+  const res = await fetch(`/api/timetable/sub?id=${id}`, {
+    method: "DELETE",
+  })
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.error || "Failed to delete sub-schedule")
+  }
+  return res.json()
+}
+
+export function useDeleteTimetableSubScheduleMutation() {
+  const queryClient = useQueryClient()
+  return useMutation<
+    { success: boolean },
+    Error,
+    { id: string; timetableBlockId: string },
+    { previous: TimetableBlock[] | undefined }
+  >({
+    mutationFn: ({ id }) => deleteTimetableSubSchedule(id),
+    onMutate: async ({ id, timetableBlockId }) => {
+      await queryClient.cancelQueries({ queryKey: ["timetable"] })
+      const previous = queryClient.getQueryData<TimetableBlock[]>(["timetable"])
+      if (previous) {
+        queryClient.setQueryData<TimetableBlock[]>(
+          ["timetable"],
+          previous.map((b) => {
+            if (b.id === timetableBlockId) {
+              return {
+                ...b,
+                subSchedules: (b.subSchedules || []).filter((s) => s.id !== id),
+              }
+            }
+            return b
+          })
+        )
+      }
+      return { previous }
+    },
+    onError: (err, vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["timetable"], context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["timetable"] })
     },
   })
 }
