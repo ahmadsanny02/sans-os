@@ -1,8 +1,28 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { timetableBlocks, priorities } from "@/types/schema"
-import { eq, and, asc } from "drizzle-orm"
+import { timetableBlocks, priorities, timetableSubSchedules } from "@/types/schema"
+import { eq, and, asc, sql } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+
+async function ensureSubSchedulesTable() {
+  try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "timetable_sub_schedules" (
+        "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+        "user_id" text NOT NULL,
+        "timetable_block_id" uuid NOT NULL REFERENCES "timetable_blocks"("id") ON DELETE cascade,
+        "title" text NOT NULL,
+        "start_time" text,
+        "end_time" text,
+        "completed" boolean DEFAULT false NOT NULL,
+        "created_at" timestamp DEFAULT now() NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS "idx_timetable_sub_block" ON "timetable_sub_schedules" ("timetable_block_id");
+    `)
+  } catch (err) {
+    console.error("Failed to ensure timetable_sub_schedules table exists:", err)
+  }
+}
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -15,11 +35,17 @@ export async function GET(): Promise<NextResponse> {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const blocks = await db
-      .select()
-      .from(timetableBlocks)
-      .where(eq(timetableBlocks.userId, user.id))
-      .orderBy(asc(timetableBlocks.dayOfWeek), asc(timetableBlocks.startTime))
+    await ensureSubSchedulesTable()
+
+    const blocks = await db.query.timetableBlocks.findMany({
+      where: eq(timetableBlocks.userId, user.id),
+      with: {
+        subSchedules: {
+          orderBy: [asc(timetableSubSchedules.startTime), asc(timetableSubSchedules.createdAt)],
+        },
+      },
+      orderBy: [asc(timetableBlocks.dayOfWeek), asc(timetableBlocks.startTime)],
+    })
 
     return NextResponse.json(blocks)
   } catch (error) {
@@ -39,8 +65,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    await ensureSubSchedulesTable()
+
     const body = await request.json()
-    const { dayOfWeek, startTime, endTime, title, category, subCategory, color, date, isTodo, link } = body
+    const { dayOfWeek, startTime, endTime, title, category, subCategory, color, date, isTodo, link, subSchedules } = body
 
     if (dayOfWeek === undefined || !startTime || !endTime || !title) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -62,6 +90,24 @@ export async function POST(request: Request): Promise<NextResponse> {
         link: link || null,
       })
       .returning()
+
+    // Insert initial sub schedules if provided
+    if (Array.isArray(subSchedules) && subSchedules.length > 0) {
+      const validSubSchedules = subSchedules
+        .filter((s: { title?: string }) => s && s.title && s.title.trim())
+        .map((s: { title: string; startTime?: string; endTime?: string }) => ({
+          userId: user.id,
+          timetableBlockId: newBlock.id,
+          title: s.title.trim(),
+          startTime: s.startTime || null,
+          endTime: s.endTime || null,
+          completed: false,
+        }))
+
+      if (validSubSchedules.length > 0) {
+        await db.insert(timetableSubSchedules).values(validSubSchedules)
+      }
+    }
 
     // Automatically add to priorities if it is a custom schedule (date is not null)
     if (date) {
@@ -89,7 +135,17 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
     }
 
-    return NextResponse.json(newBlock)
+    // Return the block with created sub-schedules
+    const fullBlock = await db.query.timetableBlocks.findFirst({
+      where: and(eq(timetableBlocks.id, newBlock.id), eq(timetableBlocks.userId, user.id)),
+      with: {
+        subSchedules: {
+          orderBy: [asc(timetableSubSchedules.startTime), asc(timetableSubSchedules.createdAt)],
+        },
+      },
+    })
+
+    return NextResponse.json(fullBlock || newBlock)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
