@@ -203,3 +203,27 @@ body.swal2-no-backdrop .swal2-container {
 .swal2-popup.swal2-toast .swal2-timer-progress-bar {
   @apply !bg-primary/50;
 }
+
+/* Date & Time Inputs styling to align native pickers with active theme */
+input[type="date"],
+input[type="time"] {
+  color-scheme: light;
+}
+
+.dark input[type="date"],
+.dark input[type="time"] {
+  color-scheme: dark;
+}
+
+/* Custom styles for native time/date inputs indicator */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
