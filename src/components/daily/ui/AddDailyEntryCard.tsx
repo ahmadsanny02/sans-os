@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Calendar, Clock, Loader2, Link2, AlertCircle } from "lucide-react"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
-import { getCategoryStyle, isCategoryInModule } from "@/lib/categoryUtils"
+import { isCategoryInModule } from "@/lib/categoryUtils"
 
 interface AddDailyEntryCardProps {
   entryTitle: string
