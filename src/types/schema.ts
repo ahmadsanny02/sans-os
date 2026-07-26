@@ -188,6 +188,7 @@ export const vocabularyLogs = pgTable("vocabulary_logs", {
   vIngTranslation: text("v_ing_translation"),
   langDirection: text("lang_direction").default("en-id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  memorizedAt: timestamp("memorized_at"),
 })
 
 // 8.1 Formulas (Master data untuk rumus tata bahasa)
