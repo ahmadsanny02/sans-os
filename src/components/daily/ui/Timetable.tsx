@@ -12,6 +12,7 @@ import {
 import { Trash2, Clock, CalendarRange, Link2, Pencil, Plus, CheckSquare, Square, X, Check, ListChecks } from "lucide-react"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
+import { CustomTimePicker } from "@/components/ui/CustomTimePicker"
 import { isCategoryInModule } from "@/lib/categoryUtils"
 
 const COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
@@ -185,18 +186,20 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                     autoFocus
                   />
                   <div className="flex items-center gap-2">
-                    <input
-                      type="time"
+                    <CustomTimePicker
                       value={editStart}
-                      onChange={(e) => setEditStart(e.target.value)}
-                      className="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+                      onChange={(val) => setEditStart(val)}
+                      showIcon={false}
+                      inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+                      className="w-20"
                     />
                     <span className="text-muted-foreground text-[10px]">to</span>
-                    <input
-                      type="time"
+                    <CustomTimePicker
                       value={editEnd}
-                      onChange={(e) => setEditEnd(e.target.value)}
-                      className="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+                      onChange={(val) => setEditEnd(val)}
+                      showIcon={false}
+                      inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+                      className="w-20"
                     />
                     <div className="flex items-center gap-1 ml-auto">
                       <button
@@ -289,20 +292,22 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
             required
           />
           <div className="flex items-center gap-2">
-            <input
-              type="time"
+            <CustomTimePicker
               value={newStart}
-              onChange={(e) => setNewStart(e.target.value)}
-              className="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
-              title="Start Time (Optional)"
+              onChange={(val) => setNewStart(val)}
+              showIcon={false}
+              inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+              className="w-20"
+              placeholder="--:--"
             />
             <span className="text-muted-foreground text-[10px]">to</span>
-            <input
-              type="time"
+            <CustomTimePicker
               value={newEnd}
-              onChange={(e) => setNewEnd(e.target.value)}
-              className="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
-              title="End Time (Optional)"
+              onChange={(val) => setNewEnd(val)}
+              showIcon={false}
+              inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+              className="w-20"
+              placeholder="--:--"
             />
             <div className="flex items-center gap-1 ml-auto">
               <button
@@ -544,11 +549,9 @@ export function Timetable({
                         {/* Start Time */}
                         <div className="space-y-1.5">
                           <label className="text-xs font-bold text-muted-foreground">Start Time</label>
-                          <input
-                            type="time"
+                          <CustomTimePicker
                             value={editStartTime}
-                            onChange={(e) => handleStartTimeChange(e.target.value)}
-                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            onChange={(val) => handleStartTimeChange(val)}
                             required
                           />
                         </div>
@@ -568,11 +571,9 @@ export function Timetable({
                         {/* End Time */}
                         <div className="space-y-1.5">
                           <label className="text-xs font-bold text-muted-foreground">End Time</label>
-                          <input
-                            type="time"
+                          <CustomTimePicker
                             value={editEndTime}
-                            onChange={(e) => handleEndTimeChange(e.target.value)}
-                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            onChange={(val) => handleEndTimeChange(val)}
                             required
                           />
                         </div>
