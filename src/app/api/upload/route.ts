@@ -28,6 +28,12 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "File must be an image" }, { status: 400 })
     }
 
+    // Pre-check file size limit before buffer memory allocation (10MB Limit)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: "File size exceeds 10MB limit" }, { status: 400 })
+    }
+
     // 3. Initialize Supabase Admin Client
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
