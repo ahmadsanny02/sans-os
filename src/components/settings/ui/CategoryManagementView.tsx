@@ -211,29 +211,33 @@ export function CategoryManagementView() {
               <div className="space-y-2 border-t border-border/40 pt-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sub-categories</span>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <button
                       onClick={() => {
                         setEditingSubModeCategoryId(editingSubModeCategoryId === cat.id ? null : cat.id)
                       }}
-                      className={`p-1 rounded-md transition-all cursor-pointer ${
+                      className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                         editingSubModeCategoryId === cat.id
-                          ? "bg-primary/10 text-primary hover:bg-primary/20"
-                          : "hover:bg-secondary text-muted-foreground hover:text-foreground"
+                          ? "bg-primary/15 text-primary border border-primary/20"
+                          : "hover:bg-secondary border border-transparent text-muted-foreground hover:text-foreground"
                       }`}
                       title="Edit sub-categories"
                     >
-                      <Edit2 className="h-3.5 w-3.5" />
+                      <Edit2 className="h-3 w-3" />
                     </button>
                     <button
                       onClick={() => {
                         setAddingSubCategoryId(addingSubCategoryId === cat.id ? null : cat.id)
                         setNewSubName("")
                       }}
-                      className="p-1 rounded-md hover:bg-secondary text-primary hover:text-primary/80 transition-all cursor-pointer"
+                      className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                        addingSubCategoryId === cat.id
+                          ? "bg-primary/15 text-primary border-primary/20"
+                          : "hover:bg-secondary border-transparent text-primary hover:text-primary/80"
+                      }`}
                       title="Add sub-category"
                     >
-                      <Plus className="h-3.5 w-3.5" />
+                      <Plus className="h-3 w-3" />
                     </button>
                   </div>
                 </div>
@@ -335,25 +339,25 @@ export function CategoryManagementView() {
                           >
                             <span>{sc.name}</span>
                             {isEditModeActive && (
-                              <>
+                              <div className="flex items-center gap-1 ml-1.5 pl-1.5 border-l border-current/25">
                                 <button
                                   onClick={() => {
                                     setEditingSubId(sc.id)
                                     setEditSubName(sc.name)
                                   }}
-                                  className="transition-colors text-muted-foreground hover:text-foreground cursor-pointer ml-1"
+                                  className="transition-colors text-muted-foreground hover:text-foreground p-0.5 rounded cursor-pointer"
                                   title="Rename sub-category"
                                 >
                                   <Edit2 className="h-2.5 w-2.5" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteSub(sc.id, sc.name)}
-                                  className="transition-colors text-muted-foreground hover:text-destructive cursor-pointer"
+                                  className="transition-colors text-muted-foreground hover:text-destructive p-0.5 rounded cursor-pointer"
                                   title="Delete sub-category"
                                 >
                                   <Trash2 className="h-2.5 w-2.5" />
                                 </button>
-                              </>
+                              </div>
                             )}
                           </div>
                         )
