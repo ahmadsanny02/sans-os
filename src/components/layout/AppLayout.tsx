@@ -193,9 +193,9 @@ function SidebarNavigation({
                           key={child.href}
                           href={child.href}
                           onClick={onItemClick}
-                          className={`flex items-center rounded-xl px-3 py-1.5 text-sm font-semibold transition-all duration-200 ${
+                          className={`flex items-center rounded-xl px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                             isActive
-                              ? "text-primary bg-primary/10 font-bold"
+                              ? "text-primary bg-primary/10 font-semibold"
                               : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/20"
                           }`}
                         >

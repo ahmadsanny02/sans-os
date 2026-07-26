@@ -19,6 +19,7 @@ import {
   Languages,
   Filter,
   ChevronDown,
+  Target,
 } from "lucide-react"
 import { GridCardSkeleton } from "@/components/ui/Skeletons"
 import { StatCard } from "@/components/ui/StatCard"
@@ -214,10 +215,18 @@ export function LanguageBoardView({
     return vocabByDirection.reduce((acc, curr) => acc + curr.count, 0)
   }, [vocabByDirection])
 
+  const memorizedTodayCount = useMemo(() => {
+    const todayStr = new Date().toDateString()
+    return vocabList.filter((vocab) => {
+      if (!vocab.memorized) return false
+      return new Date(vocab.createdAt).toDateString() === todayStr
+    }).length
+  }, [vocabList])
+
   return (
     <>
       {/* 1. Statistics Cards */}
-      <div className="grid gap-6 sm:grid-cols-3 animate-in fade-in duration-200">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in duration-200">
         <StatCard
           title="Total Vocabulary"
           value={totalWords}
@@ -244,7 +253,26 @@ export function LanguageBoardView({
         />
 
         <StatCard
-          title="Writing Practice Logs"
+          title="Daily Memorized"
+          value={
+            <>
+              {memorizedTodayCount}
+              <span className="text-sm font-bold text-muted-foreground">/ 50</span>
+            </>
+          }
+          icon={<Target className="h-6 w-6" />}
+          iconBgClass="bg-amber-500/10"
+          iconTextClass="text-amber-500"
+          isLoading={isLoading}
+          description={
+            memorizedTodayCount >= 50
+              ? "Daily goal completed! 🔥"
+              : `${50 - memorizedTodayCount} more words left today`
+          }
+        />
+
+        <StatCard
+          title="Writing Practice"
           value={writingCount}
           icon={<Languages className="h-6 w-6" />}
           iconBgClass="bg-blue-500/10"
