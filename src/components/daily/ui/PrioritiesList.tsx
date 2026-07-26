@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Priority } from "@/hooks/useDaily"
-import { Trash2, Check, RefreshCw, Link2, Pencil, X, Tag } from "lucide-react"
+import { Trash2, Check, RefreshCw, Link2, Pencil, Tag } from "lucide-react"
 import { useState } from "react"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
