@@ -296,7 +296,7 @@ export function LanguageBoardView({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search word or translation..."
-              className="w-full rounded-xl border border-border bg-card/60 pl-10 pr-3.5 py-2 text-xs outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 shadow-sm"
+              className="w-full rounded-xl border border-border bg-card/60 pl-10 pr-3.5 py-2 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
             />
           </div>
 
@@ -339,11 +339,11 @@ export function LanguageBoardView({
                         type="button"
                         onClick={() => setDirFilter(opt.id)}
                         className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:bg-secondary/40 text-left cursor-pointer ${
-                          dirFilter === opt.id ? "text-violet-400 bg-violet-500/5 font-bold" : "text-foreground"
+                          dirFilter === opt.id ? "text-primary bg-primary/10 font-bold" : "text-foreground"
                         }`}
                       >
                         <span>{opt.label}</span>
-                        {dirFilter === opt.id && <Check className="h-3.5 w-3.5 text-violet-400 stroke-[3]" />}
+                        {dirFilter === opt.id && <Check className="h-3.5 w-3.5 text-primary stroke-[3]" />}
                       </button>
                     ))}
                   </div>
@@ -370,11 +370,11 @@ export function LanguageBoardView({
                         type="button"
                         onClick={() => setMemorizedFilter(opt.id)}
                         className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:bg-secondary/40 text-left cursor-pointer ${
-                          memorizedFilter === opt.id ? "text-violet-400 bg-violet-500/5 font-bold" : "text-foreground"
+                          memorizedFilter === opt.id ? "text-primary bg-primary/10 font-bold" : "text-foreground"
                         }`}
                       >
                         <span>{opt.label}</span>
-                        {memorizedFilter === opt.id && <Check className="h-3.5 w-3.5 text-violet-400 stroke-[3]" />}
+                        {memorizedFilter === opt.id && <Check className="h-3.5 w-3.5 text-primary stroke-[3]" />}
                       </button>
                     ))}
                   </div>
@@ -509,7 +509,7 @@ export function LanguageBoardView({
                       value={word}
                       onChange={(e) => setWord(e.target.value)}
                       placeholder={langDirection === "id-en" ? "e.g. Belajar" : "e.g. Ephemeral"}
-                      className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 shadow-sm"
+                      className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
                     />
                   </div>
 
@@ -525,7 +525,7 @@ export function LanguageBoardView({
                       value={translation}
                       onChange={(e) => setTranslation(e.target.value)}
                       placeholder={langDirection === "id-en" ? "e.g. Study, learn" : "e.g. Temporary, brief"}
-                      className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 shadow-sm"
+                      className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
                     />
                   </div>
                 </div>
@@ -547,7 +547,7 @@ export function LanguageBoardView({
                           setExtraRows(updated)
                         }}
                         placeholder="Word..."
-                        className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 shadow-sm"
+                        className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
                       />
                     </div>
 
@@ -566,7 +566,7 @@ export function LanguageBoardView({
                             setExtraRows(updated)
                           }}
                           placeholder="Translation..."
-                          className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-sidebar-primary focus:ring-2 focus:ring-sidebar-primary/10 shadow-sm"
+                          className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
                         />
                         <button
                           type="button"
