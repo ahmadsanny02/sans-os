@@ -77,7 +77,7 @@ export function useLearningSubjectPage(subjectId: string) {
         name: subjectName.trim(),
         description: subjectDesc.trim() || null,
         status: subjectStatus,
-        color: "#8b5cf6",
+        color: "primary",
       })
       showSuccessToast("Subject updated successfully")
       setShowEditModal(false)
