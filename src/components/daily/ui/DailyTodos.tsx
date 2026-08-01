@@ -2,7 +2,7 @@
 
 import React from "react"
 import { DailyTodo } from "@/hooks/useDailyLogs"
-import { Trash2, Check, ListTodo, Link2, Pencil, X } from "lucide-react"
+import { Trash2, Check, ListTodo, Link2, Pencil, X, Flame } from "lucide-react"
 import { useState } from "react"
 
 interface HabitItem {
@@ -19,6 +19,7 @@ interface DailyTodosProps {
   handleToggleCompleted: (id: string, completed: boolean) => void
   handleDeleteTodo: (id: string) => Promise<void>
   handleUpdateTodo: (id: string, text: string, link: string) => Promise<void>
+  handlePromoteTodoToPriority?: (todo: DailyTodo) => Promise<void>
   isPendingToggleTodo?: boolean
   habits?: HabitItem[]
   handleToggleHabit?: (id: string) => void
@@ -32,6 +33,7 @@ export function DailyTodos({
   handleToggleCompleted,
   handleDeleteTodo,
   handleUpdateTodo,
+  handlePromoteTodoToPriority,
   isPendingToggleTodo = false,
   habits = [],
   handleToggleHabit,
@@ -257,6 +259,20 @@ export function DailyTodos({
                           </>
                         ) : (
                           <>
+                            {handlePromoteTodoToPriority && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handlePromoteTodoToPriority(todo)
+                                }}
+                                className="p-1.5 rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 transition-colors"
+                                title="Move to Top 5 Priorities"
+                                aria-label={`Move ${todo.text} to Top 5 Priorities`}
+                              >
+                                <Flame className="h-4 w-4" />
+                              </button>
+                            )}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
