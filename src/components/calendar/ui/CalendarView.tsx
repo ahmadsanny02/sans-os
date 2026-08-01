@@ -589,7 +589,7 @@ export function CalendarView({
                           </span>
                         )}
                         {isSelected && (
-                          <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-violet-500/15 text-violet-400 border border-violet-500/30 uppercase tracking-wider">
+                          <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30 uppercase tracking-wider truncate max-w-full">
                             Selected
                           </span>
                         )}
