@@ -2,7 +2,7 @@
 
 import React from "react"
 import { DailyTodo } from "@/hooks/useDailyLogs"
-import { ListTodo, Check } from "lucide-react"
+import { ListTodo, Check, Flame } from "lucide-react"
 
 interface HabitItem {
   id: string
@@ -16,6 +16,7 @@ interface TodosWidgetProps {
   isLoading: boolean
   isError: boolean
   handleToggle: (id: string, completed: boolean) => void
+  handlePromoteTodoToPriority?: (todo: DailyTodo) => Promise<void>
   isPendingToggle: boolean
   habits?: HabitItem[]
   handleToggleHabit?: (id: string) => void
@@ -27,6 +28,7 @@ export function TodosWidget({
   isLoading,
   isError,
   handleToggle,
+  handlePromoteTodoToPriority,
   isPendingToggle,
   habits = [],
   handleToggleHabit,
@@ -149,12 +151,26 @@ export function TodosWidget({
                       {todo.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
                     </button>
                     <span
-                      className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
+                      className={`text-xs font-semibold break-words whitespace-normal leading-tight flex-1 ${
                         todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                       }`}
                     >
                       {todo.text}
                     </span>
+                    {handlePromoteTodoToPriority && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handlePromoteTodoToPriority(todo)
+                        }}
+                        className="p-1 rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 transition-colors shrink-0"
+                        title="Move to Top 5 Priorities"
+                        aria-label={`Move ${todo.text} to Top 5 Priorities`}
+                      >
+                        <Flame className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
