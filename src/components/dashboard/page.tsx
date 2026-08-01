@@ -25,6 +25,7 @@ export default function DashboardComponent() {
       todosLoading={dashboardData.todosLoading}
       todosError={dashboardData.todosError}
       handleToggleTodo={dashboardData.handleToggleTodo}
+      handlePromoteTodoToPriority={dashboardData.handlePromoteTodoToPriority}
       isPendingToggleTodo={dashboardData.isPendingToggleTodo}
       habits={dashboardData.habits}
       habitsLoading={dashboardData.habitsLoading}
