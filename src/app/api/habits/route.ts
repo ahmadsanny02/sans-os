@@ -165,3 +165,43 @@ export async function PUT(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
+
+export async function PATCH(request: Request): Promise<NextResponse> {
+  try {
+    const supabase = await createServerSupabaseClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { id, name, category, subCategory, frequency } = body
+
+    if (!id || !name) {
+      return NextResponse.json({ error: "Habit ID and Name are required" }, { status: 400 })
+    }
+
+    const [updatedHabit] = await db
+      .update(habits)
+      .set({
+        name: name.trim(),
+        category: category || "General",
+        subCategory: subCategory || null,
+        frequency: frequency || "daily",
+      })
+      .where(and(eq(habits.id, id), eq(habits.userId, user.id)))
+      .returning()
+
+    if (!updatedHabit) {
+      return NextResponse.json({ error: "Habit not found" }, { status: 404 })
+    }
+
+    return NextResponse.json(updatedHabit)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Server Error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
+  }
+}
