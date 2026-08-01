@@ -34,6 +34,7 @@ interface DashboardViewProps {
   todosLoading: boolean
   todosError: boolean
   handleToggleTodo: (id: string, completed: boolean) => void
+  handlePromoteTodoToPriority?: (todo: DailyTodo) => Promise<void>
   isPendingToggleTodo: boolean
   // Habits
   habits: { id: string; name: string; completed: boolean; isHabit: true }[]
@@ -62,6 +63,7 @@ export function DashboardView({
   todosLoading,
   todosError,
   handleToggleTodo,
+  handlePromoteTodoToPriority,
   isPendingToggleTodo,
   habits,
   habitsLoading,
@@ -150,6 +152,7 @@ export function DashboardView({
             isLoading={todosLoading || habitsLoading}
             isError={todosError || habitsError}
             handleToggle={handleToggleTodo}
+            handlePromoteTodoToPriority={handlePromoteTodoToPriority}
             isPendingToggle={isPendingToggleTodo}
             habits={habits}
             handleToggleHabit={handleToggleHabit}
