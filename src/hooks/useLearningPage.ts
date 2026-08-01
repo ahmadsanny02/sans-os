@@ -107,7 +107,7 @@ export function useLearningPage() {
           name: subjectName.trim(),
           description: subjectDesc.trim() || null,
           status: subjectStatus,
-          color: "#8b5cf6",
+          color: "primary",
           category: subjectCategory,
           subCategory: subjectSubCategory || null,
         })
@@ -117,7 +117,7 @@ export function useLearningPage() {
           name: subjectName.trim(),
           description: subjectDesc.trim() || null,
           status: subjectStatus,
-          color: "#8b5cf6",
+          color: "primary",
           category: subjectCategory,
           subCategory: subjectSubCategory || null,
         })
