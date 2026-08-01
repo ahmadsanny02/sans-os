@@ -187,7 +187,7 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
           </div>
         </div>
         {activeSessionBlock && (
-          <span className="text-[11px] font-bold text-primary bg-primary/15 border border-primary/25 px-2.5 py-0.5 rounded-full shrink-0">
+          <span className="text-xs font-bold text-primary bg-primary/15 border border-primary/25 px-2.5 py-0.5 rounded-full shrink-0">
             {activeSessionBlock.startTime} - {activeSessionBlock.endTime}
           </span>
         )}
@@ -219,7 +219,7 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
       {/* 2. Main Playback / Timer Body */}
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
-          <span className={`text-[10px] font-extrabold uppercase tracking-widest block ${meta.textClass}`}>
+          <span className={`text-[9px] font-black uppercase tracking-widest block ${meta.textClass}`}>
             {meta.label}
           </span>
           <h4 className="text-4xl font-black text-foreground font-mono leading-none tracking-tight">
@@ -258,7 +258,7 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <div className="flex justify-between items-center text-[10px] text-muted-foreground font-semibold">
+          <div className="flex justify-between items-center text-xs text-muted-foreground font-semibold">
             <span className="flex items-center gap-1">
               <Target className="h-3 w-3 shrink-0" /> Session {currentSessionDisplay}/{totalSessionsNeeded}
             </span>
@@ -270,7 +270,7 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
       )}
 
       {/* 5. Sub-actions */}
-      <div className="flex items-center justify-between text-[10px] text-muted-foreground/80 font-bold border-t border-border/20 pt-2 bg-transparent select-none">
+      <div className="flex items-center justify-between text-xs text-muted-foreground/80 font-medium border-t border-border/20 pt-2 bg-transparent select-none">
         <span className="truncate pr-4">
           {integrationMode === "auto" 
             ? "Tied to timetable blocks" 
