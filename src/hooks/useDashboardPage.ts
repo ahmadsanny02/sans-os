@@ -6,13 +6,16 @@ import { useWorkspaceStore } from "@/store/workspaceStore"
 import {
   usePrioritiesQuery,
   useTogglePriorityMutation,
+  useCreatePriorityMutation,
   useTimetableQuery,
 } from "@/hooks/useDaily"
 import {
   useDailyTodosQuery,
   useToggleDailyTodoMutation,
+  useDeleteDailyTodoMutation,
   useDailyLogQuery,
 } from "@/hooks/useDailyLogs"
+import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
 import { useHabitsQuery, useToggleLogMutation } from "@/hooks/useHabits"
 import { parseISO } from "date-fns"
 
@@ -64,6 +67,8 @@ export function useDashboardPage() {
 
   // 3. Mutations
   const togglePriorityMutation = useTogglePriorityMutation(activeDate)
+  const createPriorityMutation = useCreatePriorityMutation()
+  const deleteTodoMutation = useDeleteDailyTodoMutation(activeDate)
   const toggleTodoMutation = useToggleDailyTodoMutation(activeDate)
   const toggleHabitMutation = useToggleLogMutation()
 
@@ -154,6 +159,28 @@ export function useDashboardPage() {
     toggleHabitMutation.mutate({ habitId, date: activeDate })
   }
 
+  const handlePromoteTodoToPriority = async (todo: { id: string; text: string; link?: string | null }): Promise<void> => {
+    if (priorities.length >= 5) {
+      await showError("Priority Limit Reached", "Only 5 top priorities are allowed per day. Please complete or delete an existing priority first.")
+      return
+    }
+
+    try {
+      await createPriorityMutation.mutateAsync({
+        date: activeDate,
+        text: todo.text,
+        link: todo.link || undefined,
+        category: "General",
+      })
+      await deleteTodoMutation.mutateAsync(todo.id)
+      showSuccessToast("Moved task to Top 5 Priorities")
+    } catch (err) {
+      console.error(err)
+      const errorMsg = err instanceof Error ? err.message : "Failed to move task to priorities."
+      await showError("Error", errorMsg)
+    }
+  }
+
   return {
     activeDate,
     activeDateStr,
@@ -169,6 +196,7 @@ export function useDashboardPage() {
     todosLoading,
     todosError,
     handleToggleTodo,
+    handlePromoteTodoToPriority,
     isPendingToggleTodo: toggleTodoMutation.isPending,
     // Habits
     habits: todayHabits,
