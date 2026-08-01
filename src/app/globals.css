@@ -116,7 +116,7 @@
 }
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--border));
-  border-radius: 9999px;
+  border-radius: var(--radius);
   border: 2px solid transparent;
   background-clip: content-box;
 }
