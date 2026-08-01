@@ -150,8 +150,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
             )}
             <div className="flex items-center gap-2 pt-1">
               <span
-                className="w-3 h-3 rounded-full inline-block shadow-sm"
-                style={{ backgroundColor: "#8b5cf6" }}
+                className="w-3 h-3 rounded-full inline-block shadow-sm bg-primary"
               />
               <Badge
                 variant={
