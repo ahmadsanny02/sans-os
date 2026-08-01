@@ -646,8 +646,7 @@ export function CalendarView({
                       return (
                         <div
                           key={b.id}
-                          className={`rounded-xl border p-3.5 text-xs space-y-1.5 bg-card/45 shadow-sm border-l-4 ${color.border}`}
-                          style={{ borderLeftColor: `var(--${blockColor}-500)` }}
+                          className={`rounded-xl border p-3.5 text-xs space-y-1.5 bg-card/60 shadow-sm ${color.border}`}
                         >
                           <div className="flex items-center justify-between gap-1.5 flex-wrap">
                             <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${color.bg} ${color.text}`}>
@@ -668,7 +667,7 @@ export function CalendarView({
                     {group.projectItems.map((item) => (
                       <div
                         key={item.id}
-                        className="rounded-xl border border-amber-500/30 border-l-4 border-l-amber-500 bg-amber-500/5 p-3.5 text-xs space-y-1.5 shadow-sm"
+                        className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5 text-xs space-y-1.5 shadow-sm"
                       >
                         <div className="flex items-center justify-between gap-1.5 flex-wrap">
                           <span className="text-[9px] font-black uppercase tracking-wider text-amber-500 flex items-center gap-1">
