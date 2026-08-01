@@ -68,7 +68,7 @@ export function CalendarMonthGrid({
     <div className="space-y-4">
       {isError && (
         <div className="flex items-center gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-xs font-semibold text-destructive">
-          <AlertCircle className="h-4 w-4 shrink-0 animate-bounce" />
+          <AlertCircle className="h-4 w-4 shrink-0 transition-transform duration-200 hover:scale-110" />
           <span>Error loading calendar contents. Please try refreshing.</span>
         </div>
       )}
