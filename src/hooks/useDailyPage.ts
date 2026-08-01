@@ -245,6 +245,28 @@ export function useDailyPage() {
     }
   }
 
+  const handlePromoteTodoToPriority = async (todo: { id: string; text: string; link?: string | null }): Promise<void> => {
+    if (listPriorities.length >= 5) {
+      await showError("Priority Limit Reached", "Only 5 top priorities are allowed per day. Please complete or delete an existing priority first.")
+      return
+    }
+
+    try {
+      await createPriorityMutation.mutateAsync({
+        date: activeDate,
+        text: todo.text,
+        link: todo.link || undefined,
+        category: "General",
+      })
+      await deleteTodoMutation.mutateAsync(todo.id)
+      showSuccessToast("Moved task to Top 5 Priorities")
+    } catch (err) {
+      console.error(err)
+      const errorMsg = err instanceof Error ? err.message : "Failed to move task to priorities."
+      await showError("Error", errorMsg)
+    }
+  }
+
   // ==========================================
   // Habits Sync State & Handlers
   // ==========================================
@@ -510,6 +532,7 @@ export function useDailyPage() {
     handleUpdateTodo,
     todoCreatePending: createTodoMutation.isPending,
     todoTogglePending: toggleTodoMutation.isPending,
+    handlePromoteTodoToPriority,
 
     // Timetable
     timetableList,
