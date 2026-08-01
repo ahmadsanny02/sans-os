@@ -119,6 +119,7 @@ export default function DailyComponent() {
             handleToggleCompleted={dailyData.handleToggleTodo}
             handleDeleteTodo={dailyData.handleDeleteTodo}
             handleUpdateTodo={dailyData.handleUpdateTodo}
+            handlePromoteTodoToPriority={dailyData.handlePromoteTodoToPriority}
             isPendingToggleTodo={dailyData.todoTogglePending}
             habits={dailyData.habits}
             handleToggleHabit={dailyData.handleToggleHabit}
