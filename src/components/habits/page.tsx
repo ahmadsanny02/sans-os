@@ -47,6 +47,10 @@ export default function HabitsComponent() {
     // Reorder
     handleReorderHabits,
     isPendingReorder,
+
+    // Update
+    handleUpdateHabit,
+    isPendingUpdate,
   } = useHabitsPage()
 
   // Update document title for client-side SEO
@@ -109,6 +113,8 @@ export default function HabitsComponent() {
         handleReorderHabits={handleReorderHabits}
         isPendingReorder={isPendingReorder}
         onSelectDate={setActiveDate}
+        handleUpdateHabit={handleUpdateHabit}
+        isPendingUpdate={isPendingUpdate}
       />
     </div>
   )
