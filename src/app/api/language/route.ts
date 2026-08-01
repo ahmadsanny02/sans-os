@@ -105,16 +105,17 @@ export async function POST(request: Request): Promise<NextResponse> {
 
       if (fromLang === "en") {
         try {
-          const [t1, t2, t3, tIng] = await Promise.all([
+          const [t1Result, t2Result, t3Result, tIngResult] = await Promise.allSettled([
             translateText(v1, "en", "id", false),
             translateText(v2, "en", "id", false),
             translateText(v3, "en", "id", false),
             translateText(vIng, "en", "id", false),
           ])
-          v1Trans = t1 || null
-          v2Trans = t2 || null
-          v3Trans = t3 || null
-          vIngTrans = tIng || null
+
+          v1Trans = t1Result.status === "fulfilled" && t1Result.value ? t1Result.value : null
+          v2Trans = t2Result.status === "fulfilled" && t2Result.value ? t2Result.value : null
+          v3Trans = t3Result.status === "fulfilled" && t3Result.value ? t3Result.value : null
+          vIngTrans = tIngResult.status === "fulfilled" && tIngResult.value ? tIngResult.value : null
         } catch (err) {
           console.error("Conjugation translation error:", err)
         }
