@@ -75,7 +75,7 @@ export default function LoginPage() {
             </div>
             
             <h1 className="text-4xl xl:text-5xl font-black tracking-tight text-foreground leading-[1.15]">
-              Organize your life with <span className="bg-gradient-to-r from-primary via-violet-400 to-indigo-400 bg-clip-text text-transparent">SansOS</span>
+              Organize your life with <span className="text-primary">SansOS</span>
             </h1>
 
             <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
