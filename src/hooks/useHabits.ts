@@ -309,3 +309,39 @@ export function useReorderHabitsMutation() {
     },
   })
 }
+
+// 7. Update habit mutation
+async function updateHabit(body: { id: string; name: string; category?: string; subCategory?: string | null; frequency?: string }): Promise<Habit> {
+  const res = await fetch("/api/habits", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    throw new Error("Failed to update habit")
+  }
+  return res.json()
+}
+
+export function useUpdateHabitMutation() {
+  const queryClient = useQueryClient()
+  return useMutation<Habit, Error, { id: string; name: string; category?: string; subCategory?: string | null; frequency?: string }>({
+    mutationFn: updateHabit,
+    onSuccess: (updatedHabit) => {
+      const queryCache = queryClient.getQueryCache()
+      const queries = queryCache.findAll({ queryKey: ["habits"], exact: false })
+      queries.forEach((q) => {
+        if (q.queryKey.length === 3 && q.queryKey[1] !== "stats") {
+          const oldData = q.state.data as HabitsResponse | undefined
+          if (oldData) {
+            queryClient.setQueryData(q.queryKey, {
+              ...oldData,
+              habits: oldData.habits.map((h) => h.id === updatedHabit.id ? updatedHabit : h),
+            })
+          }
+        }
+      })
+      queryClient.invalidateQueries({ queryKey: ["habits"] })
+    },
+  })
+}
