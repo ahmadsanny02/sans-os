@@ -32,7 +32,7 @@ export function HeaderPage({
     <div className="relative overflow-hidden w-full rounded-2xl border border-border/80 bg-gradient-to-br from-primary/10 via-transparent to-primary/5 p-5 sm:p-8 shadow-sm flex flex-col lg:flex-row items-start lg:items-center lg:justify-between gap-4">
       <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
       <div className="space-y-1.5">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60 flex items-center gap-2">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
           {icon && <span className="shrink-0">{icon}</span>}
           {title}
         </h1>
