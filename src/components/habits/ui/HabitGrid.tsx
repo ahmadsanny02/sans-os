@@ -3,10 +3,11 @@
 import React from "react"
 import { Habit } from "@/hooks/useHabits"
 import { format } from "date-fns"
-import { Plus, Trash2, Check, Loader2, Sparkles, GripVertical, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
+import { Plus, Trash2, Edit2, Check, Loader2, Sparkles, GripVertical, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
 import { getCategoryStyle, isCategoryInModule } from "@/lib/categoryUtils"
+import { Modal } from "@/components/ui/Modal"
 
 const CHECKED_THEME = {
   color: "text-primary",
@@ -38,6 +39,8 @@ interface HabitGridProps {
   handleReorderHabits: (orderedIds: string[]) => Promise<void>
   isPendingReorder: boolean
   onSelectDate?: (dateStr: string) => void
+  handleUpdateHabit: (id: string, name: string, category: string, subCategory: string | null) => Promise<void>
+  isPendingUpdate: boolean
 }
 
 export function HabitGrid({
@@ -64,6 +67,8 @@ export function HabitGrid({
   handleReorderHabits,
   isPendingReorder,
   onSelectDate,
+  handleUpdateHabit,
+  isPendingUpdate,
 }: HabitGridProps) {
   const { categories, subCategories } = useCategories()
   const habitCategories = categories.filter((c) => isCategoryInModule(c.module, "habits"))
@@ -73,6 +78,31 @@ export function HabitGrid({
   const availableSubs = activeCatId ? subCategories.filter((sc) => sc.categoryId === activeCatId) : []
 
   const [draggedId, setDraggedId] = React.useState<string | null>(null)
+
+  const [isEditOpen, setIsEditOpen] = React.useState(false)
+  const [editingHabit, setEditingHabit] = React.useState<Habit | null>(null)
+  const [editName, setEditName] = React.useState("")
+  const [editCategory, setEditCategory] = React.useState("")
+  const [editSubCategory, setEditSubCategory] = React.useState("")
+
+  const editActiveCatId = categories.find((c) => c.name.toLowerCase() === editCategory.toLowerCase())?.id
+  const editAvailableSubs = editActiveCatId ? subCategories.filter((sc) => sc.categoryId === editActiveCatId) : []
+
+  const handleOpenEdit = (habit: Habit) => {
+    setEditingHabit(habit)
+    setEditName(habit.name)
+    setEditCategory(habit.category)
+    setEditSubCategory(habit.subCategory || "")
+    setIsEditOpen(true)
+  }
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingHabit || !editName.trim()) return
+    await handleUpdateHabit(editingHabit.id, editName.trim(), editCategory, editSubCategory || null)
+    setIsEditOpen(false)
+    setEditingHabit(null)
+  }
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     setDraggedId(id)
@@ -414,13 +444,22 @@ export function HabitGrid({
                             )}
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleDeleteHabit(habit.id)}
-                          className="opacity-100 sm:opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 sm:p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
-                          aria-label={`Delete ${habit.name}`}
-                        >
-                          <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                        </button>
+                        <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 shrink-0">
+                          <button
+                            onClick={() => handleOpenEdit(habit)}
+                            className="p-1 sm:p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                            aria-label={`Edit ${habit.name}`}
+                          >
+                            <Edit2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteHabit(habit.id)}
+                            className="p-1 sm:p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer"
+                            aria-label={`Delete ${habit.name}`}
+                          >
+                            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          </button>
+                        </div>
                       </div>
                     </td>
 
@@ -468,6 +507,98 @@ export function HabitGrid({
           </tbody>
         </table>
       </div>
+
+      {/* Edit Habit Modal */}
+      <Modal
+        isOpen={isEditOpen}
+        onClose={() => {
+          setIsEditOpen(false)
+          setEditingHabit(null)
+        }}
+        title="Edit Habit"
+        icon={<Edit2 className="h-5 w-5 text-primary" />}
+      >
+        <form onSubmit={handleSaveEdit} className="space-y-4">
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <label htmlFor="editHabitName" className="text-xs font-bold text-muted-foreground">
+                Habit Name
+              </label>
+              <input
+                id="editHabitName"
+                type="text"
+                required
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="e.g. Workout, Read books..."
+                className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="editHabitCategory" className="text-xs font-bold text-muted-foreground">
+                Category
+              </label>
+              <CustomSelect
+                id="editHabitCategory"
+                value={editCategory}
+                onChange={(val) => {
+                  setEditCategory(val)
+                  setEditSubCategory("")
+                }}
+                options={
+                  habitCategories.length > 0
+                    ? habitCategories.map((c) => ({ value: c.name, label: c.name }))
+                    : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
+                }
+                fullWidth
+              />
+            </div>
+
+            {editAvailableSubs.length > 0 && (
+              <div className="space-y-1.5 animate-in fade-in duration-200">
+                <label htmlFor="editHabitSubCategory" className="text-xs font-bold text-muted-foreground">
+                  Sub-category
+                </label>
+                <CustomSelect
+                  id="editHabitSubCategory"
+                  value={editSubCategory}
+                  onChange={(val) => setEditSubCategory(val)}
+                  options={[
+                    { value: "", label: "None (No sub-category)" },
+                    ...editAvailableSubs.map((sc) => ({ value: sc.name, label: sc.name }))
+                  ]}
+                  fullWidth
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsEditOpen(false)
+                setEditingHabit(null)
+              }}
+              className="rounded-lg border border-border/40 px-3.5 py-2 text-xs font-semibold hover:bg-muted"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isPendingUpdate}
+              className="rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1.5"
+            >
+              {isPendingUpdate ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                "Save Changes"
+              )}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 }
