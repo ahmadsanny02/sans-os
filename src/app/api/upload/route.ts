@@ -60,7 +60,13 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     // 5. Upload File
     const buffer = Buffer.from(await file.arrayBuffer())
-    const fileExt = file.name.split(".").pop() || "png"
+    const MIME_EXT_MAP: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/gif": "gif",
+      "image/webp": "webp",
+    }
+    const fileExt = MIME_EXT_MAP[file.type] || "png"
     // Use user ID and date to keep it organized and unique
     const fileName = `${user.id}/${date}_${Date.now()}.${fileExt}`
 
