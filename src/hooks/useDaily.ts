@@ -58,8 +58,9 @@ async function fetchPriorities(date: string): Promise<Priority[]> {
 
 
 export function usePrioritiesQuery(date: string) {
+  const realTodayDate = useWorkspaceStore((state) => state.realTodayDate)
   return useQuery<Priority[]>({
-    queryKey: ["priorities", date],
+    queryKey: ["priorities", date, realTodayDate],
     queryFn: () => fetchPriorities(date),
     enabled: !!date,
   })
