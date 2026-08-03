@@ -430,7 +430,7 @@ export function LanguageBoardView({
         <div className="rounded-2xl border border-border bg-card/60 p-5 shadow-sm backdrop-blur-md space-y-4 animate-in slide-in-from-top-4 duration-200">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/40 pb-3">
             <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5 select-none">
-              <Plus className="h-4.5 w-4.5 text-violet-500" /> Add New Vocabulary
+              <Plus className="h-4.5 w-4.5 text-primary" /> Add New Vocabulary
             </h3>
             {/* Sub-tabs for Add Mode */}
             <div className="flex gap-1 p-0.5 bg-secondary/60 border border-border/30 rounded-xl select-none text-[10px] w-fit self-end sm:self-auto">
@@ -689,7 +689,7 @@ export function LanguageBoardView({
                           </div>
                           <ChevronDown
                             className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${
-                              isCollapsed ? "" : "rotate-180 text-violet-500"
+                              isCollapsed ? "" : "rotate-180 text-primary"
                             }`}
                           />
                         </button>
