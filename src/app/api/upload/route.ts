@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@supabase/supabase-js"
 
+let isBucketVerified = false
+
 export async function POST(request: Request): Promise<NextResponse> {
   try {
     // 1. Authenticate user
@@ -40,22 +42,25 @@ export async function POST(request: Request): Promise<NextResponse> {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // 4. Ensure public bucket "daily-pics" exists
-    const { data: buckets, error: getBucketsError } = await supabaseAdmin.storage.listBuckets()
-    if (getBucketsError) {
-      throw getBucketsError
-    }
-
-    const bucketExists = buckets?.some((b) => b.name === "daily-pics")
-    if (!bucketExists) {
-      const { error: createBucketError } = await supabaseAdmin.storage.createBucket("daily-pics", {
-        public: true,
-        fileSizeLimit: 10485760, // 10MB limit
-        allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
-      })
-      if (createBucketError) {
-        throw createBucketError
+    // 4. Ensure public bucket "daily-pics" exists (Cached check to prevent overhead)
+    if (!isBucketVerified) {
+      const { data: buckets, error: getBucketsError } = await supabaseAdmin.storage.listBuckets()
+      if (getBucketsError) {
+        throw getBucketsError
       }
+
+      const bucketExists = buckets?.some((b) => b.name === "daily-pics")
+      if (!bucketExists) {
+        const { error: createBucketError } = await supabaseAdmin.storage.createBucket("daily-pics", {
+          public: true,
+          fileSizeLimit: 10485760, // 10MB limit
+          allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+        })
+        if (createBucketError) {
+          throw createBucketError
+        }
+      }
+      isBucketVerified = true
     }
 
     // 5. Upload File
