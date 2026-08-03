@@ -145,7 +145,7 @@ export function CategoryManagementView() {
         <div className="bento-card p-5 space-y-1">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Active Modules</span>
           <div className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-            <Folder className="h-5 w-5 text-emerald-500" />
+            <Folder className="h-5 w-5 text-primary" />
             {new Set(categories.filter((c) => !c.isSystemDefault).map((c) => c.module)).size}
           </div>
         </div>
@@ -316,7 +316,7 @@ export function CategoryManagementView() {
                               />
                               <button
                                 type="submit"
-                                className="p-1 text-emerald-500 hover:bg-emerald-500/10 rounded cursor-pointer"
+                                className="p-1 text-primary hover:bg-primary/10 rounded cursor-pointer"
                               >
                                 <Check className="h-3 w-3 stroke-[3]" />
                               </button>
