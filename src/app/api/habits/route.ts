@@ -137,8 +137,16 @@ export async function PUT(request: Request): Promise<NextResponse> {
     const body = await request.json()
     const { orderedIds } = body
 
-    if (!orderedIds || !Array.isArray(orderedIds)) {
-      return NextResponse.json({ error: "orderedIds is required and must be an array" }, { status: 400 })
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (
+      !orderedIds ||
+      !Array.isArray(orderedIds) ||
+      !orderedIds.every((id) => typeof id === "string" && uuidRegex.test(id))
+    ) {
+      return NextResponse.json(
+        { error: "orderedIds is required and must be an array of valid UUID strings" },
+        { status: 400 }
+      )
     }
 
     // Update all habits with their new orderIndex in a single batch query
