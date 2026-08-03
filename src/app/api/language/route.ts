@@ -78,7 +78,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     try {
       autoTranslationVal = await translateText(word, fromLang, toLang, false)
     } catch (err) {
-      console.error("Auto translation error:", err)
+      console.warn(`[Language API] Auto translation service unavailable for word "${word}":`, err instanceof Error ? err.message : err)
     }
 
     // Verb conjugation
