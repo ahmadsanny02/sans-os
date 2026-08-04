@@ -217,7 +217,7 @@ function BlockSelector({
               </p>
             </div>
             {sessions > 0 && (
-              <span className="shrink-0 text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="shrink-0 text-[9px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
                 ~{sessions} <Target className="h-3 w-3 shrink-0" />
               </span>
             )}
@@ -580,7 +580,7 @@ export function PomodoroConfigView({
                             </p>
                           </div>
                           {sessions > 0 && (
-                            <span className="shrink-0 text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <span className="shrink-0 text-[9px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
                               ~{sessions} <Target className="h-3 w-3 shrink-0" />
                             </span>
                           )}
@@ -656,7 +656,7 @@ export function PomodoroConfigView({
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold text-foreground">Unsaved Changes</p>
-                <p className="text-[11px] text-muted-foreground truncate">You have modified the Pomodoro configuration.</p>
+                <p className="text-xs text-muted-foreground truncate">You have modified the Pomodoro configuration.</p>
               </div>
             </div>
             <button
