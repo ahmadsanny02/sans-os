@@ -228,7 +228,7 @@ export function PomodoroTimerView({
               {selectedBlockId && (
                 <button
                   onClick={() => handleSelectBlock(null)}
-                  className="text-[11px] font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+                  className="text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                   Clear Selection
                 </button>
