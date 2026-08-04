@@ -268,7 +268,7 @@ export function VisionBoardCanvasView({
               <AlertCircle className="h-9 w-9" />
             </div>
             <h4 className="text-sm font-bold text-destructive">Failed to Load Canvas</h4>
-            <p className="text-[11px] text-muted-foreground mt-1 max-w-xs leading-relaxed">
+            <p className="text-xs text-muted-foreground mt-1 max-w-xs leading-relaxed">
               Error loading vision board items. Please check database connection.
             </p>
           </div>
@@ -278,7 +278,7 @@ export function VisionBoardCanvasView({
               <Lightbulb className="h-9 w-9 text-primary" />
             </div>
             <h4 className="text-sm font-bold text-foreground">Canvas is Empty</h4>
-            <p className="text-[11px] text-muted-foreground mt-1 max-w-xs leading-relaxed">
+            <p className="text-xs text-muted-foreground mt-1 max-w-xs leading-relaxed">
               Pin stickies and visual wallpapers to define your goals. Click &quot;Add Vision Item&quot; at the top.
             </p>
           </div>
@@ -329,7 +329,7 @@ export function VisionBoardCanvasView({
                       {item.content}
                     </div>
 
-                    <div className="flex justify-between items-center border-t border-yellow-500/20 pt-2 text-[8px] font-black uppercase tracking-widest text-yellow-700/60 dark:text-yellow-500/60 shrink-0 mt-3">
+                    <div className="flex justify-between items-center border-t border-yellow-500/20 pt-2 text-[9px] font-black uppercase tracking-widest text-yellow-700/60 dark:text-yellow-500/60 shrink-0 mt-3">
                       <span>Goal Note</span>
                       <button
                         onClick={(e) => handleDeleteItem(item.id, e)}
