@@ -172,7 +172,7 @@ body.swal2-no-backdrop .swal2-container {
 }
 
 .swal2-actions {
-  @apply flex justify-end !mt-4 !border-t !border-border/30 !pt-3.5 !w-full !bg-transparent gap-2.5;
+  @apply flex justify-end !mt-4 !border-t !border-border/30 !pt-3.5 w-full !bg-transparent gap-2.5;
 }
 
 .swal2-popup.swal2-toast .swal2-actions {
