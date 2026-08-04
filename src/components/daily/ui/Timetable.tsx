@@ -296,7 +296,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
               value={newStart}
               onChange={(val) => setNewStart(val)}
               showIcon={false}
-              inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+              inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-xs"
               className="w-20"
               placeholder="--:--"
             />
@@ -305,7 +305,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
               value={newEnd}
               onChange={(val) => setNewEnd(val)}
               showIcon={false}
-              inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+              inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-xs"
               className="w-20"
               placeholder="--:--"
             />
@@ -313,7 +313,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
               <button
                 type="submit"
                 disabled={!newTitle.trim() || createSubMutation.isPending}
-                className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 cursor-pointer"
+                className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 cursor-pointer"
               >
                 <Plus className="h-3 w-3" />
                 Add
@@ -639,7 +639,7 @@ export function Timetable({
                                 : "border-border bg-card/25 hover:border-border/80 hover:bg-card/40 text-muted-foreground"
                             }`}
                           >
-                            <span className={`text-[11px] font-bold leading-tight ${editIsTodo ? "text-emerald-500 dark:text-emerald-400" : "text-foreground"}`}>
+                            <span className={`text-xs font-bold leading-tight ${editIsTodo ? "text-emerald-500 dark:text-emerald-400" : "text-foreground"}`}>
                               To-Do / Focus Task
                             </span>
                             <div
