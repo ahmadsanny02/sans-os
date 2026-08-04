@@ -44,23 +44,36 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     // 4. Ensure public bucket "daily-pics" exists (Cached check to prevent overhead)
     if (!isBucketVerified) {
-      const { data: buckets, error: getBucketsError } = await supabaseAdmin.storage.listBuckets()
-      if (getBucketsError) {
-        throw getBucketsError
-      }
+      try {
+        const { data: buckets, error: getBucketsError } = await supabaseAdmin.storage.listBuckets()
+        if (getBucketsError) {
+          throw getBucketsError
+        }
 
-      const bucketExists = buckets?.some((b) => b.name === "daily-pics")
-      if (!bucketExists) {
-        const { error: createBucketError } = await supabaseAdmin.storage.createBucket("daily-pics", {
-          public: true,
-          fileSizeLimit: 10485760, // 10MB limit
-          allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
-        })
-        if (createBucketError) {
-          throw createBucketError
+        const bucketExists = buckets?.some((b) => b.name === "daily-pics")
+        if (!bucketExists) {
+          const { error: createBucketError } = await supabaseAdmin.storage.createBucket("daily-pics", {
+            public: true,
+            fileSizeLimit: 10485760, // 10MB limit
+            allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+          })
+          if (createBucketError) {
+            const errMsg = createBucketError.message || ""
+            const errStatus = (createBucketError as { statusCode?: string | number }).statusCode
+            if (!errMsg.toLowerCase().includes("already exist") && errStatus !== "409" && errStatus !== 409) {
+              throw createBucketError
+            }
+          }
+        }
+        isBucketVerified = true
+      } catch (bucketErr) {
+        const msg = bucketErr instanceof Error ? bucketErr.message : String(bucketErr)
+        if (msg.toLowerCase().includes("already exist")) {
+          isBucketVerified = true
+        } else {
+          throw bucketErr
         }
       }
-      isBucketVerified = true
     }
 
     // 5. Upload File
