@@ -205,7 +205,7 @@ export function ReadingProgressModal({ book, onClose }: ReadingProgressModalProp
               <p className="text-xs font-semibold text-muted-foreground">
                 No timeline logs recorded yet.
               </p>
-              <p className="text-[11px] text-muted-foreground/70">
+              <p className="text-xs text-muted-foreground/70">
                 Log your reading updates using the form above to build your timeline!
               </p>
             </div>
