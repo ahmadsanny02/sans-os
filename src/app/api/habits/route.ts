@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { habits, habitLogs } from "@/types/schema"
 import { eq, and, gte, lte, asc, sql, inArray } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { isValidUUIDArray } from "@/lib/utils"
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -137,12 +138,7 @@ export async function PUT(request: Request): Promise<NextResponse> {
     const body = await request.json()
     const { orderedIds } = body
 
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-    if (
-      !orderedIds ||
-      !Array.isArray(orderedIds) ||
-      !orderedIds.every((id) => typeof id === "string" && uuidRegex.test(id))
-    ) {
+    if (!isValidUUIDArray(orderedIds)) {
       return NextResponse.json(
         { error: "orderedIds is required and must be an array of valid UUID strings" },
         { status: 400 }
