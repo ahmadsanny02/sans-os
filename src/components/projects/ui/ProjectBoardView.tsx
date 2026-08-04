@@ -633,11 +633,11 @@ export function ProjectBoardView({
                           )}
                         </div>
                         <div className="space-y-1 min-w-0 pt-0.5">
-                          <h4 className="text-[15px] font-bold text-foreground truncate leading-tight group-hover:text-primary transition-colors">
+                          <h4 className="text-sm font-bold text-foreground truncate leading-tight group-hover:text-primary transition-colors">
                             {project.name}
                           </h4>
                           {project.description && (
-                            <p className="text-[11px] text-muted-foreground line-clamp-1 leading-normal">
+                            <p className="text-xs text-muted-foreground line-clamp-1 leading-normal">
                               {project.description}
                             </p>
                           )}
@@ -967,7 +967,7 @@ export function ProjectBoardView({
                                   </span>
                                 )}
 
-                                <div className="flex flex-wrap items-center gap-1.5 mt-1 text-[8px] font-extrabold uppercase tracking-wide">
+                                <div className="flex flex-wrap items-center gap-1.5 mt-1 text-[9px] font-black uppercase tracking-wider">
                                   <CustomBadgeDropdown
                                     value={task.priority}
                                     options={PROJECT_PRIORITY_OPTIONS}
@@ -1054,7 +1054,7 @@ export function ProjectBoardView({
                                           {st.completed && <Check className="h-2.5 w-2.5 stroke-[4]" />}
                                         </button>
                                         <span
-                                          className={`text-[11px] min-w-0 break-words ${st.completed ? "line-through text-muted-foreground" : "text-foreground font-medium"
+                                          className={`text-xs min-w-0 break-words ${st.completed ? "line-through text-muted-foreground" : "text-foreground font-medium"
                                             }`}
                                         >
                                           {st.name}
@@ -1082,7 +1082,7 @@ export function ProjectBoardView({
                                 value={subTaskInputs[task.id] || ""}
                                 onChange={(e) => setSubTaskInputs((prev) => ({ ...prev, [task.id]: e.target.value }))}
                                 placeholder="Add a sub-task..."
-                                className="flex-1 min-w-0 bg-transparent border-b border-dashed border-border/60 hover:border-primary/40 focus:border-primary px-1 py-1 text-[11px] outline-none transition-all placeholder:text-muted-foreground/60"
+                                className="flex-1 min-w-0 bg-transparent border-b border-dashed border-border/60 hover:border-primary/40 focus:border-primary px-1 py-1 text-xs outline-none transition-all placeholder:text-muted-foreground/60"
                               />
                               <button
                                 type="submit"
