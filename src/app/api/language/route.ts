@@ -73,11 +73,13 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     // Calculate auto-translation
     let autoTranslationVal: string | null = null
+    let translationDegraded = false
     const fromLang = direction.split("-")[0] || "en"
     const toLang = direction.split("-")[1] || "id"
     try {
       autoTranslationVal = await translateText(word, fromLang, toLang, false)
     } catch (err) {
+      translationDegraded = true
       console.warn(`[Language API] Auto translation service unavailable for word "${word}":`, err instanceof Error ? err.message : err)
     }
 
@@ -146,7 +148,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       })
       .returning()
 
-    return NextResponse.json(newLog)
+    return NextResponse.json({ ...newLog, _meta: { translationDegraded } })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
