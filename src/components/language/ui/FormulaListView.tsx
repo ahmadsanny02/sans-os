@@ -549,18 +549,18 @@ export function FormulaListView({
                         {stats.total > 0 ? (
                           <>
                             {stats.writing > 0 && (
-                              <span className="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-0.5">
+                              <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-0.5">
                                 <PencilLine className="h-2 w-2" /> Write: {stats.writing}
                               </span>
                             )}
                             {stats.dialogue > 0 && (
-                              <span className="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-0.5">
+                              <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-0.5">
                                 <MessageSquare className="h-2 w-2" /> Dialog: {stats.dialogue}
                               </span>
                             )}
                           </>
                         ) : (
-                          <span className="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase bg-muted text-muted-foreground border border-border/50">
+                          <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-muted text-muted-foreground border border-border/50">
                             Unpracticed
                           </span>
                         )}
