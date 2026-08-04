@@ -132,7 +132,7 @@ export function HabitRecaps({
                     backgroundColor: "hsl(var(--card))",
                     borderColor: "hsl(var(--border))",
                     borderRadius: "12px",
-                    fontSize: "12px",
+                    fontSize: "0.75rem",
                     color: "hsl(var(--foreground))",
                   }}
                 />
