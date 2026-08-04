@@ -845,7 +845,7 @@ export function DialoguePracticeView({
                           {isRevealed && (
                             <div className="mt-2.5 pt-2 border-t border-emerald-500/10 dark:border-emerald-500/20 space-y-2 animate-in fade-in duration-200">
                               <div>
-                                <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                   Manual Translation
                                 </span>
                                 <p className="text-xs text-muted-foreground italic font-semibold">
@@ -854,7 +854,7 @@ export function DialoguePracticeView({
                               </div>
                               {log.autoTranslationAnswer && (
                                 <div className="border-t border-dotted border-emerald-500/10 dark:border-emerald-500/20 pt-1">
-                                  <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                  <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                     Google Translation
                                   </span>
                                   <p className="text-xs text-muted-foreground/80 italic">
@@ -952,7 +952,7 @@ export function DialoguePracticeView({
                           {isRevealed && (
                             <div className="mt-2.5 pt-2 border-t border-primary/10 dark:border-primary/20 space-y-2 animate-in fade-in duration-200">
                               <div>
-                                <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                   Manual Translation
                                 </span>
                                 <p className="text-xs text-muted-foreground italic font-semibold">
@@ -961,7 +961,7 @@ export function DialoguePracticeView({
                               </div>
                               {log.autoTranslationQuestion && (
                                 <div className="border-t border-dotted border-primary/10 dark:border-primary/20 pt-1">
-                                  <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                  <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                     Google Translation
                                   </span>
                                   <p className="text-xs text-muted-foreground/80 italic">
@@ -988,7 +988,7 @@ export function DialoguePracticeView({
                           {isRevealed && (
                             <div className="mt-2.5 pt-2 border-t border-emerald-500/10 dark:border-emerald-500/20 space-y-2 animate-in fade-in duration-200">
                               <div>
-                                <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                   Manual Translation
                                 </span>
                                 <p className="text-xs text-muted-foreground italic font-semibold">
@@ -997,7 +997,7 @@ export function DialoguePracticeView({
                               </div>
                               {log.autoTranslationAnswer && (
                                 <div className="border-t border-dotted border-emerald-500/10 dark:border-emerald-500/20 pt-1">
-                                  <span className="text-[8px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                  <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                     Google Translation
                                   </span>
                                   <p className="text-xs text-muted-foreground/80 italic">
