@@ -340,10 +340,10 @@ export function HabitGrid({
                     title={`Select ${format(day, "MMMM d, yyyy")}`}
                   >
                     <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[8px] sm:text-[9px] uppercase tracking-normal opacity-75 font-semibold">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-75">
                         {format(day, "EE").slice(0, 2)}
                       </span>
-                      <span className={`text-[11px] sm:text-xs h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center rounded-full ${
+                      <span className={`text-xs h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center rounded-full ${
                         isSel ? "bg-primary text-primary-foreground font-black shadow-glow" : ""
                       }`}>
                         {format(day, "d")}
@@ -437,7 +437,7 @@ export function HabitGrid({
                               {habit.name}
                             </p>
                             {habit.category && (
-                              <span className={`inline-flex items-center text-[8px] sm:text-[9px] font-bold opacity-90 uppercase tracking-wider mt-0.5 truncate max-w-full ${getCategoryStyle(habit.category, categories).text}`}>
+                              <span className={`inline-flex items-center text-[9px] font-black uppercase tracking-wider opacity-90 mt-0.5 truncate max-w-full ${getCategoryStyle(habit.category, categories).text}`}>
                                 {habit.category}
                                 {habit.subCategory && <span className="opacity-70 font-medium"> • {habit.subCategory}</span>}
                               </span>
