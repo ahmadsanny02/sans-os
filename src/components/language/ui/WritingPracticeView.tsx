@@ -732,7 +732,7 @@ export function WritingPracticeView({
                     {/* Search & Select Word for Practice #{idx + 2} */}
                     <div className="space-y-1 relative max-w-md">
                       <div className="flex items-center justify-between">
-                        <label className="text-[11px] font-bold text-muted-foreground">
+                        <label className="text-xs font-bold text-muted-foreground">
                           Select Word for Practice #{idx + 2} (Optional)
                         </label>
                         {row.vocabId && (
@@ -1081,7 +1081,7 @@ export function WritingPracticeView({
                       {group.positive && (
                         <div className="space-y-1">
                           <div className="flex items-center">
-                            <span className="px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/20">
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/20">
                               Positive
                             </span>
                           </div>
@@ -1101,7 +1101,7 @@ export function WritingPracticeView({
                       {group.negative && (
                         <div className="space-y-1">
                           <div className="flex items-center">
-                            <span className="px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20">
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20">
                               Negative
                             </span>
                           </div>
@@ -1121,7 +1121,7 @@ export function WritingPracticeView({
                       {group.interrogative && (
                         <div className="space-y-1">
                           <div className="flex items-center">
-                            <span className="px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/20">
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/20">
                               Interrogative
                             </span>
                           </div>
