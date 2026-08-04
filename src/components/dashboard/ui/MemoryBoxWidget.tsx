@@ -35,7 +35,7 @@ export function MemoryBoxWidget({
         ) : (
           <div className="text-center p-4">
             <p className="text-xs text-muted-foreground">No memory captured today.</p>
-            <Link href="/daily" className="inline-block text-[11px] font-bold text-primary hover:underline mt-2">
+            <Link href="/daily" className="inline-block text-xs font-bold text-primary hover:underline mt-2">
               Upload picture in Daily Flow
             </Link>
           </div>
