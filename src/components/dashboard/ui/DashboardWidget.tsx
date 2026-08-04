@@ -18,7 +18,7 @@ export function DashboardWidget({
   icon: Icon,
 }: DashboardWidgetProps) {
   return (
-    <div className="bento-card bento-card-interactive group p-4 relative">
+    <div className="bento-card bento-card-interactive group p-4 relative min-h-[44px]">
       <div className="flex items-center gap-3">
         <div className="rounded-xl bg-secondary p-2.5 text-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground shrink-0">
           <Icon className="h-5 w-5" />
