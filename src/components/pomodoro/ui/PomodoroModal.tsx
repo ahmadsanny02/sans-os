@@ -406,7 +406,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
           <span className="text-2xl font-mono font-bold text-white tracking-tight">
             {formatSeconds(remainingSeconds)}
           </span>
-          <span className={`text-[11px] font-bold tracking-widest uppercase mt-0.5 ${meta.color}`}>
+          <span className={`text-[9px] font-black tracking-wider uppercase mt-0.5 ${meta.color}`}>
             {meta.label}
           </span>
         </ProgressRing>
