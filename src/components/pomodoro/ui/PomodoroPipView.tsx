@@ -144,7 +144,7 @@ export function PomodoroPipView() {
           <span className={`text-[10px] font-extrabold tracking-widest uppercase opacity-70 ${meta.color} leading-none mb-0.5`}>
             {meta.label}
           </span>
-          <span className="text-[19px] font-mono font-black text-white tracking-tight leading-none my-0.5">
+          <span className="text-lg font-mono font-black text-white tracking-tight leading-none my-0.5">
             {formatSeconds(remainingSeconds)}
           </span>
           <span className="text-[9px] font-bold text-white/40 leading-none flex items-center gap-0.5 justify-center">
@@ -204,7 +204,7 @@ export function PomodoroPipView() {
         {/* Active schedule block badge */}
         {activeBlock && (
           <div className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-1.5 text-center max-w-[220px]">
-            <p className="font-semibold text-white/90 text-[11px] truncate leading-tight">
+            <p className="font-semibold text-white/90 text-xs truncate leading-tight">
               {activeBlock.title}
             </p>
           </div>
