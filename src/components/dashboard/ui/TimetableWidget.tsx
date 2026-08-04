@@ -44,8 +44,8 @@ export function TimetableWidget({
           <Clock className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-bold text-foreground">Today&apos;s Schedule</h3>
         </div>
-        <Link href="/daily" className="text-xs text-primary hover:underline font-semibold flex items-center gap-0.5">
-          Edit Timetable <ArrowRight className="h-3 w-3" />
+        <Link href="/daily" className="text-xs text-primary hover:underline font-semibold flex items-center gap-1 min-h-[44px] px-2 py-1 rounded-lg active:bg-primary/10 transition-colors">
+          Edit Timetable <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
@@ -79,7 +79,7 @@ export function TimetableWidget({
                   {/* Bullet Marker */}
                   <span className={`absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background ${color.bullet}`} />
                   
-                  <div className={`rounded-xl border p-3 bg-card/40 shadow-sm transition-colors duration-200 hover:bg-card/70 border-border/60 ${color.border}`}>
+                  <div className={`rounded-xl border p-3.5 min-h-[44px] bg-card/40 shadow-sm transition-colors duration-200 hover:bg-card/70 border-border/60 ${color.border}`}>
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 sm:gap-2">
                       <div className="min-w-0">
                         <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${color.bg} ${color.text} border ${color.border}`}>
