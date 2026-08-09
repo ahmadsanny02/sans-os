@@ -164,9 +164,9 @@ export function CalendarMonthGrid({
                             return (
                               <div
                                 key={item.id}
-                                className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border truncate flex items-center gap-1 ${theme.bg} ${theme.text} ${theme.border}`}
+                                className={`text-label md:text-micro font-bold px-1.5 py-0.5 rounded border truncate flex items-center gap-1 ${theme.bg} ${theme.text} ${theme.border}`}
                               >
-                                <span className="shrink-0 text-[8px] md:text-[9px] opacity-75">
+                                <span className="shrink-0 text-label opacity-75">
                                   {item.time}
                                 </span>
                                 <span className="truncate">{item.title}</span>
@@ -176,11 +176,11 @@ export function CalendarMonthGrid({
                             return (
                               <div
                                 key={item.id}
-                                className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded border border-primary/15 truncate flex items-center gap-1 bg-primary/5 text-primary ${
+                                className={`text-label md:text-micro font-bold px-1.5 py-0.5 rounded border border-primary/15 truncate flex items-center gap-1 bg-primary/5 text-primary ${
                                   item.completed ? "line-through opacity-45 border-dashed" : ""
                                 }`}
                               >
-                                <span className="shrink-0 text-[8px]">🎯</span>
+                                <span className="shrink-0 text-label">🎯</span>
                                 <span className="truncate">{item.title}</span>
                               </div>
                             )
@@ -188,7 +188,7 @@ export function CalendarMonthGrid({
                         })}
 
                         {remainingCount > 0 && (
-                          <div className="text-[8px] md:text-[9px] font-bold text-muted-foreground pl-1.5">
+                          <div className="text-label font-bold text-muted-foreground pl-1.5">
                             + {remainingCount} more
                           </div>
                         )}
