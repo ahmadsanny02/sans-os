@@ -151,7 +151,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:text-primary/80 transition-colors py-0.5 px-1.5 rounded-lg hover:bg-primary/10 cursor-pointer"
+            className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-0.5 px-1.5 rounded-lg hover:bg-primary/10 cursor-pointer"
           >
             <Plus className="h-3 w-3" />
             <span>Add Sub</span>
@@ -190,7 +190,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                       value={editStart}
                       onChange={(val) => setEditStart(val)}
                       showIcon={false}
-                      inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+                      inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-xs"
                       className="w-20"
                     />
                     <span className="text-muted-foreground text-[10px]">to</span>
@@ -198,7 +198,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                       value={editEnd}
                       onChange={(val) => setEditEnd(val)}
                       showIcon={false}
-                      inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-[11px]"
+                      inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-xs"
                       className="w-20"
                     />
                     <div className="flex items-center gap-1 ml-auto">
