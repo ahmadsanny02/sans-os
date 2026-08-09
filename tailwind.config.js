@@ -69,6 +69,10 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontSize: {
+        label: ["0.5625rem", { letterSpacing: "0.05em" }],
+        micro: ["0.625rem", { letterSpacing: "0.025em" }],
+      },
       fontFamily: {
         sans: ["var(--font-poppins)", ...fontFamily.sans],
       },
