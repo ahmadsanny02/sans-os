@@ -214,7 +214,7 @@ export default function LoginPage() {
             </form>
 
             <div className="pt-2 border-t border-border/40 text-center">
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-micro text-muted-foreground">
                 SansOS Personal Workspace v1.0.0
               </p>
             </div>
