@@ -128,11 +128,11 @@ export function HabitRecaps({
                 />
                 <Tooltip 
                   cursor={{ fill: "hsl(var(--primary) / 0.04)" }}
+                  wrapperClassName="text-xs"
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     borderColor: "hsl(var(--border))",
                     borderRadius: "12px",
-                    fontSize: "0.75rem",
                     color: "hsl(var(--foreground))",
                   }}
                 />
