@@ -100,7 +100,7 @@ export function DailyTodos({
             {/* Habits Section */}
             {habits.length > 0 && (
               <div className="space-y-2">
-                <div className="text-[11px] font-bold tracking-wider text-muted-foreground/80 uppercase px-1">
+                <div className="text-xs font-bold tracking-wider text-muted-foreground/80 uppercase px-1">
                   Habits
                 </div>
                 <div className="space-y-2">
@@ -148,7 +148,7 @@ export function DailyTodos({
             {/* Todos Section */}
             {todos.length > 0 && (
               <div className="space-y-2">
-                <div className="text-[11px] font-bold tracking-wider text-muted-foreground/80 uppercase px-1">
+                <div className="text-xs font-bold tracking-wider text-muted-foreground/80 uppercase px-1">
                   Tasks
                 </div>
                 <div className="space-y-2">
