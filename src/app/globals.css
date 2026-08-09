@@ -146,7 +146,7 @@ body.swal2-no-backdrop .swal2-container {
 }
 
 .swal2-popup.swal2-toast .swal2-icon {
-  font-size: 11px !important;
+  font-size: 0.625rem !important;
   width: 2em !important;
   height: 2em !important;
   min-width: 2em !important;
@@ -221,6 +221,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 0.6;
   transition: opacity 0.2s;
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+.dark input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) hue-rotate(180deg);
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
