@@ -20,6 +20,8 @@ import {
   MessageSquare,
   TrendingUp,
   History,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react"
 import { GridCardSkeleton } from "@/components/ui/Skeletons"
 import { StatCard } from "@/components/ui/StatCard"
@@ -145,6 +147,7 @@ export function ReadingBoardView({
   isPendingDelete,
 }: ReadingBoardViewProps) {
   const [selectedProgressBook, setSelectedProgressBook] = React.useState<ReadingItem | null>(null)
+  const [expandedReviews, setExpandedReviews] = React.useState<Record<string, boolean>>({})
 
   // Optional multi-item batch creation state
   const [extraBookRows, setExtraBookRows] = React.useState<Array<{ id: string; title: string; author: string; status: string }>>([])
@@ -646,11 +649,34 @@ export function ReadingBoardView({
 
                       {/* Review text box */}
                       {book.review && (
-                        <div className="rounded-lg bg-secondary/20 border border-border/40 p-3 relative mt-2 group-hover:bg-secondary/40 transition-colors">
-                          <MessageSquare className="absolute right-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground/20" />
-                          <p className="text-xs text-muted-foreground leading-relaxed pr-6 select-text whitespace-pre-wrap">
-                            {book.review}
-                          </p>
+                        <div className="space-y-2 mt-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setExpandedReviews((prev) => ({
+                                ...prev,
+                                [book.id]: !prev[book.id],
+                              }))
+                            }}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-all cursor-pointer select-none py-1 px-2 rounded-lg bg-secondary/10 hover:bg-secondary/20 border border-border/20 active:scale-95"
+                          >
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            <span>{expandedReviews[book.id] ? "Hide Review" : "Show Review"}</span>
+                            {expandedReviews[book.id] ? (
+                              <ChevronUp className="h-3.5 w-3.5 text-muted-foreground/60" />
+                            ) : (
+                              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/60" />
+                            )}
+                          </button>
+
+                          {expandedReviews[book.id] && (
+                            <div className="rounded-lg bg-secondary/20 border border-border/40 p-3 relative group-hover:bg-secondary/40 transition-colors animate-in fade-in slide-in-from-top-1 duration-150">
+                              <MessageSquare className="absolute right-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground/20" />
+                              <p className="text-xs text-muted-foreground leading-relaxed pr-6 select-text whitespace-pre-wrap">
+                                {book.review}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       )}
 
