@@ -15,7 +15,7 @@ import {
   useDeleteDailyTodoMutation,
   useDailyLogQuery,
 } from "@/hooks/useDailyLogs"
-import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
+import { showError, showSuccessToast } from "@/lib/sweetalert"
 import { useHabitsQuery, useToggleLogMutation } from "@/hooks/useHabits"
 import { parseISO } from "date-fns"
 
