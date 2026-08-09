@@ -507,10 +507,10 @@ export function AddDailyEntryCard({
                       }`}
                     >
                       <div className="flex flex-col justify-center min-w-0">
-                        <span className={`text-[11px] font-bold leading-tight ${timetableIsTodo ? "text-emerald-500 dark:text-emerald-400" : "text-foreground"}`}>
+                        <span className={`text-xs font-bold leading-tight ${timetableIsTodo ? "text-emerald-500 dark:text-emerald-400" : "text-foreground"}`}>
                           To-Do / Focus Task
                         </span>
-                        <span className="text-[9px] opacity-70 leading-tight truncate">
+                        <span className="text-label opacity-70 leading-tight truncate">
                           Integrate in Pomodoro
                         </span>
                       </div>
