@@ -500,7 +500,7 @@ export function CalendarView({
                 <button
                   key={statusTab.id}
                   onClick={() => setAgendaStatusFilter(statusTab.id as "pending" | "all" | "completed")}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all shrink-0 cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     agendaStatusFilter === statusTab.id
                       ? "bg-card text-foreground shadow-sm border border-border/60"
                       : "text-muted-foreground hover:text-foreground"
