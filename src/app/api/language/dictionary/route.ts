@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { logger } from "@/lib/logger";
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -24,7 +25,7 @@ export async function GET(request: Request): Promise<NextResponse> {
           }
         }
       } catch (err) {
-        console.error("Translation API error:", err)
+        logger.error("Translation API error:", err)
       }
 
       // Fetch Definition & Part of Speech from Free Dictionary API
@@ -47,7 +48,7 @@ export async function GET(request: Request): Promise<NextResponse> {
           }
         }
       } catch (err) {
-        console.error("Dictionary API error:", err)
+        logger.error("Dictionary API error:", err)
       }
 
       return NextResponse.json({
