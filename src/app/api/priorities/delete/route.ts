@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { priorities, timetableBlocks } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger";
 
 export async function DELETE(request: Request): Promise<NextResponse> {
   try {
@@ -43,7 +44,7 @@ export async function DELETE(request: Request): Promise<NextResponse> {
           )
         )
     } catch (err) {
-      console.error("Failed to auto-delete timetable block matching priority:", err)
+      logger.error("Failed to auto-delete timetable block matching priority:", err)
     }
 
     return NextResponse.json({ success: true })
