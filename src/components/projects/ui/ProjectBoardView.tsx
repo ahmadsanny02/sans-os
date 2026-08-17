@@ -1,4 +1,5 @@
 "use client"
+import { logger } from "@/lib/logger";
 
 import React, { useState, useRef, useEffect } from "react"
 import { Project, ProjectTask } from "@/hooks/useProjects"
@@ -990,7 +991,7 @@ export function ProjectBoardView({
                                         try {
                                           e.currentTarget.showPicker()
                                         } catch (err) {
-                                          console.error(err)
+                                          logger.error(err)
                                         }
                                       }}
                                       className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20"
