@@ -1,4 +1,5 @@
 "use client"
+import { logger } from "@/lib/logger";
 
 import React, { useState, useEffect } from "react"
 import { useWorkspaceStore } from "@/store/workspaceStore"
@@ -261,7 +262,7 @@ export function useDailyPage() {
       await deleteTodoMutation.mutateAsync(todo.id)
       showSuccessToast("Moved task to Top 5 Priorities")
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       const errorMsg = err instanceof Error ? err.message : "Failed to move task to priorities."
       await showError("Error", errorMsg)
     }
@@ -419,7 +420,7 @@ export function useDailyPage() {
       })
       showSuccessToast("Reflections saved")
     } catch (err) {
-      console.error("Failed to save reflections", err)
+      logger.error("Failed to save reflections", err)
       await showError("Save Failed", "Failed to save your reflections. Please try again.")
     }
   }
@@ -482,7 +483,7 @@ export function useDailyPage() {
       })
       showSuccessToast("Photo removed successfully")
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       setPicErrorMsg("Failed to remove photo")
       await showError("Error", "Failed to remove photo")
     }
