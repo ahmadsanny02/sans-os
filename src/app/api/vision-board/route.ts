@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { visionBoardItems } from "@/types/schema"
 import { eq, and, asc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger";
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -62,7 +63,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newItem)
   } catch (error) {
-    console.error("POST /api/vision-board error:", error)
+    logger.error("POST /api/vision-board error:", error)
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
