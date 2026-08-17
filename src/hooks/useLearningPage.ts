@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { useState, useMemo } from "react"
 import {
   useLearningSubjectsQuery,
@@ -125,7 +126,7 @@ export function useLearningPage() {
       }
       setShowAddSubjectModal(false)
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       showErrorToast("Failed to save subject")
     }
   }
