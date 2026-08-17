@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { timetableBlocks, priorities, timetableSubSchedules } from "@/types/schema"
 import { eq, and, asc, sql } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger";
 
 async function ensureSubSchedulesTable() {
   try {
@@ -20,7 +21,7 @@ async function ensureSubSchedulesTable() {
       CREATE INDEX IF NOT EXISTS "idx_timetable_sub_block" ON "timetable_sub_schedules" ("timetable_block_id");
     `)
   } catch (err) {
-    console.error("Failed to ensure timetable_sub_schedules table exists:", err)
+    logger.error("Failed to ensure timetable_sub_schedules table exists:", err)
   }
 }
 
@@ -131,7 +132,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           }
         }
       } catch (err) {
-        console.error("Failed to auto-insert priority:", err)
+        logger.error("Failed to auto-insert priority:", err)
       }
     }
 
@@ -192,7 +193,7 @@ export async function DELETE(request: Request): Promise<NextResponse> {
             )
           )
       } catch (err) {
-        console.error("Failed to auto-delete priority:", err)
+        logger.error("Failed to auto-delete priority:", err)
       }
     }
 
@@ -284,7 +285,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
             )
         }
       } catch (err) {
-        console.error("Failed to sync updated priority:", err)
+        logger.error("Failed to sync updated priority:", err)
       }
     } else if (date) {
       // Date added, try to auto-insert priority
@@ -310,7 +311,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
           }
         }
       } catch (err) {
-        console.error("Failed to auto-insert updated priority:", err)
+        logger.error("Failed to auto-insert updated priority:", err)
       }
     }
 
