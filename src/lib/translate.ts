@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 export async function translateText(text: string, from = "en", to = "id", useBilingual = true): Promise<string> {
   if (!text || !text.trim()) return ""
   try {
@@ -32,7 +33,7 @@ export async function translateText(text: string, from = "en", to = "id", useBil
     }
     return ""
   } catch (error) {
-    console.error("Auto-translate error:", error)
+    logger.error("Auto-translate error:", error)
     return ""
   }
 }
