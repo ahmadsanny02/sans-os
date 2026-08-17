@@ -5,6 +5,7 @@ import { eq, and, asc, sql } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { translateText } from "@/lib/translate"
 import { conjugateVerb } from "@/lib/verbs"
+import { logger } from "@/lib/logger";
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -119,7 +120,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           v3Trans = t3Result.status === "fulfilled" && t3Result.value ? t3Result.value : null
           vIngTrans = tIngResult.status === "fulfilled" && tIngResult.value ? tIngResult.value : null
         } catch (err) {
-          console.error("Conjugation translation error:", err)
+          logger.error("Conjugation translation error:", err)
         }
       }
     }
@@ -211,7 +212,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
               updateData.autoTranslation = autoTrans
             }
           } catch (err) {
-            console.error("Auto translation error during patch:", err)
+            logger.error("Auto translation error during patch:", err)
           }
         }
 
