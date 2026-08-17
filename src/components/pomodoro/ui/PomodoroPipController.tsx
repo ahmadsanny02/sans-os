@@ -1,4 +1,5 @@
 "use client"
+import { logger } from "@/lib/logger";
 
 import React, { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
@@ -83,7 +84,7 @@ export async function startPip(
       setIsPipExpanded(false)
     })
   } catch (err) {
-    console.error("Failed to open Picture-in-Picture window:", err)
+    logger.error("Failed to open Picture-in-Picture window:", err)
   }
 }
 
