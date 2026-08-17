@@ -1,4 +1,5 @@
 "use client"
+import { logger } from "@/lib/logger";
 
 import React, { useState, useEffect, useRef, Suspense } from "react"
 import { motion } from "framer-motion"
@@ -267,7 +268,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       router.refresh()
       router.push("/login")
     } catch (error) {
-      console.error("Logout error:", error)
+      logger.error("Logout error:", error)
     }
   }
 
