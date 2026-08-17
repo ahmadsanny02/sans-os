@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { dailyLogs } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger";
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -30,7 +31,7 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(log || null)
   } catch (error) {
-    console.error("[GET /api/daily-logs] Exception:", error)
+    logger.error("[GET /api/daily-logs] Exception:", error)
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
@@ -97,7 +98,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(resultLog)
   } catch (error) {
-    console.error("[POST /api/daily-logs] Exception:", error)
+    logger.error("[POST /api/daily-logs] Exception:", error)
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
