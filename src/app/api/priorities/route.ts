@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { priorities, timetableBlocks } from "@/types/schema"
 import { eq, and, lt, asc, gte, lte } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger";
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -131,7 +132,7 @@ export async function GET(request: Request): Promise<NextResponse> {
           currentPriorities.push(newPriority)
           hasInsertedNew = true
         } catch (err) {
-          console.error("Failed to self-heal auto-insert priority:", err)
+          logger.error("Failed to self-heal auto-insert priority:", err)
         }
       }
     }
