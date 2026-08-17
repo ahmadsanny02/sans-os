@@ -1,4 +1,5 @@
 "use client"
+import { logger } from "@/lib/logger";
 
 import React, { useState } from "react"
 import { useWorkspaceStore } from "@/store/workspaceStore"
@@ -74,7 +75,7 @@ export function useHabitsPage() {
       setShowAddForm(false)
       showSuccessToast("Habit added successfully")
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       showError("Error", "Failed to add habit.")
     }
   }
@@ -89,7 +90,7 @@ export function useHabitsPage() {
       await deleteHabitMutation.mutateAsync(id)
       showSuccessToast("Habit deleted successfully")
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       showError("Error", "Failed to delete habit.")
     }
   }
@@ -103,7 +104,7 @@ export function useHabitsPage() {
       await reorderHabitsMutation.mutateAsync(orderedIds)
       showSuccessToast("Habits reordered")
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       showError("Error", "Failed to reorder habits.")
     }
   }
@@ -113,7 +114,7 @@ export function useHabitsPage() {
       await updateHabitMutation.mutateAsync({ id, name, category, subCategory })
       showSuccessToast("Habit updated successfully")
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       showError("Error", "Failed to update habit.")
     }
   }
