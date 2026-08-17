@@ -1,5 +1,6 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client"
+import { logger } from "@/lib/logger";
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import { useState, useEffect } from "react"
 import { useWorkspaceStore } from "@/store/workspaceStore"
@@ -175,7 +176,7 @@ export function useDashboardPage() {
       await deleteTodoMutation.mutateAsync(todo.id)
       showSuccessToast("Moved task to Top 5 Priorities")
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       const errorMsg = err instanceof Error ? err.message : "Failed to move task to priorities."
       await showError("Error", errorMsg)
     }
