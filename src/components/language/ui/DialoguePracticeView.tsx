@@ -227,7 +227,7 @@ export function DialoguePracticeView({
                 setDialogueActiveHistoryTab("vocab")
                 setSearchQueryDialogue("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 dialogueActiveHistoryTab === "vocab"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
@@ -240,7 +240,7 @@ export function DialoguePracticeView({
                 setDialogueActiveHistoryTab("formula")
                 setSearchQueryDialogue("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 dialogueActiveHistoryTab === "formula"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
@@ -254,14 +254,14 @@ export function DialoguePracticeView({
           <div className="flex items-center gap-1.5 bg-secondary/35 border border-border/30 p-1 rounded-xl shrink-0 self-start md:self-auto select-none">
             <button
               onClick={revealAllDialogueTranslations}
-              className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
               title="Reveal all dialogue translations"
             >
               <Eye className="h-3.5 w-3.5" /> Reveal All
             </button>
             <button
               onClick={hideAllDialogueTranslations}
-              className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
               title="Hide all dialogue translations"
             >
               <EyeOff className="h-3.5 w-3.5" /> Hide All
@@ -372,7 +372,7 @@ export function DialoguePracticeView({
                                   }`}
                                 >
                                   <span className="font-semibold">{f.name}</span>
-                                  <span className="text-[10px] text-muted-foreground italic font-mono max-w-[120px] truncate">
+                                  <span className="text-xs text-muted-foreground italic font-mono max-w-[120px] truncate">
                                     {f.formula}
                                   </span>
                                 </button>
@@ -397,7 +397,7 @@ export function DialoguePracticeView({
                             setSelectedDialogueVocabId("")
                             setSearchDialogueVocabQuery("")
                           }}
-                          className="text-[10px] text-destructive hover:underline font-semibold cursor-pointer"
+                          className="text-xs text-destructive hover:underline font-semibold cursor-pointer"
                         >
                           Clear Selection
                         </button>
@@ -445,7 +445,7 @@ export function DialoguePracticeView({
                                   }`}
                                 >
                                   <span>{v.word}</span>
-                                  <span className="text-[10px] text-muted-foreground italic max-w-[120px] truncate">{v.translation}</span>
+                                  <span className="text-xs text-muted-foreground italic max-w-[120px] truncate">{v.translation}</span>
                                 </button>
                               ))
                             )}
@@ -509,7 +509,7 @@ export function DialoguePracticeView({
                               }`}
                             >
                               <span>{v.word}</span>
-                              <span className="text-[10px] text-muted-foreground italic max-w-[120px] truncate">
+                              <span className="text-xs text-muted-foreground italic max-w-[120px] truncate">
                                 {v.translation}
                               </span>
                             </button>
@@ -526,9 +526,9 @@ export function DialoguePracticeView({
             <div className="grid gap-6 sm:grid-cols-2">
               
               {/* USER A: Question Form Inputs */}
-              <div className="space-y-3 border-l-2 border-primary pl-3.5 py-0.5">
+              <div className="space-y-3 border-l-2 border-primary pl-3.5 py-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="h-4 w-4 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold">
+                  <span className="h-4 w-4 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
                     Q
                   </span>
                   <span className="text-xs font-bold uppercase tracking-wider text-primary">
@@ -557,9 +557,9 @@ export function DialoguePracticeView({
               </div>
 
               {/* USER B: Answer Form Inputs */}
-              <div className="space-y-3 border-l-2 border-emerald-500 pl-3.5 py-0.5">
+              <div className="space-y-3 border-l-2 border-emerald-500 pl-3.5 py-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="h-4 w-4 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-[10px] font-bold">
+                  <span className="h-4 w-4 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xs font-bold">
                     A
                   </span>
                   <span className="text-xs font-bold uppercase tracking-wider text-emerald-500">
@@ -798,7 +798,7 @@ export function DialoguePracticeView({
                       {/* Speaker A */}
                       <div className="flex flex-col items-start space-y-1 max-w-[85%]">
                         <div className="flex items-center gap-1.5 ml-1">
-                          <span className="text-[10px] font-extrabold text-primary uppercase tracking-wide">
+                          <span className="text-xs font-extrabold text-primary uppercase tracking-wide">
                             User A
                           </span>
                         </div>
@@ -809,7 +809,7 @@ export function DialoguePracticeView({
                           {isRevealed && (
                             <div className="mt-2.5 pt-2 border-t border-primary/10 dark:border-primary/20 space-y-2 animate-in fade-in duration-200">
                               <div>
-                                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                   Manual Translation
                                 </span>
                                 <p className="text-xs text-muted-foreground italic font-semibold">
@@ -818,7 +818,7 @@ export function DialoguePracticeView({
                               </div>
                               {log.autoTranslationQuestion && (
                                 <div className="border-t border-dotted border-primary/10 dark:border-primary/20 pt-1">
-                                  <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                  <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                     Google Translation
                                   </span>
                                   <p className="text-xs text-muted-foreground/80 italic">
@@ -834,7 +834,7 @@ export function DialoguePracticeView({
                       {/* Speaker B */}
                       <div className="flex flex-col items-end space-y-1 ml-auto max-w-[85%]">
                         <div className="flex items-center gap-1.5 mr-1">
-                          <span className="text-[10px] font-extrabold text-emerald-500 uppercase tracking-wide">
+                          <span className="text-xs font-extrabold text-emerald-500 uppercase tracking-wide">
                             User B
                           </span>
                         </div>
@@ -845,7 +845,7 @@ export function DialoguePracticeView({
                           {isRevealed && (
                             <div className="mt-2.5 pt-2 border-t border-emerald-500/10 dark:border-emerald-500/20 space-y-2 animate-in fade-in duration-200">
                               <div>
-                                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                   Manual Translation
                                 </span>
                                 <p className="text-xs text-muted-foreground italic font-semibold">
@@ -854,7 +854,7 @@ export function DialoguePracticeView({
                               </div>
                               {log.autoTranslationAnswer && (
                                 <div className="border-t border-dotted border-emerald-500/10 dark:border-emerald-500/20 pt-1">
-                                  <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                  <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                     Google Translation
                                   </span>
                                   <p className="text-xs text-muted-foreground/80 italic">
@@ -941,7 +941,7 @@ export function DialoguePracticeView({
                       {/* Speaker A */}
                       <div className="flex flex-col items-start space-y-1 max-w-[85%]">
                         <div className="flex items-center gap-1.5 ml-1">
-                          <span className="text-[10px] font-extrabold text-primary uppercase tracking-wide">
+                          <span className="text-xs font-extrabold text-primary uppercase tracking-wide">
                             User A
                           </span>
                         </div>
@@ -952,7 +952,7 @@ export function DialoguePracticeView({
                           {isRevealed && (
                             <div className="mt-2.5 pt-2 border-t border-primary/10 dark:border-primary/20 space-y-2 animate-in fade-in duration-200">
                               <div>
-                                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                   Manual Translation
                                 </span>
                                 <p className="text-xs text-muted-foreground italic font-semibold">
@@ -961,7 +961,7 @@ export function DialoguePracticeView({
                               </div>
                               {log.autoTranslationQuestion && (
                                 <div className="border-t border-dotted border-primary/10 dark:border-primary/20 pt-1">
-                                  <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                  <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                     Google Translation
                                   </span>
                                   <p className="text-xs text-muted-foreground/80 italic">
@@ -977,7 +977,7 @@ export function DialoguePracticeView({
                       {/* Speaker B */}
                       <div className="flex flex-col items-end space-y-1 ml-auto max-w-[85%]">
                         <div className="flex items-center gap-1.5 mr-1">
-                          <span className="text-[10px] font-extrabold text-emerald-500 uppercase tracking-wide">
+                          <span className="text-xs font-extrabold text-emerald-500 uppercase tracking-wide">
                             User B
                           </span>
                         </div>
@@ -988,7 +988,7 @@ export function DialoguePracticeView({
                           {isRevealed && (
                             <div className="mt-2.5 pt-2 border-t border-emerald-500/10 dark:border-emerald-500/20 space-y-2 animate-in fade-in duration-200">
                               <div>
-                                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                   Manual Translation
                                 </span>
                                 <p className="text-xs text-muted-foreground italic font-semibold">
@@ -997,7 +997,7 @@ export function DialoguePracticeView({
                               </div>
                               {log.autoTranslationAnswer && (
                                 <div className="border-t border-dotted border-emerald-500/10 dark:border-emerald-500/20 pt-1">
-                                  <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
+                                  <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block mb-0.5">
                                     Google Translation
                                   </span>
                                   <p className="text-xs text-muted-foreground/80 italic">

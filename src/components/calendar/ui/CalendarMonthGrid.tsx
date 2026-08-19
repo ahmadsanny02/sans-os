@@ -164,7 +164,7 @@ export function CalendarMonthGrid({
                             return (
                               <div
                                 key={item.id}
-                                className={`text-label md:text-micro font-bold px-1.5 py-0.5 rounded border truncate flex items-center gap-1 ${theme.bg} ${theme.text} ${theme.border}`}
+                                className={`text-label md:text-micro font-bold px-2 py-1 rounded border truncate flex items-center gap-1 ${theme.bg} ${theme.text} ${theme.border}`}
                               >
                                 <span className="shrink-0 text-label opacity-75">
                                   {item.time}
@@ -176,7 +176,7 @@ export function CalendarMonthGrid({
                             return (
                               <div
                                 key={item.id}
-                                className={`text-label md:text-micro font-bold px-1.5 py-0.5 rounded border border-primary/15 truncate flex items-center gap-1 bg-primary/5 text-primary ${
+                                className={`text-label md:text-micro font-bold px-2 py-1 rounded border border-primary/15 truncate flex items-center gap-1 bg-primary/5 text-primary ${
                                   item.completed ? "line-through opacity-45 border-dashed" : ""
                                 }`}
                               >

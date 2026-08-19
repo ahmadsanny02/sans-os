@@ -498,7 +498,7 @@ export function FormulaListView({
                     <div className="space-y-3.5">
                       {/* Card Header row */}
                       <div className="flex items-start justify-between gap-2 border-b border-border/40 pb-2.5">
-                        <span className="text-[10px] font-extrabold text-muted-foreground/50 tracking-wider">
+                        <span className="text-xs font-extrabold text-muted-foreground/50 tracking-wider">
                           FORMULA
                         </span>
                         
@@ -549,24 +549,24 @@ export function FormulaListView({
                         {stats.total > 0 ? (
                           <>
                             {stats.writing > 0 && (
-                              <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-0.5">
+                              <span className="px-2 py-1 rounded-full text-micro font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-0.5">
                                 <PencilLine className="h-2 w-2" /> Write: {stats.writing}
                               </span>
                             )}
                             {stats.dialogue > 0 && (
-                              <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-0.5">
+                              <span className="px-2 py-1 rounded-full text-micro font-black uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-0.5">
                                 <MessageSquare className="h-2 w-2" /> Dialog: {stats.dialogue}
                               </span>
                             )}
                           </>
                         ) : (
-                          <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-muted text-muted-foreground border border-border/50">
+                          <span className="px-2 py-1 rounded-full text-micro font-black uppercase tracking-wider bg-muted text-muted-foreground border border-border/50">
                             Unpracticed
                           </span>
                         )}
                       </div>
 
-                      <span className="text-[9px] font-bold text-muted-foreground/40 select-none">
+                      <span className="text-micro font-bold text-muted-foreground/40 select-none">
                         Added {new Date(f.createdAt).toLocaleDateString()}
                       </span>
                     </div>

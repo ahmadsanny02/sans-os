@@ -119,7 +119,7 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
               </div>
             </div>
 
-            <div className="grid grid-cols-7 gap-1 text-center py-2 text-[10px] font-bold text-muted-foreground tracking-wider uppercase">
+            <div className="grid grid-cols-7 gap-1 text-center py-2 text-xs font-bold text-muted-foreground tracking-wider uppercase">
               {weekdays.map((day) => (
                 <div key={day} className="h-6 flex items-center justify-center">
                   {day}

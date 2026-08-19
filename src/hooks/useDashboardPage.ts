@@ -125,7 +125,7 @@ export function useDashboardPage() {
     const timer = setInterval(() => {
       const d = new Date()
       setCurrentTimeStr(`${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`)
-    }, 10000) // update clock every 10 seconds
+    }, 60000) // update clock every 60 seconds
     return () => clearInterval(timer)
   }, [])
 

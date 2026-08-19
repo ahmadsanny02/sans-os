@@ -169,7 +169,7 @@ export function CustomTimePicker({
     >
       {/* Hours Column */}
       <div className="flex flex-col gap-1 w-[46%]">
-        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground text-center pb-1 select-none border-b border-border/40">Hour</span>
+        <span className="text-xs font-black uppercase tracking-wider text-muted-foreground text-center pb-1 select-none border-b border-border/40">Hour</span>
         <div ref={hourScrollRef} className="h-40 overflow-y-auto space-y-0.5 scroll-smooth pr-1">
           {hours.map((h) => {
             const isSelected = currentHour === h
@@ -197,7 +197,7 @@ export function CustomTimePicker({
 
       {/* Minutes Column */}
       <div className="flex flex-col gap-1 w-[46%]">
-        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground text-center pb-1 select-none border-b border-border/40">Min</span>
+        <span className="text-xs font-black uppercase tracking-wider text-muted-foreground text-center pb-1 select-none border-b border-border/40">Min</span>
         <div ref={minuteScrollRef} className="h-40 overflow-y-auto space-y-0.5 scroll-smooth pr-1">
           {minutes.map((m) => {
             const isSelected = currentMinute === m

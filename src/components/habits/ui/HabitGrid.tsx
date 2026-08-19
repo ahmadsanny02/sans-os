@@ -209,7 +209,7 @@ export function HabitGrid({
             <button
               type="button"
               onClick={handleScrollToActive}
-              className="px-2 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-[10px] font-bold tracking-wide active:scale-95 transition-all border border-primary/20"
+              className="px-2 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold tracking-wide active:scale-95 transition-all border border-primary/20"
               title="Go to active date"
             >
               Today
@@ -340,7 +340,7 @@ export function HabitGrid({
                     title={`Select ${format(day, "MMMM d, yyyy")}`}
                   >
                     <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-[9px] font-black uppercase tracking-wider opacity-75">
+                      <span className="text-micro font-black uppercase tracking-wider opacity-75">
                         {format(day, "EE").slice(0, 2)}
                       </span>
                       <span className={`text-xs h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center rounded-full ${
@@ -437,7 +437,7 @@ export function HabitGrid({
                               {habit.name}
                             </p>
                             {habit.category && (
-                              <span className={`inline-flex items-center text-[9px] font-black uppercase tracking-wider opacity-90 mt-0.5 truncate max-w-full ${getCategoryStyle(habit.category, categories).text}`}>
+                              <span className={`inline-flex items-center text-micro font-black uppercase tracking-wider opacity-90 mt-0.5 truncate max-w-full ${getCategoryStyle(habit.category, categories).text}`}>
                                 {habit.category}
                                 {habit.subCategory && <span className="opacity-70 font-medium"> • {habit.subCategory}</span>}
                               </span>

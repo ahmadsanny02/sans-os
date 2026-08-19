@@ -241,7 +241,7 @@ export function BucketListBoardView({
 
           {/* Presets template */}
           <div className="space-y-2">
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
               <Heart className="h-3.5 w-3.5 text-primary" /> Or pick a preset dream location
             </span>
             <div className="flex flex-wrap gap-2">
@@ -250,7 +250,7 @@ export function BucketListBoardView({
                   key={preset.name}
                   type="button"
                   onClick={() => setAddImageUrl(preset.url)}
-                  className={`px-3 py-1 text-[10px] font-bold rounded-full border transition-all cursor-pointer ${
+                  className={`px-3 py-1 text-xs font-bold rounded-full border transition-all cursor-pointer ${
                     addImageUrl === preset.url
                       ? "bg-primary/10 text-primary border-primary/20"
                       : "border-border/60 text-muted-foreground hover:bg-secondary/40"
@@ -474,7 +474,7 @@ export function BucketListBoardView({
 
                   {/* Completion Date Stamp */}
                   {item.completed && item.completedAt && (
-                    <div className="flex items-center gap-1 pl-8 text-[9px] font-black uppercase tracking-wider text-emerald-400">
+                    <div className="flex items-center gap-1 pl-8 text-micro font-black uppercase tracking-wider text-emerald-400">
                       <Trophy className="h-3 w-3 shrink-0" />
                       Achieved: {formatDate(item.completedAt)}
                     </div>

@@ -39,7 +39,7 @@ export function usePomodoroPage() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
-    }, 1000)
+    }, 60000) // update clock every 60 seconds
     return () => clearInterval(timer)
   }, [])
 

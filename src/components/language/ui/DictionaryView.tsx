@@ -280,7 +280,7 @@ function LetterSection({
                 <div className="text-center py-10 border border-dashed border-border/40 rounded-xl space-y-1.5 bg-secondary/5">
                   <BookOpen className="h-6 w-6 text-muted-foreground/30 mx-auto" />
                   <h4 className="text-xs font-bold text-foreground">No words found</h4>
-                  <p className="text-[10px] text-muted-foreground">No dictionary definitions match this letter.</p>
+                  <p className="text-xs text-muted-foreground">No dictionary definitions match this letter.</p>
                 </div>
               ) : (
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -388,12 +388,12 @@ function WordCard({
                 <div className="space-y-4">
                   {/* Indonesian Translation */}
                   <div className="space-y-2">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground block">
+                    <span className="text-xs font-extrabold uppercase tracking-widest text-muted-foreground block">
                       Indonesian Meaning
                     </span>
 
                     <div className="p-4 bg-primary/5 border border-primary/15 rounded-xl">
-                      <span className="text-[9px] font-extrabold uppercase tracking-wider text-primary block select-none mb-0.5">
+                      <span className="text-micro font-extrabold uppercase tracking-wider text-primary block select-none mb-0.5">
                         Translation
                       </span>
                       <span className="text-base font-extrabold text-foreground">
@@ -405,12 +405,12 @@ function WordCard({
                   {/* Part of speech & Definition */}
                   {(details.partOfSpeech || details.definition) && (
                     <div className="space-y-2 border-t border-border/30 pt-3">
-                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground block">
+                      <span className="text-xs font-extrabold uppercase tracking-widest text-muted-foreground block">
                         Dictionary Definition
                       </span>
                       <div className="flex flex-wrap items-baseline gap-2">
                         {details.partOfSpeech && (
-                          <span className="inline-block px-2 py-0.5 rounded bg-secondary text-[10px] font-bold text-muted-foreground capitalize">
+                          <span className="inline-block px-2 py-1 rounded bg-secondary text-xs font-bold text-muted-foreground capitalize">
                             {details.partOfSpeech}
                           </span>
                         )}
@@ -426,13 +426,13 @@ function WordCard({
                   {/* Alternative Translations */}
                   {details.alternativeTranslations && details.alternativeTranslations.length > 0 && (
                     <div className="space-y-2 border-t border-border/30 pt-3">
-                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground block">
+                      <span className="text-xs font-extrabold uppercase tracking-widest text-muted-foreground block">
                         Alternative Translations
                       </span>
                       <div className="flex flex-wrap gap-2">
                         {details.alternativeTranslations.map((alt, idx) => (
                           <div key={idx} className="flex items-center gap-1.5 bg-secondary/30 px-2.5 py-1 rounded-lg text-xs">
-                            <span className="font-bold text-[9px] uppercase text-muted-foreground select-none">
+                            <span className="font-bold text-micro uppercase text-muted-foreground select-none">
                               {alt.partOfSpeech}:
                             </span>
                             <span className="text-foreground font-semibold">

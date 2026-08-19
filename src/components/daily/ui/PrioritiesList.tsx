@@ -58,7 +58,7 @@ export function PrioritiesList({
             Focus on the 5 most important tasks for today
           </p>
         </div>
-        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border/40 flex items-center justify-center min-w-[32px] h-6">
+        <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-muted-foreground border border-border/40 flex items-center justify-center min-w-[32px] h-6">
           {isLoading ? (
             <span className="inline-block w-4 h-3 bg-muted/30 animate-pulse rounded" />
           ) : (
@@ -121,7 +121,7 @@ export function PrioritiesList({
                     {editingId === priority.id ? (
                       <div className="flex flex-col gap-3 w-full py-1" onClick={(e) => e.stopPropagation()}>
                         <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                             Priority Title
                           </label>
                           <input
@@ -136,7 +136,7 @@ export function PrioritiesList({
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                           <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                               Category
                             </label>
                             <CustomSelect
@@ -157,7 +157,7 @@ export function PrioritiesList({
 
                           {availableSubs.length > 0 && (
                             <div className="space-y-1 animate-in fade-in duration-200">
-                              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                                 Sub-category
                               </label>
                               <CustomSelect
@@ -176,7 +176,7 @@ export function PrioritiesList({
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                           <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                               Target Date
                             </label>
                             <input
@@ -189,7 +189,7 @@ export function PrioritiesList({
                           </div>
 
                           <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                               Reference Link (Optional)
                             </label>
                             <input
@@ -240,7 +240,7 @@ export function PrioritiesList({
                       <div className="space-y-1.5">
                         {priority.category && (
                           <div className="flex max-w-full">
-                            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider truncate max-w-full ${getCategoryStyle(priority.category, categories).badgeBg}`}>
+                            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-micro font-bold uppercase tracking-wider truncate max-w-full ${getCategoryStyle(priority.category, categories).badgeBg}`}>
                               <Tag className="h-2 w-2 shrink-0" />
                               <span className="truncate">{priority.category}</span>
                               {priority.subCategory && <span className="opacity-70 font-medium truncate"> • {priority.subCategory}</span>}
@@ -269,7 +269,7 @@ export function PrioritiesList({
                           </span>
                         </div>
                         {priority.rolloverCount > 0 && !priority.completed && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-500 mt-0.5">
+                          <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-500 mt-0.5">
                             <RefreshCw className="h-3 w-3 animate-spin-slow" />
                             {priority.rolloverCount} {priority.rolloverCount === 1 ? "rollover" : "rollovers"}
                           </span>

@@ -434,7 +434,7 @@ export function WritingPracticeView({
                                   }`}
                                 >
                                   <span className="font-semibold">{f.name}</span>
-                                  <span className="text-[10px] text-muted-foreground italic font-mono max-w-[120px] truncate">
+                                  <span className="text-xs text-muted-foreground italic font-mono max-w-[120px] truncate">
                                     {f.formula}
                                   </span>
                                 </button>
@@ -459,7 +459,7 @@ export function WritingPracticeView({
                             setSelectedVocabId("")
                             setSearchVocabQuery("")
                           }}
-                          className="text-[10px] text-destructive hover:underline font-semibold cursor-pointer"
+                          className="text-xs text-destructive hover:underline font-semibold cursor-pointer"
                         >
                           Clear Selection
                         </button>
@@ -507,7 +507,7 @@ export function WritingPracticeView({
                                   }`}
                                 >
                                   <span>{v.word}</span>
-                                  <span className="text-[10px] text-muted-foreground italic max-w-[120px] truncate">{v.translation}</span>
+                                  <span className="text-xs text-muted-foreground italic max-w-[120px] truncate">{v.translation}</span>
                                 </button>
                               ))
                             )}
@@ -570,7 +570,7 @@ export function WritingPracticeView({
                                 }`}
                               >
                                 <span>{v.word}</span>
-                                <span className="text-[10px] text-muted-foreground italic max-w-[120px] truncate">{v.translation}</span>
+                                <span className="text-xs text-muted-foreground italic max-w-[120px] truncate">{v.translation}</span>
                               </button>
                             ))
                           )}
@@ -744,7 +744,7 @@ export function WritingPracticeView({
                               updated[idx].vocabQuery = ""
                               setExtraWritingRows(updated)
                             }}
-                            className="text-[10px] text-destructive hover:underline font-semibold cursor-pointer"
+                            className="text-xs text-destructive hover:underline font-semibold cursor-pointer"
                           >
                             Use Main Word
                           </button>
@@ -803,7 +803,7 @@ export function WritingPracticeView({
                                 }`}
                               >
                                 <span>{v.word}</span>
-                                <span className="text-[10px] text-muted-foreground italic max-w-[120px] truncate">{v.translation}</span>
+                                <span className="text-xs text-muted-foreground italic max-w-[120px] truncate">{v.translation}</span>
                               </button>
                             ))
                           )}
@@ -1063,7 +1063,7 @@ export function WritingPracticeView({
                     <div className="space-y-4">
                       {/* Top Row: Vocab Word & Delete */}
                       <div className="flex items-center justify-between gap-2 border-b border-border/30 pb-2 mb-1">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-micro font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
                           Word: {group.vocabWord}
                         </span>
 
@@ -1081,7 +1081,7 @@ export function WritingPracticeView({
                       {group.positive && (
                         <div className="space-y-1">
                           <div className="flex items-center">
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/20">
+                            <span className="px-2 py-1 rounded text-micro font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/20">
                               Positive
                             </span>
                           </div>
@@ -1091,7 +1091,7 @@ export function WritingPracticeView({
                           <div className="text-xs text-muted-foreground/80 leading-relaxed italic space-y-0.5 pl-2 border-l border-emerald-500/30">
                             <p className="font-semibold text-muted-foreground/90">{group.positive.indonesianTranslation}</p>
                             {group.positive.autoTranslation && (
-                              <p className="text-muted-foreground/50 text-[10px] not-italic">Google: {group.positive.autoTranslation}</p>
+                              <p className="text-muted-foreground/50 text-xs not-italic">Google: {group.positive.autoTranslation}</p>
                             )}
                           </div>
                         </div>
@@ -1101,7 +1101,7 @@ export function WritingPracticeView({
                       {group.negative && (
                         <div className="space-y-1">
                           <div className="flex items-center">
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20">
+                            <span className="px-2 py-1 rounded text-micro font-black uppercase tracking-wider bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20">
                               Negative
                             </span>
                           </div>
@@ -1111,7 +1111,7 @@ export function WritingPracticeView({
                           <div className="text-xs text-muted-foreground/80 leading-relaxed italic space-y-0.5 pl-2 border-l border-rose-500/30">
                             <p className="font-semibold text-muted-foreground/90">{group.negative.indonesianTranslation}</p>
                             {group.negative.autoTranslation && (
-                              <p className="text-muted-foreground/50 text-[10px] not-italic">Google: {group.negative.autoTranslation}</p>
+                              <p className="text-muted-foreground/50 text-xs not-italic">Google: {group.negative.autoTranslation}</p>
                             )}
                           </div>
                         </div>
@@ -1121,7 +1121,7 @@ export function WritingPracticeView({
                       {group.interrogative && (
                         <div className="space-y-1">
                           <div className="flex items-center">
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/20">
+                            <span className="px-2 py-1 rounded text-micro font-black uppercase tracking-wider bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/20">
                               Interrogative
                             </span>
                           </div>
@@ -1131,7 +1131,7 @@ export function WritingPracticeView({
                           <div className="text-xs text-muted-foreground/80 leading-relaxed italic space-y-0.5 pl-2 border-l border-blue-500/30">
                             <p className="font-semibold text-muted-foreground/90">{group.interrogative.indonesianTranslation}</p>
                             {group.interrogative.autoTranslation && (
-                              <p className="text-muted-foreground/50 text-[10px] not-italic">Google: {group.interrogative.autoTranslation}</p>
+                              <p className="text-muted-foreground/50 text-xs not-italic">Google: {group.interrogative.autoTranslation}</p>
                             )}
                           </div>
                         </div>
@@ -1139,7 +1139,7 @@ export function WritingPracticeView({
                     </div>
 
                     {/* Metadata Footer */}
-                    <div className="mt-3.5 text-[9px] font-semibold text-muted-foreground/60 text-right border-t border-border/20 pt-2 animate-in fade-in duration-200">
+                    <div className="mt-3.5 text-micro font-semibold text-muted-foreground/60 text-right border-t border-border/20 pt-2 animate-in fade-in duration-200">
                       {new Date(group.createdAt).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "short",
@@ -1173,11 +1173,11 @@ export function WritingPracticeView({
                       {/* Top Badges Row */}
                       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/30 pb-2 mb-2">
                         <div className="flex flex-wrap gap-1.5 items-center">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-micro font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
                             Formula: {log.formula}
                           </span>
                           {log.vocabWord && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-micro font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
                               Word: {log.vocabWord}
                             </span>
                           )}
@@ -1201,7 +1201,7 @@ export function WritingPracticeView({
                       {/* Indonesian translation */}
                       <div className="pt-1.5 border-t border-dashed border-border/30 mt-2 space-y-2">
                         <div>
-                          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                          <span className="text-micro font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
                             Translation
                           </span>
                           <p className="text-xs text-muted-foreground leading-relaxed italic font-semibold">
@@ -1210,7 +1210,7 @@ export function WritingPracticeView({
                         </div>
                         {log.autoTranslation && (
                           <div className="border-t border-dotted border-border/40 pt-1">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                            <span className="text-micro font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
                               Google Translation
                             </span>
                             <p className="text-xs text-muted-foreground/80 leading-relaxed italic">
@@ -1222,7 +1222,7 @@ export function WritingPracticeView({
                     </div>
 
                     {/* Metadata Footer */}
-                    <div className="mt-3 text-[9px] font-semibold text-muted-foreground/60 text-right">
+                    <div className="mt-3 text-micro font-semibold text-muted-foreground/60 text-right">
                       {new Date(log.createdAt).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "short",
@@ -1255,7 +1255,7 @@ export function WritingPracticeView({
                     <div className="space-y-2">
                       {/* Top Badges Row */}
                       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/30 pb-2 mb-2">
-                        <span className="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-secondary/40 text-muted-foreground border border-border/55">
+                        <span className="px-2 py-1 rounded-md text-micro font-extrabold uppercase tracking-wider bg-secondary/40 text-muted-foreground border border-border/55">
                           Free Writing
                         </span>
 
@@ -1277,7 +1277,7 @@ export function WritingPracticeView({
                       {/* Indonesian translation */}
                       <div className="pt-1.5 border-t border-dashed border-border/30 mt-2 space-y-2">
                         <div>
-                          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                          <span className="text-micro font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
                             Manual Translation
                           </span>
                           <p className="text-xs text-muted-foreground leading-relaxed italic font-semibold">
@@ -1286,7 +1286,7 @@ export function WritingPracticeView({
                         </div>
                         {log.autoTranslation && (
                           <div className="border-t border-dotted border-border/40 pt-1">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
+                            <span className="text-micro font-bold uppercase tracking-wider text-muted-foreground block mb-0.5">
                               Google Translation
                             </span>
                             <p className="text-xs text-muted-foreground/80 leading-relaxed italic">
@@ -1298,7 +1298,7 @@ export function WritingPracticeView({
                     </div>
 
                     {/* Metadata Footer */}
-                    <div className="mt-3 text-[9px] font-semibold text-muted-foreground/60 text-right">
+                    <div className="mt-3 text-micro font-semibold text-muted-foreground/60 text-right">
                       {new Date(log.createdAt).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "short",

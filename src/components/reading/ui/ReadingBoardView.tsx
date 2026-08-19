@@ -614,7 +614,7 @@ export function ReadingBoardView({
                   {/* Progress Tracker Block */}
                   {book.status !== "Completed" && (
                     <div className="mt-4 rounded-xl border border-border/50 bg-secondary/20 p-3.5 space-y-1.5">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                      <span className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                         <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" />
                         <span>Current Progress</span>
                       </span>
@@ -682,7 +682,7 @@ export function ReadingBoardView({
 
                       {/* Finish date */}
                       {book.finishedAt && (
-                        <p className="text-[9px] text-muted-foreground/80 flex items-center gap-1 mt-1 font-semibold uppercase tracking-wider">
+                        <p className="text-micro text-muted-foreground/80 flex items-center gap-1 mt-1 font-semibold uppercase tracking-wider">
                           <CheckCircle2 className="h-3 w-3 text-emerald-500 shrink-0" />
                           Completed: {formatDate(book.finishedAt)}
                         </p>

@@ -142,7 +142,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
           <ListChecks className="h-3.5 w-3.5 text-primary" />
           <span>Sub Schedules</span>
           {totalCount > 0 && (
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary font-extrabold">
+            <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary font-extrabold">
               {completedCount}/{totalCount} ({progress}%)
             </span>
           )}
@@ -151,7 +151,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-0.5 px-1.5 rounded-lg hover:bg-primary/10 cursor-pointer"
+            className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1 px-2 rounded-lg hover:bg-primary/10 cursor-pointer"
           >
             <Plus className="h-3 w-3" />
             <span>Add Sub</span>
@@ -193,7 +193,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                       inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-xs"
                       className="w-20"
                     />
-                    <span className="text-muted-foreground text-[10px]">to</span>
+                    <span className="text-muted-foreground text-xs">to</span>
                     <CustomTimePicker
                       value={editEnd}
                       onChange={(val) => setEditEnd(val)}
@@ -249,7 +249,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                     {sub.title}
                   </span>
                   {(sub.startTime || sub.endTime) && (
-                    <span className="shrink-0 text-[10px] font-semibold text-muted-foreground bg-secondary/60 px-1.5 py-0.5 rounded-md">
+                    <span className="shrink-0 text-xs font-semibold text-muted-foreground bg-secondary/60 px-2 py-1 rounded-md">
                       {sub.startTime || "..."} - {sub.endTime || "..."}
                     </span>
                   )}
@@ -300,7 +300,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
               className="w-20"
               placeholder="--:--"
             />
-            <span className="text-muted-foreground text-[10px]">to</span>
+            <span className="text-muted-foreground text-xs">to</span>
             <CustomTimePicker
               value={newEnd}
               onChange={(val) => setNewEnd(val)}
@@ -715,17 +715,17 @@ export function Timetable({
                               {block.startTime} - {block.endTime}
                             </span>
                             {duration && (
-                              <span className="rounded-full bg-background/50 px-2 py-0.5 text-[10px]">
+                              <span className="rounded-full bg-background/50 px-2 py-1 text-xs">
                                 {duration}
                               </span>
                             )}
                             {block.dayOfWeek === -1 && (
-                              <span className="rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-violet-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
+                              <span className="rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-violet-400 px-2 py-1 text-micro font-extrabold uppercase tracking-wider">
                                 Every Day
                               </span>
                             )}
                             {block.isTodo && (
-                              <span className="rounded-full bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/20 dark:text-emerald-400 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider">
+                              <span className="rounded-full bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/20 dark:text-emerald-400 px-2 py-1 text-micro font-extrabold uppercase tracking-wider">
                                 To-Do
                               </span>
                             )}
@@ -749,7 +749,7 @@ export function Timetable({
                           </div>
                           
                           {block.category && (
-                            <span className={`inline-block text-[10px] font-bold tracking-wide uppercase ${theme.text}`}>
+                            <span className={`inline-block text-xs font-bold tracking-wide uppercase ${theme.text}`}>
                               {block.category}
                               {block.subCategory && <span className="opacity-70 font-medium"> • {block.subCategory}</span>}
                             </span>

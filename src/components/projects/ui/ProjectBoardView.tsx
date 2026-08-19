@@ -91,12 +91,12 @@ function CustomBadgeDropdown({
           e.stopPropagation()
           if (!disabled) setIsOpen(!isOpen)
         }}
-        className={`px-2 py-0.5 rounded-full border flex items-center gap-1.5 transition-all hover:scale-[1.02] active:scale-95 duration-200 select-none ${theme.bg} ${theme.text} ${theme.border} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+        className={`px-2 py-1 rounded-full border flex items-center gap-1.5 transition-all hover:scale-[1.02] active:scale-95 duration-200 select-none ${theme.bg} ${theme.text} ${theme.border} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
       >
         {showDot && (
           <div className={`h-1.5 w-1.5 rounded-full shadow-[0_0_5px_currentColor] ${selectedOption.dotClass || "bg-current"}`} />
         )}
-        <span className="text-[9px] font-bold uppercase tracking-wider">{selectedOption.label}</span>
+        <span className="text-micro font-bold uppercase tracking-wider">{selectedOption.label}</span>
       </button>
 
       {isOpen && (
@@ -113,7 +113,7 @@ function CustomBadgeDropdown({
                     onChange(option.value)
                     setIsOpen(false)
                   }}
-                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[10px] font-bold transition-colors duration-150 ${isSelected
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors duration-150 ${isSelected
                     ? "bg-primary/10 text-primary"
                     : "text-foreground hover:bg-secondary/60 hover:text-foreground"
                     }`}
@@ -643,11 +643,11 @@ export function ProjectBoardView({
                             </p>
                           )}
                           <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
-                            <div className="px-2.5 py-1 text-[9px] rounded-full border border-border/30 bg-secondary/30 text-muted-foreground font-medium w-fit">
+                            <div className="px-2.5 py-1 text-micro rounded-full border border-border/30 bg-secondary/30 text-muted-foreground font-medium w-fit">
                               Added: {formatDate(project.createdAt)}
                             </div>
                             {project.category && (
-                              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold border uppercase tracking-wider ${getCategoryStyle(project.category, categories).badgeBg}`}>
+                              <span className={`inline-flex items-center rounded-full px-2 py-1 text-micro font-bold border uppercase tracking-wider ${getCategoryStyle(project.category, categories).badgeBg}`}>
                                 {project.category}
                                 {project.subCategory && <span className="opacity-70 font-medium ml-1"> • {project.subCategory}</span>}
                               </span>
@@ -668,7 +668,7 @@ export function ProjectBoardView({
 
                     {/* Progress Slider */}
                     <div className="space-y-2 bg-background/40 rounded-xl p-3 border border-border/30">
-                      <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      <div className="flex justify-between items-center text-xs font-bold text-muted-foreground uppercase tracking-wider">
                         <span>Progress</span>
                         <span className="text-foreground">{completedTasks}/{totalTasks} ({progressPct}%)</span>
                       </div>
@@ -681,7 +681,7 @@ export function ProjectBoardView({
                     </div>
 
                     {/* Badges footer */}
-                    <div className="flex flex-wrap items-center gap-2 pt-1 text-[9px] font-bold uppercase tracking-wider">
+                    <div className="flex flex-wrap items-center gap-2 pt-1 text-micro font-bold uppercase tracking-wider">
                       <span className={`px-2.5 py-1 rounded-full border flex items-center gap-1 ${statusTheme.bg} ${statusTheme.text} ${statusTheme.border}`}>
                         <div className={`h-1.5 w-1.5 rounded-full ${statusTheme.text.split(' ')[0].replace('text-', 'bg-')} shadow-[0_0_5px_currentColor]`} />
                         {project.status}
@@ -745,7 +745,7 @@ export function ProjectBoardView({
 
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex flex-col gap-2 flex-1 min-w-0">
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary uppercase tracking-widest">
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-primary uppercase tracking-widest">
                     <TrendingUp className="h-3.5 w-3.5" /> Workspace Agenda
                   </span>
                   {isEditingProjectName ? (
@@ -803,7 +803,7 @@ export function ProjectBoardView({
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-1.5 text-[9px] font-bold tracking-wider uppercase self-start">
+                <div className="flex flex-wrap items-center gap-1.5 text-micro font-bold tracking-wider uppercase self-start">
                   <CustomBadgeDropdown
                     value={activeProject.category || "General"}
                     options={categoryOptions}
@@ -880,7 +880,7 @@ export function ProjectBoardView({
                     />
                   </span>
                   {activeProject.deadline && isOverdue(activeProject.deadline, activeProject.status === "Completed") && (
-                    <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded-full border border-rose-500/20 ml-2 uppercase animate-pulse">
+                    <span className="text-xs font-bold text-rose-500 flex items-center gap-1 bg-rose-500/10 px-2 py-1 rounded-full border border-rose-500/20 ml-2 uppercase animate-pulse">
                       <AlertTriangle className="h-3 w-3" /> Overdue
                     </span>
                   )}
@@ -968,7 +968,7 @@ export function ProjectBoardView({
                                   </span>
                                 )}
 
-                                <div className="flex flex-wrap items-center gap-1.5 mt-1 text-[9px] font-black uppercase tracking-wider">
+                                <div className="flex flex-wrap items-center gap-1.5 mt-1 text-micro font-black uppercase tracking-wider">
                                   <CustomBadgeDropdown
                                     value={task.priority}
                                     options={PROJECT_PRIORITY_OPTIONS}
@@ -997,7 +997,7 @@ export function ProjectBoardView({
                                       className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20"
                                       aria-label="Change task deadline"
                                     />
-                                    <span className={`px-1.5 py-0.5 rounded-full border flex items-center gap-1 transition-all ${
+                                    <span className={`px-2 py-1 rounded-full border flex items-center gap-1 transition-all ${
                                       task.deadline 
                                         ? isTaskOver
                                           ? "bg-rose-500/10 text-rose-500 border-rose-500/20 hover:bg-rose-500/20"
@@ -1008,7 +1008,7 @@ export function ProjectBoardView({
                                       <span>{task.deadline ? formatDate(task.deadline) : "Set Deadline"}</span>
                                     </span>
                                   </div>
-                                  <span className="px-1.5 py-0.5 rounded-full border border-border/30 bg-secondary/30 text-muted-foreground flex items-center gap-1">
+                                  <span className="px-2 py-1 rounded-full border border-border/30 bg-secondary/30 text-muted-foreground flex items-center gap-1">
                                     Added: {formatDate(task.createdAt)}
                                   </span>
                                 </div>
@@ -1094,7 +1094,7 @@ export function ProjectBoardView({
                               </button>
                             </form>
                             {subTaskErrors[task.id] && (
-                              <p className="text-[10px] text-destructive flex items-center gap-1">
+                              <p className="text-xs text-destructive flex items-center gap-1">
                                 <AlertCircle className="h-3 w-3" /> {subTaskErrors[task.id]}
                               </p>
                             )}

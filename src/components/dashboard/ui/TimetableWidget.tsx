@@ -82,7 +82,7 @@ export function TimetableWidget({
                   <div className={`rounded-xl border p-3.5 min-h-[44px] bg-card/40 shadow-sm transition-colors duration-200 hover:bg-card/70 border-border/60 ${color.border}`}>
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 sm:gap-2">
                       <div className="min-w-0">
-                        <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${color.bg} ${color.text} border ${color.border}`}>
+                        <span className={`inline-block text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${color.bg} ${color.text} border ${color.border}`}>
                           {block.category || "General"}
                         </span>
                         <h4 className="text-sm font-bold text-foreground mt-1.5 leading-snug">

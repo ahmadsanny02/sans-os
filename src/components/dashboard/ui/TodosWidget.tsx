@@ -55,7 +55,7 @@ export function TodosWidget({
           <ListTodo className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-bold text-foreground">Daily Checklist</h3>
         </div>
-        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full border border-border/40 font-semibold text-muted-foreground flex items-center justify-center min-w-[50px] h-5">
+        <span className="text-xs bg-secondary/80 px-2 py-1 rounded-full border border-border/40 font-semibold text-muted-foreground flex items-center justify-center min-w-[50px] h-5">
           {isLoading ? (
             <span className="inline-block w-8 h-2.5 bg-muted/30 animate-pulse rounded" />
           ) : (
@@ -83,7 +83,7 @@ export function TodosWidget({
             {/* Habits Section */}
             {habits.length > 0 && (
               <div className="space-y-2">
-                <p className="text-[10px] font-bold tracking-wider text-muted-foreground/70 uppercase px-0.5">
+                <p className="text-xs font-bold tracking-wider text-muted-foreground/70 uppercase px-0.5">
                   Habits
                 </p>
                 {sortedHabits.map((habit) => (
@@ -124,7 +124,7 @@ export function TodosWidget({
             {todos.length > 0 && (
               <div className="space-y-2">
                 {habits.length > 0 && (
-                  <p className="text-[10px] font-bold tracking-wider text-muted-foreground/70 uppercase px-0.5">
+                  <p className="text-xs font-bold tracking-wider text-muted-foreground/70 uppercase px-0.5">
                     Tasks
                   </p>
                 )}

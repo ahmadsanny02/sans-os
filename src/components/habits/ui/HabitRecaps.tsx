@@ -119,12 +119,12 @@ export function HabitRecaps({
                 <XAxis 
                   dataKey="dayLabel" 
                   tickLine={false} 
-                  className="text-[10px] fill-muted-foreground font-semibold"
+                  className="text-xs fill-muted-foreground font-semibold"
                 />
                 <YAxis 
                   allowDecimals={false} 
                   tickLine={false} 
-                  className="text-[10px] fill-muted-foreground font-semibold"
+                  className="text-xs fill-muted-foreground font-semibold"
                 />
                 <Tooltip 
                   cursor={{ fill: "hsl(var(--primary) / 0.04)" }}

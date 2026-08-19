@@ -195,7 +195,7 @@ export function CategoryManagementView() {
             <div key={cat.id} className="bento-card p-5 space-y-3 flex flex-col justify-between hover:border-primary/20 transition-all">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
-                  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${badgeClass}`}>
+                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${badgeClass}`}>
                     <Tag className="h-3 w-3" />
                     {cat.name}
                   </span>
@@ -210,7 +210,7 @@ export function CategoryManagementView() {
               {/* Sub-categories List */}
               <div className="space-y-2 border-t border-border/40 pt-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sub-categories</span>
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sub-categories</span>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => {
@@ -285,7 +285,7 @@ export function CategoryManagementView() {
                 )}
 
                 {subCategories.filter((sc) => sc.categoryId === cat.id).length === 0 && addingSubCategoryId !== cat.id ? (
-                  <p className="text-[10px] text-muted-foreground italic pl-0.5">No sub-categories</p>
+                  <p className="text-xs text-muted-foreground italic pl-0.5">No sub-categories</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
                     {subCategories
@@ -312,7 +312,7 @@ export function CategoryManagementView() {
                                 autoFocus
                                 value={editSubName}
                                 onChange={(e) => setEditSubName(e.target.value)}
-                                className="w-28 rounded-lg border border-border/80 bg-background px-2 py-0.5 text-xs outline-none focus:border-primary text-foreground"
+                                className="w-28 rounded-lg border border-border/80 bg-background px-2 py-1 text-xs outline-none focus:border-primary text-foreground"
                               />
                               <button
                                 type="submit"
@@ -335,7 +335,7 @@ export function CategoryManagementView() {
                         return (
                           <div
                             key={sc.id}
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${badgeClass}`}
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${badgeClass}`}
                           >
                             <span>{sc.name}</span>
                             {isEditModeActive && (
@@ -378,7 +378,7 @@ export function CategoryManagementView() {
                       general: "General",
                     }
                     return (
-                      <span key={modName} className="text-[9px] uppercase font-bold text-muted-foreground tracking-wider bg-secondary/60 dark:bg-card/60 px-2 py-0.5 rounded-md border border-border/40">
+                      <span key={modName} className="text-micro uppercase font-bold text-muted-foreground tracking-wider bg-secondary/60 dark:bg-card/60 px-2 py-1 rounded-md border border-border/40">
                         {labelMap[modName] || modName}
                       </span>
                     )

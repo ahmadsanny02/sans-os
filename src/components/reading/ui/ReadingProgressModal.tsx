@@ -104,7 +104,7 @@ export function ReadingProgressModal({ book, onClose }: ReadingProgressModalProp
             <div className="pt-2 border-t border-border/30 flex items-start gap-2">
               <BookOpen className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               <div className="min-w-0">
-                <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground block">
+                <span className="text-xs font-black uppercase tracking-wider text-muted-foreground block">
                   Latest Registered Position
                 </span>
                 <p className="text-xs font-bold text-foreground break-words leading-snug">
@@ -121,7 +121,7 @@ export function ReadingProgressModal({ book, onClose }: ReadingProgressModalProp
             <h4 className="text-xs font-black uppercase tracking-wider text-foreground flex items-center gap-1.5">
               <Plus className="h-4 w-4 text-primary" /> Log New Progress
             </h4>
-            <span className="text-[10px] font-semibold text-muted-foreground">
+            <span className="text-xs font-semibold text-muted-foreground">
               Updates active reading position
             </span>
           </div>
@@ -187,7 +187,7 @@ export function ReadingProgressModal({ book, onClose }: ReadingProgressModalProp
             <h4 className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5 text-primary" /> Progress Timeline & History
             </h4>
-            <span className="text-xs font-bold text-foreground bg-secondary/80 px-2.5 py-0.5 rounded-full border border-border/40">
+            <span className="text-xs font-bold text-foreground bg-secondary/80 px-2.5 py-1 rounded-full border border-border/40">
               {logs.length} {logs.length === 1 ? "entry" : "entries"}
             </span>
           </div>
@@ -219,10 +219,10 @@ export function ReadingProgressModal({ book, onClose }: ReadingProgressModalProp
                   <div className="rounded-xl border border-border/50 bg-card/40 hover:bg-card/75 p-3 shadow-sm hover:border-primary/30 transition-all flex items-start justify-between gap-3">
                     <div className="space-y-1.5 min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-block rounded-md bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-xs font-extrabold text-primary">
+                        <span className="inline-block rounded-md bg-primary/10 border border-primary/20 px-2.5 py-1 text-xs font-extrabold text-primary">
                           {log.progress}
                         </span>
-                        <span className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
+                        <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
                           <Calendar className="h-3 w-3 shrink-0" />
                           {formatDate(log.createdAt)}
                         </span>

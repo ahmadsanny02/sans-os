@@ -217,7 +217,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
-    }, 1000)
+    }, 60000)
     return () => clearInterval(timer)
   }, [])
 
@@ -373,7 +373,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
               className={`rounded p-1 transition-colors cursor-pointer ${
                 isPipActive
                   ? "text-primary bg-white/10"
-                  : "text-white/40 hover:text-white/70 hover:bg-white/10"
+                  : "text-white/70 hover:text-white/70 hover:bg-white/10"
               }`}
               aria-label={isPipActive ? "Close floating window" : "Open floating window"}
               title={isPipActive ? "Close floating window" : "Open floating window (Picture-in-Picture)"}
@@ -387,14 +387,14 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
             aria-label="Open Pomodoro settings"
             onClick={closeModal}
           >
-            <ExternalLink className="h-3.5 w-3.5 text-white/40 hover:text-white/70" />
+            <ExternalLink className="h-3.5 w-3.5 text-white/70 hover:text-white/70" />
           </Link>
           <button
             onClick={closeModal}
             className="rounded p-1 hover:bg-white/10 transition-colors cursor-pointer"
             aria-label="Close Pomodoro modal"
           >
-            <X className="h-3.5 w-3.5 text-white/40 hover:text-white/70" />
+            <X className="h-3.5 w-3.5 text-white/70 hover:text-white/70" />
           </button>
         </div>
       </div>
@@ -406,7 +406,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
           <span className="text-2xl font-mono font-bold text-white tracking-tight">
             {formatSeconds(remainingSeconds)}
           </span>
-          <span className={`text-[9px] font-black tracking-wider uppercase mt-0.5 ${meta.color}`}>
+          <span className={`text-micro font-black tracking-wider uppercase mt-0.5 ${meta.color}`}>
             {meta.label}
           </span>
         </ProgressRing>
@@ -440,7 +440,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
         {activeBlock && (
           <div className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-xs">
             <p className="font-semibold text-white/80 truncate">{activeBlock.title}</p>
-            <p className="text-white/40 mt-0.5">
+            <p className="text-white/70 mt-0.5">
               {activeBlock.startTime} – {activeBlock.endTime}
               {integrationMode === "auto" && (
                 <span className="ml-1 text-emerald-400/80">● live</span>

@@ -148,7 +148,7 @@ function SidebarNavigation({
       {SIDEBAR_GROUPS.map((group) => (
         <div key={group.title} className="space-y-1">
           {sidebarOpen ? (
-            <span className="px-3.5 py-1.5 text-[9px] font-black tracking-widest text-muted-foreground/50 uppercase block select-none">
+            <span className="px-3.5 py-1.5 text-micro font-black tracking-widest text-muted-foreground/50 uppercase block select-none">
               {group.title}
             </span>
           ) : null}
@@ -300,8 +300,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     document.addEventListener("visibilitychange", handleSync)
     window.addEventListener("pageshow", handleSync)
 
-    // 3. Periodic check every 2 seconds for midnight rollover
-    const interval = setInterval(handleSync, 2000)
+    // 3. Periodic check every minute for midnight rollover
+    const interval = setInterval(handleSync, 60000)
 
     return () => {
       window.removeEventListener("focus", handleSync)
@@ -352,7 +352,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <span className="text-xs font-black tracking-wide text-foreground truncate">
                   SansOS
                 </span>
-                <span className="text-[9px] text-muted-foreground font-semibold truncate leading-none mt-0.5 select-none">
+                <span className="text-micro text-muted-foreground font-semibold truncate leading-none mt-0.5 select-none">
                   Personal OS
                 </span>
               </div>
@@ -406,7 +406,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-xs font-black text-foreground truncate">Ahmad Sanny</span>
-                    <span className="text-[10px] text-muted-foreground truncate">sanny@sansos.workspace</span>
+                    <span className="text-xs text-muted-foreground truncate">sanny@sansos.workspace</span>
                   </div>
                 </div>
 
@@ -459,7 +459,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               {sidebarOpen ? (
                 <div className="flex flex-col text-left min-w-0">
                   <span className="text-xs font-black text-foreground truncate leading-none mb-0.5">Ahmad Sanny</span>
-                  <span className="text-[9px] text-muted-foreground truncate leading-none">sanny@sansos.workspace</span>
+                  <span className="text-micro text-muted-foreground truncate leading-none">sanny@sansos.workspace</span>
                 </div>
               ) : null}
             </div>
@@ -505,7 +505,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="text-xs font-black text-foreground truncate">Ahmad Sanny</span>
-                        <span className="text-[10px] text-muted-foreground truncate">sanny@sansos.workspace</span>
+                        <span className="text-xs text-muted-foreground truncate">sanny@sansos.workspace</span>
                       </div>
                     </div>
                     <div className="space-y-0.5">
@@ -556,7 +556,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   </div>
                   <div className="flex flex-col text-left min-w-0">
                     <span className="text-xs font-black text-foreground truncate leading-none mb-0.5">Ahmad Sanny</span>
-                    <span className="text-[9px] text-muted-foreground truncate leading-none">sanny@sansos.workspace</span>
+                    <span className="text-micro text-muted-foreground truncate leading-none">sanny@sansos.workspace</span>
                   </div>
                 </div>
                 <ChevronsUpDown className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -617,7 +617,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 }`}
               >
                 <Icon className={`h-5 w-5 ${isActive ? "stroke-[2.5]" : ""}`} />
-                <span className="text-[10px] tracking-wide">
+                <span className="text-xs tracking-wide">
                   {item.name.split(" ")[0]}
                 </span>
               </Link>

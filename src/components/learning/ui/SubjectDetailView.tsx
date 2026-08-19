@@ -219,7 +219,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
               }}
             />
           </div>
-          <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground/80">
+          <div className="flex justify-between items-center text-xs font-bold text-muted-foreground/80">
             <span>In Progress: {inProgressMats}</span>
             <span>Planned: {totalMats - completedMats - inProgressMats}</span>
           </div>
@@ -247,7 +247,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
               }}
             />
           </div>
-          <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground/80">
+          <div className="flex justify-between items-center text-xs font-bold text-muted-foreground/80">
             <span>Pending: {totalTasks - completedTasks}</span>
             <span>Completed: {completedTasks}</span>
           </div>
@@ -293,7 +293,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                 onSubmit={handleAddMaterial}
                 className="bg-card/45 dark:bg-card/15 border border-border/60 shadow-sm rounded-2xl p-5 space-y-4"
               >
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block select-none">
+                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground block select-none">
                   Add New Material
                 </span>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -375,7 +375,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                                 href={mat.linkUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-primary hover:underline flex items-center gap-0.5 text-[10px] font-bold"
+                                className="text-primary hover:underline flex items-center gap-0.5 text-xs font-bold"
                               >
                                 Link <ExternalLink className="h-2.5 w-2.5" />
                               </a>
@@ -421,7 +421,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                 onSubmit={handleAddTask}
                 className="bg-card/45 dark:bg-card/15 border border-border/60 shadow-sm rounded-2xl p-5 space-y-4"
               >
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block select-none">
+                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground block select-none">
                   Add New Task
                 </span>
                 <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
@@ -492,7 +492,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                             </span>
                             {task.dueDate && (
                               <span
-                                className={`inline-flex items-center gap-1 text-[9px] font-extrabold tracking-wide uppercase ${
+                                className={`inline-flex items-center gap-1 text-micro font-extrabold tracking-wide uppercase ${
                                   isOverdue ? "text-rose-500" : "text-muted-foreground"
                                 }`}
                               >

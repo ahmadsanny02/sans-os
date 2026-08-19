@@ -218,7 +218,7 @@ export function LearningWorkspace() {
                           {subj.status}
                         </Badge>
                         {subj.category && (
-                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[9px] font-bold border uppercase tracking-wider ${getCategoryStyle(subj.category, categories).badgeBg}`}>
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-micro font-bold border uppercase tracking-wider ${getCategoryStyle(subj.category, categories).badgeBg}`}>
                             {subj.category}
                             {subj.subCategory && <span className="opacity-70 font-medium"> • {subj.subCategory}</span>}
                           </span>
@@ -254,7 +254,7 @@ export function LearningWorkspace() {
 
                   {/* Progress info */}
                   <div className="space-y-1.5 pt-2">
-                    <div className="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
+                    <div className="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
                       <span>Progress</span>
                       <span>{progress}%</span>
                     </div>
@@ -267,7 +267,7 @@ export function LearningWorkspace() {
                         }}
                       />
                     </div>
-                    <div className="flex items-center justify-between text-[9px] font-bold text-muted-foreground/80">
+                    <div className="flex items-center justify-between text-micro font-bold text-muted-foreground/80">
                       <span>Materials: {subj.materials.length}</span>
                       <span>Tasks: {subj.tasks.filter(t => t.completed).length}/{subj.tasks.length}</span>
                     </div>

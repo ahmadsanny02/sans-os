@@ -202,7 +202,7 @@ export function PomodoroTimerView({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl bg-secondary/40 border border-border/40 p-3.5 space-y-1">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Completed</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Completed</span>
                 <p className="text-xl font-extrabold text-foreground flex items-center gap-1.5">
                   <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                   {store.sessionCount} <span className="text-xs text-muted-foreground font-normal">sprints</span>
@@ -210,7 +210,7 @@ export function PomodoroTimerView({
               </div>
 
               <div className="rounded-xl bg-secondary/40 border border-border/40 p-3.5 space-y-1">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Focus Time</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Focus Time</span>
                 <p className="text-xl font-extrabold text-foreground flex items-center gap-1.5">
                   <Flame className="h-4 w-4 text-amber-500" />
                   {totalFocusMinutesToday} <span className="text-xs text-muted-foreground font-normal">mins</span>
@@ -250,7 +250,7 @@ export function PomodoroTimerView({
                   >
                     <div className="space-y-0.5 truncate">
                       <p className="font-bold truncate text-foreground">{block.title}</p>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {block.startTime} – {block.endTime} · {block.category || "General"}
                       </p>
                     </div>

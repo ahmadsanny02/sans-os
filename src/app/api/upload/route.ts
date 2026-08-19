@@ -77,7 +77,6 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     // 5. Upload File
-    const buffer = Buffer.from(await file.arrayBuffer())
     const MIME_EXT_MAP: Record<string, string> = {
       "image/jpeg": "jpg",
       "image/png": "png",
@@ -90,7 +89,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const { error: uploadError } = await supabaseAdmin.storage
       .from("daily-pics")
-      .upload(fileName, buffer, {
+      .upload(fileName, file, {
         contentType: file.type,
         upsert: true,
       })

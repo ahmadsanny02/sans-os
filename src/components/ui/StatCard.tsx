@@ -24,7 +24,7 @@ export function StatCard({
   return (
     <div className="rounded-2xl border border-border bg-card/45 dark:bg-card/20 p-5 shadow-sm flex flex-col justify-between md:flex-row md:items-center backdrop-blur-md">
       <div className="space-y-1 min-w-0 flex-1 pr-3">
-        <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block truncate">
+        <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block truncate">
           {title}
         </span>
         {value !== undefined && (

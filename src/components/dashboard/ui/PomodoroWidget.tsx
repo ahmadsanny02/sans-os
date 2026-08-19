@@ -130,7 +130,7 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
   // Compute active timetable session block currently running
   const [nowTime, setNowTime] = React.useState(() => new Date())
   useEffect(() => {
-    const timer = setInterval(() => setNowTime(new Date()), 10000)
+    const timer = setInterval(() => setNowTime(new Date()), 60000)
     return () => clearInterval(timer)
   }, [])
 
@@ -174,7 +174,7 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
             <span className={`relative inline-flex rounded-full h-2 w-2 ${isRunning || activeSessionBlock ? "bg-primary" : "bg-muted-foreground/60"}`} />
           </div>
           <div className="min-w-0">
-            <span className="text-[9px] font-extrabold uppercase tracking-widest text-primary block">
+            <span className="text-micro font-extrabold uppercase tracking-widest text-primary block">
               Active Session
             </span>
             <h4 className="text-xs font-extrabold text-foreground truncate leading-tight">
@@ -187,7 +187,7 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
           </div>
         </div>
         {activeSessionBlock && (
-          <span className="text-xs font-bold text-primary bg-primary/15 border border-primary/25 px-2.5 py-0.5 rounded-full shrink-0">
+          <span className="text-xs font-bold text-primary bg-primary/15 border border-primary/25 px-2.5 py-1 rounded-full shrink-0">
             {activeSessionBlock.startTime} - {activeSessionBlock.endTime}
           </span>
         )}
@@ -219,7 +219,7 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
       {/* 2. Main Playback / Timer Body */}
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
-          <span className={`text-[9px] font-black uppercase tracking-widest block ${meta.textClass}`}>
+          <span className={`text-micro font-black uppercase tracking-widest block ${meta.textClass}`}>
             {meta.label}
           </span>
           <h4 className="text-4xl font-black text-foreground font-mono leading-none tracking-tight">

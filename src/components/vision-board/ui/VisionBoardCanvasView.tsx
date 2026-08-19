@@ -145,7 +145,7 @@ export function VisionBoardCanvasView({
             {/* Presets visual section for image items */}
             {itemType === "image" && (
               <div className="space-y-2">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
                   <Compass className="h-3.5 w-3.5 text-primary" /> Presets Visual Wallpapers
                 </span>
                 <div className="flex flex-wrap gap-2 pt-0.5">
@@ -154,7 +154,7 @@ export function VisionBoardCanvasView({
                       key={preset.name}
                       type="button"
                       onClick={() => handleApplyPreset(preset.url)}
-                      className={`px-2.5 py-1 text-[10px] font-semibold rounded-full border transition-all cursor-pointer ${
+                      className={`px-2.5 py-1 text-xs font-semibold rounded-full border transition-all cursor-pointer ${
                         content === preset.url
                           ? "bg-primary/10 text-primary border-primary/20"
                           : "border-border/60 text-muted-foreground hover:bg-secondary/40"
@@ -329,7 +329,7 @@ export function VisionBoardCanvasView({
                       {item.content}
                     </div>
 
-                    <div className="flex justify-between items-center border-t border-yellow-500/20 pt-2 text-[9px] font-black uppercase tracking-widest text-yellow-700/60 dark:text-yellow-500/60 shrink-0 mt-3">
+                    <div className="flex justify-between items-center border-t border-yellow-500/20 pt-2 text-micro font-black uppercase tracking-widest text-yellow-700/60 dark:text-yellow-500/60 shrink-0 mt-3">
                       <span>Goal Note</span>
                       <button
                         onClick={(e) => handleDeleteItem(item.id, e)}

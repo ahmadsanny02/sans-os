@@ -323,7 +323,7 @@ export function LanguageBoardView({
               <div className="absolute left-0 mt-2 z-50 w-72 rounded-2xl border border-border bg-card/95 p-4 shadow-xl backdrop-blur-xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-150">
                 {/* 1. Language Direction Group */}
                 <div className="space-y-1.5">
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground block select-none">
+                  <span className="text-micro font-extrabold uppercase tracking-wider text-muted-foreground block select-none">
                     Language Direction
                   </span>
                   <div className="space-y-0.5">
@@ -354,7 +354,7 @@ export function LanguageBoardView({
 
                 {/* 2. Memorization Status Group */}
                 <div className="space-y-1.5">
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground block select-none">
+                  <span className="text-micro font-extrabold uppercase tracking-wider text-muted-foreground block select-none">
                     Status
                   </span>
                   <div className="space-y-0.5">
@@ -385,7 +385,7 @@ export function LanguageBoardView({
 
                 {/* 3. Study Assistant Actions Group */}
                 <div className="space-y-1.5">
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground block select-none">
+                  <span className="text-micro font-extrabold uppercase tracking-wider text-muted-foreground block select-none">
                     Study Assistant
                   </span>
                   <div className="grid grid-cols-2 gap-2">
@@ -395,7 +395,7 @@ export function LanguageBoardView({
                         revealAllTranslations()
                         setIsFilterOpen(false)
                       }}
-                      className="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-border hover:bg-secondary/40 text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg border border-border hover:bg-secondary/40 text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <Eye className="h-3.5 w-3.5" /> Reveal All
                     </button>
@@ -405,7 +405,7 @@ export function LanguageBoardView({
                         hideAllTranslations()
                         setIsFilterOpen(false)
                       }}
-                      className="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-border hover:bg-secondary/40 text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg border border-border hover:bg-secondary/40 text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <EyeOff className="h-3.5 w-3.5" /> Hide All
                     </button>
@@ -433,7 +433,7 @@ export function LanguageBoardView({
               <Plus className="h-4.5 w-4.5 text-primary" /> Add New Vocabulary
             </h3>
             {/* Sub-tabs for Add Mode */}
-            <div className="flex gap-1 p-0.5 bg-secondary/60 border border-border/30 rounded-xl select-none text-[10px] w-fit self-end sm:self-auto">
+            <div className="flex gap-1 p-0.5 bg-secondary/60 border border-border/30 rounded-xl select-none text-xs w-fit self-end sm:self-auto">
               <button
                 type="button"
                 onClick={() => setAddMode("dictionary")}
@@ -660,7 +660,7 @@ export function LanguageBoardView({
                   <h3 className="text-sm font-bold text-foreground tracking-wide uppercase select-none">
                     {label}
                   </h3>
-                  <span className="text-[10px] font-extrabold text-muted-foreground px-2 py-0.5 rounded-full bg-secondary/50 border border-border/50 select-none">
+                  <span className="text-xs font-extrabold text-muted-foreground px-2 py-1 rounded-full bg-secondary/50 border border-border/50 select-none">
                     {count} words
                   </span>
                 </div>
@@ -785,7 +785,7 @@ const VocabCard = React.memo(function VocabCard({
           <div className="flex items-center gap-1.5 flex-wrap">
             <Badge variant="primary">VOCAB</Badge>
             {isDifferent && !vocab.memorized && (
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
+              <span className="text-micro font-extrabold px-2 py-1 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
                 Auto-translate available
               </span>
             )}
@@ -836,12 +836,12 @@ const VocabCard = React.memo(function VocabCard({
 
         {/* Translation review block */}
         <div className="my-4.5">
-          <div className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground mb-2 select-none flex items-center justify-between">
+          <div className="text-xs font-extrabold uppercase tracking-widest text-muted-foreground mb-2 select-none flex items-center justify-between">
             <span className="flex items-center gap-1">
               <Lightbulb className="h-3 w-3 text-primary" /> Translation
             </span>
             {isDifferent && !vocab.memorized && (
-              <span className="text-[9px] font-semibold text-amber-500">Manual ≠ Auto</span>
+              <span className="text-micro font-semibold text-amber-500">Manual ≠ Auto</span>
             )}
           </div>
 
@@ -859,7 +859,7 @@ const VocabCard = React.memo(function VocabCard({
                   <>
                     {/* Manual Translation */}
                     <div className="space-y-1">
-                      <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block">
+                      <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block">
                         Manual Translation:
                       </span>
                       <div className="flex flex-wrap gap-1.5">
@@ -876,7 +876,7 @@ const VocabCard = React.memo(function VocabCard({
 
                     {/* Auto Translation */}
                     <div className="space-y-1 pt-1 border-t border-border/40">
-                      <span className="text-[9px] font-black uppercase tracking-wider text-primary block">
+                      <span className="text-micro font-black uppercase tracking-wider text-primary block">
                         Auto Translation:
                       </span>
                       <div className="flex flex-wrap gap-1.5">

@@ -103,7 +103,7 @@ export default function LoginPage() {
                     </div>
                     <span className="text-xs font-extrabold text-foreground">{feat.label}</span>
                   </div>
-                  <p className="text-[10px] text-muted-foreground pl-0.5">{feat.desc}</p>
+                  <p className="text-xs text-muted-foreground pl-0.5">{feat.desc}</p>
                 </div>
               )
             })}
