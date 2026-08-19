@@ -91,7 +91,7 @@ export function PomodoroPipView() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
-    }, 1000)
+    }, 60000)
     return () => clearInterval(timer)
   }, [])
 
@@ -141,13 +141,13 @@ export function PomodoroPipView() {
           className={`w-[138px] h-[138px] rounded-full flex flex-col items-center justify-center border-4 transition-all duration-300 text-left outline-none ${meta.border} ${meta.bg} shadow-lg ${meta.glow} hover:scale-105 hover:bg-card/40`}
           title="Click to expand controls"
         >
-          <span className={`text-[10px] font-extrabold tracking-widest uppercase opacity-70 ${meta.color} leading-none mb-0.5`}>
+          <span className={`text-xs font-extrabold tracking-widest uppercase opacity-70 ${meta.color} leading-none mb-0.5`}>
             {meta.label}
           </span>
           <span className="text-lg font-mono font-black text-white tracking-tight leading-none my-0.5">
             {formatSeconds(remainingSeconds)}
           </span>
-          <span className="text-[9px] font-bold text-white/40 leading-none flex items-center gap-0.5 justify-center">
+          <span className="text-xs font-bold text-muted-foreground leading-none flex items-center gap-0.5 justify-center">
             {sessionCount} <Target className="h-2.5 w-2.5 text-primary" />
           </span>
         </button>
@@ -162,13 +162,13 @@ export function PomodoroPipView() {
       <div className="flex items-center justify-between px-3.5 py-2 border-b border-border/10 bg-card/60 shrink-0">
         <div className="flex items-center gap-1.5">
           <Timer className="h-3.5 w-3.5 text-primary" />
-          <span className="text-[10px] font-black text-white/80 tracking-widest uppercase">
+          <span className="text-xs font-black text-white/80 tracking-widest uppercase">
             Pomodoro
           </span>
         </div>
         <button
           onClick={() => setIsPipExpanded(false)}
-          className="rounded p-1 hover:bg-white/10 text-white/40 hover:text-white/70 transition-colors"
+          className="rounded p-1 hover:bg-white/10 text-white/70 hover:text-white/70 transition-colors"
           title="Minimize to circle"
         >
           <Minimize2 className="h-3.5 w-3.5" />

@@ -79,7 +79,7 @@ function SliderCard({
         className="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary"
         aria-label={label}
       />
-      <div className="flex justify-between text-[10px] text-muted-foreground/60 font-medium">
+      <div className="flex justify-between text-xs text-muted-foreground/60 font-medium">
         <span>
           {min} {unit}
         </span>
@@ -119,7 +119,7 @@ function ModeBadge({ active, icon: Icon, label, description, onClick }: ModeBadg
           {label}
         </span>
         {active && (
-          <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full font-semibold border border-primary/30">
+          <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full font-semibold border border-primary/30">
             Active
           </span>
         )}
@@ -202,12 +202,12 @@ function BlockSelector({
                   {block.title}
                 </p>
                 {block.dayOfWeek === -1 && (
-                  <span className="shrink-0 text-[9px] bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                  <span className="shrink-0 text-micro bg-primary/10 text-primary border border-primary/20 px-2 py-1 rounded-full font-bold uppercase tracking-wider">
                     Every Day
                   </span>
                 )}
                 {block.isTodo && (
-                  <span className="shrink-0 text-[9px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider font-semibold">
+                  <span className="shrink-0 text-micro bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 py-1 rounded-full font-bold uppercase tracking-wider font-semibold">
                     To-Do
                   </span>
                 )}
@@ -217,7 +217,7 @@ function BlockSelector({
               </p>
             </div>
             {sessions > 0 && (
-              <span className="shrink-0 text-[9px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="shrink-0 text-micro font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-2 py-1 rounded-full flex items-center gap-1">
                 ~{sessions} <Target className="h-3 w-3 shrink-0" />
               </span>
             )}
@@ -387,7 +387,7 @@ export function PomodoroConfigView({
               <div className="flex items-center gap-3">
                 {localConfig.soundEnabled && (
                   <div className="flex items-center gap-1.5 rounded-xl bg-secondary/60 border border-border/40 p-1">
-                    <span className="text-[10px] text-muted-foreground font-semibold px-2 uppercase tracking-wider">Test:</span>
+                    <span className="text-xs text-muted-foreground font-semibold px-2 uppercase tracking-wider">Test:</span>
                     <button
                       type="button"
                       onClick={() => playPomodoroSound("focus", localConfig)}
@@ -565,12 +565,12 @@ export function PomodoroConfigView({
                                 {block.title}
                               </p>
                               {block.dayOfWeek === -1 && (
-                                <span className="shrink-0 text-[9px] bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                <span className="shrink-0 text-micro bg-primary/10 text-primary border border-primary/20 px-2 py-1 rounded-full font-bold uppercase tracking-wider">
                                   Every Day
                                 </span>
                               )}
                               {block.isTodo && (
-                                <span className="shrink-0 text-[9px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider font-semibold">
+                                <span className="shrink-0 text-micro bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 py-1 rounded-full font-bold uppercase tracking-wider font-semibold">
                                   To-Do
                                 </span>
                               )}
@@ -580,7 +580,7 @@ export function PomodoroConfigView({
                             </p>
                           </div>
                           {sessions > 0 && (
-                            <span className="shrink-0 text-[9px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <span className="shrink-0 text-micro font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-2 py-1 rounded-full flex items-center gap-1">
                               ~{sessions} <Target className="h-3 w-3 shrink-0" />
                             </span>
                           )}

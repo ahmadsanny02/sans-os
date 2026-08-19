@@ -381,14 +381,14 @@ export function CalendarView({
                         style={{ borderLeftColor: `var(--${block.color}-500)` }}
                       >
                         <div className="space-y-0.5 min-w-0">
-                          <p className="text-[10px] font-bold opacity-80 flex items-center gap-1">
+                          <p className="text-xs font-bold opacity-80 flex items-center gap-1">
                             <span>{block.startTime} - {block.endTime}</span>
                           </p>
                           <h5 className="text-xs font-bold text-foreground leading-normal truncate">
                             {block.title}
                           </h5>
                           {block.category && (
-                            <span className="text-[9px] font-bold opacity-75 uppercase tracking-wide">
+                            <span className="text-micro font-bold opacity-75 uppercase tracking-wide">
                               {block.category}
                             </span>
                           )}
@@ -516,23 +516,23 @@ export function CalendarView({
         {/* Summary Metric Pills */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
           <div className="rounded-xl border border-border/50 bg-card/30 p-3 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Total Events</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground block">Total Events</span>
             <p className="text-xl font-black text-foreground">{totalAgendasCount}</p>
           </div>
           <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1">
               <ListTodo className="h-3 w-3" /> Priorities
             </span>
             <p className="text-xl font-black text-foreground">{totalPrioritiesCount}</p>
           </div>
           <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-500 flex items-center gap-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-500 flex items-center gap-1">
               <Clock className="h-3 w-3" /> Timetable
             </span>
             <p className="text-xl font-black text-foreground">{totalTimetableCount}</p>
           </div>
           <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-500 flex items-center gap-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-500 flex items-center gap-1">
               <Briefcase className="h-3 w-3" /> Projects
             </span>
             <p className="text-xl font-black text-foreground">{totalProjectsCount}</p>
@@ -584,19 +584,19 @@ export function CalendarView({
 
                       <div className="flex items-center gap-1.5 flex-wrap">
                         {isTodayDate && (
-                          <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30 uppercase tracking-wider">
+                          <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-primary/15 text-primary border border-primary/30 uppercase tracking-wider">
                             Today
                           </span>
                         )}
                         {isSelected && (
-                          <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30 uppercase tracking-wider truncate max-w-full">
+                          <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-primary/15 text-primary border border-primary/30 uppercase tracking-wider truncate max-w-full">
                             Selected
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <span className="text-xs font-bold text-muted-foreground bg-secondary/50 px-2.5 py-0.5 rounded-full border border-border/40 shrink-0 self-start sm:self-auto">
+                    <span className="text-xs font-bold text-muted-foreground bg-secondary/50 px-2.5 py-1 rounded-full border border-border/40 shrink-0 self-start sm:self-auto">
                       {group.totalCount} {group.totalCount === 1 ? "item" : "items"}
                     </span>
                   </div>
@@ -629,7 +629,7 @@ export function CalendarView({
                           {p.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                         </button>
                         <div className="space-y-1 min-w-0 flex-1">
-                          <span className="text-[9px] font-black uppercase tracking-wider text-primary block">
+                          <span className="text-micro font-black uppercase tracking-wider text-primary block">
                             Priority
                           </span>
                           <p className={`font-semibold leading-relaxed break-words ${p.completed ? "line-through text-muted-foreground" : "text-foreground"}`}>
@@ -649,10 +649,10 @@ export function CalendarView({
                           className={`rounded-xl border p-3.5 text-xs space-y-1.5 bg-card/60 shadow-sm ${color.border}`}
                         >
                           <div className="flex items-center justify-between gap-1.5 flex-wrap">
-                            <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${color.bg} ${color.text}`}>
+                            <span className={`text-micro font-black uppercase tracking-wider px-2 py-1 rounded-full ${color.bg} ${color.text}`}>
                               {b.category || "Timetable"}
                             </span>
-                            <span className="text-[10px] font-bold text-muted-foreground">
+                            <span className="text-xs font-bold text-muted-foreground">
                               {b.startTime} - {b.endTime}
                             </span>
                           </div>
@@ -670,10 +670,10 @@ export function CalendarView({
                         className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5 text-xs space-y-1.5 shadow-sm"
                       >
                         <div className="flex items-center justify-between gap-1.5 flex-wrap">
-                          <span className="text-[9px] font-black uppercase tracking-wider text-amber-500 flex items-center gap-1">
+                          <span className="text-micro font-black uppercase tracking-wider text-amber-500 flex items-center gap-1">
                             <Briefcase className="h-3 w-3" /> {item.type === "project" ? "Project Deadline" : "Task Deadline"}
                           </span>
-                          <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                          <span className="text-micro font-extrabold uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20">
                             {item.priority}
                           </span>
                         </div>
@@ -681,7 +681,7 @@ export function CalendarView({
                           {item.name}
                         </p>
                         {item.projectName && (
-                          <p className="text-[10px] text-muted-foreground italic">
+                          <p className="text-xs text-muted-foreground italic">
                             Project: {item.projectName}
                           </p>
                         )}
