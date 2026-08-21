@@ -20,8 +20,11 @@ export async function proxy(request: NextRequest) {
     return supabaseResponse
   }
 
-  // Redirection: If no logged-in user and not on login page -> Send to login
+  // Redirection: If no logged-in user and not on login page
   if (!user && !isLoginPage) {
+    if (url.pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     url.pathname = "/login"
     return NextResponse.redirect(url)
   }
