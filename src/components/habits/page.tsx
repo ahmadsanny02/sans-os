@@ -62,10 +62,10 @@ export default function HabitsComponent() {
     <div className="mx-auto max-w-7xl space-y-8 py-4 animate-in fade-in duration-200">
       <HeaderPage
         title="Habit Tracker"
-        icon={<CheckSquare className="h-7 w-7 text-violet-500 shrink-0" />}
+        icon={<CheckSquare className="h-7 w-7 text-primary shrink-0" />}
         description={
           <div className="flex items-center gap-1.5 mt-1">
-            <Calendar className="h-4 w-4 text-violet-500" />
+            <Calendar className="h-4 w-4 text-primary" />
             <span>
               Active Month: <span className="font-semibold text-foreground">{activeMonthFormatted}</span>
             </span>
