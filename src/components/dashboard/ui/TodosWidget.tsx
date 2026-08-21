@@ -2,7 +2,7 @@
 
 import React from "react"
 import { DailyTodo } from "@/hooks/useDailyLogs"
-import { ListTodo, Check, Flame } from "lucide-react"
+import { ListTodo, Check, Flame, RotateCcw } from "lucide-react"
 
 interface HabitItem {
   id: string
@@ -104,12 +104,12 @@ export function TodosWidget({
                           ? "bg-primary border-primary text-primary-foreground shadow-glow"
                           : "border-border hover:border-primary/50 bg-card"
                       }`}
-                      aria-label="Toggle habit check-in"
+                      aria-label="Toggle habit status"
                     >
                       {habit.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
                     </button>
                     <span
-                      className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
+                      className={`text-xs font-semibold break-words whitespace-normal leading-tight flex-1 ${
                         habit.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                       }`}
                     >
@@ -150,13 +150,24 @@ export function TodosWidget({
                     >
                       {todo.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
                     </button>
-                    <span
-                      className={`text-xs font-semibold break-words whitespace-normal leading-tight flex-1 ${
-                        todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
-                      }`}
-                    >
-                      {todo.text}
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0 flex-wrap">
+                      <span
+                        className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
+                          todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
+                        }`}
+                      >
+                        {todo.text}
+                      </span>
+                      {todo.rolloverCount > 0 && (
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 px-1.5 py-0.5 text-micro font-bold uppercase tracking-wider shrink-0"
+                          title={`Rolled over ${todo.rolloverCount} time${todo.rolloverCount > 1 ? "s" : ""}`}
+                        >
+                          <RotateCcw className="h-2 w-2 shrink-0" />
+                          <span>Rollover{todo.rolloverCount > 1 ? ` (${todo.rolloverCount}x)` : ""}</span>
+                        </span>
+                      )}
+                    </div>
                     {handlePromoteTodoToPriority && (
                       <button
                         type="button"
