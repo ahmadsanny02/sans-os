@@ -313,6 +313,8 @@ export const dailyTodos = pgTable("daily_todos", {
   date: text("date").notNull(), // timezone-independent ISO string "YYYY-MM-DD"
   text: text("text").notNull(),
   completed: boolean("completed").default(false).notNull(),
+  category: text("category").default("General").notNull(),
+  subCategory: text("sub_category"),
   link: text("link"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })

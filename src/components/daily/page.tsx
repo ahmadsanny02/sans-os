@@ -64,6 +64,10 @@ export default function DailyComponent() {
           setTargetTimetable={dailyData.setTargetTimetable}
           targetTodo={dailyData.targetTodo}
           setTargetTodo={dailyData.setTargetTodo}
+          todoCategory={dailyData.todoCategory}
+          setTodoCategory={dailyData.setTodoCategory}
+          todoSubCategory={dailyData.todoSubCategory}
+          setTodoSubCategory={dailyData.setTodoSubCategory}
           targetPriority={dailyData.targetPriority}
           setTargetPriority={dailyData.setTargetPriority}
           combinedErrorMsg={dailyData.combinedErrorMsg}

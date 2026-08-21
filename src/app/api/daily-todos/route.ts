@@ -47,7 +47,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { date, text, link } = body
+    const { date, text, link, category, subCategory } = body
 
     if (!date || !text) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -60,6 +60,8 @@ export async function POST(request: Request): Promise<NextResponse> {
         date,
         text,
         completed: false,
+        category: category || "General",
+        subCategory: subCategory || null,
         link: link || null,
       })
       .returning()
@@ -83,7 +85,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, completed, text, link } = body
+    const { id, completed, text, link, category, subCategory } = body
 
     if (!id) {
       return NextResponse.json({ error: "Missing todo ID" }, { status: 400 })
@@ -95,6 +97,12 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
     if (text !== undefined) {
       updateData.text = text
+    }
+    if (category !== undefined) {
+      updateData.category = category
+    }
+    if (subCategory !== undefined) {
+      updateData.subCategory = subCategory
     }
     if (link !== undefined) {
       updateData.link = link || null

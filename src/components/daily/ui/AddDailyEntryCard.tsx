@@ -17,6 +17,10 @@ interface AddDailyEntryCardProps {
   setTargetTimetable: (t: boolean) => void
   targetTodo: boolean
   setTargetTodo: (t: boolean) => void
+  todoCategory: string
+  setTodoCategory: (c: string) => void
+  todoSubCategory: string
+  setTodoSubCategory: (c: string) => void
   targetPriority: boolean
   setTargetPriority: (t: boolean) => void
   combinedErrorMsg: string | null
@@ -58,6 +62,10 @@ export function AddDailyEntryCard({
   setTargetTimetable,
   targetTodo,
   setTargetTodo,
+  todoCategory,
+  setTodoCategory,
+  todoSubCategory,
+  setTodoSubCategory,
   targetPriority,
   setTargetPriority,
   combinedErrorMsg,
@@ -92,6 +100,9 @@ export function AddDailyEntryCard({
   const { categories, subCategories } = useCategories()
   const timetableCategories = categories.filter((c) => isCategoryInModule(c.module, "timetable"))
   const defaultFallbackCategories = ["General"]
+
+  const activeTodoCatId = categories.find((c) => c.name.toLowerCase() === todoCategory.toLowerCase())?.id
+  const availableTodoSubs = activeTodoCatId ? subCategories.filter((sc) => sc.categoryId === activeTodoCatId) : []
 
   const activePriorityCatId = categories.find((c) => c.name.toLowerCase() === priorityCategory.toLowerCase())?.id
   const availablePrioritySubs = activePriorityCatId ? subCategories.filter((sc) => sc.categoryId === activePriorityCatId) : []
@@ -343,6 +354,47 @@ export function AddDailyEntryCard({
                           options={[
                             { value: "", label: "None (No sub-category)" },
                             ...availablePrioritySubs.map((sc) => ({ value: sc.name, label: sc.name }))
+                          ]}
+                          fullWidth
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+                {targetTodo && !targetPriority && (
+                  <>
+                    <div className="space-y-1.5 animate-in fade-in duration-200">
+                      <label htmlFor="todoCategory" className="text-xs font-bold text-muted-foreground">
+                        Task Category
+                      </label>
+                      <CustomSelect
+                        id="todoCategory"
+                        value={todoCategory}
+                        onChange={(val) => {
+                          setTodoCategory(val)
+                          setTodoSubCategory("")
+                        }}
+                        options={
+                          timetableCategories.length > 0
+                            ? timetableCategories.map((c) => ({ value: c.name, label: c.name }))
+                            : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
+                        }
+                        fullWidth
+                      />
+                    </div>
+
+                    {availableTodoSubs.length > 0 && (
+                      <div className="space-y-1.5 animate-in fade-in duration-200">
+                        <label htmlFor="todoSubCategory" className="text-xs font-bold text-muted-foreground">
+                          Task Sub-category
+                        </label>
+                        <CustomSelect
+                          id="todoSubCategory"
+                          value={todoSubCategory}
+                          onChange={(val) => setTodoSubCategory(val)}
+                          options={[
+                            { value: "", label: "None (No sub-category)" },
+                            ...availableTodoSubs.map((sc) => ({ value: sc.name, label: sc.name }))
                           ]}
                           fullWidth
                         />

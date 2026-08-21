@@ -59,6 +59,8 @@ export function useDailyPage() {
   const [targetTimetable, setTargetTimetable] = useState(false)
   const [targetTodo, setTargetTodo] = useState(false)
   const [targetPriority, setTargetPriority] = useState(false)
+  const [todoCategory, setTodoCategory] = useState("General")
+  const [todoSubCategory, setTodoSubCategory] = useState("")
   const [combinedErrorMsg, setCombinedErrorMsg] = useState<string | null>(null)
   const [isPendingCombined, setIsPendingCombined] = useState(false)
 
@@ -129,6 +131,8 @@ export function useDailyPage() {
             date: chooseDate,
             text: entryTitle.trim(),
             link: entryLink.trim() || undefined,
+            category: todoCategory,
+            subCategory: todoSubCategory || null,
           })
         )
       }
@@ -507,6 +511,10 @@ export function useDailyPage() {
     setTargetTodo,
     targetPriority,
     setTargetPriority,
+    todoCategory,
+    setTodoCategory,
+    todoSubCategory,
+    setTodoSubCategory,
     chooseDate,
     setChooseDate,
     combinedErrorMsg,

@@ -2,7 +2,10 @@
 
 import React from "react"
 import { DailyTodo } from "@/hooks/useDailyLogs"
-import { Trash2, Check, ListTodo, Link2, Pencil, X, Flame } from "lucide-react"
+import { Trash2, Check, ListTodo, Link2, Pencil, X, Flame, Tag } from "lucide-react"
+import { getCategoryStyle } from "@/lib/categoryUtils"
+import { useCategories } from "@/hooks/useCategories"
+import { CustomSelect } from "@/components/ui/CustomSelect"
 import { useState } from "react"
 
 interface HabitItem {
@@ -18,7 +21,7 @@ interface DailyTodosProps {
   isError: boolean
   handleToggleCompleted: (id: string, completed: boolean) => void
   handleDeleteTodo: (id: string) => Promise<void>
-  handleUpdateTodo: (id: string, text: string, link: string) => Promise<void>
+  handleUpdateTodo: (id: string, text: string, link: string, category?: string, subCategory?: string | null) => Promise<void>
   handlePromoteTodoToPriority?: (todo: DailyTodo) => Promise<void>
   isPendingToggleTodo?: boolean
   habits?: HabitItem[]
@@ -41,6 +44,10 @@ export function DailyTodos({
 }: DailyTodosProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState("")
+  const [editCategory, setEditCategory] = useState("")
+  const [editSubCategory, setEditSubCategory] = useState("")
+  const { categories, subCategories } = useCategories()
+  const timetableCategories = categories.filter((c) => c.module === "timetable" || c.module === "general")
   const [editLink, setEditLink] = useState("")
 
   const completedTodos = todos.filter((t) => t.completed).length
@@ -196,6 +203,34 @@ export function DailyTodos({
                                 placeholder="Task text"
                                 autoFocus
                               />
+                              <div className="grid grid-cols-2 gap-2">
+                                <CustomSelect
+                                  id="editCategory"
+                                  value={editCategory}
+                                  onChange={(val) => {
+                                    setEditCategory(val)
+                                    setEditSubCategory("")
+                                  }}
+                                  options={
+                                    timetableCategories.length > 0
+                                      ? timetableCategories.map((c) => ({ value: c.name, label: c.name }))
+                                      : [{ value: "General", label: "General" }]
+                                  }
+                                  fullWidth
+                                />
+                                {editCategory && subCategories.filter(sc => sc.categoryId === categories.find(c => c.name.toLowerCase() === editCategory.toLowerCase())?.id).length > 0 && (
+                                  <CustomSelect
+                                    id="editSubCategory"
+                                    value={editSubCategory}
+                                    onChange={(val) => setEditSubCategory(val)}
+                                    options={[
+                                      { value: "", label: "None" },
+                                      ...subCategories.filter(sc => sc.categoryId === categories.find(c => c.name.toLowerCase() === editCategory.toLowerCase())?.id).map((sc) => ({ value: sc.name, label: sc.name }))
+                                    ]}
+                                    fullWidth
+                                  />
+                                )}
+                              </div>
                               <input
                                 type="url"
                                 value={editLink}
@@ -206,13 +241,22 @@ export function DailyTodos({
                             </div>
                           ) : (
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span
-                                className={`text-sm font-medium break-words whitespace-normal ${
-                                  todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
-                                }`}
-                              >
-                                {todo.text}
-                              </span>
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 min-w-0">
+                                <span
+                                  className={`text-sm font-medium break-words whitespace-normal ${
+                                    todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
+                                  }`}
+                                >
+                                  {todo.text}
+                                </span>
+                                {todo.category && (
+                                  <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-micro font-bold uppercase tracking-wider truncate max-w-full w-fit ${getCategoryStyle(todo.category, categories).badgeBg}`}>
+                                    <Tag className="h-2.5 w-2.5 shrink-0" />
+                                    <span className="truncate">{todo.category}</span>
+                                    {todo.subCategory && <span className="opacity-70 font-medium truncate"> • {todo.subCategory}</span>}
+                                  </span>
+                                )}
+                              </div>
                               {todo.link && (
                                 <a
                                   href={todo.link}
@@ -237,7 +281,7 @@ export function DailyTodos({
                               onClick={async (e) => {
                                 e.stopPropagation()
                                 if (!editText.trim()) return
-                                await handleUpdateTodo(todo.id, editText.trim(), editLink.trim())
+                                await handleUpdateTodo(todo.id, editText.trim(), editLink.trim(), editCategory, editSubCategory || null)
                                 setEditingId(null)
                               }}
                               disabled={!editText.trim()}
@@ -279,6 +323,8 @@ export function DailyTodos({
                                 setEditingId(todo.id)
                                 setEditText(todo.text)
                                 setEditLink(todo.link || "")
+                                setEditCategory(todo.category || "General")
+                                setEditSubCategory(todo.subCategory || "")
                               }}
                               className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                               aria-label="Edit todo item"

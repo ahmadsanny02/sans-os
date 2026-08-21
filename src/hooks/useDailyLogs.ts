@@ -6,6 +6,8 @@ export interface DailyTodo {
   date: string
   text: string
   completed: boolean
+  category: string
+  subCategory: string | null
   link: string | null
   createdAt: string
 }
@@ -40,7 +42,7 @@ export function useDailyTodosQuery(date: string) {
 }
 
 // Create Daily Todo
-async function createDailyTodo(body: { date: string; text: string; link?: string }): Promise<DailyTodo> {
+async function createDailyTodo(body: { date: string; text: string; link?: string; category?: string; subCategory?: string | null }): Promise<DailyTodo> {
   const res = await fetch("/api/daily-todos", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -55,7 +57,7 @@ async function createDailyTodo(body: { date: string; text: string; link?: string
 
 export function useCreateDailyTodoMutation() {
   const queryClient = useQueryClient()
-  return useMutation<DailyTodo, Error, { date: string; text: string; link?: string }>({
+  return useMutation<DailyTodo, Error, { date: string; text: string; link?: string; category?: string; subCategory?: string | null }>({
     mutationFn: createDailyTodo,
     onSuccess: (newTodo) => {
       queryClient.setQueryData<DailyTodo[]>(["daily-todos", newTodo.date], (old) => {
