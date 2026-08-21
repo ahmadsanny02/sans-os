@@ -82,7 +82,7 @@ export function CalendarDatePicker({ selectedDate, onDateChange }: CalendarDateP
         aria-label="Select Date"
         aria-expanded={isOpen}
       >
-        <CalendarIcon className="h-4.5 w-4.5 text-violet-500" />
+        <CalendarIcon className="h-4.5 w-4.5 text-primary" />
         <span className="text-foreground" suppressHydrationWarning>{formattedActiveDate}</span>
       </button>
 
