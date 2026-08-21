@@ -316,8 +316,11 @@ export const dailyTodos = pgTable("daily_todos", {
   category: text("category").default("General").notNull(),
   subCategory: text("sub_category"),
   link: text("link"),
+  rolloverCount: integer("rollover_count").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_daily_todos_user_date").on(t.userId, t.date),
+])
 
 // 13. Daily Logs (Journal, Notes, Gratitude, Pic of the Day)
 export const dailyLogs = pgTable("daily_logs", {
