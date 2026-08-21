@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import Image from "next/image"
 import { BucketItem } from "@/hooks/useBucketList"
 import { formatDate } from "@/hooks/useBucketListPage"
 import {
@@ -414,11 +415,12 @@ export function BucketListBoardView({
               >
                 {/* Visual Cover Photo */}
                 {item.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={item.imageUrl}
                     alt={item.title}
-                    className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className={`object-cover transition-all duration-500 group-hover:scale-105 ${
                       item.completed ? "opacity-35 grayscale" : "opacity-60"
                     }`}
                   />
