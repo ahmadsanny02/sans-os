@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useWorkspaceStore } from "@/store/workspaceStore"
 
 export interface DailyTodo {
   id: string
@@ -9,6 +10,7 @@ export interface DailyTodo {
   category: string
   subCategory: string | null
   link: string | null
+  rolloverCount: number
   createdAt: string
 }
 
@@ -25,7 +27,8 @@ export interface DailyLog {
 
 // Fetch Daily Todos
 async function fetchDailyTodos(date: string): Promise<DailyTodo[]> {
-  const res = await fetch(`/api/daily-todos?date=${date}`)
+  const today = useWorkspaceStore.getState().realTodayDate
+  const res = await fetch(`/api/daily-todos?date=${date}&today=${today}`)
   if (!res.ok) {
     const errorData = await res.json()
     throw new Error(errorData.error || "Failed to fetch daily todos")
@@ -34,8 +37,9 @@ async function fetchDailyTodos(date: string): Promise<DailyTodo[]> {
 }
 
 export function useDailyTodosQuery(date: string) {
+  const realTodayDate = useWorkspaceStore((state) => state.realTodayDate)
   return useQuery<DailyTodo[]>({
-    queryKey: ["daily-todos", date],
+    queryKey: ["daily-todos", date, realTodayDate],
     queryFn: () => fetchDailyTodos(date),
     enabled: !!date,
   })
@@ -59,10 +63,17 @@ export function useCreateDailyTodoMutation() {
   const queryClient = useQueryClient()
   return useMutation<DailyTodo, Error, { date: string; text: string; link?: string; category?: string; subCategory?: string | null }>({
     mutationFn: createDailyTodo,
-    onSuccess: (newTodo) => {
-      queryClient.setQueryData<DailyTodo[]>(["daily-todos", newTodo.date], (old) => {
-        if (!old) return [newTodo]
-        return [...old.filter((t) => t.id !== newTodo.id), newTodo]
+    onSuccess: (newTodo, variables) => {
+      const queryCache = queryClient.getQueryCache()
+      const queries = queryCache.findAll({ queryKey: ["daily-todos", variables.date], exact: false })
+      queries.forEach((q) => {
+        const old = q.state.data as DailyTodo[] | undefined
+        if (Array.isArray(old)) {
+          queryClient.setQueryData(
+            q.queryKey,
+            [...old.filter((t) => t.id !== newTodo.id), newTodo]
+          )
+        }
       })
       queryClient.invalidateQueries({ queryKey: ["daily-todos"] })
     },
@@ -89,25 +100,37 @@ export function useToggleDailyTodoMutation(date: string) {
     DailyTodo,
     Error,
     { id: string; completed: boolean },
-    { previousTodos: DailyTodo[] | undefined }
+    { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
   >({
     mutationFn: toggleDailyTodo,
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: ["daily-todos", date] })
-      const previousTodos = queryClient.getQueryData<DailyTodo[]>(["daily-todos", date])
-      if (previousTodos) {
-        queryClient.setQueryData<DailyTodo[]>(
-          ["daily-todos", date],
-          previousTodos.map((t) =>
-            t.id === variables.id ? { ...t, completed: variables.completed } : t
+      const queryCache = queryClient.getQueryCache()
+      const queries = queryCache.findAll({ queryKey: ["daily-todos", date], exact: false })
+
+      const previousQueriesData = queries.map((q) => ({
+        queryKey: q.queryKey,
+        data: q.state.data,
+      }))
+
+      queries.forEach((q) => {
+        const oldData = q.state.data as DailyTodo[] | undefined
+        if (Array.isArray(oldData)) {
+          queryClient.setQueryData(
+            q.queryKey,
+            oldData.map((t) =>
+              t.id === variables.id ? { ...t, completed: variables.completed } : t
+            )
           )
-        )
-      }
-      return { previousTodos }
+        }
+      })
+      return { previousQueriesData }
     },
     onError: (err, variables, context) => {
-      if (context?.previousTodos) {
-        queryClient.setQueryData(["daily-todos", date], context.previousTodos)
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach((q) => {
+          queryClient.setQueryData(q.queryKey, q.data)
+        })
       }
     },
     onSettled: () => {
@@ -130,22 +153,39 @@ async function deleteDailyTodo(id: string): Promise<{ success: boolean }> {
 
 export function useDeleteDailyTodoMutation(date: string) {
   const queryClient = useQueryClient()
-  return useMutation<{ success: boolean }, Error, string, { previous: DailyTodo[] | undefined }>({
+  return useMutation<
+    { success: boolean },
+    Error,
+    string,
+    { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
+  >({
     mutationFn: deleteDailyTodo,
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ["daily-todos", date] })
-      const previous = queryClient.getQueryData<DailyTodo[]>(["daily-todos", date])
-      if (previous) {
-        queryClient.setQueryData<DailyTodo[]>(
-          ["daily-todos", date],
-          previous.filter((t) => t.id !== id)
-        )
-      }
-      return { previous }
+      const queryCache = queryClient.getQueryCache()
+      const queries = queryCache.findAll({ queryKey: ["daily-todos", date], exact: false })
+
+      const previousQueriesData = queries.map((q) => ({
+        queryKey: q.queryKey,
+        data: q.state.data,
+      }))
+
+      queries.forEach((q) => {
+        const oldData = q.state.data as DailyTodo[] | undefined
+        if (Array.isArray(oldData)) {
+          queryClient.setQueryData(
+            q.queryKey,
+            oldData.filter((t) => t.id !== id)
+          )
+        }
+      })
+      return { previousQueriesData }
     },
     onError: (err, id, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(["daily-todos", date], context.previous)
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach((q) => {
+          queryClient.setQueryData(q.queryKey, q.data)
+        })
       }
     },
     onSettled: () => {
@@ -248,9 +288,16 @@ export function useUpdateDailyTodoMutation(date: string) {
   >({
     mutationFn: updateDailyTodo,
     onSuccess: (updatedTodo) => {
-      queryClient.setQueryData<DailyTodo[]>(["daily-todos", date], (old) => {
-        if (!old) return [updatedTodo]
-        return old.map((t) => (t.id === updatedTodo.id ? updatedTodo : t))
+      const queryCache = queryClient.getQueryCache()
+      const queries = queryCache.findAll({ queryKey: ["daily-todos", date], exact: false })
+      queries.forEach((q) => {
+        const old = q.state.data as DailyTodo[] | undefined
+        if (Array.isArray(old)) {
+          queryClient.setQueryData(
+            q.queryKey,
+            old.map((t) => (t.id === updatedTodo.id ? updatedTodo : t))
+          )
+        }
       })
       queryClient.invalidateQueries({ queryKey: ["daily-todos"] })
     },
