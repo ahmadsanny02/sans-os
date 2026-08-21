@@ -4,6 +4,28 @@ import { usePomodoroStore } from "@/store/pomodoroStore"
 
 export type PomodoroSoundType = "focus" | "break" | "long-break"
 
+let audioCtxInstance: AudioContext | null = null
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === "undefined") return null
+  try {
+    if (!audioCtxInstance || audioCtxInstance.state === "closed") {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext
+      if (!AudioContextClass) return null
+      audioCtxInstance = new AudioContextClass()
+    }
+    if (audioCtxInstance && audioCtxInstance.state === "suspended") {
+      audioCtxInstance.resume().catch(() => {})
+    }
+    return audioCtxInstance
+  } catch {
+    return null
+  }
+}
+
 /**
  * Plays a notification sound using the Web Audio API.
  * - "focus": ascending energetic arpeggio
@@ -26,13 +48,8 @@ export function playPomodoroSound(
     const volumeMultiplier = overrideConfig?.soundVolume ?? config.soundVolume ?? 0.5
     const oscType = overrideConfig?.soundType ?? config.soundType ?? "sine"
 
-    const AudioContextClass =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext: typeof AudioContext })
-        .webkitAudioContext
-    if (!AudioContextClass) return
-
-    const ctx = new AudioContextClass()
+    const ctx = getAudioContext()
+    if (!ctx) return
 
     const playTone = (
       freq: number,
@@ -78,9 +95,6 @@ export function playPomodoroSound(
       playTone(493.88, t + 0.08, 0.5, 0.22)
       playTone(587.33, t + 0.16, 0.55, 0.25)
     }
-
-    // Release AudioContext after tones finish
-    setTimeout(() => ctx.close().catch(() => {}), 2500)
   } catch {
     // Silently fail — Web Audio API unavailable or blocked
   }
