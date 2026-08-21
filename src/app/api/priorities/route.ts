@@ -79,16 +79,18 @@ export async function GET(request: Request): Promise<NextResponse> {
         const toRollover = oldIncomplete.slice(0, availableSlots)
         let nextIndex = todayPriorities.length
 
-        for (const item of toRollover) {
-          await db
-            .update(priorities)
-            .set({
-              date: today,
-              orderIndex: nextIndex++,
-              rolloverCount: (item.rolloverCount || 0) + 1,
-            })
-            .where(and(eq(priorities.id, item.id), eq(priorities.userId, user.id)))
-        }
+        await db.transaction(async (tx) => {
+          for (const item of toRollover) {
+            await tx
+              .update(priorities)
+              .set({
+                date: today,
+                orderIndex: nextIndex++,
+                rolloverCount: (item.rolloverCount || 0) + 1,
+              })
+              .where(and(eq(priorities.id, item.id), eq(priorities.userId, user.id)))
+          }
+        })
       }
     }
 
