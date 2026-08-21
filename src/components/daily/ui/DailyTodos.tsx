@@ -3,7 +3,7 @@
 import React from "react"
 import { DailyTodo } from "@/hooks/useDailyLogs"
 import { Trash2, Check, ListTodo, Link2, Pencil, X, Flame, Tag } from "lucide-react"
-import { getCategoryStyle } from "@/lib/categoryUtils"
+import { getCategoryStyle, isCategoryInModule } from "@/lib/categoryUtils"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
 import { useState } from "react"
@@ -47,7 +47,7 @@ export function DailyTodos({
   const [editCategory, setEditCategory] = useState("")
   const [editSubCategory, setEditSubCategory] = useState("")
   const { categories, subCategories } = useCategories()
-  const timetableCategories = categories.filter((c) => c.module === "timetable" || c.module === "general")
+  const timetableCategories = categories.filter((c) => isCategoryInModule(c.module, "timetable"))
   const [editLink, setEditLink] = useState("")
 
   const completedTodos = todos.filter((t) => t.completed).length
