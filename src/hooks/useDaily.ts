@@ -101,9 +101,16 @@ export function useCreatePriorityMutation() {
   return useMutation<Priority, Error, { date: string; text: string; orderIndex?: number; link?: string; category?: string; subCategory?: string | null }>({
     mutationFn: createPriority,
     onSuccess: (newPriority, variables) => {
-      queryClient.setQueryData<Priority[]>(["priorities", variables.date], (old) => {
-        if (!old) return [newPriority]
-        return [...old.filter((p) => p.id !== newPriority.id), newPriority].sort((a, b) => a.orderIndex - b.orderIndex)
+      const queryCache = queryClient.getQueryCache()
+      const queries = queryCache.findAll({ queryKey: ["priorities", variables.date], exact: false })
+      queries.forEach((q) => {
+        const old = q.state.data as Priority[] | undefined
+        if (Array.isArray(old)) {
+          queryClient.setQueryData(
+            q.queryKey,
+            [...old.filter((p) => p.id !== newPriority.id), newPriority].sort((a, b) => a.orderIndex - b.orderIndex)
+          )
+        }
       })
       queryClient.invalidateQueries({ queryKey: ["priorities"] })
       queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
@@ -129,25 +136,37 @@ export function useTogglePriorityMutation(date: string) {
     Priority,
     Error,
     { id: string; completed: boolean },
-    { previousPriorities: Priority[] | undefined }
+    { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
   >({
     mutationFn: togglePriority,
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: ["priorities", date] })
-      const previousPriorities = queryClient.getQueryData<Priority[]>(["priorities", date])
-      if (previousPriorities) {
-        queryClient.setQueryData<Priority[]>(
-          ["priorities", date],
-          previousPriorities.map((p) =>
-            p.id === variables.id ? { ...p, completed: variables.completed } : p
+      const queryCache = queryClient.getQueryCache()
+      const queries = queryCache.findAll({ queryKey: ["priorities", date], exact: false })
+
+      const previousQueriesData = queries.map((q) => ({
+        queryKey: q.queryKey,
+        data: q.state.data,
+      }))
+
+      queries.forEach((q) => {
+        const oldData = q.state.data as Priority[] | undefined
+        if (Array.isArray(oldData)) {
+          queryClient.setQueryData(
+            q.queryKey,
+            oldData.map((p) =>
+              p.id === variables.id ? { ...p, completed: variables.completed } : p
+            )
           )
-        )
-      }
-      return { previousPriorities }
+        }
+      })
+      return { previousQueriesData }
     },
     onError: (err, variables, context) => {
-      if (context?.previousPriorities) {
-        queryClient.setQueryData(["priorities", date], context.previousPriorities)
+      if (context?.previousQueriesData) {
+        context.previousQueriesData.forEach((q) => {
+          queryClient.setQueryData(q.queryKey, q.data)
+        })
       }
     },
     onSettled: () => {
