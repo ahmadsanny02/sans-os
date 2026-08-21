@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { habits, timetableBlocks, priorities, learningSubjects, projects } from "@/types/schema"
+import { habits, timetableBlocks, priorities, learningSubjects, projects, dailyTodos } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -27,57 +27,71 @@ export async function POST(request: Request): Promise<NextResponse> {
         return NextResponse.json({ error: "newName is required for rename action" }, { status: 400 })
       }
 
-      // Rename categories across all tables for this user
-      await db
-        .update(habits)
-        .set({ category: newName })
-        .where(and(eq(habits.userId, user.id), eq(habits.category, oldName)))
+      // Rename categories across all tables for this user in an atomic transaction
+      await db.transaction(async (tx) => {
+        await tx
+          .update(habits)
+          .set({ category: newName })
+          .where(and(eq(habits.userId, user.id), eq(habits.category, oldName)))
 
-      await db
-        .update(timetableBlocks)
-        .set({ category: newName })
-        .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.category, oldName)))
+        await tx
+          .update(timetableBlocks)
+          .set({ category: newName })
+          .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.category, oldName)))
 
-      await db
-        .update(priorities)
-        .set({ category: newName })
-        .where(and(eq(priorities.userId, user.id), eq(priorities.category, oldName)))
+        await tx
+          .update(priorities)
+          .set({ category: newName })
+          .where(and(eq(priorities.userId, user.id), eq(priorities.category, oldName)))
 
-      await db
-        .update(learningSubjects)
-        .set({ category: newName })
-        .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.category, oldName)))
+        await tx
+          .update(learningSubjects)
+          .set({ category: newName })
+          .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.category, oldName)))
 
-      await db
-        .update(projects)
-        .set({ category: newName })
-        .where(and(eq(projects.userId, user.id), eq(projects.category, oldName)))
+        await tx
+          .update(projects)
+          .set({ category: newName })
+          .where(and(eq(projects.userId, user.id), eq(projects.category, oldName)))
+
+        await tx
+          .update(dailyTodos)
+          .set({ category: newName })
+          .where(and(eq(dailyTodos.userId, user.id), eq(dailyTodos.category, oldName)))
+      })
     } else if (action === "delete") {
-      // Fallback deleted categories to 'General'
-      await db
-        .update(habits)
-        .set({ category: "General" })
-        .where(and(eq(habits.userId, user.id), eq(habits.category, oldName)))
+      // Fallback deleted categories to 'General' in an atomic transaction
+      await db.transaction(async (tx) => {
+        await tx
+          .update(habits)
+          .set({ category: "General" })
+          .where(and(eq(habits.userId, user.id), eq(habits.category, oldName)))
 
-      await db
-        .update(timetableBlocks)
-        .set({ category: "General" })
-        .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.category, oldName)))
+        await tx
+          .update(timetableBlocks)
+          .set({ category: "General" })
+          .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.category, oldName)))
 
-      await db
-        .update(priorities)
-        .set({ category: "General" })
-        .where(and(eq(priorities.userId, user.id), eq(priorities.category, oldName)))
+        await tx
+          .update(priorities)
+          .set({ category: "General" })
+          .where(and(eq(priorities.userId, user.id), eq(priorities.category, oldName)))
 
-      await db
-        .update(learningSubjects)
-        .set({ category: "General" })
-        .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.category, oldName)))
+        await tx
+          .update(learningSubjects)
+          .set({ category: "General" })
+          .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.category, oldName)))
 
-      await db
-        .update(projects)
-        .set({ category: "General" })
-        .where(and(eq(projects.userId, user.id), eq(projects.category, oldName)))
+        await tx
+          .update(projects)
+          .set({ category: "General" })
+          .where(and(eq(projects.userId, user.id), eq(projects.category, oldName)))
+
+        await tx
+          .update(dailyTodos)
+          .set({ category: "General" })
+          .where(and(eq(dailyTodos.userId, user.id), eq(dailyTodos.category, oldName)))
+      })
     } else {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 })
     }
