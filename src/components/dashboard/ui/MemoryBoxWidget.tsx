@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { Image as ImageIcon } from "lucide-react"
 
@@ -26,12 +27,15 @@ export function MemoryBoxWidget({
         {isLoading ? (
           <div className="w-full h-full bg-muted/20 animate-pulse rounded-lg" />
         ) : picUrl ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={picUrl}
-            alt="Memory of the Day"
-            className="w-full h-full object-cover rounded-lg animate-in fade-in duration-200"
-          />
+          <div className="relative w-full h-full rounded-lg overflow-hidden">
+            <Image
+              src={picUrl}
+              alt="Memory of the Day"
+              fill
+              sizes="(max-width: 768px) 100vw, 300px"
+              className="object-cover rounded-lg animate-in fade-in duration-200"
+            />
+          </div>
         ) : (
           <div className="text-center p-4">
             <p className="text-xs text-muted-foreground">No memory captured today.</p>
