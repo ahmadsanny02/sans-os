@@ -227,9 +227,21 @@ export function useDailyPage() {
 
   const updateTodoMutation = useUpdateDailyTodoMutation(activeDate)
 
-  const handleUpdateTodo = async (id: string, text: string, link: string): Promise<void> => {
+  const handleUpdateTodo = async (
+    id: string,
+    text: string,
+    link: string,
+    category?: string,
+    subCategory?: string | null
+  ): Promise<void> => {
     try {
-      await updateTodoMutation.mutateAsync({ id, text, link: link || undefined })
+      await updateTodoMutation.mutateAsync({
+        id,
+        text,
+        link: link || undefined,
+        category: category || "General",
+        subCategory: subCategory !== undefined ? subCategory : undefined,
+      })
       showSuccessToast("Todo updated")
     } catch {
       await showError("Error", "Failed to update todo.")
