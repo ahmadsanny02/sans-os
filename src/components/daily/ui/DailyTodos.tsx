@@ -2,7 +2,7 @@
 
 import React from "react"
 import { DailyTodo } from "@/hooks/useDailyLogs"
-import { Trash2, Check, ListTodo, Link2, Pencil, X, Flame, Tag } from "lucide-react"
+import { Trash2, Check, ListTodo, Link2, Pencil, X, Flame, Tag, RotateCcw } from "lucide-react"
 import { getCategoryStyle, isCategoryInModule } from "@/lib/categoryUtils"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
@@ -254,6 +254,15 @@ export function DailyTodos({
                                     <Tag className="h-2.5 w-2.5 shrink-0" />
                                     <span className="truncate">{todo.category}</span>
                                     {todo.subCategory && <span className="opacity-70 font-medium truncate"> • {todo.subCategory}</span>}
+                                  </span>
+                                )}
+                                {todo.rolloverCount > 0 && (
+                                  <span
+                                    className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 px-2 py-0.5 text-micro font-bold uppercase tracking-wider shrink-0"
+                                    title={`Rolled over ${todo.rolloverCount} time${todo.rolloverCount > 1 ? "s" : ""}`}
+                                  >
+                                    <RotateCcw className="h-2.5 w-2.5 shrink-0" />
+                                    <span>Rollover{todo.rolloverCount > 1 ? ` (${todo.rolloverCount}x)` : ""}</span>
                                   </span>
                                 )}
                               </div>
