@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { priorities, timetableBlocks } from "@/types/schema"
-import { eq, and } from "drizzle-orm"
+import { eq, and, asc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger";
 
@@ -30,6 +30,28 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     if (!deletedPriority) {
       return NextResponse.json({ error: "Priority not found" }, { status: 404 })
+    }
+
+    // Re-index remaining priorities for this date to maintain contiguous orderIndex
+    try {
+      const remaining = await db
+        .select({ id: priorities.id })
+        .from(priorities)
+        .where(and(eq(priorities.userId, user.id), eq(priorities.date, deletedPriority.date)))
+        .orderBy(asc(priorities.orderIndex), asc(priorities.createdAt))
+
+      if (remaining.length > 0) {
+        await db.transaction(async (tx) => {
+          for (let i = 0; i < remaining.length; i++) {
+            await tx
+              .update(priorities)
+              .set({ orderIndex: i })
+              .where(and(eq(priorities.id, remaining[i].id), eq(priorities.userId, user.id)))
+          }
+        })
+      }
+    } catch (err) {
+      logger.error("Failed to re-index priorities after delete:", err)
     }
 
     // Automatically remove matching custom timetable block if it exists to keep in sync
