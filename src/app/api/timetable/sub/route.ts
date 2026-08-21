@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { timetableSubSchedules } from "@/types/schema"
+import { timetableSubSchedules, timetableBlocks } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -20,6 +20,17 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     if (!timetableBlockId || !title) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    // Verify timetable block ownership
+    const [block] = await db
+      .select({ id: timetableBlocks.id })
+      .from(timetableBlocks)
+      .where(and(eq(timetableBlocks.id, timetableBlockId), eq(timetableBlocks.userId, user.id)))
+      .limit(1)
+
+    if (!block) {
+      return NextResponse.json({ error: "Timetable block not found or unauthorized" }, { status: 404 })
     }
 
     const [newSubSchedule] = await db
