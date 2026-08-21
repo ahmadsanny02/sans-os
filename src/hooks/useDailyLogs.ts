@@ -212,7 +212,14 @@ export function useSaveDailyLogMutation() {
   })
 }
 
-async function updateDailyTodo(body: { id: string; text?: string; link?: string; completed?: boolean }): Promise<DailyTodo> {
+async function updateDailyTodo(body: {
+  id: string
+  text?: string
+  link?: string
+  completed?: boolean
+  category?: string
+  subCategory?: string | null
+}): Promise<DailyTodo> {
   const res = await fetch("/api/daily-todos", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -227,7 +234,18 @@ async function updateDailyTodo(body: { id: string; text?: string; link?: string;
 
 export function useUpdateDailyTodoMutation(date: string) {
   const queryClient = useQueryClient()
-  return useMutation<DailyTodo, Error, { id: string; text?: string; link?: string; completed?: boolean }>({
+  return useMutation<
+    DailyTodo,
+    Error,
+    {
+      id: string
+      text?: string
+      link?: string
+      completed?: boolean
+      category?: string
+      subCategory?: string | null
+    }
+  >({
     mutationFn: updateDailyTodo,
     onSuccess: (updatedTodo) => {
       queryClient.setQueryData<DailyTodo[]>(["daily-todos", date], (old) => {
