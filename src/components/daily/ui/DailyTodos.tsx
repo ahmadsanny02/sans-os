@@ -218,14 +218,14 @@ export function DailyTodos({
                                   }
                                   fullWidth
                                 />
-                                {editCategory && subCategories.filter(sc => sc.categoryId === categories.find(c => c.name.toLowerCase() === editCategory.toLowerCase())?.id).length > 0 && (
+                                {editCategory && subCategories.some(sc => sc.categoryId === categories.find(c => c.name.toLowerCase() === (editCategory || "").toLowerCase())?.id) && (
                                   <CustomSelect
                                     id="editSubCategory"
                                     value={editSubCategory}
                                     onChange={(val) => setEditSubCategory(val)}
                                     options={[
                                       { value: "", label: "None" },
-                                      ...subCategories.filter(sc => sc.categoryId === categories.find(c => c.name.toLowerCase() === editCategory.toLowerCase())?.id).map((sc) => ({ value: sc.name, label: sc.name }))
+                                      ...subCategories.filter(sc => sc.categoryId === categories.find(c => c.name.toLowerCase() === (editCategory || "").toLowerCase())?.id).map((sc) => ({ value: sc.name, label: sc.name }))
                                     ]}
                                     fullWidth
                                   />
