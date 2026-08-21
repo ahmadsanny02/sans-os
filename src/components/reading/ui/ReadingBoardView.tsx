@@ -141,6 +141,7 @@ export function ReadingBoardView({
   totalBooks,
   readingCount,
   completedCount,
+  averageRating,
   filteredBooks,
   isPendingCreate,
   isPendingUpdate,
@@ -208,6 +209,16 @@ export function ReadingBoardView({
 
         <StatCard
           title="Average Rating"
+          value={
+            <span className="flex items-center gap-1.5">
+              {averageRating > 0 ? averageRating.toFixed(1) : "0.0"}
+              <Star className="h-5 w-5 text-amber-500 fill-amber-500 inline-block" />
+            </span>
+          }
+          icon={<Sparkles className="h-6 w-6" />}
+          iconBgClass="bg-amber-500/10"
+          iconTextClass="text-amber-500"
+          isLoading={isLoading}
           description="In your personal library"
         />
 
@@ -735,7 +746,7 @@ export function ReadingBoardView({
         isOpen={!!editingBook}
         onClose={() => setEditingBook(null)}
         title="Edit Book Details"
-        icon={<BookOpen className="h-5 w-5 text-violet-500" />}
+        icon={<BookOpen className="h-5 w-5 text-primary" />}
       >
         {editingBook && (
           <form onSubmit={handleUpdateBook} className="space-y-4 pt-1">
