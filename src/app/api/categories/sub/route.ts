@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { subCategories } from "@/types/schema"
-import { eq, asc } from "drizzle-orm"
+import { subCategories, categories } from "@/types/schema"
+import { eq, and, asc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 export async function GET(): Promise<NextResponse> {
@@ -44,6 +44,17 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     if (!name || !categoryId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    // Verify category ownership
+    const [category] = await db
+      .select({ id: categories.id })
+      .from(categories)
+      .where(and(eq(categories.id, categoryId), eq(categories.userId, user.id)))
+      .limit(1)
+
+    if (!category) {
+      return NextResponse.json({ error: "Category not found or unauthorized" }, { status: 404 })
     }
 
     const [newSub] = await db
