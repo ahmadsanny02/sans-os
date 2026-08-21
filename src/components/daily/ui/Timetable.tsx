@@ -720,7 +720,7 @@ export function Timetable({
                               </span>
                             )}
                             {block.dayOfWeek === -1 && (
-                              <span className="rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-violet-400 px-2 py-1 text-micro font-extrabold uppercase tracking-wider">
+                              <span className="rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary px-2 py-1 text-micro font-extrabold uppercase tracking-wider">
                                 Every Day
                               </span>
                             )}
