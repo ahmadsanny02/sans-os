@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import Image from "next/image"
 import { VisionBoardItem } from "@/hooks/useVisionBoard"
 import { motion, PanInfo } from "framer-motion"
 import {
@@ -344,12 +345,14 @@ export function VisionBoardCanvasView({
                 ) : (
                   // Image Item Layout
                   <div className="relative w-full h-full">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={item.content}
                       alt="Vision board inspiration"
-                      className="w-full h-full object-cover pointer-events-none"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 300px"
+                      className="object-cover pointer-events-none"
                       draggable={false}
+                      unoptimized={item.content.startsWith("data:")}
                     />
 
                     {/* Delete button layer on hover */}
