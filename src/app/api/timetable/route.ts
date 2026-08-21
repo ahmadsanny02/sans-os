@@ -1,29 +1,9 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { timetableBlocks, priorities, timetableSubSchedules } from "@/types/schema"
-import { eq, and, asc, sql } from "drizzle-orm"
+import { eq, and, asc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger";
-
-async function ensureSubSchedulesTable() {
-  try {
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "timetable_sub_schedules" (
-        "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-        "user_id" text NOT NULL,
-        "timetable_block_id" uuid NOT NULL REFERENCES "timetable_blocks"("id") ON DELETE cascade,
-        "title" text NOT NULL,
-        "start_time" text,
-        "end_time" text,
-        "completed" boolean DEFAULT false NOT NULL,
-        "created_at" timestamp DEFAULT now() NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS "idx_timetable_sub_block" ON "timetable_sub_schedules" ("timetable_block_id");
-    `)
-  } catch (err) {
-    logger.error("Failed to ensure timetable_sub_schedules table exists:", err)
-  }
-}
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -35,8 +15,6 @@ export async function GET(): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-
-    await ensureSubSchedulesTable()
 
     const blocks = await db.query.timetableBlocks.findMany({
       where: eq(timetableBlocks.userId, user.id),
@@ -65,8 +43,6 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-
-    await ensureSubSchedulesTable()
 
     const body = await request.json()
     const { dayOfWeek, startTime, endTime, title, category, subCategory, color, date, isTodo, link, subSchedules } = body
