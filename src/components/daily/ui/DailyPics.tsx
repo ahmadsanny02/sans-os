@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useRef } from "react"
+import Image from "next/image"
 import { Image as ImageIcon, Camera, Trash2, Loader2, UploadCloud, AlertCircle } from "lucide-react"
 
 interface DailyPicsProps {
@@ -45,14 +46,15 @@ export function DailyPics({
           <div className="w-full h-full bg-muted/20 animate-pulse rounded-xl" />
         ) : picUrl ? (
           <div className="relative w-full h-full rounded-xl overflow-hidden bg-secondary/10 flex items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={picUrl}
               alt="Pic of the Day"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              fill
+              sizes="(max-width: 768px) 100vw, 400px"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             {/* Overlay Gradient on Hover */}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-10">
               <button
                 onClick={triggerFileInput}
                 disabled={isUploading || isPendingSave}
