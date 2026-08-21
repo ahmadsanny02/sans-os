@@ -300,8 +300,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     document.addEventListener("visibilitychange", handleSync)
     window.addEventListener("pageshow", handleSync)
 
-    // 3. Periodic check every minute for midnight rollover
-    const interval = setInterval(handleSync, 60000)
+    // 3. Periodic check every 10 seconds for midnight rollover
+    const interval = setInterval(handleSync, 10000)
 
     return () => {
       window.removeEventListener("focus", handleSync)
