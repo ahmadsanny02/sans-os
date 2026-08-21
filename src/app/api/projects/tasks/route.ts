@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { projectTasks } from "@/types/schema"
+import { projectTasks, projects } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -20,6 +20,17 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     if (!projectId || !name) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    // Verify project ownership
+    const [project] = await db
+      .select({ id: projects.id })
+      .from(projects)
+      .where(and(eq(projects.id, projectId), eq(projects.userId, user.id)))
+      .limit(1)
+
+    if (!project) {
+      return NextResponse.json({ error: "Project not found or unauthorized" }, { status: 404 })
     }
 
     const [newTask] = await db
