@@ -345,7 +345,7 @@ export function DialoguePracticeView({
                           />
                           {selectedDialogueFormulaId && (
                             <span 
-                              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-2 w-2 rounded-full bg-violet-500 animate-pulse" 
+                              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-2 w-2 rounded-full bg-primary animate-pulse" 
                               title="Formula Selected" 
                             />
                           )}
