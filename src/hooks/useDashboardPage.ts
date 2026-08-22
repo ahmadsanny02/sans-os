@@ -11,6 +11,7 @@ import {
   useTimetableQuery,
 } from "@/hooks/useDaily"
 import {
+  DailyTodo,
   useDailyTodosQuery,
   useToggleDailyTodoMutation,
   useDeleteDailyTodoMutation,
@@ -160,7 +161,7 @@ export function useDashboardPage() {
     toggleHabitMutation.mutate({ habitId, date: activeDate })
   }
 
-  const handlePromoteTodoToPriority = async (todo: { id: string; text: string; link?: string | null }): Promise<void> => {
+  const handlePromoteTodoToPriority = async (todo: DailyTodo): Promise<void> => {
     if (priorities.length >= 5) {
       await showError("Priority Limit Reached", "Only 5 top priorities are allowed per day. Please complete or delete an existing priority first.")
       return
@@ -171,7 +172,8 @@ export function useDashboardPage() {
         date: activeDate,
         text: todo.text,
         link: todo.link || undefined,
-        category: "General",
+        category: todo.category || "General",
+        subCategory: todo.subCategory || null,
       })
       await deleteTodoMutation.mutateAsync(todo.id)
       showSuccessToast("Moved task to Top 5 Priorities")
