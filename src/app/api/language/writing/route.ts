@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { writingLogs } from "@/types/schema"
+import { writingLogs, vocabularyLogs, formulas } from "@/types/schema"
 import { eq, and, desc, inArray } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { translateText } from "@/lib/translate"
@@ -22,24 +22,7 @@ export async function GET(): Promise<NextResponse> {
       .where(eq(writingLogs.userId, user.id))
       .orderBy(desc(writingLogs.createdAt))
 
-    // On-the-fly backfill for older writing logs
-    const updatedLogs = await Promise.all(
-      logs.map(async (log) => {
-        if (!log.autoTranslation) {
-          const auto = await translateText(log.englishSentence)
-          if (auto) {
-            await db
-              .update(writingLogs)
-              .set({ autoTranslation: auto })
-              .where(and(eq(writingLogs.id, log.id), eq(writingLogs.userId, user.id)))
-            return { ...log, autoTranslation: auto }
-          }
-        }
-        return log
-      })
-    )
-
-    return NextResponse.json(updatedLogs)
+    return NextResponse.json(logs)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
@@ -62,6 +45,32 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     if (!englishSentence || !indonesianTranslation) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    // Verify vocab ownership if vocabId is provided
+    if (vocabId) {
+      const [vocab] = await db
+        .select({ id: vocabularyLogs.id })
+        .from(vocabularyLogs)
+        .where(and(eq(vocabularyLogs.id, vocabId), eq(vocabularyLogs.userId, user.id)))
+        .limit(1)
+
+      if (!vocab) {
+        return NextResponse.json({ error: "Vocabulary not found or unauthorized" }, { status: 404 })
+      }
+    }
+
+    // Verify formula ownership if formulaId is provided
+    if (formulaId) {
+      const [f] = await db
+        .select({ id: formulas.id })
+        .from(formulas)
+        .where(and(eq(formulas.id, formulaId), eq(formulas.userId, user.id)))
+        .limit(1)
+
+      if (!f) {
+        return NextResponse.json({ error: "Formula not found or unauthorized" }, { status: 404 })
+      }
     }
 
     const autoTranslation = await translateText(englishSentence)
