@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { habitLogs } from "@/types/schema"
+import { habitLogs, habits } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -20,6 +20,17 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     if (!habitId || !date) {
       return NextResponse.json({ error: "habitId and date are required" }, { status: 400 })
+    }
+
+    // Verify habit ownership
+    const [habit] = await db
+      .select({ id: habits.id })
+      .from(habits)
+      .where(and(eq(habits.id, habitId), eq(habits.userId, user.id)))
+      .limit(1)
+
+    if (!habit) {
+      return NextResponse.json({ error: "Habit not found or unauthorized" }, { status: 404 })
     }
 
     // Check if a log already exists for this habit and date
