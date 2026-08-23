@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { subCategories, habits, timetableBlocks, priorities, learningSubjects, projects } from "@/types/schema"
+import { subCategories, habits, timetableBlocks, priorities, learningSubjects, projects, dailyTodos } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -72,6 +72,11 @@ export async function PUT(
           .update(projects)
           .set({ subCategory: name })
           .where(and(eq(projects.userId, user.id), eq(projects.subCategory, existing.name)))
+
+        await tx
+          .update(dailyTodos)
+          .set({ subCategory: name })
+          .where(and(eq(dailyTodos.userId, user.id), eq(dailyTodos.subCategory, existing.name)))
       }
     })
 
@@ -139,6 +144,11 @@ export async function DELETE(
         .update(projects)
         .set({ subCategory: null })
         .where(and(eq(projects.userId, user.id), eq(projects.subCategory, existing.name)))
+
+      await tx
+        .update(dailyTodos)
+        .set({ subCategory: null })
+        .where(and(eq(dailyTodos.userId, user.id), eq(dailyTodos.subCategory, existing.name)))
     })
 
     return NextResponse.json({ success: true })
