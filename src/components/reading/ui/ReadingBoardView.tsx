@@ -199,12 +199,17 @@ export function ReadingBoardView({
 
         <StatCard
           title="Completed Books"
-          value={completedCount}
+          value={
+            <>
+              {completedCount}
+              <span className="text-sm font-bold text-muted-foreground"> / {totalBooks}</span>
+            </>
+          }
           icon={<BookMarked className="h-6 w-6" />}
           iconBgClass="bg-emerald-500/10"
           iconTextClass="text-emerald-500"
           isLoading={isLoading}
-          description="Finished reading"
+          description={totalBooks > 0 ? `${Math.round((completedCount / totalBooks) * 100)}% completion rate` : "0% completion rate"}
         />
 
         <StatCard
@@ -220,31 +225,6 @@ export function ReadingBoardView({
           iconTextClass="text-amber-500"
           isLoading={isLoading}
           description="In your personal library"
-        />
-
-        <StatCard
-          title="Books Completed"
-          value={
-            <>
-              {completedCount}
-              <span className="text-sm font-bold text-muted-foreground">/ {totalBooks}</span>
-            </>
-          }
-          icon={<CheckCircle2 className="h-6 w-6" />}
-          iconBgClass="bg-emerald-500/10"
-          iconTextClass="text-emerald-500"
-          isLoading={isLoading}
-          description={totalBooks > 0 ? `${Math.round((completedCount / totalBooks) * 100)}% completion rate` : "0% completion rate"}
-        />
-
-        <StatCard
-          title="Currently Reading"
-          value={readingCount}
-          icon={<BookOpenCheck className="h-6 w-6" />}
-          iconBgClass="bg-amber-500/10"
-          iconTextClass="text-amber-500"
-          isLoading={isLoading}
-          description="Active reading status"
         />
       </div>
 
