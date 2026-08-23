@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Image as ImageIcon } from "lucide-react"
@@ -14,6 +14,12 @@ export function MemoryBoxWidget({
   picUrl,
   isLoading,
 }: MemoryBoxWidgetProps) {
+  const [hasImageError, setHasImageError] = useState(false)
+
+  useEffect(() => {
+    setHasImageError(false)
+  }, [picUrl])
+
   return (
     <div className="bento-card p-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -26,7 +32,7 @@ export function MemoryBoxWidget({
       <div className="relative rounded-xl border border-border/40 bg-secondary/25 overflow-hidden h-48 flex items-center justify-center shadow-inner p-1">
         {isLoading ? (
           <div className="w-full h-full bg-muted/20 animate-pulse rounded-lg" />
-        ) : picUrl ? (
+        ) : picUrl && !hasImageError ? (
           <div className="relative w-full h-full rounded-lg overflow-hidden">
             <Image
               src={picUrl}
@@ -34,6 +40,7 @@ export function MemoryBoxWidget({
               fill
               sizes="(max-width: 768px) 100vw, 300px"
               className="object-cover rounded-lg animate-in fade-in duration-200"
+              onError={() => setHasImageError(true)}
             />
           </div>
         ) : (
