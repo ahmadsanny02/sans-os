@@ -47,6 +47,52 @@ interface VisionBoardCanvasViewProps {
   isPendingDelete: boolean
 }
 
+function VisionBoardImageItem({
+  src,
+  onDelete,
+  isPendingDelete,
+}: {
+  src: string
+  onDelete: (e: React.MouseEvent) => void
+  isPendingDelete: boolean
+}) {
+  const [hasError, setHasError] = React.useState(false)
+
+  return (
+    <div className="relative w-full h-full bg-secondary/15 flex items-center justify-center">
+      {!hasError ? (
+        <Image
+          src={src}
+          alt="Vision board inspiration"
+          fill
+          sizes="(max-width: 768px) 100vw, 300px"
+          className="object-cover pointer-events-none"
+          draggable={false}
+          unoptimized={src.startsWith("data:")}
+          onError={() => setHasError(true)}
+        />
+      ) : (
+        <div className="flex flex-col items-center justify-center p-3 text-center text-muted-foreground">
+          <ImageIcon className="h-8 w-8 mb-1 opacity-50" />
+          <span className="text-micro font-medium">Image unavailable</span>
+        </div>
+      )}
+
+      {/* Delete button layer on hover */}
+      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 select-none z-20">
+        <button
+          onClick={onDelete}
+          disabled={isPendingDelete}
+          className="p-2 rounded-xl bg-rose-500/90 text-white hover:bg-rose-600 transition-all shadow-md active:scale-95 shrink-0 cursor-pointer"
+          aria-label="Delete image card"
+        >
+          <Trash2 className="h-4.5 w-4.5" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function VisionBoardCanvasView({
   boardItems,
   isLoading,
@@ -344,29 +390,11 @@ export function VisionBoardCanvasView({
                   </>
                 ) : (
                   // Image Item Layout
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={item.content}
-                      alt="Vision board inspiration"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 300px"
-                      className="object-cover pointer-events-none"
-                      draggable={false}
-                      unoptimized={item.content.startsWith("data:")}
-                    />
-
-                    {/* Delete button layer on hover */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 select-none z-20">
-                      <button
-                        onClick={(e) => handleDeleteItem(item.id, e)}
-                        disabled={isPendingDelete}
-                        className="p-2 rounded-xl bg-rose-500/90 text-white hover:bg-rose-600 transition-all shadow-md active:scale-95 shrink-0"
-                        aria-label="Delete image card"
-                      >
-                        <Trash2 className="h-4.5 w-4.5" />
-                      </button>
-                    </div>
-                  </div>
+                  <VisionBoardImageItem
+                    src={item.content}
+                    onDelete={(e) => handleDeleteItem(item.id, e)}
+                    isPendingDelete={isPendingDelete}
+                  />
                 )}
               </motion.div>
             )
