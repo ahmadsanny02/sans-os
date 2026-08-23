@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { dialogueLogs } from "@/types/schema"
+import { dialogueLogs, vocabularyLogs, formulas } from "@/types/schema"
 import { eq, and, desc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { translateText } from "@/lib/translate"
@@ -22,45 +22,7 @@ export async function GET(): Promise<NextResponse> {
       .where(eq(dialogueLogs.userId, user.id))
       .orderBy(desc(dialogueLogs.createdAt))
 
-    // On-the-fly backfill for older dialogue logs
-    const updatedLogs = await Promise.all(
-      logs.map(async (log) => {
-        let needsUpdate = false
-        const updateData: {
-          autoTranslationQuestion?: string
-          autoTranslationAnswer?: string
-        } = {}
-
-        if (!log.autoTranslationQuestion) {
-          const autoQ = await translateText(log.englishQuestion)
-          if (autoQ) {
-            updateData.autoTranslationQuestion = autoQ
-            log.autoTranslationQuestion = autoQ
-            needsUpdate = true
-          }
-        }
-
-        if (!log.autoTranslationAnswer) {
-          const autoA = await translateText(log.englishAnswer)
-          if (autoA) {
-            updateData.autoTranslationAnswer = autoA
-            log.autoTranslationAnswer = autoA
-            needsUpdate = true
-          }
-        }
-
-        if (needsUpdate) {
-          await db
-            .update(dialogueLogs)
-            .set(updateData)
-            .where(and(eq(dialogueLogs.id, log.id), eq(dialogueLogs.userId, user.id)))
-        }
-
-        return log
-      })
-    )
-
-    return NextResponse.json(updatedLogs)
+    return NextResponse.json(logs)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
@@ -100,6 +62,32 @@ export async function POST(request: Request): Promise<NextResponse> {
       !indonesianAnswer?.trim()
     ) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    // Verify vocab ownership if vocabId is provided
+    if (vocabId) {
+      const [vocab] = await db
+        .select({ id: vocabularyLogs.id })
+        .from(vocabularyLogs)
+        .where(and(eq(vocabularyLogs.id, vocabId), eq(vocabularyLogs.userId, user.id)))
+        .limit(1)
+
+      if (!vocab) {
+        return NextResponse.json({ error: "Vocabulary not found or unauthorized" }, { status: 404 })
+      }
+    }
+
+    // Verify formula ownership if formulaId is provided
+    if (formulaId) {
+      const [f] = await db
+        .select({ id: formulas.id })
+        .from(formulas)
+        .where(and(eq(formulas.id, formulaId), eq(formulas.userId, user.id)))
+        .limit(1)
+
+      if (!f) {
+        return NextResponse.json({ error: "Formula not found or unauthorized" }, { status: 404 })
+      }
     }
 
     const autoTranslationQuestion = await translateText(englishQuestion)
