@@ -63,7 +63,7 @@ export default function LoginPage() {
       {/* Background ambient lighting and decorative grid pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
       <div className="absolute -left-20 top-1/4 -z-10 h-96 w-96 rounded-full bg-primary/15 blur-[120px] pointer-events-none animate-pulse" />
-      <div className="absolute -right-20 bottom-1/4 -z-10 h-96 w-96 rounded-full bg-violet-500/15 blur-[120px] pointer-events-none animate-pulse" />
+      <div className="absolute -right-20 bottom-1/4 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[120px] pointer-events-none animate-pulse" />
 
       {/* Main Container */}
       <div className="relative z-10 w-full max-w-5xl grid lg:grid-cols-12 gap-8 items-center">
@@ -88,7 +88,7 @@ export default function LoginPage() {
             {[
               { label: "Habit Tracker", desc: "Matrix check-in logs", icon: CheckCircle2, color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
               { label: "Language Hub", desc: "Vocab & Sentence drill", icon: BookOpen, color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
-              { label: "Daily Timetable", desc: "Schedule & Priorities", icon: Calendar, color: "text-violet-500 bg-violet-500/10 border-violet-500/20" },
+              { label: "Daily Timetable", desc: "Schedule & Priorities", icon: Calendar, color: "text-primary bg-primary/10 border-primary/20" },
               { label: "Project Board", desc: "Tasks & Deadlines", icon: Briefcase, color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
             ].map((feat, idx) => {
               const Icon = feat.icon
@@ -125,7 +125,7 @@ export default function LoginPage() {
           >
             {/* Form Header */}
             <div className="text-center space-y-2">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary to-violet-500 text-primary-foreground shadow-lg shadow-primary/20 mb-1">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/20 mb-1">
                 <Layers className="h-6 w-6" />
               </div>
               <h2 className="text-2xl font-black tracking-tight text-foreground">
