@@ -42,7 +42,7 @@ const PROJECT_STATUS_OPTIONS: DropdownOption[] = [
 
 const PROJECT_PRIORITY_OPTIONS: DropdownOption[] = [
   { value: "Low", label: "Low", dotClass: "bg-slate-400 dark:bg-slate-500" },
-  { value: "Medium", label: "Medium", dotClass: "bg-indigo-400 dark:bg-indigo-500" },
+  { value: "Medium", label: "Medium", dotClass: "bg-primary" },
   { value: "High", label: "High", dotClass: "bg-rose-400 dark:bg-rose-500" },
 ]
 
