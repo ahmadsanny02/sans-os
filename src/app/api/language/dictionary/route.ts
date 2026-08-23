@@ -71,22 +71,29 @@ export async function GET(request: Request): Promise<NextResponse> {
       searchUrl = `https://api.datamuse.com/words?sp=a*&max=50`
     }
 
-    const res = await fetch(searchUrl)
-    if (!res.ok) {
-      throw new Error("Datamuse API error")
+    try {
+      const res = await fetch(searchUrl)
+      if (!res.ok) {
+        logger.warn(`Datamuse API returned status ${res.status}`)
+        return NextResponse.json(query ? [{ word: query.trim().toLowerCase() }] : [])
+      }
+      const data = await res.json()
+      let wordsList = Array.isArray(data)
+        ? data.map((item: { word: string }) => ({ word: item.word }))
+        : []
+      wordsList.sort((a: { word: string }, b: { word: string }) => a.word.toLowerCase().localeCompare(b.word.toLowerCase()))
+      
+      if (query) {
+        const cleanQuery = query.trim().toLowerCase()
+        wordsList = wordsList.filter((item: { word: string }) => item.word.toLowerCase() !== cleanQuery)
+        wordsList.unshift({ word: cleanQuery })
+      }
+      
+      return NextResponse.json(wordsList)
+    } catch (fetchErr) {
+      logger.error("Datamuse API fetch error:", fetchErr)
+      return NextResponse.json(query ? [{ word: query.trim().toLowerCase() }] : [])
     }
-    const data = await res.json()
-    let wordsList = data
-      .map((item: { word: string }) => ({ word: item.word }))
-      .sort((a: { word: string }, b: { word: string }) => a.word.toLowerCase().localeCompare(b.word.toLowerCase()))
-    
-    if (query) {
-      const cleanQuery = query.trim().toLowerCase()
-      wordsList = wordsList.filter((item: { word: string }) => item.word.toLowerCase() !== cleanQuery)
-      wordsList.unshift({ word: cleanQuery })
-    }
-    
-    return NextResponse.json(wordsList)
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : "Internal Server Error"
     return NextResponse.json({ error: errMsg }, { status: 500 })
