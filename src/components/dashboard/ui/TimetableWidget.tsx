@@ -5,25 +5,7 @@ import Link from "next/link"
 import { TimetableBlock } from "@/hooks/useDaily"
 import { Clock, ArrowRight } from "lucide-react"
 import { useCategories } from "@/hooks/useCategories"
-
-const TIMETABLE_COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
-  blue: { bg: "bg-blue-500/10", text: "text-blue-500 dark:text-blue-400", border: "border-blue-500/20", bullet: "bg-blue-500" },
-  green: { bg: "bg-emerald-500/10", text: "text-emerald-500 dark:text-emerald-400", border: "border-emerald-500/20", bullet: "bg-emerald-500" },
-  emerald: { bg: "bg-emerald-500/10", text: "text-emerald-500 dark:text-emerald-400", border: "border-emerald-500/20", bullet: "bg-emerald-500" },
-  purple: { bg: "bg-violet-500/10", text: "text-violet-500 dark:text-violet-400", border: "border-violet-500/20", bullet: "bg-purple-500" },
-  violet: { bg: "bg-violet-500/10", text: "text-violet-500 dark:text-violet-400", border: "border-violet-500/20", bullet: "bg-violet-500" },
-  amber: { bg: "bg-amber-500/10", text: "text-amber-500 dark:text-amber-400", border: "border-amber-500/20", bullet: "bg-amber-500" },
-  red: { bg: "bg-rose-500/10", text: "text-rose-500 dark:text-rose-400", border: "border-rose-500/20", bullet: "bg-rose-500" },
-  rose: { bg: "bg-rose-500/10", text: "text-rose-500 dark:text-rose-400", border: "border-rose-500/20", bullet: "bg-rose-500" },
-  pink: { bg: "bg-pink-500/10", text: "text-pink-500 dark:text-pink-400", border: "border-pink-500/20", bullet: "bg-pink-500" },
-  teal: { bg: "bg-teal-500/10", text: "text-teal-500 dark:text-teal-400", border: "border-teal-500/20", bullet: "bg-teal-500" },
-  orange: { bg: "bg-orange-500/10", text: "text-orange-500 dark:text-orange-400", border: "border-orange-500/20", bullet: "bg-orange-500" },
-  indigo: { bg: "bg-indigo-500/10", text: "text-indigo-500 dark:text-indigo-400", border: "border-indigo-500/20", bullet: "bg-indigo-500" },
-  slate: { bg: "bg-slate-500/10", text: "text-slate-500 dark:text-slate-400", border: "border-slate-500/20", bullet: "bg-slate-500" },
-  cyan: { bg: "bg-cyan-500/10", text: "text-cyan-500 dark:text-cyan-400", border: "border-cyan-500/20", bullet: "bg-cyan-500" },
-  fuchsia: { bg: "bg-fuchsia-500/10", text: "text-fuchsia-500 dark:text-fuchsia-400", border: "border-fuchsia-500/20", bullet: "bg-fuchsia-500" },
-  primary: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20", bullet: "bg-primary" },
-}
+import { getColorStyle } from "@/lib/categoryUtils"
 
 interface TimetableWidgetProps {
   activeDayBlocks: TimetableBlock[]
@@ -73,16 +55,16 @@ export function TimetableWidget({
           <div className="relative border-l border-border/40 ml-2.5 pl-6 space-y-4">
             {activeDayBlocks.map((block) => {
               const blockColor = categories.find((c) => c.name.toLowerCase() === block.category?.toLowerCase())?.color || block.color || "blue"
-              const color = TIMETABLE_COLORS[blockColor] || TIMETABLE_COLORS.blue
+              const color = getColorStyle(blockColor)
               return (
                 <div key={block.id} className="relative">
                   {/* Bullet Marker */}
-                  <span className={`absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background ${color.bullet}`} />
+                  <span className={`absolute -left-[30px] top-1.5 flex h-3 w-3 rounded-full border-2 border-background ${color.dotClass}`} />
                   
-                  <div className={`rounded-xl border p-3.5 min-h-[44px] bg-card/40 shadow-sm transition-colors duration-200 hover:bg-card/70 border-border/60 ${color.border}`}>
+                  <div className={`rounded-xl border p-3.5 min-h-[44px] bg-card/40 shadow-sm transition-colors duration-200 hover:bg-card/70 border-border/60`}>
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 sm:gap-2">
                       <div className="min-w-0">
-                        <span className={`inline-block text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${color.bg} ${color.text} border ${color.border}`}>
+                        <span className={`inline-block text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${color.badgeBg}`}>
                           {block.category || "General"}
                         </span>
                         <h4 className="text-sm font-bold text-foreground mt-1.5 leading-snug">
