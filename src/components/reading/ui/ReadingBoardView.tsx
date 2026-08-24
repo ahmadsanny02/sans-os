@@ -15,7 +15,6 @@ import {
   Clock,
   BookMarked,
   CheckCircle2,
-  BookOpenCheck,
   Edit2,
   MessageSquare,
   TrendingUp,
