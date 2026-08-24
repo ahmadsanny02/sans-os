@@ -44,9 +44,17 @@ export function Modal({
   if (!isOpen || !isMounted) return null
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose()
+        }
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+    >
       <div
         ref={modalRef}
+        onClick={(e) => e.stopPropagation()}
         className={`relative w-full ${maxWidth} max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-card p-6 shadow-xl backdrop-blur-md space-y-4 animate-in zoom-in-95 duration-200`}
       >
         {/* Close button */}
