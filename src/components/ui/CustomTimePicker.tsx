@@ -165,7 +165,7 @@ export function CustomTimePicker({
         opacity: 1,
         zIndex: 9999,
       }}
-      className="flex gap-2 rounded-2xl border border-border bg-white dark:bg-slate-950 p-3 shadow-2xl w-52 justify-between"
+      className="flex gap-2 rounded-2xl border border-border bg-card backdrop-blur-md p-3 shadow-2xl w-52 justify-between"
     >
       {/* Hours Column */}
       <div className="flex flex-col gap-1 w-[46%]">
