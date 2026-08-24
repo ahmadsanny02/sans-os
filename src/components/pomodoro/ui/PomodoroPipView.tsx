@@ -138,13 +138,13 @@ export function PomodoroPipView() {
       <div className="w-full h-full min-h-screen flex items-center justify-center bg-background p-1">
         <button
           onClick={() => setIsPipExpanded(true)}
-          className={`w-[138px] h-[138px] rounded-full flex flex-col items-center justify-center border-4 transition-all duration-300 text-left outline-none ${meta.border} ${meta.bg} shadow-lg ${meta.glow} hover:scale-105 hover:bg-card/40`}
+          className={`w-[138px] h-[138px] rounded-full flex flex-col items-center justify-center border-4 transition-all duration-300 text-left outline-none ${meta.border} ${meta.bg} shadow-lg ${meta.glow} hover:scale-105 hover:bg-card/40 cursor-pointer`}
           title="Click to expand controls"
         >
           <span className={`text-xs font-extrabold tracking-widest uppercase opacity-70 ${meta.color} leading-none mb-0.5`}>
             {meta.label}
           </span>
-          <span className="text-lg font-mono font-black text-white tracking-tight leading-none my-0.5">
+          <span className="text-lg font-mono font-black text-foreground tracking-tight leading-none my-0.5">
             {formatSeconds(remainingSeconds)}
           </span>
           <span className="text-xs font-bold text-muted-foreground leading-none flex items-center gap-0.5 justify-center">
@@ -159,16 +159,16 @@ export function PomodoroPipView() {
   return (
     <div className="w-full h-full min-h-screen flex flex-col bg-background text-foreground font-sans overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-3.5 py-2 border-b border-border/10 bg-card/60 shrink-0">
+      <div className="flex items-center justify-between px-3.5 py-2 border-b border-border/40 bg-card/60 shrink-0">
         <div className="flex items-center gap-1.5">
           <Timer className="h-3.5 w-3.5 text-primary" />
-          <span className="text-xs font-black text-white/80 tracking-widest uppercase">
+          <span className="text-xs font-black text-foreground/80 tracking-widest uppercase">
             Pomodoro
           </span>
         </div>
         <button
           onClick={() => setIsPipExpanded(false)}
-          className="rounded p-1 hover:bg-white/10 text-white/70 hover:text-white/70 transition-colors"
+          className="rounded p-1 hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           title="Minimize to circle"
         >
           <Minimize2 className="h-3.5 w-3.5" />
@@ -179,7 +179,7 @@ export function PomodoroPipView() {
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-3 gap-3">
         {/* Countdown Timer Display */}
         <div className="flex flex-col items-center select-none">
-          <span className="text-4xl font-mono font-black tracking-tighter text-white tabular-nums">
+          <span className="text-4xl font-mono font-black tracking-tighter text-foreground tabular-nums">
             {formatSeconds(remainingSeconds)}
           </span>
           <span className={`text-xs font-bold tracking-widest uppercase mt-0.5 ${meta.color}`}>
@@ -195,7 +195,7 @@ export function PomodoroPipView() {
               className={`h-1.5 w-1.5 rounded-full transition-colors ${
                 i < (sessionCount % totalSessions)
                   ? "bg-primary"
-                  : "bg-white/15"
+                  : "bg-muted-foreground/30"
               }`}
             />
           ))}
@@ -203,8 +203,8 @@ export function PomodoroPipView() {
 
         {/* Active schedule block badge */}
         {activeBlock && (
-          <div className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-1.5 text-center max-w-[220px]">
-            <p className="font-semibold text-white/90 text-xs truncate leading-tight">
+          <div className="w-full rounded-xl bg-secondary/40 border border-border/60 px-3 py-1.5 text-center max-w-[220px]">
+            <p className="font-semibold text-foreground text-xs truncate leading-tight">
               {activeBlock.title}
             </p>
           </div>
@@ -220,7 +220,7 @@ export function PomodoroPipView() {
                   showErrorToast("No active timetable schedule block right now!")
                 }
               }}
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold py-2 transition-all"
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold py-2 transition-all cursor-pointer shadow-sm"
             >
               <Play className="h-3.5 w-3.5 fill-current" />
               Start Focus
@@ -239,7 +239,7 @@ export function PomodoroPipView() {
                     }
                   }
                 }}
-                className={`flex-1 flex items-center justify-center gap-1.5 rounded-xl text-xs font-bold py-2 transition-all ${
+                className={`flex-1 flex items-center justify-center gap-1.5 rounded-xl text-xs font-bold py-2 transition-all cursor-pointer shadow-sm ${
                   isRunning
                     ? "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
                     : "bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -252,7 +252,7 @@ export function PomodoroPipView() {
               {/* Skip */}
               <button
                 onClick={skipPhase}
-                className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 text-white/70 transition-all"
+                className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer border border-border/40"
                 title="Skip Phase"
               >
                 <SkipForward className="h-3.5 w-3.5" />
@@ -261,10 +261,10 @@ export function PomodoroPipView() {
               {/* Stop */}
               <button
                 onClick={stopTimer}
-                className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 transition-all"
+                className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-500 transition-all cursor-pointer border border-rose-500/20"
                 title="Stop Timer"
               >
-                <Square className="h-3.5 w-3.5 fill-rose-400" />
+                <Square className="h-3.5 w-3.5 fill-rose-500" />
               </button>
             </>
           )}
