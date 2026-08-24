@@ -13,26 +13,7 @@ import { Trash2, Clock, CalendarRange, Link2, Pencil, Plus, CheckSquare, Square,
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
 import { CustomTimePicker } from "@/components/ui/CustomTimePicker"
-import { isCategoryInModule } from "@/lib/categoryUtils"
-
-const COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
-  blue: { bg: "bg-blue-500/10", text: "text-blue-500 dark:text-blue-400", border: "border-blue-500/20", bullet: "bg-blue-500" },
-  green: { bg: "bg-emerald-500/10", text: "text-emerald-500 dark:text-emerald-400", border: "border-emerald-500/20", bullet: "bg-emerald-500" },
-  emerald: { bg: "bg-emerald-500/10", text: "text-emerald-500 dark:text-emerald-400", border: "border-emerald-500/20", bullet: "bg-emerald-500" },
-  purple: { bg: "bg-violet-500/10", text: "text-violet-500 dark:text-violet-400", border: "border-violet-500/20", bullet: "bg-purple-500" },
-  violet: { bg: "bg-violet-500/10", text: "text-violet-500 dark:text-violet-400", border: "border-violet-500/20", bullet: "bg-violet-500" },
-  amber: { bg: "bg-amber-500/10", text: "text-amber-500 dark:text-amber-400", border: "border-amber-500/20", bullet: "bg-amber-500" },
-  red: { bg: "bg-rose-500/10", text: "text-rose-500 dark:text-rose-400", border: "border-rose-500/20", bullet: "bg-rose-500" },
-  rose: { bg: "bg-rose-500/10", text: "text-rose-500 dark:text-rose-400", border: "border-rose-500/20", bullet: "bg-rose-500" },
-  pink: { bg: "bg-pink-500/10", text: "text-pink-500 dark:text-pink-400", border: "border-pink-500/20", bullet: "bg-pink-500" },
-  teal: { bg: "bg-teal-500/10", text: "text-teal-500 dark:text-teal-400", border: "border-teal-500/20", bullet: "bg-teal-500" },
-  orange: { bg: "bg-orange-500/10", text: "text-orange-500 dark:text-orange-400", border: "border-orange-500/20", bullet: "bg-orange-500" },
-  indigo: { bg: "bg-indigo-500/10", text: "text-indigo-500 dark:text-indigo-400", border: "border-indigo-500/20", bullet: "bg-indigo-500" },
-  slate: { bg: "bg-slate-500/10", text: "text-slate-500 dark:text-slate-400", border: "border-slate-500/20", bullet: "bg-slate-500" },
-  cyan: { bg: "bg-cyan-500/10", text: "text-cyan-500 dark:text-cyan-400", border: "border-cyan-500/20", bullet: "bg-cyan-500" },
-  fuchsia: { bg: "bg-fuchsia-500/10", text: "text-fuchsia-500 dark:text-fuchsia-400", border: "border-fuchsia-500/20", bullet: "bg-fuchsia-500" },
-  primary: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20", bullet: "bg-primary" },
-}
+import { isCategoryInModule, getColorStyle } from "@/lib/categoryUtils"
 
 function calculateDuration(start: string, end: string): string {
   try {
@@ -471,14 +452,14 @@ export function Timetable({
           <div className="relative border-l border-border/40 pl-6 space-y-6">
             {activeDayBlocks.map((block) => {
               const blockColor = categories.find((c) => c.name.toLowerCase() === block.category?.toLowerCase())?.color || block.color
-              const theme = COLORS[blockColor] || COLORS.blue
+              const theme = getColorStyle(blockColor)
               const duration = calculateDuration(block.startTime, block.endTime)
               const isEditing = editingId === block.id
 
               return (
                 <div key={block.id} className="relative group">
                   {/* Timeline bullet node */}
-                  <div className={`absolute -left-[31px] top-1.5 h-4 w-4 rounded-full border-2 border-background ${theme.bullet}`} />
+                  <div className={`absolute -left-[31px] top-1.5 h-4 w-4 rounded-full border-2 border-background ${theme.dotClass}`} />
 
                   {isEditing ? (
                     <div className="border border-border/60 bg-card/45 dark:bg-card/20 rounded-2xl p-5 shadow-sm backdrop-blur-md space-y-4">
@@ -706,7 +687,7 @@ export function Timetable({
                     </div>
                   ) : (
                     /* Scheduled Block Box */
-                    <div className={`flex flex-col rounded-xl border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm ${theme.bg} ${theme.border}`}>
+                    <div className={`flex flex-col rounded-xl border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm ${theme.badgeBg}`}>
                       <div className="flex items-start justify-between">
                         <div className="space-y-1 flex-1 min-w-0 pr-2">
                           <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-muted-foreground">
