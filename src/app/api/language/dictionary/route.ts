@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
+import { translateWordDetails } from "@/lib/translate"
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -22,35 +23,24 @@ export async function GET(request: Request): Promise<NextResponse> {
     if (word) {
       const cleanWord = word.trim().toLowerCase()
 
-      // Fetch Translation from Google Translate
-      const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=id&dt=t&q=${encodeURIComponent(cleanWord)}`
-      let translation = ""
-      
-      try {
-        const transRes = await fetch(translateUrl)
-        if (transRes.ok) {
-          const transData = await transRes.json()
-          if (transData && transData[0] && transData[0][0]) {
-            translation = transData[0][0][0]
-          }
-        }
-      } catch (err) {
-        logger.error("Translation API error:", err)
-      }
+      // Fetch Translation and alternative translations
+      const translationResult = await translateWordDetails(cleanWord, "en", "id")
 
       // Fetch Definition & Part of Speech from Free Dictionary API
-      let partOfSpeech = "noun"
+      let partOfSpeech = translationResult.partOfSpeech || "noun"
       let definition = "No definition found."
 
       try {
-        const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${cleanWord}`)
+        const dictRes = await fetch(
+          `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`
+        )
         if (dictRes.ok) {
           const dictData = await dictRes.json()
           if (dictData && dictData[0]) {
             const entry = dictData[0]
             if (entry.meanings && entry.meanings[0]) {
               const meaning = entry.meanings[0]
-              partOfSpeech = meaning.partOfSpeech || "noun"
+              partOfSpeech = meaning.partOfSpeech || partOfSpeech
               if (meaning.definitions && meaning.definitions[0]) {
                 definition = meaning.definitions[0].definition || "No definition found."
               }
@@ -65,9 +55,9 @@ export async function GET(request: Request): Promise<NextResponse> {
         word: cleanWord,
         partOfSpeech,
         definition,
-        translation: translation || "No translation found.",
-        alternativeTranslations: [],
-        dictionaryData: null
+        translation: translationResult.translation || "No translation found.",
+        alternativeTranslations: translationResult.alternativeTranslations || [],
+        dictionaryData: null,
       })
     }
 
