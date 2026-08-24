@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@supabase/supabase-js"
+import { logger } from "@/lib/logger"
 
 let isBucketVerified = false
+
+const ALLOWED_MIME_MAP: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+}
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
@@ -25,9 +33,13 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing file or date parameter" }, { status: 400 })
     }
 
-    // Validate type is an image
-    if (!file.type.startsWith("image/")) {
-      return NextResponse.json({ error: "File must be an image" }, { status: 400 })
+    // Validate type against strict whitelist (prevent SVG XSS)
+    const fileExt = ALLOWED_MIME_MAP[file.type]
+    if (!fileExt) {
+      return NextResponse.json(
+        { error: "Format file tidak didukung. Harap unggah format JPEG, PNG, WEBP, atau GIF." },
+        { status: 400 }
+      )
     }
 
     // Pre-check file size limit before buffer memory allocation (10MB Limit)
@@ -77,13 +89,6 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     // 5. Upload File
-    const MIME_EXT_MAP: Record<string, string> = {
-      "image/jpeg": "jpg",
-      "image/png": "png",
-      "image/gif": "gif",
-      "image/webp": "webp",
-    }
-    const fileExt = MIME_EXT_MAP[file.type] || "png"
     // Use user ID and date to keep it organized and unique
     const fileName = `${user.id}/${date}_${Date.now()}.${fileExt}`
 
@@ -106,6 +111,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ url: urlData.publicUrl })
   } catch (error) {
+    logger.error("[Upload API Error]", error)
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
