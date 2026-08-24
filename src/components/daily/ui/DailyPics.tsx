@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useRef, useState, useEffect } from "react"
+import React, { useRef, useState } from "react"
 import Image from "next/image"
 import { Image as ImageIcon, Camera, Trash2, Loader2, UploadCloud, AlertCircle } from "lucide-react"
 
@@ -24,11 +24,8 @@ export function DailyPics({
   isPendingSave,
 }: DailyPicsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [hasImageError, setHasImageError] = useState(false)
-
-  useEffect(() => {
-    setHasImageError(false)
-  }, [picUrl])
+  const [imageErrorUrl, setImageErrorUrl] = useState<string | null>(null)
+  const hasImageError = Boolean(picUrl && imageErrorUrl === picUrl)
 
   const triggerFileInput = (): void => {
     fileInputRef.current?.click()
@@ -52,12 +49,15 @@ export function DailyPics({
         ) : picUrl && !hasImageError ? (
           <div className="relative w-full h-full rounded-xl overflow-hidden bg-secondary/10 flex items-center justify-center">
             <Image
+              key={picUrl}
               src={picUrl}
               alt="Pic of the Day"
               fill
               sizes="(max-width: 768px) 100vw, 400px"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              onError={() => setHasImageError(true)}
+              onError={() => {
+                if (picUrl) setImageErrorUrl(picUrl)
+              }}
             />
             {/* Overlay Gradient on Hover */}
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-10">
