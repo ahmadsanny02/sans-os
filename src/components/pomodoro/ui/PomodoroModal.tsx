@@ -93,7 +93,7 @@ function ProgressRing({ progress, phase, children }: RingProps) {
           fill="none"
           stroke="currentColor"
           strokeWidth="8"
-          className="text-white/5"
+          className="text-muted/40"
         />
         {/* Progress */}
         <circle
@@ -353,7 +353,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
       >
         <div className="flex items-center gap-2">
           <Timer className="h-4 w-4 text-primary" />
-          <span className="text-xs font-bold text-white/80 tracking-wide uppercase">
+          <span className="text-xs font-bold text-foreground/80 tracking-wide uppercase">
             Pomodoro
           </span>
           {isRunning && (
@@ -372,8 +372,8 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
               }}
               className={`rounded p-1 transition-colors cursor-pointer ${
                 isPipActive
-                  ? "text-primary bg-white/10"
-                  : "text-white/70 hover:text-white/70 hover:bg-white/10"
+                  ? "text-primary bg-primary/10"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
               }`}
               aria-label={isPipActive ? "Close floating window" : "Open floating window"}
               title={isPipActive ? "Close floating window" : "Open floating window (Picture-in-Picture)"}
@@ -383,18 +383,18 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
           )}
           <Link
             href="/pomodoro"
-            className="rounded p-1 hover:bg-white/10 transition-colors"
+            className="rounded p-1 hover:bg-secondary/60 transition-colors"
             aria-label="Open Pomodoro settings"
             onClick={closeModal}
           >
-            <ExternalLink className="h-3.5 w-3.5 text-white/70 hover:text-white/70" />
+            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
           </Link>
           <button
             onClick={closeModal}
-            className="rounded p-1 hover:bg-white/10 transition-colors cursor-pointer"
+            className="rounded p-1 hover:bg-secondary/60 transition-colors cursor-pointer"
             aria-label="Close Pomodoro modal"
           >
-            <X className="h-3.5 w-3.5 text-white/70 hover:text-white/70" />
+            <X className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
           </button>
         </div>
       </div>
@@ -403,7 +403,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
       <div className="flex flex-col items-center gap-4 px-4 py-5">
         {/* Ring */}
         <ProgressRing progress={progress} phase={phase}>
-          <span className="text-2xl font-mono font-bold text-white tracking-tight">
+          <span className="text-2xl font-mono font-bold text-foreground tracking-tight">
             {formatSeconds(remainingSeconds)}
           </span>
           <span className={`text-micro font-black tracking-wider uppercase mt-0.5 ${meta.color}`}>
@@ -412,7 +412,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
         </ProgressRing>
 
         {/* Session info */}
-        <div className="flex items-center gap-2 text-xs text-white/50">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>
             {phase === "idle"
               ? "Ready to start"
@@ -428,7 +428,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
                   className={`inline-block h-1.5 w-1.5 rounded-full transition-colors ${
                     i < (sessionCount % totalSessions)
                       ? "bg-primary"
-                      : "bg-white/20"
+                      : "bg-muted-foreground/30"
                   }`}
                 />
               )
@@ -438,12 +438,12 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
 
         {/* Active block badge */}
         {activeBlock && (
-          <div className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-xs">
-            <p className="font-semibold text-white/80 truncate">{activeBlock.title}</p>
-            <p className="text-white/70 mt-0.5">
+          <div className="w-full rounded-xl bg-secondary/40 border border-border/60 px-3 py-2 text-xs">
+            <p className="font-semibold text-foreground truncate">{activeBlock.title}</p>
+            <p className="text-muted-foreground mt-0.5">
               {activeBlock.startTime} – {activeBlock.endTime}
               {integrationMode === "auto" && (
-                <span className="ml-1 text-emerald-400/80">● live</span>
+                <span className="ml-1 text-emerald-500">● live</span>
               )}
             </p>
           </div>
@@ -459,7 +459,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
                   showErrorToast("No active timetable schedule block right now!")
                 }
               }}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground text-sm font-semibold py-2.5 transition-all cursor-pointer active:scale-95"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground text-sm font-semibold py-2.5 transition-all cursor-pointer active:scale-95 shadow-sm"
             >
               <Play className="h-4 w-4" />
               Start Focus
@@ -478,7 +478,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
                     }
                   }
                 }}
-                className={`flex-1 flex items-center justify-center gap-2 rounded-xl text-sm font-semibold py-2.5 transition-all cursor-pointer active:scale-95 ${
+                className={`flex-1 flex items-center justify-center gap-2 rounded-xl text-sm font-semibold py-2.5 transition-all cursor-pointer active:scale-95 shadow-sm ${
                   isRunning
                     ? "bg-amber-600 hover:bg-amber-500 text-white"
                     : "bg-primary hover:bg-primary/95 text-primary-foreground"
@@ -496,7 +496,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
               {/* Skip */}
               <button
                 onClick={skipPhase}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 text-white/70 transition-all"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer border border-border/40"
                 aria-label="Skip to next phase"
               >
                 <SkipForward className="h-4 w-4" />
@@ -505,7 +505,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
               {/* Stop */}
               <button
                 onClick={stopTimer}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 transition-all"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-500 transition-all cursor-pointer border border-rose-500/20"
                 aria-label="Stop timer"
               >
                 <Square className="h-4 w-4" />
