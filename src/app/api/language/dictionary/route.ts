@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server"
-import { logger } from "@/lib/logger";
+import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger"
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
+    const supabase = await createServerSupabaseClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
     const letter = searchParams.get("letter")
     const query = searchParams.get("q")
