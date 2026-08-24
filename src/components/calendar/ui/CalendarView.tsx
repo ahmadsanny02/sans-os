@@ -22,25 +22,7 @@ import {
   isToday,
 } from "date-fns"
 import { CustomSelect } from "@/components/ui/CustomSelect"
-
-const TIMETABLE_COLORS: Record<string, { bg: string; text: string; border: string; bullet: string }> = {
-  blue: { bg: "bg-blue-500/10", text: "text-blue-500 dark:text-blue-400", border: "border-blue-500/20", bullet: "bg-blue-500" },
-  green: { bg: "bg-emerald-500/10", text: "text-emerald-500 dark:text-emerald-400", border: "border-emerald-500/20", bullet: "bg-emerald-500" },
-  emerald: { bg: "bg-emerald-500/10", text: "text-emerald-500 dark:text-emerald-400", border: "border-emerald-500/20", bullet: "bg-emerald-500" },
-  purple: { bg: "bg-violet-500/10", text: "text-violet-500 dark:text-violet-400", border: "border-violet-500/20", bullet: "bg-purple-500" },
-  violet: { bg: "bg-violet-500/10", text: "text-violet-500 dark:text-violet-400", border: "border-violet-500/20", bullet: "bg-violet-500" },
-  amber: { bg: "bg-amber-500/10", text: "text-amber-500 dark:text-amber-400", border: "border-amber-500/20", bullet: "bg-amber-500" },
-  red: { bg: "bg-rose-500/10", text: "text-rose-500 dark:text-rose-400", border: "border-rose-500/20", bullet: "bg-rose-500" },
-  rose: { bg: "bg-rose-500/10", text: "text-rose-500 dark:text-rose-400", border: "border-rose-500/20", bullet: "bg-rose-500" },
-  pink: { bg: "bg-pink-500/10", text: "text-pink-500 dark:text-pink-400", border: "border-pink-500/20", bullet: "bg-pink-500" },
-  teal: { bg: "bg-teal-500/10", text: "text-teal-500 dark:text-teal-400", border: "border-teal-500/20", bullet: "bg-teal-500" },
-  orange: { bg: "bg-orange-500/10", text: "text-orange-500 dark:text-orange-400", border: "border-orange-500/20", bullet: "bg-orange-500" },
-  indigo: { bg: "bg-indigo-500/10", text: "text-indigo-500 dark:text-indigo-400", border: "border-indigo-500/20", bullet: "bg-indigo-500" },
-  slate: { bg: "bg-slate-500/10", text: "text-slate-500 dark:text-slate-400", border: "border-slate-500/20", bullet: "bg-slate-500" },
-  cyan: { bg: "bg-cyan-500/10", text: "text-cyan-500 dark:text-cyan-400", border: "border-cyan-500/20", bullet: "bg-cyan-500" },
-  fuchsia: { bg: "bg-fuchsia-500/10", text: "text-fuchsia-500 dark:text-fuchsia-400", border: "border-fuchsia-500/20", bullet: "bg-fuchsia-500" },
-  primary: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20", bullet: "bg-primary" },
-}
+import { getColorStyle } from "@/lib/categoryUtils"
 
 const MONTH_NAMES = [
   "January",
@@ -373,12 +355,11 @@ export function CalendarView({
                 <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
                   {activeTimetableBlocks.map((block) => {
                     const blockColor = categories.find((c) => c.name.toLowerCase() === block.category?.toLowerCase())?.color || block.color || "blue"
-                    const theme = TIMETABLE_COLORS[blockColor] || TIMETABLE_COLORS.blue
+                    const theme = getColorStyle(blockColor)
                     return (
                       <div
                         key={block.id}
                         className={`flex items-start gap-2.5 border-l-2 pl-2.5 py-1 ${theme.text}`}
-                        style={{ borderLeftColor: `var(--${block.color}-500)` }}
                       >
                         <div className="space-y-0.5 min-w-0">
                           <p className="text-xs font-bold opacity-80 flex items-center gap-1">
@@ -642,14 +623,14 @@ export function CalendarView({
                     {/* 2. Timetable Blocks */}
                     {group.timetableBlocks.map((b) => {
                       const blockColor = categories.find((c) => c.name.toLowerCase() === b.category?.toLowerCase())?.color || b.color || "blue"
-                      const color = TIMETABLE_COLORS[blockColor] || TIMETABLE_COLORS.blue
+                      const color = getColorStyle(blockColor)
                       return (
                         <div
                           key={b.id}
-                          className={`rounded-xl border p-3.5 text-xs space-y-1.5 bg-card/60 shadow-sm ${color.border}`}
+                          className={`rounded-xl border p-3.5 text-xs space-y-1.5 bg-card/60 shadow-sm border-border/60`}
                         >
                           <div className="flex items-center justify-between gap-1.5 flex-wrap">
-                            <span className={`text-micro font-black uppercase tracking-wider px-2 py-1 rounded-full ${color.bg} ${color.text}`}>
+                            <span className={`text-micro font-black uppercase tracking-wider px-2 py-1 rounded-full ${color.badgeBg}`}>
                               {b.category || "Timetable"}
                             </span>
                             <span className="text-xs font-bold text-muted-foreground">
