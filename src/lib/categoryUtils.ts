@@ -98,6 +98,11 @@ export function getCategoryStyle(
   return CATEGORY_COLOR_MAP[colorKey] || CATEGORY_COLOR_MAP.primary
 }
 
+export function getColorStyle(colorName?: string | null) {
+  const key = (colorName || "blue").toLowerCase()
+  return CATEGORY_COLOR_MAP[key] || CATEGORY_COLOR_MAP.primary
+}
+
 export function isCategoryInModule(catModule: string | undefined | null, targetModule: string): boolean {
   if (!catModule) return true
   if (catModule === "all" || catModule === "general" || targetModule === "all") return true
