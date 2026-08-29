@@ -17,6 +17,7 @@ import { Priority, TimetableBlock } from "@/hooks/useDaily"
 import { AlertCircle } from "lucide-react"
 import { useCategories } from "@/hooks/useCategories"
 import { getColorStyle } from "@/lib/categoryUtils"
+import { useWorkspaceStore } from "@/store/workspaceStore"
 
 interface CalendarMonthGridProps {
   currentMonth: Date
@@ -38,12 +39,15 @@ export function CalendarMonthGrid({
   isError,
 }: CalendarMonthGridProps) {
   const { categories } = useCategories()
+  const startOfWeekConfig = useWorkspaceStore((state) => state.userConfig.startOfWeek)
   const monthStart = startOfMonth(currentMonth)
   const monthEnd = endOfMonth(monthStart)
-  const gridStart = startOfWeek(monthStart)
-  const gridEnd = endOfWeek(monthEnd)
+  const gridStart = startOfWeek(monthStart, { weekStartsOn: startOfWeekConfig as 0 | 1 | 6 })
+  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: startOfWeekConfig as 0 | 1 | 6 })
 
-  const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  const weekdays = startOfWeekConfig === 1
+    ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
   const daysGrid = eachDayOfInterval({ start: gridStart, end: gridEnd })
 
   return (
