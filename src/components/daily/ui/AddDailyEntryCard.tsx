@@ -462,46 +462,44 @@ export function AddDailyEntryCard({
                   </div>
 
                   {/* Category */}
-                  {/* Category & Sub-category */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label htmlFor="category" className="text-xs font-bold text-muted-foreground">
-                        Category
+                  <div className="space-y-1.5 animate-in fade-in duration-200">
+                    <label htmlFor="category" className="text-xs font-bold text-muted-foreground">
+                      Category
+                    </label>
+                    <CustomSelect
+                      id="category"
+                      value={timetableCategory}
+                      onChange={(val) => {
+                        setTimetableCategory(val)
+                        setTimetableSubCategory("")
+                      }}
+                      options={
+                        timetableCategories.length > 0
+                          ? timetableCategories.map((c) => ({ value: c.name, label: c.name }))
+                          : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
+                      }
+                      fullWidth
+                    />
+                  </div>
+
+                  {/* Sub-category */}
+                  {availableTimetableSubs.length > 0 && (
+                    <div className="space-y-1.5 animate-in fade-in duration-200">
+                      <label htmlFor="timetableSubCategory" className="text-xs font-bold text-muted-foreground">
+                        Sub-category
                       </label>
                       <CustomSelect
-                        id="category"
-                        value={timetableCategory}
-                        onChange={(val) => {
-                          setTimetableCategory(val)
-                          setTimetableSubCategory("")
-                        }}
-                        options={
-                          timetableCategories.length > 0
-                            ? timetableCategories.map((c) => ({ value: c.name, label: c.name }))
-                            : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
-                        }
+                        id="timetableSubCategory"
+                        value={timetableSubCategory}
+                        onChange={(val) => setTimetableSubCategory(val)}
+                        options={[
+                          { value: "", label: "None (No sub-category)" },
+                          ...availableTimetableSubs.map((sc) => ({ value: sc.name, label: sc.name }))
+                        ]}
                         fullWidth
                       />
                     </div>
-
-                    {availableTimetableSubs.length > 0 && (
-                      <div className="space-y-1.5 animate-in fade-in duration-200">
-                        <label htmlFor="timetableSubCategory" className="text-xs font-bold text-muted-foreground">
-                          Sub-category
-                        </label>
-                        <CustomSelect
-                          id="timetableSubCategory"
-                          value={timetableSubCategory}
-                          onChange={(val) => setTimetableSubCategory(val)}
-                          options={[
-                            { value: "", label: "None (No sub-category)" },
-                            ...availableTimetableSubs.map((sc) => ({ value: sc.name, label: sc.name }))
-                          ]}
-                          fullWidth
-                        />
-                      </div>
-                    )}
-                  </div>
+                  )}
 
                   {/* Schedule Type */}
                   <div className="space-y-1.5">
