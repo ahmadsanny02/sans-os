@@ -266,7 +266,7 @@ export function PomodoroConfigView({
   return (
     <div className="mx-auto max-w-7xl gap-6 flex flex-col py-4 animate-in fade-in duration-200">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-br from-primary/10 via-transparent to-indigo-500/5 p-8 shadow-sm">
+      <div className="relative overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-br from-primary/10 via-transparent to-primary/5 p-8 shadow-sm">
         <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
         <div className="relative z-10 space-y-2">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -664,7 +664,7 @@ export function PomodoroConfigView({
               onClick={handleSaveConfig}
               className="flex items-center gap-1.5 shrink-0 rounded-xl bg-primary hover:bg-primary/95 active:scale-95 px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-all cursor-pointer"
             >
-              <Save className="h-3.5" />
+              <Save className="h-3.5 w-3.5" />
               Save Changes
             </button>
           </div>
