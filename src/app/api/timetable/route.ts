@@ -28,6 +28,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json(blocks)
   } catch (error) {
+    logger.error("[Timetable API Error]", error)
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
@@ -51,45 +52,45 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const [newBlock] = await db
-      .insert(timetableBlocks)
-      .values({
-        userId: user.id,
-        dayOfWeek,
-        startTime,
-        endTime,
-        title,
-        category: category || "General",
-        subCategory: subCategory || null,
-        color: color || "blue",
-        date: date || null,
-        isTodo: isTodo ?? false,
-        link: link || null,
-      })
-      .returning()
-
-    // Insert initial sub schedules if provided
-    if (Array.isArray(subSchedules) && subSchedules.length > 0) {
-      const validSubSchedules = subSchedules
-        .filter((s: { title?: string }) => s && s.title && s.title.trim())
-        .map((s: { title: string; startTime?: string; endTime?: string }) => ({
+    const newBlockId = await db.transaction(async (tx) => {
+      const [newBlock] = await tx
+        .insert(timetableBlocks)
+        .values({
           userId: user.id,
-          timetableBlockId: newBlock.id,
-          title: s.title.trim(),
-          startTime: s.startTime || null,
-          endTime: s.endTime || null,
-          completed: false,
-        }))
+          dayOfWeek,
+          startTime,
+          endTime,
+          title,
+          category: category || "General",
+          subCategory: subCategory || null,
+          color: color || "blue",
+          date: date || null,
+          isTodo: isTodo ?? false,
+          link: link || null,
+        })
+        .returning()
 
-      if (validSubSchedules.length > 0) {
-        await db.insert(timetableSubSchedules).values(validSubSchedules)
+      // Insert initial sub schedules if provided
+      if (Array.isArray(subSchedules) && subSchedules.length > 0) {
+        const validSubSchedules = subSchedules
+          .filter((s: { title?: string }) => s && s.title && s.title.trim())
+          .map((s: { title: string; startTime?: string; endTime?: string }) => ({
+            userId: user.id,
+            timetableBlockId: newBlock.id,
+            title: s.title.trim(),
+            startTime: s.startTime || null,
+            endTime: s.endTime || null,
+            completed: false,
+          }))
+
+        if (validSubSchedules.length > 0) {
+          await tx.insert(timetableSubSchedules).values(validSubSchedules)
+        }
       }
-    }
 
-    // Automatically add to priorities if it is a custom schedule (date is not null)
-    if (date) {
-      try {
-        const existing = await db
+      // Automatically add to priorities if it is a custom schedule (date is not null)
+      if (date) {
+        const existing = await tx
           .select()
           .from(priorities)
           .where(and(eq(priorities.userId, user.id), eq(priorities.date, date)))
@@ -97,7 +98,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         if (existing.length < 5) {
           const alreadyExists = existing.some((p) => p.text === title)
           if (!alreadyExists) {
-            await db.insert(priorities).values({
+            await tx.insert(priorities).values({
               userId: user.id,
               date,
               text: title,
@@ -107,14 +108,14 @@ export async function POST(request: Request): Promise<NextResponse> {
             })
           }
         }
-      } catch (err) {
-        logger.error("Failed to auto-insert priority:", err)
       }
-    }
+
+      return newBlock.id
+    })
 
     // Return the block with created sub-schedules
     const fullBlock = await db.query.timetableBlocks.findFirst({
-      where: and(eq(timetableBlocks.id, newBlock.id), eq(timetableBlocks.userId, user.id)),
+      where: and(eq(timetableBlocks.id, newBlockId), eq(timetableBlocks.userId, user.id)),
       with: {
         subSchedules: {
           orderBy: [asc(timetableSubSchedules.startTime), asc(timetableSubSchedules.createdAt)],
@@ -122,8 +123,9 @@ export async function POST(request: Request): Promise<NextResponse> {
       },
     })
 
-    return NextResponse.json(fullBlock || newBlock)
+    return NextResponse.json(fullBlock)
   } catch (error) {
+    logger.error("[Timetable API Error]", error)
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
@@ -147,19 +149,19 @@ export async function DELETE(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing block ID" }, { status: 400 })
     }
 
-    const [deletedBlock] = await db
-      .delete(timetableBlocks)
-      .where(and(eq(timetableBlocks.id, id), eq(timetableBlocks.userId, user.id)))
-      .returning()
+    const success = await db.transaction(async (tx) => {
+      const [deletedBlock] = await tx
+        .delete(timetableBlocks)
+        .where(and(eq(timetableBlocks.id, id), eq(timetableBlocks.userId, user.id)))
+        .returning()
 
-    if (!deletedBlock) {
-      return NextResponse.json({ error: "Block not found" }, { status: 404 })
-    }
+      if (!deletedBlock) {
+        return false
+      }
 
-    // Automatically remove matching priority if it was a custom schedule
-    if (deletedBlock.date) {
-      try {
-        await db
+      // Automatically remove matching priority if it was a custom schedule
+      if (deletedBlock.date) {
+        await tx
           .delete(priorities)
           .where(
             and(
@@ -168,13 +170,18 @@ export async function DELETE(request: Request): Promise<NextResponse> {
               eq(priorities.text, deletedBlock.title)
             )
           )
-      } catch (err) {
-        logger.error("Failed to auto-delete priority:", err)
       }
+
+      return true
+    })
+
+    if (!success) {
+      return NextResponse.json({ error: "Block not found" }, { status: 404 })
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    logger.error("[Timetable API Error]", error)
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
@@ -198,43 +205,43 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing block ID" }, { status: 400 })
     }
 
-    // Fetch existing block to synchronize priority changes
-    const [existingBlock] = await db
-      .select()
-      .from(timetableBlocks)
-      .where(and(eq(timetableBlocks.id, id), eq(timetableBlocks.userId, user.id)))
+    const updatedBlock = await db.transaction(async (tx) => {
+      // Fetch existing block to synchronize priority changes
+      const [existingBlock] = await tx
+        .select()
+        .from(timetableBlocks)
+        .where(and(eq(timetableBlocks.id, id), eq(timetableBlocks.userId, user.id)))
 
-    if (!existingBlock) {
-      return NextResponse.json({ error: "Block not found" }, { status: 404 })
-    }
+      if (!existingBlock) {
+        return null
+      }
 
-    const updateData: Partial<typeof timetableBlocks.$inferInsert> = {}
-    if (dayOfWeek !== undefined) updateData.dayOfWeek = dayOfWeek
-    if (startTime !== undefined) updateData.startTime = startTime
-    if (endTime !== undefined) updateData.endTime = endTime
-    if (title !== undefined) updateData.title = title
-    if (category !== undefined) updateData.category = category
-    if (subCategory !== undefined) updateData.subCategory = subCategory || null
-    if (color !== undefined) updateData.color = color
-    if (date !== undefined) updateData.date = date || null
-    if (isTodo !== undefined) updateData.isTodo = isTodo
-    if (link !== undefined) updateData.link = link || null
+      const updateData: Partial<typeof timetableBlocks.$inferInsert> = {}
+      if (dayOfWeek !== undefined) updateData.dayOfWeek = dayOfWeek
+      if (startTime !== undefined) updateData.startTime = startTime
+      if (endTime !== undefined) updateData.endTime = endTime
+      if (title !== undefined) updateData.title = title
+      if (category !== undefined) updateData.category = category
+      if (subCategory !== undefined) updateData.subCategory = subCategory || null
+      if (color !== undefined) updateData.color = color
+      if (date !== undefined) updateData.date = date || null
+      if (isTodo !== undefined) updateData.isTodo = isTodo
+      if (link !== undefined) updateData.link = link || null
 
-    const [updatedBlock] = await db
-      .update(timetableBlocks)
-      .set(updateData)
-      .where(and(eq(timetableBlocks.id, id), eq(timetableBlocks.userId, user.id)))
-      .returning()
+      const [updated] = await tx
+        .update(timetableBlocks)
+        .set(updateData)
+        .where(and(eq(timetableBlocks.id, id), eq(timetableBlocks.userId, user.id)))
+        .returning()
 
-    // Synchronize custom schedule priorities
-    if (existingBlock.date) {
-      try {
+      // Synchronize custom schedule priorities
+      if (existingBlock.date) {
         const newTitle = title !== undefined ? title : existingBlock.title
         const newLink = link !== undefined ? (link || null) : existingBlock.link
         const newDate = date !== undefined ? (date || null) : existingBlock.date
 
         if (newDate) {
-          await db
+          await tx
             .update(priorities)
             .set({
               text: newTitle,
@@ -250,7 +257,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
             )
         } else {
           // Date removed, delete corresponding priority
-          await db
+          await tx
             .delete(priorities)
             .where(
               and(
@@ -260,13 +267,9 @@ export async function PATCH(request: Request): Promise<NextResponse> {
               )
             )
         }
-      } catch (err) {
-        logger.error("Failed to sync updated priority:", err)
-      }
-    } else if (date) {
-      // Date added, try to auto-insert priority
-      try {
-        const existing = await db
+      } else if (date) {
+        // Date added, try to auto-insert priority
+        const existing = await tx
           .select()
           .from(priorities)
           .where(and(eq(priorities.userId, user.id), eq(priorities.date, date)))
@@ -276,7 +279,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
           const newLink = link !== undefined ? (link || null) : existingBlock.link
           const alreadyExists = existing.some((p) => p.text === newTitle)
           if (!alreadyExists) {
-            await db.insert(priorities).values({
+            await tx.insert(priorities).values({
               userId: user.id,
               date,
               text: newTitle,
@@ -286,13 +289,18 @@ export async function PATCH(request: Request): Promise<NextResponse> {
             })
           }
         }
-      } catch (err) {
-        logger.error("Failed to auto-insert updated priority:", err)
       }
+
+      return updated
+    })
+
+    if (!updatedBlock) {
+      return NextResponse.json({ error: "Block not found" }, { status: 404 })
     }
 
     return NextResponse.json(updatedBlock)
   } catch (error) {
+    logger.error("[Timetable API Error]", error)
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
