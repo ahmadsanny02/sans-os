@@ -490,42 +490,41 @@ export function Timetable({
                           />
                         </div>
 
-                        {/* Category & Sub-category */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-muted-foreground">Category</label>
+                        {/* Category */}
+                        <div className="space-y-1.5 animate-in fade-in duration-200">
+                          <label className="text-xs font-bold text-muted-foreground">Category</label>
+                          <CustomSelect
+                            value={editCategory}
+                            onChange={(val) => {
+                              const cat = String(val)
+                              setEditCategory(cat)
+                              setEditColor(categories.find((c) => c.name.toLowerCase() === cat.toLowerCase())?.color || "blue")
+                              setEditSubCategory("")
+                            }}
+                            options={
+                              timetableCategories.length > 0
+                                ? timetableCategories.map((c) => ({ value: c.name, label: c.name }))
+                                : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
+                            }
+                            fullWidth
+                          />
+                        </div>
+
+                        {/* Sub-category */}
+                        {availableSubs.length > 0 && (
+                          <div className="space-y-1.5 animate-in fade-in duration-200">
+                            <label className="text-xs font-bold text-muted-foreground">Sub-category</label>
                             <CustomSelect
-                              value={editCategory}
-                              onChange={(val) => {
-                                const cat = String(val)
-                                setEditCategory(cat)
-                                setEditColor(categories.find((c) => c.name.toLowerCase() === cat.toLowerCase())?.color || "blue")
-                                setEditSubCategory("")
-                              }}
-                              options={
-                                timetableCategories.length > 0
-                                  ? timetableCategories.map((c) => ({ value: c.name, label: c.name }))
-                                  : defaultFallbackCategories.map((catName) => ({ value: catName, label: catName }))
-                              }
+                              value={editSubCategory || ""}
+                              onChange={(val) => setEditSubCategory(String(val) || null)}
+                              options={[
+                                { value: "", label: "None (No sub-category)" },
+                                ...availableSubs.map((sc) => ({ value: sc.name, label: sc.name }))
+                              ]}
                               fullWidth
                             />
                           </div>
-
-                          {availableSubs.length > 0 && (
-                            <div className="space-y-1.5 animate-in fade-in duration-200">
-                              <label className="text-xs font-bold text-muted-foreground">Sub-category</label>
-                              <CustomSelect
-                                value={editSubCategory || ""}
-                                onChange={(val) => setEditSubCategory(String(val) || null)}
-                                options={[
-                                  { value: "", label: "None (No sub-category)" },
-                                  ...availableSubs.map((sc) => ({ value: sc.name, label: sc.name }))
-                                ]}
-                                fullWidth
-                              />
-                            </div>
-                          )}
-                        </div>
+                        )}
 
                         {/* Start Time */}
                         <div className="space-y-1.5">
