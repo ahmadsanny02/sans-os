@@ -59,10 +59,11 @@ export function useCalendarPage() {
   const togglePriorityMutation = useTogglePriorityMutation(selectedDate)
 
   // Generate date bounds for range query (for calendar grid)
+  const startOfWeekConfig = useWorkspaceStore((state) => state.userConfig.startOfWeek)
   const monthStart = startOfMonth(currentMonth)
   const monthEnd = endOfMonth(monthStart)
-  const gridStart = startOfWeek(monthStart)
-  const gridEnd = endOfWeek(monthEnd)
+  const gridStart = startOfWeek(monthStart, { weekStartsOn: startOfWeekConfig as 0 | 1 | 6 })
+  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: startOfWeekConfig as 0 | 1 | 6 })
 
   const startDateStr = format(gridStart, "yyyy-MM-dd")
   const endDateStr = format(gridEnd, "yyyy-MM-dd")
