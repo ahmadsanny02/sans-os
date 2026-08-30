@@ -604,7 +604,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Mobile Bottom Navigation Bar (Quick Navigation) */}
         <nav className="flex h-16 border-t border-border/40 bg-card/75 backdrop-blur-lg md:hidden items-center justify-around pb-safe shrink-0">
           {FLAT_ITEMS.slice(0, 4).map((item) => {
-            const isActive = pathname === item.href
+            const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
             const Icon = item.icon
             return (
               <Link
@@ -617,12 +617,38 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 }`}
               >
                 <Icon className={`h-5 w-5 ${isActive ? "stroke-[2.5]" : ""}`} />
-                <span className="text-xs tracking-wide">
+                <span className="text-[10px] tracking-wide">
                   {item.name.split(" ")[0]}
                 </span>
               </Link>
             );
           })}
+          {/* 5th Action: More Menu Drawer Trigger */}
+          {(() => {
+            const isOtherActive = !FLAT_ITEMS.slice(0, 4).some((i) =>
+              i.href === "/" ? pathname === "/" : pathname.startsWith(i.href)
+            )
+            return (
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                className={`flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors duration-200 cursor-pointer ${
+                  isOtherActive
+                    ? "text-primary font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                aria-label="Open full menu"
+              >
+                <div className="relative">
+                  <Menu className={`h-5 w-5 ${isOtherActive ? "stroke-[2.5]" : ""}`} />
+                  {isOtherActive && (
+                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-primary ring-2 ring-card" />
+                  )}
+                </div>
+                <span className="text-[10px] tracking-wide">More</span>
+              </button>
+            )
+          })()}
         </nav>
       </div>
       {/* Floating Pomodoro Trigger Badge (Bottom Right) */}
