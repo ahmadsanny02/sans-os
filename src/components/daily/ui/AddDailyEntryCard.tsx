@@ -25,7 +25,10 @@ interface AddDailyEntryCardProps {
   setTargetPriority: (t: boolean) => void
   combinedErrorMsg: string | null
   isPendingCombined: boolean
-  handleAddDailyEntry: (e: React.FormEvent) => Promise<void>
+  handleAddDailyEntry: (
+    e: React.FormEvent,
+    overrideData?: { title?: string; link?: string; extraRows?: Array<{ id?: string; title: string; link: string }> }
+  ) => Promise<void>
 
   // Timetable sub-form states
   timetableStartTime: string
@@ -113,24 +116,16 @@ export function AddDailyEntryCard({
   // Optional multi-item batch creation state
   const [extraDailyRows, setExtraDailyRows] = React.useState<Array<{ id: string; title: string; link: string }>>([])
 
-
   const handleDailyBatchSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!entryTitle.trim()) return
 
-    await handleAddDailyEntry(e)
-
-    if (extraDailyRows.length > 0) {
-      for (const row of extraDailyRows) {
-        if (row.title.trim()) {
-          setEntryTitle(row.title.trim())
-          setEntryLink(row.link.trim())
-          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
-          await handleAddDailyEntry(fakeEvent)
-        }
-      }
-      setExtraDailyRows([])
-    }
+    await handleAddDailyEntry(e, {
+      title: entryTitle,
+      link: entryLink,
+      extraRows: extraDailyRows,
+    })
+    setExtraDailyRows([])
   }
 
   return (
