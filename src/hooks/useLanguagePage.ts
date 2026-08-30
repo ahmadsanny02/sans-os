@@ -198,12 +198,21 @@ export function useLanguagePage() {
   const [searchDialogueFormulaQuery, setSearchDialogueFormulaQuery] = useState("")
   const [showDialogueFormulaDropdown, setShowDialogueFormulaDropdown] = useState(false)
 
-  const handleAddFormula = async (e: React.FormEvent): Promise<void> => {
+  const handleAddFormula = async (
+    e: React.FormEvent,
+    overrideData?: {
+      name?: string
+      formula?: string
+      description?: string
+      extraRows?: Array<{ id?: string; name: string; formula: string; description?: string }>
+    }
+  ): Promise<void> => {
     e.preventDefault()
     setFormulaFormError(null)
 
-    const trimmedName = formulaName.trim()
-    const trimmedFormula = formulaString.trim()
+    const trimmedName = (overrideData?.name ?? formulaName).trim()
+    const trimmedFormula = (overrideData?.formula ?? formulaString).trim()
+    const trimmedDesc = (overrideData?.description ?? formulaDescription).trim()
 
     if (!trimmedName || !trimmedFormula) {
       setFormulaFormError("Please fill out all required fields.")
@@ -211,16 +220,37 @@ export function useLanguagePage() {
     }
 
     try {
-      await createFormulaMutation.mutateAsync({
-        name: trimmedName,
-        formula: trimmedFormula,
-        description: formulaDescription.trim() || undefined,
-      })
+      const promises: Promise<unknown>[] = [
+        createFormulaMutation.mutateAsync({
+          name: trimmedName,
+          formula: trimmedFormula,
+          description: trimmedDesc || undefined,
+        }),
+      ]
+
+      if (overrideData?.extraRows && overrideData.extraRows.length > 0) {
+        for (const extra of overrideData.extraRows) {
+          const eName = extra.name.trim()
+          const eForm = extra.formula.trim()
+          const eDesc = (extra.description || "").trim()
+          if (eName && eForm) {
+            promises.push(
+              createFormulaMutation.mutateAsync({
+                name: eName,
+                formula: eForm,
+                description: eDesc || undefined,
+              })
+            )
+          }
+        }
+      }
+
+      await Promise.all(promises)
       setFormulaName("")
       setFormulaString("")
       setFormulaDescription("")
       setShowFormulaForm(false)
-      showSuccessToast("Formula added successfully")
+      showSuccessToast("Formula(s) added successfully")
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : "Failed to add formula."
       setFormulaFormError(errMsg)
@@ -291,12 +321,19 @@ export function useLanguagePage() {
   // ==========================================
   // Vocabulary Handlers
   // ==========================================
-  const handleAddVocabulary = async (e: React.FormEvent): Promise<void> => {
+  const handleAddVocabulary = async (
+    e: React.FormEvent,
+    overrideData?: {
+      word?: string
+      translation?: string
+      extraRows?: Array<{ id?: string; word: string; translation: string }>
+    }
+  ): Promise<void> => {
     e.preventDefault()
     setFormError(null)
 
-    const trimmedWord = word.trim()
-    const trimmedTranslation = translation.trim()
+    const trimmedWord = (overrideData?.word ?? word).trim()
+    const trimmedTranslation = (overrideData?.translation ?? translation).trim()
 
     if (!trimmedWord || !trimmedTranslation) {
       setFormError("Please fill out all required fields.")
@@ -315,13 +352,35 @@ export function useLanguagePage() {
     }
 
     try {
-      await createVocabMutation.mutateAsync({
-        word: trimmedWord,
-        definition: "n/a",
-        translation: trimmedTranslation,
-        masteryLevel: 3,
-        langDirection: langDirection,
-      })
+      const promises: Promise<unknown>[] = [
+        createVocabMutation.mutateAsync({
+          word: trimmedWord,
+          definition: "n/a",
+          translation: trimmedTranslation,
+          masteryLevel: 3,
+          langDirection: langDirection,
+        }),
+      ]
+
+      if (overrideData?.extraRows && overrideData.extraRows.length > 0) {
+        for (const extra of overrideData.extraRows) {
+          const eWord = extra.word.trim()
+          const eTrans = extra.translation.trim()
+          if (eWord && eTrans) {
+            promises.push(
+              createVocabMutation.mutateAsync({
+                word: eWord,
+                definition: "n/a",
+                translation: eTrans,
+                masteryLevel: 3,
+                langDirection: langDirection,
+              })
+            )
+          }
+        }
+      }
+
+      await Promise.all(promises)
       setWord("")
       setTranslation("")
       setLangDirection("en-id")
@@ -410,6 +469,19 @@ export function useLanguagePage() {
       vocabEngInt?: string
       vocabTransInt?: string
       vocabFormula?: string
+      extraRows?: Array<{
+        id?: string
+        freeEnglish?: string
+        freeTranslation?: string
+        vocabId?: string
+        vocabQuery?: string
+        vocabEngPos?: string
+        vocabTransPos?: string
+        vocabEngNeg?: string
+        vocabTransNeg?: string
+        vocabEngInt?: string
+        vocabTransInt?: string
+      }>
     }
   ): Promise<void> => {
     e.preventDefault()
@@ -431,17 +503,37 @@ export function useLanguagePage() {
       }
 
       try {
-        await createWritingMutation.mutateAsync({
-          vocabId: null,
-          vocabWord: null,
-          sentenceType: null,
-          englishSentence: activeFreeEnglish.trim(),
-          indonesianTranslation: activeFreeTranslation.trim(),
-        })
+        const promises: Promise<unknown>[] = [
+          createWritingMutation.mutateAsync({
+            vocabId: null,
+            vocabWord: null,
+            sentenceType: null,
+            englishSentence: activeFreeEnglish.trim(),
+            indonesianTranslation: activeFreeTranslation.trim(),
+          }),
+        ]
+
+        if (formData?.extraRows && formData.extraRows.length > 0) {
+          for (const extra of formData.extraRows) {
+            if (extra.freeEnglish?.trim() && extra.freeTranslation?.trim()) {
+              promises.push(
+                createWritingMutation.mutateAsync({
+                  vocabId: null,
+                  vocabWord: null,
+                  sentenceType: null,
+                  englishSentence: extra.freeEnglish.trim(),
+                  indonesianTranslation: extra.freeTranslation.trim(),
+                })
+              )
+            }
+          }
+        }
+
+        await Promise.all(promises)
         setFreeEnglish("")
         setFreeTranslation("")
         setShowWritingForm(false)
-        showSuccessToast("Free writing log added successfully")
+        showSuccessToast("Free writing log(s) added successfully")
       } catch {
         setWritingFormError("Failed to add writing log.")
       }
@@ -467,7 +559,7 @@ export function useLanguagePage() {
       }
 
       try {
-        await Promise.all([
+        const promises: Promise<unknown>[] = [
           createWritingMutation.mutateAsync({
             vocabId: selectedVocabObj.id,
             vocabWord: selectedVocabObj.word,
@@ -489,8 +581,41 @@ export function useLanguagePage() {
             englishSentence: activeVocabEngInt.trim(),
             indonesianTranslation: activeVocabTransInt.trim(),
           }),
-        ])
+        ]
 
+        if (formData?.extraRows && formData.extraRows.length > 0) {
+          for (const extra of formData.extraRows) {
+            const rowVocabId = extra.vocabId || selectedVocabId
+            const rowVocab = vocabList.find((v) => v.id === rowVocabId)
+            if (rowVocab && extra.vocabEngPos?.trim() && extra.vocabTransPos?.trim()) {
+              promises.push(
+                createWritingMutation.mutateAsync({
+                  vocabId: rowVocab.id,
+                  vocabWord: rowVocab.word,
+                  sentenceType: "Positive",
+                  englishSentence: extra.vocabEngPos.trim(),
+                  indonesianTranslation: extra.vocabTransPos.trim(),
+                }),
+                createWritingMutation.mutateAsync({
+                  vocabId: rowVocab.id,
+                  vocabWord: rowVocab.word,
+                  sentenceType: "Negative",
+                  englishSentence: (extra.vocabEngNeg || "").trim(),
+                  indonesianTranslation: (extra.vocabTransNeg || "").trim(),
+                }),
+                createWritingMutation.mutateAsync({
+                  vocabId: rowVocab.id,
+                  vocabWord: rowVocab.word,
+                  sentenceType: "Interrogative",
+                  englishSentence: (extra.vocabEngInt || "").trim(),
+                  indonesianTranslation: (extra.vocabTransInt || "").trim(),
+                })
+              )
+            }
+          }
+        }
+
+        await Promise.all(promises)
         setVocabEngPos("")
         setVocabTransPos("")
         setVocabEngNeg("")
@@ -526,16 +651,37 @@ export function useLanguagePage() {
         : null
 
       try {
-        await createWritingMutation.mutateAsync({
-          vocabId: selectedVocabObj?.id || null,
-          vocabWord: selectedVocabObj?.word || null,
-          sentenceType: null,
-          englishSentence: activeFreeEnglish.trim(),
-          indonesianTranslation: activeFreeTranslation.trim(),
-          formulaId: selectedFormulaObj.id,
-          formula: selectedFormulaObj.formula,
-        })
+        const promises: Promise<unknown>[] = [
+          createWritingMutation.mutateAsync({
+            vocabId: selectedVocabObj?.id || null,
+            vocabWord: selectedVocabObj?.word || null,
+            sentenceType: null,
+            englishSentence: activeFreeEnglish.trim(),
+            indonesianTranslation: activeFreeTranslation.trim(),
+            formulaId: selectedFormulaObj.id,
+            formula: selectedFormulaObj.formula,
+          }),
+        ]
 
+        if (formData?.extraRows && formData.extraRows.length > 0) {
+          for (const extra of formData.extraRows) {
+            if (extra.freeEnglish?.trim() && extra.freeTranslation?.trim()) {
+              promises.push(
+                createWritingMutation.mutateAsync({
+                  vocabId: selectedVocabObj?.id || null,
+                  vocabWord: selectedVocabObj?.word || null,
+                  sentenceType: null,
+                  englishSentence: extra.freeEnglish.trim(),
+                  indonesianTranslation: extra.freeTranslation.trim(),
+                  formulaId: selectedFormulaObj.id,
+                  formula: selectedFormulaObj.formula,
+                })
+              )
+            }
+          }
+        }
+
+        await Promise.all(promises)
         setSelectedWritingFormulaId("")
         setSearchWritingFormulaQuery("")
         setSelectedVocabId("")
@@ -544,7 +690,7 @@ export function useLanguagePage() {
         setFreeTranslation("")
         setWritingFormError(null)
         setShowWritingForm(false)
-        showSuccessToast("Formula practice sentence added successfully")
+        showSuccessToast("Formula practice sentence(s) added successfully")
       } catch {
         setWritingFormError("Failed to save sentence. Please try again.")
       }
@@ -658,6 +804,13 @@ export function useLanguagePage() {
       dialogueEngA?: string
       dialogueTransA?: string
       dialogueFormula?: string
+      extraRows?: Array<{
+        id?: string
+        dialogueEngQ: string
+        dialogueTransQ: string
+        dialogueEngA: string
+        dialogueTransA: string
+      }>
     }
   ): Promise<void> => {
     e.preventDefault()
@@ -689,15 +842,37 @@ export function useLanguagePage() {
       }
 
       try {
-        await createDialogueMutation.mutateAsync({
-          vocabId: selectedVocab.id,
-          vocabWord: selectedVocab.word,
-          englishQuestion: activeDialogueEngQ.trim(),
-          indonesianQuestion: activeDialogueTransQ.trim(),
-          englishAnswer: activeDialogueEngA.trim(),
-          indonesianAnswer: activeDialogueTransA.trim(),
-          formula: null,
-        })
+        const promises: Promise<unknown>[] = [
+          createDialogueMutation.mutateAsync({
+            vocabId: selectedVocab.id,
+            vocabWord: selectedVocab.word,
+            englishQuestion: activeDialogueEngQ.trim(),
+            indonesianQuestion: activeDialogueTransQ.trim(),
+            englishAnswer: activeDialogueEngA.trim(),
+            indonesianAnswer: activeDialogueTransA.trim(),
+            formula: null,
+          }),
+        ]
+
+        if (formData?.extraRows && formData.extraRows.length > 0) {
+          for (const extra of formData.extraRows) {
+            if (extra.dialogueEngQ?.trim() && extra.dialogueEngA?.trim()) {
+              promises.push(
+                createDialogueMutation.mutateAsync({
+                  vocabId: selectedVocab.id,
+                  vocabWord: selectedVocab.word,
+                  englishQuestion: extra.dialogueEngQ.trim(),
+                  indonesianQuestion: (extra.dialogueTransQ || "").trim(),
+                  englishAnswer: extra.dialogueEngA.trim(),
+                  indonesianAnswer: (extra.dialogueTransA || "").trim(),
+                  formula: null,
+                })
+              )
+            }
+          }
+        }
+
+        await Promise.all(promises)
 
         // Reset form
         setSelectedDialogueVocabId("")
@@ -708,7 +883,7 @@ export function useLanguagePage() {
         setDialogueTransA("")
         setDialogueFormula("")
         setShowDialogueForm(false)
-        showSuccessToast("Dialogue added successfully")
+        showSuccessToast("Dialogue(s) added successfully")
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : "Failed to add dialogue."
         setDialogueFormError(errMsg)
@@ -731,16 +906,39 @@ export function useLanguagePage() {
         : null
 
       try {
-        await createDialogueMutation.mutateAsync({
-          vocabId: selectedVocab?.id || null,
-          vocabWord: selectedVocab?.word || null,
-          englishQuestion: activeDialogueEngQ.trim(),
-          indonesianQuestion: activeDialogueTransQ.trim(),
-          englishAnswer: activeDialogueEngA.trim(),
-          indonesianAnswer: activeDialogueTransA.trim(),
-          formulaId: selectedFormulaObj.id,
-          formula: selectedFormulaObj.formula,
-        })
+        const promises: Promise<unknown>[] = [
+          createDialogueMutation.mutateAsync({
+            vocabId: selectedVocab?.id || null,
+            vocabWord: selectedVocab?.word || null,
+            englishQuestion: activeDialogueEngQ.trim(),
+            indonesianQuestion: activeDialogueTransQ.trim(),
+            englishAnswer: activeDialogueEngA.trim(),
+            indonesianAnswer: activeDialogueTransA.trim(),
+            formulaId: selectedFormulaObj.id,
+            formula: selectedFormulaObj.formula,
+          }),
+        ]
+
+        if (formData?.extraRows && formData.extraRows.length > 0) {
+          for (const extra of formData.extraRows) {
+            if (extra.dialogueEngQ?.trim() && extra.dialogueEngA?.trim()) {
+              promises.push(
+                createDialogueMutation.mutateAsync({
+                  vocabId: selectedVocab?.id || null,
+                  vocabWord: selectedVocab?.word || null,
+                  englishQuestion: extra.dialogueEngQ.trim(),
+                  indonesianQuestion: (extra.dialogueTransQ || "").trim(),
+                  englishAnswer: extra.dialogueEngA.trim(),
+                  indonesianAnswer: (extra.dialogueTransA || "").trim(),
+                  formulaId: selectedFormulaObj.id,
+                  formula: selectedFormulaObj.formula,
+                })
+              )
+            }
+          }
+        }
+
+        await Promise.all(promises)
 
         // Reset form
         setSelectedDialogueFormulaId("")
@@ -753,7 +951,7 @@ export function useLanguagePage() {
         setDialogueTransA("")
         setDialogueFormula("")
         setShowDialogueForm(false)
-        showSuccessToast("Dialogue added successfully")
+        showSuccessToast("Dialogue(s) added successfully")
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : "Failed to add dialogue."
         setDialogueFormError(errMsg)
