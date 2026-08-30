@@ -522,9 +522,22 @@ export function CalendarView({
 
         {/* Grouped Days List View */}
         {isLoadingAgendaPriorities || isLoadingTimetable || isLoadingProjects ? (
-          <div className="space-y-3 pt-2">
-            <div className="h-20 w-full bg-muted/20 animate-pulse rounded-xl border border-border/40" />
-            <div className="h-20 w-full bg-muted/20 animate-pulse rounded-xl border border-border/40" />
+          <div className="space-y-3 pt-2 animate-in fade-in duration-200">
+            <div className="h-24 w-full bg-card/45 dark:bg-card/15 animate-pulse rounded-2xl border border-border/40 p-4 space-y-2.5">
+              <div className="h-4 w-48 bg-muted/40 rounded-lg animate-pulse" />
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="h-10 bg-muted/30 rounded-xl" />
+                <div className="h-10 bg-muted/30 rounded-xl" />
+                <div className="h-10 bg-muted/30 rounded-xl" />
+              </div>
+            </div>
+            <div className="h-24 w-full bg-card/45 dark:bg-card/15 animate-pulse rounded-2xl border border-border/40 p-4 space-y-2.5">
+              <div className="h-4 w-40 bg-muted/40 rounded-lg animate-pulse" />
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="h-10 bg-muted/30 rounded-xl" />
+                <div className="h-10 bg-muted/30 rounded-xl" />
+              </div>
+            </div>
           </div>
         ) : sortedGroupedAgendas.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 py-12 text-center space-y-2">
