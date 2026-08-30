@@ -61,6 +61,13 @@ interface DialoguePracticeViewProps {
       dialogueEngA?: string
       dialogueTransA?: string
       dialogueFormula?: string
+      extraRows?: Array<{
+        id?: string
+        dialogueEngQ: string
+        dialogueTransQ: string
+        dialogueEngA: string
+        dialogueTransA: string
+      }>
     }
   ) => Promise<void>
   handleDeleteDialogue: (id: string, wordStr: string) => Promise<void>
@@ -143,17 +150,6 @@ export function DialoguePracticeView({
   }, [showDialogueForm, setSelectedDialogueFormulaId, setSearchDialogueFormulaQuery, setSelectedDialogueVocabId, setSearchDialogueVocabQuery])
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    await handleAddDialogue(e, {
-      dialogueEngQ: localDialogueEngQ,
-      dialogueTransQ: localDialogueTransQ,
-      dialogueEngA: localDialogueEngA,
-      dialogueTransA: localDialogueTransA,
-      dialogueFormula: localDialogueFormula,
-    })
-  }
-
   // Optional multi-item batch creation state for dialogue practice
   const [extraDialogueRows, setExtraDialogueRows] = useState<Array<{
     id: string
@@ -165,23 +161,15 @@ export function DialoguePracticeView({
 
   const handleDialogueBatchSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await handleSubmit(e)
-
-    if (extraDialogueRows.length > 0) {
-      for (const row of extraDialogueRows) {
-        if (row.dialogueEngQ.trim() && row.dialogueEngA.trim()) {
-          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
-          await handleAddDialogue(fakeEvent, {
-            dialogueEngQ: row.dialogueEngQ.trim(),
-            dialogueTransQ: row.dialogueTransQ.trim(),
-            dialogueEngA: row.dialogueEngA.trim(),
-            dialogueTransA: row.dialogueTransA.trim(),
-            dialogueFormula: localDialogueFormula,
-          })
-        }
-      }
-      setExtraDialogueRows([])
-    }
+    await handleAddDialogue(e, {
+      dialogueEngQ: localDialogueEngQ,
+      dialogueTransQ: localDialogueTransQ,
+      dialogueEngA: localDialogueEngA,
+      dialogueTransA: localDialogueTransA,
+      dialogueFormula: localDialogueFormula,
+      extraRows: extraDialogueRows,
+    })
+    setExtraDialogueRows([])
   }
 
   // Close dropdown on outside click
