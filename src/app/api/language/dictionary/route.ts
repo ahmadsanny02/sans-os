@@ -32,7 +32,8 @@ export async function GET(request: Request): Promise<NextResponse> {
 
       try {
         const dictRes = await fetch(
-          `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`
+          `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`,
+          { signal: AbortSignal.timeout(5000) }
         )
         if (dictRes.ok) {
           const dictData = await dictRes.json()
@@ -72,7 +73,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     }
 
     try {
-      const res = await fetch(searchUrl)
+      const res = await fetch(searchUrl, { signal: AbortSignal.timeout(5000) })
       if (!res.ok) {
         logger.warn(`Datamuse API returned status ${res.status}`)
         return NextResponse.json(query ? [{ word: query.trim().toLowerCase() }] : [])
