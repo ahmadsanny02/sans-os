@@ -46,24 +46,51 @@ export function useBucketListPage() {
   const [editCompleted, setEditCompleted] = useState(false)
   const [editError, setEditError] = useState<string | null>(null)
 
-  const handleAddItem = async (e: React.FormEvent): Promise<void> => {
+  const handleAddItem = async (
+    e: React.FormEvent,
+    overrideData?: {
+      title?: string
+      imageUrl?: string
+      extraRows?: Array<{ id?: string; title: string; imageUrl: string }>
+    }
+  ): Promise<void> => {
     e.preventDefault()
     setAddError(null)
 
-    if (!addTitle.trim()) {
+    const mainTitle = (overrideData?.title ?? addTitle).trim()
+    const mainImg = (overrideData?.imageUrl ?? addImageUrl).trim()
+
+    if (!mainTitle) {
       setAddError("Please fill out the Title field.")
       return
     }
 
     try {
-      await createItemMutation.mutateAsync({
-        title: addTitle.trim(),
-        imageUrl: addImageUrl.trim() || null,
-      })
+      const promises: Promise<unknown>[] = [
+        createItemMutation.mutateAsync({
+          title: mainTitle,
+          imageUrl: mainImg || null,
+        }),
+      ]
+
+      if (overrideData?.extraRows && overrideData.extraRows.length > 0) {
+        for (const extra of overrideData.extraRows) {
+          if (extra.title.trim()) {
+            promises.push(
+              createItemMutation.mutateAsync({
+                title: extra.title.trim(),
+                imageUrl: extra.imageUrl.trim() || null,
+              })
+            )
+          }
+        }
+      }
+
+      await Promise.all(promises)
       setAddTitle("")
       setAddImageUrl("")
       setShowAddForm(false)
-      showSuccessToast("Dream added to bucket list!")
+      showSuccessToast("Dream(s) added to bucket list!")
     } catch {
       setAddError("Failed to add item to bucket list.")
     }
