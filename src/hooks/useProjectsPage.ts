@@ -135,22 +135,53 @@ export function useProjectsPage() {
     }
   }
 
-  const handleAddTask = async (e: React.FormEvent): Promise<void> => {
+  const handleAddTask = async (
+    e: React.FormEvent,
+    overrideData?: {
+      name?: string
+      priority?: string
+      deadline?: string
+      extraRows?: Array<{ id?: string; name: string; priority: string; deadline: string }>
+    }
+  ): Promise<void> => {
     e.preventDefault()
     setTaskError(null)
-    if (!selectedProjectId || !taskName.trim()) return
+    const mainName = (overrideData?.name ?? taskName).trim()
+    const mainPriority = overrideData?.priority ?? taskPriority
+    const mainDeadline = overrideData?.deadline ?? taskDeadline
+
+    if (!selectedProjectId || !mainName) return
 
     try {
-      await createTaskMutation.mutateAsync({
-        projectId: selectedProjectId,
-        name: taskName,
-        priority: taskPriority,
-        deadline: taskDeadline || undefined,
-      })
+      const promises: Promise<unknown>[] = [
+        createTaskMutation.mutateAsync({
+          projectId: selectedProjectId,
+          name: mainName,
+          priority: mainPriority,
+          deadline: mainDeadline || undefined,
+        }),
+      ]
+
+      if (overrideData?.extraRows && overrideData.extraRows.length > 0) {
+        for (const extra of overrideData.extraRows) {
+          if (extra.name.trim()) {
+            promises.push(
+              createTaskMutation.mutateAsync({
+                projectId: selectedProjectId,
+                name: extra.name.trim(),
+                priority: extra.priority || "Medium",
+                deadline: extra.deadline || undefined,
+              })
+            )
+          }
+        }
+      }
+
+      await Promise.all(promises)
       setTaskName("")
       setTaskPriority("Medium")
       setTaskDeadline(getOneWeekFromTodayStr())
-      showSuccessToast("Task added to project")
+      showSuccessToast("Task(s) added to project")
     } catch {
       setTaskError("Failed to add task.")
     }
