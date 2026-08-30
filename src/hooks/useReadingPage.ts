@@ -55,25 +55,57 @@ export function useReadingPage() {
   const [editProgress, setEditProgress] = useState("")
   const [editError, setEditError] = useState<string | null>(null)
 
-  const handleAddBook = async (e: React.FormEvent): Promise<void> => {
+  const handleAddBook = async (
+    e: React.FormEvent,
+    overrideData?: {
+      title?: string
+      author?: string
+      extraRows?: Array<{ id?: string; title: string; author: string }>
+    }
+  ): Promise<void> => {
     e.preventDefault()
     setAddError(null)
 
-    if (!addTitle.trim() || !addAuthor.trim()) {
+    const mainTitle = (overrideData?.title ?? addTitle).trim()
+    const mainAuthor = (overrideData?.author ?? addAuthor).trim()
+
+    if (!mainTitle || !mainAuthor) {
       setAddError("Please fill out Title and Author fields.")
       return
     }
 
     try {
-      await createBookMutation.mutateAsync({
-        title: addTitle.trim(),
-        author: addAuthor.trim(),
-        status: addStatus,
-        rating: addStatus === "Completed" ? addRating : null,
-        review: addStatus === "Completed" ? addReview.trim() : null,
-        finishedAt: addStatus === "Completed" ? addFinishedAt : null,
-        currentProgress: addStatus === "Reading" ? addProgress.trim() : null,
-      })
+      const promises: Promise<unknown>[] = [
+        createBookMutation.mutateAsync({
+          title: mainTitle,
+          author: mainAuthor,
+          status: addStatus,
+          rating: addStatus === "Completed" ? addRating : null,
+          review: addStatus === "Completed" ? addReview.trim() : null,
+          finishedAt: addStatus === "Completed" ? addFinishedAt : null,
+          currentProgress: addStatus === "Reading" ? addProgress.trim() : null,
+        }),
+      ]
+
+      if (overrideData?.extraRows && overrideData.extraRows.length > 0) {
+        for (const extra of overrideData.extraRows) {
+          if (extra.title.trim() && extra.author.trim()) {
+            promises.push(
+              createBookMutation.mutateAsync({
+                title: extra.title.trim(),
+                author: extra.author.trim(),
+                status: addStatus,
+                rating: addStatus === "Completed" ? addRating : null,
+                review: addStatus === "Completed" ? addReview.trim() : null,
+                finishedAt: addStatus === "Completed" ? addFinishedAt : null,
+                currentProgress: addStatus === "Reading" ? addProgress.trim() : null,
+              })
+            )
+          }
+        }
+      }
+
+      await Promise.all(promises)
       setAddTitle("")
       setAddAuthor("")
       setAddStatus("To Read")
@@ -82,7 +114,7 @@ export function useReadingPage() {
       setAddFinishedAt(todayStr)
       setAddProgress("")
       setShowAddForm(false)
-      showSuccessToast("Book added to reading journal")
+      showSuccessToast("Book(s) added to reading journal")
     } catch {
       setAddError("Failed to add book to journal.")
     }
