@@ -210,7 +210,15 @@ interface ProjectBoardViewProps {
   activeProject: Project | null
   handleAddProject: (e: React.FormEvent) => Promise<void>
   handleDeleteProject: (id: string, e: React.MouseEvent) => Promise<void>
-  handleAddTask: (e: React.FormEvent) => Promise<void>
+  handleAddTask: (
+    e: React.FormEvent,
+    overrideData?: {
+      name?: string
+      priority?: string
+      deadline?: string
+      extraRows?: Array<{ id?: string; name: string; priority: string; deadline: string }>
+    }
+  ) => Promise<void>
   handleDeleteTask: (id: string) => Promise<void>
   handleToggleTask: (id: string, completed: boolean) => void
   subTaskInputs: Record<string, string>
@@ -334,20 +342,13 @@ export function ProjectBoardView({
     e.preventDefault()
     if (!taskName.trim()) return
 
-    await handleAddTask(e)
-
-    if (extraProjectTaskRows.length > 0) {
-      for (const row of extraProjectTaskRows) {
-        if (row.name.trim()) {
-          setTaskName(row.name.trim())
-          setTaskPriority(row.priority || "Medium")
-          setTaskDeadline(row.deadline || "")
-          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
-          await handleAddTask(fakeEvent)
-        }
-      }
-      setExtraProjectTaskRows([])
-    }
+    await handleAddTask(e, {
+      name: taskName,
+      priority: taskPriority,
+      deadline: taskDeadline,
+      extraRows: extraProjectTaskRows,
+    })
+    setExtraProjectTaskRows([])
   }
 
   const handleSaveProjectName = () => {
