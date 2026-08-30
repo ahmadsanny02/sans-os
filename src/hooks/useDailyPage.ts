@@ -82,80 +82,100 @@ export function useDailyPage() {
     setActiveDate(format(new Date(), "yyyy-MM-dd"))
   }
 
-  const handleAddDailyEntry = async (e: React.FormEvent): Promise<void> => {
+  const handleAddDailyEntry = async (
+    e: React.FormEvent,
+    overrideData?: { title?: string; link?: string; extraRows?: Array<{ id?: string; title: string; link: string }> }
+  ): Promise<void> => {
     e.preventDefault()
     setCombinedErrorMsg(null)
-    if (!entryTitle.trim()) return
+    const mainTitle = (overrideData?.title ?? entryTitle).trim()
+    const mainLink = (overrideData?.link ?? entryLink).trim()
+    if (!mainTitle) return
 
     setIsPendingCombined(true)
     try {
       const promises: Promise<unknown>[] = []
 
-      if (targetTimetable) {
-        if (timetableStartTime >= timetableEndTime) {
-          throw new Error("End time must be after start time.")
+      const addEntry = (title: string, link: string, orderIdx?: number) => {
+        if (targetTimetable) {
+          if (timetableStartTime >= timetableEndTime) {
+            throw new Error("End time must be after start time.")
+          }
+
+          let targetDayOfWeek = -1
+          let targetDate: string | undefined = undefined
+
+          if (timetableScheduleType === "fixed") {
+            targetDayOfWeek = -1
+            targetDate = undefined
+          } else if (timetableScheduleType === "weekly") {
+            targetDayOfWeek = timetableDayOfWeek
+            targetDate = undefined
+          } else {
+            targetDayOfWeek = parseISO(chooseDate).getDay()
+            targetDate = chooseDate
+          }
+
+          promises.push(
+            createBlockMutation.mutateAsync({
+              dayOfWeek: targetDayOfWeek,
+              startTime: timetableStartTime,
+              endTime: timetableEndTime,
+              title: title,
+              category: timetableCategory,
+              subCategory: timetableSubCategory || null,
+              color: categories.find((c) => c.name === timetableCategory)?.color || "blue",
+              date: targetDate,
+              isTodo: timetableIsTodo,
+              link: link || undefined,
+            })
+          )
         }
 
-        let targetDayOfWeek = -1
-        let targetDate: string | undefined = undefined
-
-        if (timetableScheduleType === "fixed") {
-          targetDayOfWeek = -1
-          targetDate = undefined
-        } else if (timetableScheduleType === "weekly") {
-          targetDayOfWeek = timetableDayOfWeek
-          targetDate = undefined
-        } else {
-          targetDayOfWeek = parseISO(chooseDate).getDay()
-          targetDate = chooseDate
+        if (targetTodo) {
+          promises.push(
+            createTodoMutation.mutateAsync({
+              date: chooseDate,
+              text: title,
+              link: link || undefined,
+              category: todoCategory,
+              subCategory: todoSubCategory || null,
+            })
+          )
         }
 
-        promises.push(
-          createBlockMutation.mutateAsync({
-            dayOfWeek: targetDayOfWeek,
-            startTime: timetableStartTime,
-            endTime: timetableEndTime,
-            title: entryTitle.trim(),
-            category: timetableCategory,
-            subCategory: timetableSubCategory || null,
-            color: categories.find((c) => c.name === timetableCategory)?.color || "blue",
-            date: targetDate,
-            isTodo: timetableIsTodo,
-            link: entryLink.trim() || undefined,
-          })
-        )
-      }
-
-      if (targetTodo) {
-        promises.push(
-          createTodoMutation.mutateAsync({
-            date: chooseDate,
-            text: entryTitle.trim(),
-            link: entryLink.trim() || undefined,
-            category: todoCategory,
-            subCategory: todoSubCategory || null,
-          })
-        )
-      }
-
-      if (targetPriority) {
-        if (chooseDate === activeDate && listPriorities.length >= 5) {
-          throw new Error("You can only have a maximum of 5 priorities per day.")
+        if (targetPriority) {
+          if (chooseDate === activeDate && listPriorities.length + promises.length >= 5) {
+            throw new Error("You can only have a maximum of 5 priorities per day.")
+          }
+          promises.push(
+            createPriorityMutation.mutateAsync({
+              date: chooseDate,
+              text: title,
+              orderIndex: orderIdx !== undefined ? orderIdx : (chooseDate === activeDate ? listPriorities.length : undefined),
+              link: link || undefined,
+              category: priorityCategory,
+              subCategory: prioritySubCategory || null,
+            })
+          )
         }
-        promises.push(
-          createPriorityMutation.mutateAsync({
-            date: chooseDate,
-            text: entryTitle.trim(),
-            orderIndex: chooseDate === activeDate ? listPriorities.length : undefined,
-            link: entryLink.trim() || undefined,
-            category: priorityCategory,
-            subCategory: prioritySubCategory || null,
-          })
-        )
       }
 
-      if (promises.length === 0) {
+      if (!targetTimetable && !targetTodo && !targetPriority) {
         throw new Error("Please select at least one destination (Timetable, Task, or Priority).")
+      }
+
+      // 1. Add primary entry
+      addEntry(mainTitle, mainLink)
+
+      // 2. Add extra rows if provided
+      if (overrideData?.extraRows && overrideData.extraRows.length > 0) {
+        overrideData.extraRows.forEach((row, i) => {
+          if (row.title.trim()) {
+            const idx = chooseDate === activeDate ? listPriorities.length + 1 + i : undefined
+            addEntry(row.title.trim(), row.link.trim(), idx)
+          }
+        })
       }
 
       await Promise.all(promises)
@@ -294,7 +314,7 @@ export function useDailyPage() {
 
   const todayHabits = (habitsData?.habits || []).map((habit) => {
     const isCompleted = (habitsData?.logs || []).some(
-      (log) => log.habitId === habit.id && log.date === activeDate
+      (log) => log.habitId === habit.id && log.date === activeDate && log.status?.toLowerCase() === "completed"
     )
     return {
       id: habit.id,
