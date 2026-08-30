@@ -55,7 +55,14 @@ interface BucketListBoardViewProps {
   editCompleted: boolean
   setEditCompleted: (val: boolean) => void
   editError: string | null
-  handleAddItem: (e: React.FormEvent) => Promise<void>
+  handleAddItem: (
+    e: React.FormEvent,
+    overrideData?: {
+      title?: string
+      imageUrl?: string
+      extraRows?: Array<{ id?: string; title: string; imageUrl: string }>
+    }
+  ) => Promise<void>
   handleOpenEdit: (item: BucketItem) => void
   handleUpdateItem: (e: React.FormEvent) => Promise<void>
   handleDeleteItem: (id: string, titleStr: string) => Promise<void>
@@ -114,19 +121,12 @@ export function BucketListBoardView({
     e.preventDefault()
     if (!addTitle.trim()) return
 
-    await handleAddItem(e)
-
-    if (extraBucketRows.length > 0) {
-      for (const row of extraBucketRows) {
-        if (row.title.trim()) {
-          setAddTitle(row.title.trim())
-          setAddImageUrl(row.imageUrl.trim())
-          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
-          await handleAddItem(fakeEvent)
-        }
-      }
-      setExtraBucketRows([])
-    }
+    await handleAddItem(e, {
+      title: addTitle,
+      imageUrl: addImageUrl,
+      extraRows: extraBucketRows,
+    })
+    setExtraBucketRows([])
   }
 
   return (
