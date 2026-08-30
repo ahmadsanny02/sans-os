@@ -68,6 +68,19 @@ interface WritingPracticeViewProps {
       vocabEngInt?: string
       vocabTransInt?: string
       vocabFormula?: string
+      extraRows?: Array<{
+        id?: string
+        freeEnglish?: string
+        freeTranslation?: string
+        vocabId?: string
+        vocabQuery?: string
+        vocabEngPos?: string
+        vocabTransPos?: string
+        vocabEngNeg?: string
+        vocabTransNeg?: string
+        vocabEngInt?: string
+        vocabTransInt?: string
+      }>
     }
   ) => Promise<void>
   handleDeleteWriting: (id: string) => Promise<void>
@@ -156,21 +169,6 @@ export function WritingPracticeView({
   }, [showWritingForm, setSelectedVocabId, setSearchVocabQuery, setSelectedWritingFormulaId, setSearchWritingFormulaQuery])
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    await handleAddWriting(e, {
-      freeEnglish: localFreeEnglish,
-      freeTranslation: localFreeTranslation,
-      vocabEngPos: localVocabEngPos,
-      vocabTransPos: localVocabTransPos,
-      vocabEngNeg: localVocabEngNeg,
-      vocabTransNeg: localVocabTransNeg,
-      vocabEngInt: localVocabEngInt,
-      vocabTransInt: localVocabTransInt,
-      vocabFormula: localVocabFormula,
-    })
-  }
-
   // Optional multi-item batch creation state for writing practice
   const [extraWritingRows, setExtraWritingRows] = useState<Array<{
     id: string
@@ -189,47 +187,19 @@ export function WritingPracticeView({
 
   const handleWritingBatchSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await handleSubmit(e)
-
-    if (extraWritingRows.length > 0) {
-      for (const row of extraWritingRows) {
-        if (practiceMode === "vocab") {
-          if (row.vocabEngPos.trim() && row.vocabTransPos.trim()) {
-            if (row.vocabId) {
-              handleSelectVocab(row.vocabId, row.vocabQuery)
-            }
-            const fakeEvent = { preventDefault: () => {} } as React.FormEvent
-            await handleAddWriting(fakeEvent, {
-              freeEnglish: "",
-              freeTranslation: "",
-              vocabEngPos: row.vocabEngPos.trim(),
-              vocabTransPos: row.vocabTransPos.trim(),
-              vocabEngNeg: row.vocabEngNeg.trim(),
-              vocabTransNeg: row.vocabTransNeg.trim(),
-              vocabEngInt: row.vocabEngInt.trim(),
-              vocabTransInt: row.vocabTransInt.trim(),
-              vocabFormula: localVocabFormula,
-            })
-          }
-        } else {
-          if (row.freeEnglish.trim() && row.freeTranslation.trim()) {
-            const fakeEvent = { preventDefault: () => {} } as React.FormEvent
-            await handleAddWriting(fakeEvent, {
-              freeEnglish: row.freeEnglish.trim(),
-              freeTranslation: row.freeTranslation.trim(),
-              vocabEngPos: "",
-              vocabTransPos: "",
-              vocabEngNeg: "",
-              vocabTransNeg: "",
-              vocabEngInt: "",
-              vocabTransInt: "",
-              vocabFormula: localVocabFormula,
-            })
-          }
-        }
-      }
-      setExtraWritingRows([])
-    }
+    await handleAddWriting(e, {
+      freeEnglish: localFreeEnglish,
+      freeTranslation: localFreeTranslation,
+      vocabEngPos: localVocabEngPos,
+      vocabTransPos: localVocabTransPos,
+      vocabEngNeg: localVocabEngNeg,
+      vocabTransNeg: localVocabTransNeg,
+      vocabEngInt: localVocabEngInt,
+      vocabTransInt: localVocabTransInt,
+      vocabFormula: localVocabFormula,
+      extraRows: extraWritingRows,
+    })
+    setExtraWritingRows([])
   }
 
   // Close dropdown on outside click
