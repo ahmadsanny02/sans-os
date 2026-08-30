@@ -25,7 +25,7 @@ export async function GET(): Promise<NextResponse> {
     const hasGeneral = items.some((c) => c.name.toLowerCase() === "general")
     if (!hasGeneral) {
       const generalItem: typeof categories.$inferSelect = {
-        id: "default_general",
+        id: "00000000-0000-0000-0000-000000000001",
         userId: user.id,
         name: "General",
         module: "general",
