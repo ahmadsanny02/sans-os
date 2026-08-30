@@ -36,7 +36,15 @@ interface FormulaListViewProps {
   searchQueryFormula: string
   setSearchQueryFormula: (query: string) => void
   formulaFormError: string | null
-  handleAddFormula: (e: React.FormEvent) => Promise<void>
+  handleAddFormula: (
+    e: React.FormEvent,
+    overrideData?: {
+      name?: string
+      formula?: string
+      description?: string
+      extraRows?: Array<{ id?: string; name: string; formula: string; description?: string }>
+    }
+  ) => Promise<void>
   handleUpdateFormula: (id: string, name: string, formulaVal: string, description: string | null) => Promise<void>
   handleDeleteFormula: (id: string) => Promise<void>
   filteredFormulas: Formula[]
@@ -146,20 +154,13 @@ export function FormulaListView({
     e.preventDefault()
     if (!formulaName.trim() || !formulaString.trim()) return
 
-    await handleAddFormula(e)
-
-    if (extraFormulaRows.length > 0) {
-      for (const row of extraFormulaRows) {
-        if (row.name.trim() && row.formula.trim()) {
-          setFormulaName(row.name.trim())
-          setFormulaString(row.formula.trim())
-          setFormulaDescription(row.description.trim())
-          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
-          await handleAddFormula(fakeEvent)
-        }
-      }
-      setExtraFormulaRows([])
-    }
+    await handleAddFormula(e, {
+      name: formulaName,
+      formula: formulaString,
+      description: formulaDescription,
+      extraRows: extraFormulaRows,
+    })
+    setExtraFormulaRows([])
   }
 
   return (
