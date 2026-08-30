@@ -30,7 +30,7 @@ export async function translateWordDetails(
 
   for (const url of primaryEndpoints) {
     try {
-      const res = await fetch(url, { headers: BROWSER_HEADERS })
+      const res = await fetch(url, { headers: BROWSER_HEADERS, signal: AbortSignal.timeout(5000) })
       if (!res.ok) continue
 
       const data = await res.json()
@@ -86,7 +86,7 @@ export async function translateWordDetails(
   // Fallback 1: Simple dict-chrome-ex translate endpoint
   try {
     const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=${from}&tl=${to}&q=${encodeURIComponent(clean)}`
-    const res = await fetch(url, { headers: BROWSER_HEADERS })
+    const res = await fetch(url, { headers: BROWSER_HEADERS, signal: AbortSignal.timeout(5000) })
     if (res.ok) {
       const data = await res.json()
       if (Array.isArray(data) && typeof data[0] === "string") {
@@ -100,7 +100,7 @@ export async function translateWordDetails(
   // Fallback 2: MyMemory Translation API
   try {
     const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=${from}|${to}`
-    const res = await fetch(url, { headers: BROWSER_HEADERS })
+    const res = await fetch(url, { headers: BROWSER_HEADERS, signal: AbortSignal.timeout(5000) })
     if (res.ok) {
       const data = await res.json()
       const text = data.responseData?.translatedText
