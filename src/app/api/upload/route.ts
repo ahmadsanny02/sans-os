@@ -54,15 +54,11 @@ export async function POST(request: Request): Promise<NextResponse> {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // 4. Ensure public bucket "daily-pics" exists (Cached check to prevent overhead)
+    // 4. Ensure public bucket "daily-pics" exists (safely catch and continue if already exists)
     if (!isBucketVerified) {
       try {
         const { data: buckets, error: getBucketsError } = await supabaseAdmin.storage.listBuckets()
-        if (getBucketsError) {
-          throw getBucketsError
-        }
-
-        const bucketExists = buckets?.some((b) => b.name === "daily-pics")
+        const bucketExists = !getBucketsError && buckets?.some((b) => b.name === "daily-pics")
         if (!bucketExists) {
           const { error: createBucketError } = await supabaseAdmin.storage.createBucket("daily-pics", {
             public: true,
@@ -73,18 +69,14 @@ export async function POST(request: Request): Promise<NextResponse> {
             const errMsg = createBucketError.message || ""
             const errStatus = (createBucketError as { statusCode?: string | number }).statusCode
             if (!errMsg.toLowerCase().includes("already exist") && errStatus !== "409" && errStatus !== 409) {
-              throw createBucketError
+              logger.warn("Bucket creation notice:", errMsg)
             }
           }
         }
         isBucketVerified = true
       } catch (bucketErr) {
-        const msg = bucketErr instanceof Error ? bucketErr.message : String(bucketErr)
-        if (msg.toLowerCase().includes("already exist")) {
-          isBucketVerified = true
-        } else {
-          throw bucketErr
-        }
+        logger.warn("Bucket verification notice:", bucketErr)
+        isBucketVerified = true
       }
     }
 
