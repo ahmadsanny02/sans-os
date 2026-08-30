@@ -74,7 +74,14 @@ interface ReadingBoardViewProps {
   editProgress: string
   setEditProgress: (val: string) => void
   editError: string | null
-  handleAddBook: (e: React.FormEvent) => Promise<void>
+  handleAddBook: (
+    e: React.FormEvent,
+    overrideData?: {
+      title?: string
+      author?: string
+      extraRows?: Array<{ id?: string; title: string; author: string }>
+    }
+  ) => Promise<void>
   handleOpenEdit: (book: ReadingItem) => void
   handleUpdateBook: (e: React.FormEvent) => Promise<void>
   handleDeleteBook: (id: string, titleStr: string) => Promise<void>
@@ -156,20 +163,12 @@ export function ReadingBoardView({
     e.preventDefault()
     if (!addTitle.trim() || !addAuthor.trim()) return
 
-    await handleAddBook(e)
-
-    if (extraBookRows.length > 0) {
-      for (const row of extraBookRows) {
-        if (row.title.trim() && row.author.trim()) {
-          setAddTitle(row.title.trim())
-          setAddAuthor(row.author.trim())
-          setAddStatus(row.status || "To Read")
-          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
-          await handleAddBook(fakeEvent)
-        }
-      }
-      setExtraBookRows([])
-    }
+    await handleAddBook(e, {
+      title: addTitle,
+      author: addAuthor,
+      extraRows: extraBookRows,
+    })
+    setExtraBookRows([])
   }
 
   return (
