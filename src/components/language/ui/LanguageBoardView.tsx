@@ -51,7 +51,14 @@ interface LanguageBoardViewProps {
   langDirection: string
   setLangDirection: (dir: string) => void
   formError: string | null
-  handleAddVocabulary: (e: React.FormEvent) => Promise<void>
+  handleAddVocabulary: (
+    e: React.FormEvent,
+    overrideData?: {
+      word?: string
+      translation?: string
+      extraRows?: Array<{ id?: string; word: string; translation: string }>
+    }
+  ) => Promise<void>
   handleDeleteVocabulary: (id: string, wordStr: string) => Promise<void>
   handleToggleMemorized: (id: string, currentMemorized: boolean) => void
   toggleRevealTranslation: (id: string) => void
@@ -112,19 +119,12 @@ export function LanguageBoardView({
     const primaryTrans = translation.trim()
     if (!primaryWord || !primaryTrans) return
 
-    await handleAddVocabulary(e)
-
-    if (extraRows.length > 0) {
-      for (const row of extraRows) {
-        if (row.word.trim() && row.translation.trim()) {
-          setWord(row.word.trim())
-          setTranslation(row.translation.trim())
-          const fakeEvent = { preventDefault: () => {} } as React.FormEvent
-          await handleAddVocabulary(fakeEvent)
-        }
-      }
-      setExtraRows([])
-    }
+    await handleAddVocabulary(e, {
+      word: primaryWord,
+      translation: primaryTrans,
+      extraRows: extraRows,
+    })
+    setExtraRows([])
   }
 
   const toggleLetterCollapse = (key: string) => {
