@@ -240,9 +240,15 @@ body.swal2-toast-shown .swal2-container.swal2-bottom-start {
   grid-row: unset !important;
 }
 
-.swal2-popup.swal2-toast .swal2-icon.swal2-success [class^='swal2-success-circular-line'],
-.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-fix {
+.swal2-icon.swal2-success [class^='swal2-success-circular-line'],
+.swal2-icon.swal2-success .swal2-success-fix {
   background-color: transparent !important;
+}
+
+.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring,
+.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-fix,
+.swal2-popup.swal2-toast .swal2-icon.swal2-success [class^='swal2-success-circular-line'] {
+  display: none !important;
 }
 
 .swal2-popup.swal2-toast .swal2-title {
