@@ -175,14 +175,14 @@ export function DailyTodos({
                           : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
                       }`}
                     >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
                         <button
                           disabled={isPendingToggleTodo || editingId === todo.id}
                           onClick={(e) => {
                             e.stopPropagation()
                             handleToggleCompleted(todo.id, todo.completed)
                           }}
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-0.5 ${
                             todo.completed
                               ? "bg-primary border-primary text-primary-foreground shadow-glow"
                               : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
@@ -192,7 +192,7 @@ export function DailyTodos({
                           {todo.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                         </button>
 
-                        <div className="flex flex-col min-w-0 pr-2 flex-1">
+                        <div className="flex flex-col min-w-0 flex-1 gap-1">
                           {editingId === todo.id ? (
                             <div className="flex flex-col gap-2 w-full" onClick={(e) => e.stopPropagation()}>
                               <input
@@ -240,45 +240,50 @@ export function DailyTodos({
                               />
                             </div>
                           ) : (
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 min-w-0">
+                            <>
+                              <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                                 <span
-                                  className={`text-sm font-medium break-words whitespace-normal ${
+                                  className={`text-sm font-medium leading-snug break-words ${
                                     todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                                   }`}
                                 >
                                   {todo.text}
                                 </span>
-                                {todo.category && (
-                                  <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-micro font-bold uppercase tracking-wider truncate max-w-full w-fit ${getCategoryStyle(todo.category, categories).badgeBg}`}>
-                                    <Tag className="h-2.5 w-2.5 shrink-0" />
-                                    <span className="truncate">{todo.category}</span>
-                                    {todo.subCategory && <span className="opacity-70 font-medium truncate"> • {todo.subCategory}</span>}
-                                  </span>
-                                )}
-                                {todo.rolloverCount > 0 && (
-                                  <span
-                                    className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 px-2 py-0.5 text-micro font-bold uppercase tracking-wider shrink-0"
-                                    title={`Rolled over ${todo.rolloverCount} time${todo.rolloverCount > 1 ? "s" : ""}`}
+                                {todo.link && (
+                                  <a
+                                    href={todo.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center text-primary/80 hover:text-primary transition-colors shrink-0"
+                                    title="Open Link"
                                   >
-                                    <RotateCcw className="h-2.5 w-2.5 shrink-0" />
-                                    <span>Rollover{todo.rolloverCount > 1 ? ` (${todo.rolloverCount}x)` : ""}</span>
-                                  </span>
+                                    <Link2 className="h-3.5 w-3.5" />
+                                  </a>
                                 )}
                               </div>
-                              {todo.link && (
-                                <a
-                                  href={todo.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-                                  title="Open Link"
-                                >
-                                  <Link2 className="h-3.5 w-3.5" />
-                                </a>
+
+                              {(todo.category || todo.rolloverCount > 0) && (
+                                <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                                  {todo.category && (
+                                    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-micro font-semibold tracking-wide truncate max-w-full ${getCategoryStyle(todo.category, categories).badgeBg}`}>
+                                      <Tag className="h-2.5 w-2.5 shrink-0 opacity-70" />
+                                      <span className="truncate">{todo.category}</span>
+                                      {todo.subCategory && <span className="opacity-70 font-normal truncate"> • {todo.subCategory}</span>}
+                                    </span>
+                                  )}
+                                  {todo.rolloverCount > 0 && (
+                                    <span
+                                      className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 px-2 py-0.5 text-micro font-semibold tracking-wide shrink-0"
+                                      title={`Rolled over ${todo.rolloverCount} time${todo.rolloverCount > 1 ? "s" : ""}`}
+                                    >
+                                      <RotateCcw className="h-2.5 w-2.5 shrink-0" />
+                                      <span>Rollover{todo.rolloverCount > 1 ? ` (${todo.rolloverCount}x)` : ""}</span>
+                                    </span>
+                                  )}
+                                </div>
                               )}
-                            </div>
+                            </>
                           )}
                         </div>
                       </div>
