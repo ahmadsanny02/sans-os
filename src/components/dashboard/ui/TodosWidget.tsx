@@ -132,7 +132,7 @@ export function TodosWidget({
                   <div
                     key={todo.id}
                     onClick={() => !isPendingToggle && handleToggle(todo.id, todo.completed)}
-                    className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
+                    className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
                       todo.completed 
                         ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65" 
                         : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
@@ -141,7 +141,7 @@ export function TodosWidget({
                     <button
                       type="button"
                       disabled={isPendingToggle}
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all mt-0.5 ${
                         todo.completed
                           ? "bg-primary border-primary text-primary-foreground shadow-glow"
                           : "border-border hover:border-primary/50 bg-card"
@@ -150,22 +150,24 @@ export function TodosWidget({
                     >
                       {todo.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
                     </button>
-                    <div className="flex items-center gap-1.5 flex-1 min-w-0 flex-wrap">
+                    <div className="flex flex-col gap-1 flex-1 min-w-0">
                       <span
-                        className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
+                        className={`text-xs font-semibold break-words whitespace-normal leading-snug ${
                           todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                         }`}
                       >
                         {todo.text}
                       </span>
                       {todo.rolloverCount > 0 && (
-                        <span
-                          className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 px-1.5 py-0.5 text-micro font-bold uppercase tracking-wider shrink-0"
-                          title={`Rolled over ${todo.rolloverCount} time${todo.rolloverCount > 1 ? "s" : ""}`}
-                        >
-                          <RotateCcw className="h-2 w-2 shrink-0" />
-                          <span>Rollover{todo.rolloverCount > 1 ? ` (${todo.rolloverCount}x)` : ""}</span>
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span
+                            className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 px-1.5 py-0.5 text-micro font-semibold tracking-wide shrink-0"
+                            title={`Rolled over ${todo.rolloverCount} time${todo.rolloverCount > 1 ? "s" : ""}`}
+                          >
+                            <RotateCcw className="h-2 w-2 shrink-0" />
+                            <span>Rollover{todo.rolloverCount > 1 ? ` (${todo.rolloverCount}x)` : ""}</span>
+                          </span>
+                        </div>
                       )}
                     </div>
                     {handlePromoteTodoToPriority && (
