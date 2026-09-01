@@ -16,15 +16,21 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, completed } = body
+    const { id, completed, date } = body
 
     if (!id || completed === undefined) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    const now = new Date()
+    const defaultDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+
     const [updated] = await db
       .update(timetableSubSchedules)
-      .set({ completed })
+      .set({
+        completed,
+        completedDate: completed ? (date || defaultDate) : null,
+      })
       .where(and(eq(timetableSubSchedules.id, id), eq(timetableSubSchedules.userId, user.id)))
       .returning()
 
