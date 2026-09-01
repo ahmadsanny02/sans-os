@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Priority } from "@/hooks/useDaily"
-import { Trash2, Check, RefreshCw, Link2, Pencil, Tag } from "lucide-react"
+import { Trash2, Check, RotateCcw, Link2, Pencil, Tag } from "lucide-react"
 import { useState } from "react"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
@@ -100,14 +100,14 @@ export function PrioritiesList({
                     : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
                 }`}
               >
-                <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                <div className="flex items-start gap-3.5 flex-1 min-w-0">
                   <button
                     disabled={isPendingToggle || editingId === priority.id}
                     onClick={(e) => {
                       e.stopPropagation()
                       handleToggleCompleted(priority.id, priority.completed)
                     }}
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-0.5 ${
                       priority.completed
                         ? "bg-primary border-primary text-primary-foreground shadow-glow"
                         : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
@@ -237,42 +237,48 @@ export function PrioritiesList({
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-1.5">
-                        {priority.category && (
-                          <div className="flex max-w-full">
-                            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-micro font-bold uppercase tracking-wider truncate max-w-full ${getCategoryStyle(priority.category, categories).badgeBg}`}>
-                              <Tag className="h-2 w-2 shrink-0" />
-                              <span className="truncate">{priority.category}</span>
-                              {priority.subCategory && <span className="opacity-70 font-medium truncate"> • {priority.subCategory}</span>}
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex items-start gap-1.5 flex-wrap">
+                      <div className="flex flex-col gap-1 min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                           <span
                             className={`text-sm font-semibold break-words whitespace-normal leading-snug ${
-                              priority.completed ? "line-through text-muted-foreground" : "text-foreground"
+                              priority.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
                             }`}
                           >
                             {priority.text}
-                            {priority.link && (
-                              <a
-                                href={priority.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="inline-flex items-center ml-1.5 text-primary hover:text-primary/80 align-middle transition-colors shrink-0"
-                                title="Open Link"
-                              >
-                                <Link2 className="h-3.5 w-3.5" />
-                              </a>
-                            )}
                           </span>
+                          {priority.link && (
+                            <a
+                              href={priority.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center text-primary/80 hover:text-primary transition-colors shrink-0"
+                              title="Open Link"
+                            >
+                              <Link2 className="h-3.5 w-3.5" />
+                            </a>
+                          )}
                         </div>
-                        {priority.rolloverCount > 0 && !priority.completed && (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-500 mt-0.5">
-                            <RefreshCw className="h-3 w-3 animate-spin-slow" />
-                            {priority.rolloverCount} {priority.rolloverCount === 1 ? "rollover" : "rollovers"}
-                          </span>
+
+                        {(priority.category || (priority.rolloverCount > 0 && !priority.completed)) && (
+                          <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                            {priority.category && (
+                              <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-micro font-semibold tracking-wide truncate max-w-full ${getCategoryStyle(priority.category, categories).badgeBg}`}>
+                                <Tag className="h-2.5 w-2.5 shrink-0 opacity-70" />
+                                <span className="truncate">{priority.category}</span>
+                                {priority.subCategory && <span className="opacity-70 font-normal truncate"> • {priority.subCategory}</span>}
+                              </span>
+                            )}
+                            {priority.rolloverCount > 0 && !priority.completed && (
+                              <span
+                                className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 px-2 py-0.5 text-micro font-semibold tracking-wide shrink-0"
+                                title={`Rolled over ${priority.rolloverCount} time${priority.rolloverCount > 1 ? "s" : ""}`}
+                              >
+                                <RotateCcw className="h-2.5 w-2.5 shrink-0" />
+                                <span>Rollover{priority.rolloverCount > 1 ? ` (${priority.rolloverCount}x)` : ""}</span>
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
                     )}
