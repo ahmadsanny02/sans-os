@@ -131,6 +131,7 @@ export const timetableSubSchedules = pgTable("timetable_sub_schedules", {
   startTime: text("start_time"), // e.g. "08:00"
   endTime: text("end_time"), // e.g. "08:30"
   completed: boolean("completed").default(false).notNull(),
+  completedDate: text("completed_date"), // YYYY-MM-DD
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_timetable_sub_block").on(t.timetableBlockId),
