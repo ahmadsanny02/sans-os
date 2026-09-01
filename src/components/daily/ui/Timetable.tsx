@@ -14,6 +14,7 @@ import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
 import { CustomTimePicker } from "@/components/ui/CustomTimePicker"
 import { isCategoryInModule, getColorStyle } from "@/lib/categoryUtils"
+import { useWorkspaceStore } from "@/store/workspaceStore"
 
 function calculateDuration(start: string, end: string): string {
   try {
@@ -63,6 +64,7 @@ function minutesToTime(mins: number): string {
 }
 
 function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
+  const activeDate = useWorkspaceStore((state) => state.activeDate)
   const createSubMutation = useCreateTimetableSubScheduleMutation()
   const updateSubMutation = useUpdateTimetableSubScheduleMutation()
   const toggleSubMutation = useToggleTimetableSubScheduleMutation()
@@ -79,7 +81,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
   const [editEnd, setEditEnd] = useState("")
 
   const subSchedules = block.subSchedules || []
-  const completedCount = subSchedules.filter((s) => s.completed).length
+  const completedCount = subSchedules.filter((s) => s.completed && s.completedDate === activeDate).length
   const totalCount = subSchedules.length
   const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
 
@@ -153,6 +155,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
       {subSchedules.length > 0 && (
         <div className="space-y-1.5 pt-1">
           {subSchedules.map((sub) => {
+            const isCompleted = Boolean(sub.completed && sub.completedDate === activeDate)
             const isEditingThis = editingSubId === sub.id
 
             if (isEditingThis) {
@@ -168,6 +171,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                   />
                   <div className="flex items-center gap-2">
                     <CustomTimePicker
+                      id={`edit-sub-start-${sub.id}`}
                       value={editStart}
                       onChange={(val) => setEditStart(val)}
                       showIcon={false}
@@ -176,6 +180,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                     />
                     <span className="text-muted-foreground text-xs">to</span>
                     <CustomTimePicker
+                      id={`edit-sub-end-${sub.id}`}
                       value={editEnd}
                       onChange={(val) => setEditEnd(val)}
                       showIcon={false}
@@ -212,11 +217,11 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                 <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
                   <button
                     type="button"
-                    onClick={() => toggleSubMutation.mutate({ id: sub.id, completed: !sub.completed })}
+                    onClick={() => toggleSubMutation.mutate({ id: sub.id, completed: !isCompleted, date: activeDate })}
                     className="text-muted-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
-                    title={sub.completed ? "Mark incomplete" : "Mark completed"}
+                    title={isCompleted ? "Mark incomplete" : "Mark completed"}
                   >
-                    {sub.completed ? (
+                    {isCompleted ? (
                       <CheckSquare className="h-4 w-4 text-emerald-500" />
                     ) : (
                       <Square className="h-4 w-4" />
@@ -224,7 +229,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                   </button>
                   <span
                     className={`break-words ${
-                      sub.completed ? "line-through text-muted-foreground/70" : "text-foreground font-medium"
+                      isCompleted ? "line-through text-muted-foreground/70" : "text-foreground font-medium"
                     }`}
                   >
                     {sub.title}
