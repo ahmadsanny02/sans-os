@@ -23,6 +23,7 @@ export interface TimetableSubSchedule {
   startTime?: string | null
   endTime?: string | null
   completed: boolean
+  completedDate?: string | null
   createdAt: string
 }
 
@@ -519,6 +520,7 @@ export function useUpdateTimetableSubScheduleMutation() {
 async function toggleTimetableSubSchedule(body: {
   id: string
   completed: boolean
+  date?: string
 }): Promise<TimetableSubSchedule> {
   const res = await fetch("/api/timetable/sub/toggle", {
     method: "POST",
@@ -537,7 +539,7 @@ export function useToggleTimetableSubScheduleMutation() {
   return useMutation<
     TimetableSubSchedule,
     Error,
-    { id: string; completed: boolean },
+    { id: string; completed: boolean; date?: string },
     { previous: TimetableBlock[] | undefined }
   >({
     mutationFn: toggleTimetableSubSchedule,
@@ -550,7 +552,13 @@ export function useToggleTimetableSubScheduleMutation() {
           previous.map((b) => ({
             ...b,
             subSchedules: (b.subSchedules || []).map((s) =>
-              s.id === variables.id ? { ...s, completed: variables.completed } : s
+              s.id === variables.id
+                ? {
+                    ...s,
+                    completed: variables.completed,
+                    completedDate: variables.completed ? (variables.date || null) : null,
+                  }
+                : s
             ),
           }))
         )
