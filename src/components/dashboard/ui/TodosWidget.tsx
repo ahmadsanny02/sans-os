@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import React from "react"
-import { DailyTodo } from "@/hooks/useDailyLogs"
-import { ListTodo, Check, Flame, RotateCcw } from "lucide-react"
+import React from "react";
+import { DailyTodo } from "@/hooks/useDailyLogs";
+import { ListTodo, Check, Flame, RotateCcw } from "lucide-react";
 
 interface HabitItem {
-  id: string
-  name: string
-  completed: boolean
-  isHabit: true
+  id: string;
+  name: string;
+  completed: boolean;
+  isHabit: true;
 }
 
 interface TodosWidgetProps {
-  todos: DailyTodo[]
-  isLoading: boolean
-  isError: boolean
-  handleToggle: (id: string, completed: boolean) => void
-  handlePromoteTodoToPriority?: (todo: DailyTodo) => Promise<void>
-  isPendingToggle: boolean
-  habits?: HabitItem[]
-  handleToggleHabit?: (id: string) => void
-  isPendingToggleHabit?: boolean
+  todos: DailyTodo[];
+  isLoading: boolean;
+  isError: boolean;
+  handleToggle: (id: string, completed: boolean) => void;
+  handlePromoteTodoToPriority?: (todo: DailyTodo) => Promise<void>;
+  isPendingToggle: boolean;
+  habits?: HabitItem[];
+  handleToggleHabit?: (id: string) => void;
+  isPendingToggleHabit?: boolean;
 }
 
 export function TodosWidget({
@@ -35,24 +35,25 @@ export function TodosWidget({
   isPendingToggleHabit = false,
 }: TodosWidgetProps) {
   const completedCount =
-    todos.filter((t) => t.completed).length + habits.filter((h) => h.completed).length
-  const totalCount = todos.length + habits.length
+    todos.filter((t) => t.completed).length +
+    habits.filter((h) => h.completed).length;
+  const totalCount = todos.length + habits.length;
 
   const sortedHabits = [...habits].sort((a, b) => {
-    if (a.completed === b.completed) return 0
-    return a.completed ? 1 : -1
-  })
+    if (a.completed === b.completed) return 0;
+    return a.completed ? 1 : -1;
+  });
 
   const sortedTodos = [...todos].sort((a, b) => {
-    if (a.completed === b.completed) return 0
-    return a.completed ? 1 : -1
-  })
+    if (a.completed === b.completed) return 0;
+    return a.completed ? 1 : -1;
+  });
 
   return (
-    <div className="bento-card p-6 space-y-4">
+    <div className="p-6 space-y-4 bento-card">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ListTodo className="h-5 w-5 text-primary" />
+          <ListTodo className="w-5 h-5 text-primary" />
           <h3 className="text-lg font-bold text-foreground">Daily Checklist</h3>
         </div>
         <span className="text-xs bg-secondary/80 px-2 py-1 rounded-full border border-border/40 font-semibold text-muted-foreground flex items-center justify-center min-w-[50px] h-5">
@@ -66,16 +67,16 @@ export function TodosWidget({
 
       <div className="space-y-3 max-h-[260px] overflow-y-auto pr-1">
         {isLoading ? (
-          <div className="space-y-2 pt-1">
-            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
-            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
+          <div className="pt-1 space-y-2">
+            <div className="w-full h-12 bg-muted/20 animate-pulse rounded-xl" />
+            <div className="w-full h-12 bg-muted/20 animate-pulse rounded-xl" />
           </div>
         ) : isError ? (
-          <div className="rounded-xl border border-destructive/20 bg-destructive/5 py-8 text-center text-xs text-destructive font-semibold">
+          <div className="py-8 text-xs font-semibold text-center border rounded-xl border-destructive/20 bg-destructive/5 text-destructive">
             Error loading checklist.
           </div>
         ) : totalCount === 0 ? (
-          <div className="rounded-xl border border-dashed border-border/60 py-8 text-center text-xs text-muted-foreground">
+          <div className="py-8 text-xs text-center border border-dashed rounded-xl border-border/60 text-muted-foreground">
             No checklist items set for today.
           </div>
         ) : (
@@ -89,29 +90,32 @@ export function TodosWidget({
                 {sortedHabits.map((habit) => (
                   <div
                     key={habit.id}
-                    onClick={() => !isPendingToggleHabit && handleToggleHabit?.(habit.id)}
-                    className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
-                      habit.completed 
-                        ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65" 
-                        : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
-                    }`}
+                    onClick={() =>
+                      !isPendingToggleHabit && handleToggleHabit?.(habit.id)
+                    }
+                    className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${habit.completed
+                      ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65"
+                      : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
+                      }`}
                   >
                     <button
                       type="button"
                       disabled={isPendingToggleHabit}
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${
-                        habit.completed
-                          ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                          : "border-border hover:border-primary/50 bg-card"
-                      }`}
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${habit.completed
+                        ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                        : "border-border hover:border-primary/50 bg-card"
+                        }`}
                       aria-label="Toggle habit status"
                     >
-                      {habit.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
+                      {habit.completed ? (
+                        <Check className="h-3.5 w-3.5 stroke-[3]" />
+                      ) : null}
                     </button>
                     <span
-                      className={`text-xs font-semibold break-words whitespace-normal leading-tight flex-1 ${
-                        habit.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
-                      }`}
+                      className={`text-xs font-semibold break-words whitespace-normal leading-tight flex-1 ${habit.completed
+                        ? "line-through text-muted-foreground font-normal"
+                        : "text-foreground"
+                        }`}
                     >
                       {habit.name}
                     </span>
@@ -131,30 +135,33 @@ export function TodosWidget({
                 {sortedTodos.map((todo) => (
                   <div
                     key={todo.id}
-                    onClick={() => !isPendingToggle && handleToggle(todo.id, todo.completed)}
-                    className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
-                      todo.completed 
-                        ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65" 
-                        : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
-                    }`}
+                    onClick={() =>
+                      !isPendingToggle && handleToggle(todo.id, todo.completed)
+                    }
+                    className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${todo.completed
+                      ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65"
+                      : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
+                      }`}
                   >
                     <button
                       type="button"
                       disabled={isPendingToggle}
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all mt-0.5 ${
-                        todo.completed
-                          ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                          : "border-border hover:border-primary/50 bg-card"
-                      }`}
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all mt-0.5 ${todo.completed
+                        ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                        : "border-border hover:border-primary/50 bg-card"
+                        }`}
                       aria-label="Toggle todo status"
                     >
-                      {todo.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
+                      {todo.completed ? (
+                        <Check className="h-3.5 w-3.5 stroke-[3]" />
+                      ) : null}
                     </button>
-                    <div className="flex flex-col gap-1 flex-1 min-w-0">
+                    <div className="flex flex-col flex-1 min-w-0 gap-1">
                       <span
-                        className={`text-xs font-semibold break-words whitespace-normal leading-snug ${
-                          todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
-                        }`}
+                        className={`text-xs font-semibold break-words whitespace-normal leading-snug ${todo.completed
+                          ? "line-through text-muted-foreground font-normal"
+                          : "text-foreground"
+                          }`}
                       >
                         {todo.text}
                       </span>
@@ -164,8 +171,13 @@ export function TodosWidget({
                             className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 px-1.5 py-0.5 text-micro font-semibold tracking-wide shrink-0"
                             title={`Rolled over ${todo.rolloverCount} time${todo.rolloverCount > 1 ? "s" : ""}`}
                           >
-                            <RotateCcw className="h-2 w-2 shrink-0" />
-                            <span>Rollover{todo.rolloverCount > 1 ? ` (${todo.rolloverCount}x)` : ""}</span>
+                            <RotateCcw className="w-2 h-2 shrink-0" />
+                            <span>
+                              Rollover
+                              {todo.rolloverCount > 1
+                                ? ` (${todo.rolloverCount}x)`
+                                : ""}
+                            </span>
                           </span>
                         </div>
                       )}
@@ -174,10 +186,10 @@ export function TodosWidget({
                       <button
                         type="button"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          handlePromoteTodoToPriority(todo)
+                          e.stopPropagation();
+                          handlePromoteTodoToPriority(todo);
                         }}
-                        className="p-1 rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 transition-colors shrink-0"
+                        className="p-1 transition-colors rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 shrink-0"
                         title="Move to Top 5 Priorities"
                         aria-label={`Move ${todo.text} to Top 5 Priorities`}
                       >
@@ -192,5 +204,5 @@ export function TodosWidget({
         )}
       </div>
     </div>
-  )
+  );
 }
