@@ -71,8 +71,8 @@ export function DailyTodos({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <ListTodo className="h-5 w-5 text-primary" />
+          <h3 className="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground">
+            <ListTodo className="w-5 h-5 text-primary" />
             Daily Checklist
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
@@ -81,7 +81,7 @@ export function DailyTodos({
         </div>
         <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-muted-foreground border border-border/40 flex items-center justify-center min-w-[50px] h-6">
           {isLoading ? (
-            <span className="inline-block w-8 h-3 bg-muted/30 animate-pulse rounded" />
+            <span className="inline-block w-8 h-3 rounded bg-muted/30 animate-pulse" />
           ) : (
             `${completedCount}/${totalCount} Done`
           )}
@@ -91,15 +91,15 @@ export function DailyTodos({
       <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
         {isLoading ? (
           <div className="space-y-2.5 pt-1">
-            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
-            <div className="h-12 w-full bg-muted/20 animate-pulse rounded-xl" />
+            <div className="w-full h-12 bg-muted/20 animate-pulse rounded-xl" />
+            <div className="w-full h-12 bg-muted/20 animate-pulse rounded-xl" />
           </div>
         ) : isError ? (
-          <div className="flex h-32 items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 text-sm font-semibold text-destructive">
+          <div className="flex items-center justify-center h-32 text-sm font-semibold border rounded-xl border-destructive/20 bg-destructive/5 text-destructive">
             Error loading checklist. Please check connection.
           </div>
         ) : totalCount === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border/60 py-10 text-center text-sm text-muted-foreground">
+          <div className="py-10 text-sm text-center border border-dashed rounded-2xl border-border/60 text-muted-foreground">
             No tasks or habits for today. Add one above!
           </div>
         ) : (
@@ -107,7 +107,7 @@ export function DailyTodos({
             {/* Habits Section */}
             {habits.length > 0 && (
               <div className="space-y-2">
-                <div className="text-xs font-bold tracking-wider text-muted-foreground/80 uppercase px-1">
+                <div className="px-1 text-xs font-bold tracking-wider uppercase text-muted-foreground/80">
                   Habits
                 </div>
                 <div className="space-y-2">
@@ -115,33 +115,30 @@ export function DailyTodos({
                     <div
                       key={habit.id}
                       onClick={() => !isPendingToggleHabit && handleToggleHabit?.(habit.id)}
-                      className={`flex items-center justify-between rounded-xl border p-3.5 cursor-pointer transition-all duration-200 ${
-                        habit.completed
-                          ? "border-border/40 bg-secondary/20 opacity-70"
-                          : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
-                      }`}
+                      className={`flex items-center justify-between rounded-xl border p-3.5 cursor-pointer transition-all duration-200 ${habit.completed
+                        ? "border-border/40 bg-secondary/20 opacity-70"
+                        : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
+                        }`}
                     >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="flex items-center flex-1 min-w-0 gap-3">
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
                             handleToggleHabit?.(habit.id)
                           }}
-                          disabled={isPendingToggleHabit}
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 ${
-                            habit.completed
-                              ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                              : "border-border/60 hover:border-primary/50 bg-card"
-                          } disabled:opacity-50`}
+                          // disabled={isPendingToggleHabit}
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 ${habit.completed
+                            ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                            : "border-border/60 hover:border-primary/50 bg-card"
+                            } disabled:opacity-50`}
                           aria-label="Toggle habit check-in"
                         >
                           {habit.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                         </button>
 
                         <span
-                          className={`text-sm font-medium break-words whitespace-normal pr-2 ${
-                            habit.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
-                          }`}
+                          className={`text-sm font-medium break-words whitespace-normal pr-2 ${habit.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
+                            }`}
                         >
                           {habit.name}
                         </span>
@@ -155,7 +152,7 @@ export function DailyTodos({
             {/* Todos Section */}
             {todos.length > 0 && (
               <div className="space-y-2">
-                <div className="text-xs font-bold tracking-wider text-muted-foreground/80 uppercase px-1">
+                <div className="px-1 text-xs font-bold tracking-wider uppercase text-muted-foreground/80">
                   Tasks
                 </div>
                 <div className="space-y-2">
@@ -167,34 +164,31 @@ export function DailyTodos({
                           handleToggleCompleted(todo.id, todo.completed)
                         }
                       }}
-                      className={`flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 ${
-                        editingId === todo.id ? "" : "cursor-pointer"
-                      } ${
-                        todo.completed
+                      className={`flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 ${editingId === todo.id ? "" : "cursor-pointer"
+                        } ${todo.completed
                           ? "border-border/40 bg-secondary/20 opacity-70"
                           : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
-                      }`}
+                        }`}
                     >
-                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className="flex items-start flex-1 min-w-0 gap-3">
                         <button
                           disabled={isPendingToggleTodo || editingId === todo.id}
                           onClick={(e) => {
                             e.stopPropagation()
                             handleToggleCompleted(todo.id, todo.completed)
                           }}
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-0.5 ${
-                            todo.completed
-                              ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                              : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
-                          } ${isPendingToggleTodo || editingId === todo.id ? "cursor-not-allowed" : "cursor-pointer"}`}
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-0.5 ${todo.completed
+                            ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                            : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
+                            } ${isPendingToggleTodo || editingId === todo.id ? "cursor-not-allowed" : "cursor-pointer"}`}
                           aria-label="Toggle task completion"
                         >
                           {todo.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                         </button>
 
-                        <div className="flex flex-col min-w-0 flex-1 gap-1">
+                        <div className="flex flex-col flex-1 min-w-0 gap-1">
                           {editingId === todo.id ? (
-                            <div className="flex flex-col gap-2 w-full" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex flex-col w-full gap-2" onClick={(e) => e.stopPropagation()}>
                               <input
                                 type="text"
                                 value={editText}
@@ -243,9 +237,8 @@ export function DailyTodos({
                             <>
                               <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                                 <span
-                                  className={`text-sm font-medium leading-snug break-words ${
-                                    todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
-                                  }`}
+                                  className={`text-sm font-medium leading-snug break-words ${todo.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
+                                    }`}
                                 >
                                   {todo.text}
                                 </span>
@@ -255,7 +248,7 @@ export function DailyTodos({
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="inline-flex items-center text-primary/80 hover:text-primary transition-colors shrink-0"
+                                    className="inline-flex items-center transition-colors text-primary/80 hover:text-primary shrink-0"
                                     title="Open Link"
                                   >
                                     <Link2 className="h-3.5 w-3.5" />
@@ -269,7 +262,7 @@ export function DailyTodos({
                                     <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-micro font-semibold tracking-wide truncate max-w-full ${getCategoryStyle(todo.category, categories).badgeBg}`}>
                                       <Tag className="h-2.5 w-2.5 shrink-0 opacity-70" />
                                       <span className="truncate">{todo.category}</span>
-                                      {todo.subCategory && <span className="opacity-70 font-normal truncate"> • {todo.subCategory}</span>}
+                                      {todo.subCategory && <span className="font-normal truncate opacity-70"> • {todo.subCategory}</span>}
                                     </span>
                                   )}
                                   {todo.rolloverCount > 0 && (
@@ -288,7 +281,7 @@ export function DailyTodos({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 shrink-0 ml-2">
+                      <div className="flex items-center gap-1 ml-2 shrink-0">
                         {editingId === todo.id ? (
                           <>
                             <button
@@ -312,7 +305,7 @@ export function DailyTodos({
                               className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
                               aria-label="Cancel editing"
                             >
-                              <X className="h-4 w-4" />
+                              <X className="w-4 h-4" />
                             </button>
                           </>
                         ) : (
@@ -328,7 +321,7 @@ export function DailyTodos({
                                 title="Move to Top 5 Priorities"
                                 aria-label={`Move ${todo.text} to Top 5 Priorities`}
                               >
-                                <Flame className="h-4 w-4" />
+                                <Flame className="w-4 h-4" />
                               </button>
                             )}
                             <button
@@ -343,7 +336,7 @@ export function DailyTodos({
                               className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                               aria-label="Edit todo item"
                             >
-                              <Pencil className="h-4 w-4" />
+                              <Pencil className="w-4 h-4" />
                             </button>
                             <button
                               onClick={(e) => {
@@ -353,7 +346,7 @@ export function DailyTodos({
                               className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                               aria-label="Delete todo item"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </>
                         )}
