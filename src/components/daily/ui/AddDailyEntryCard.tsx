@@ -129,7 +129,7 @@ export function AddDailyEntryCard({
   }
 
   return (
-    <div className="border border-border bg-card/45 dark:bg-card/20 rounded-2xl p-6 shadow-sm backdrop-blur-md">
+    <div className="border border-border bg-card/45 dark:bg-card/20 rounded-2xl p-4 sm:p-6 shadow-sm backdrop-blur-md max-h-[85vh] overflow-y-auto">
       <div className="flex items-center gap-2 mb-4">
         <div className="p-2 rounded-xl bg-primary/10 text-primary">
           <Plus className="h-5 w-5" />
@@ -589,7 +589,7 @@ export function AddDailyEntryCard({
         )}
 
         {/* Submit and Cancel Buttons */}
-        <div className="flex justify-end items-center gap-3 pt-2">
+        <div className="sticky bottom-0 z-20 -mx-4 -mb-4 sm:-mx-6 sm:-mb-6 mt-2 flex items-center justify-end gap-3 border-t border-border/40 bg-card/95 dark:bg-card/90 px-4 py-3 backdrop-blur-md sm:relative sm:bottom-auto sm:z-auto sm:mx-0 sm:mb-0 sm:mt-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:pt-2 sm:backdrop-blur-none">
           {onClose && (
             <button
               type="button"
@@ -602,7 +602,7 @@ export function AddDailyEntryCard({
           <button
             type="submit"
             disabled={isPendingCombined || !entryTitle.trim() || (!targetTimetable && !targetTodo && !targetPriority)}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center hover:scale-[1.02] active:scale-95 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-95 cursor-pointer"
           >
             {isPendingCombined ? (
               <>
