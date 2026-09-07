@@ -75,7 +75,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       const [updatedLog] = await db
         .update(dailyLogs)
         .set(updateData)
-        .where(eq(dailyLogs.id, existingLog.id))
+        .where(and(eq(dailyLogs.id, existingLog.id), eq(dailyLogs.userId, user.id)))
         .returning()
       
       resultLog = updatedLog
