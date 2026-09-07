@@ -442,6 +442,7 @@ export function useUpdateProjectMutation() {
                   priority: variables.priority !== undefined ? variables.priority : p.priority,
                   deadline: variables.deadline !== undefined ? variables.deadline : p.deadline,
                   category: variables.category !== undefined ? variables.category : p.category,
+                  subCategory: variables.subCategory !== undefined ? variables.subCategory : p.subCategory,
                 }
               : p
           )
