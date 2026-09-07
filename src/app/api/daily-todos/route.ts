@@ -53,7 +53,13 @@ export async function GET(request: Request): Promise<NextResponse> {
               date: today,
               rolloverCount: (item.rolloverCount || 0) + 1,
             })
-            .where(and(eq(dailyTodos.id, item.id), eq(dailyTodos.userId, user.id)))
+            .where(
+              and(
+                eq(dailyTodos.id, item.id),
+                eq(dailyTodos.userId, user.id),
+                lt(dailyTodos.date, today)
+              )
+            )
         }
       })
     }
