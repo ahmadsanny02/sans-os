@@ -155,14 +155,22 @@ function shouldDoubleConsonant(word: string): boolean {
 
   // Common unstressed CVC suffixes where the final consonant should NOT double
   const UNSTRESSED_SUFFIXES = [
-    "en",      // listen, open, happen
-    "er",      // remember, whisper, offer, suffer
-    "el",      // travel, cancel
-    "et",      // target, budget
-    "it",      // visit, edit, limit, vomit, orbit, inherit, exhibit
+    "en",      // listen, open, happen, threaten, fasten
+    "er",      // remember, whisper, offer, suffer, differ, order, wander, wonder
+    "el",      // travel, cancel, model, tunnel, shovel
+    "et",      // target, budget, market, ticket, pocket, blanket
+    "it",      // visit, edit, limit, vomit, orbit, inherit, exhibit, credit, audit, deposit, profit
+    "ot",      // pilot, pivot, ballot
+    "al",      // signal, equal, total, spiral
+    "ar",      // calendar, grammar
+    "or",      // monitor, vapor, doctor, tailor
+    "ur",      // murmur
     "develop",
     "focus",
-    "benefit"
+    "benefit",
+    "gossip",
+    "worship",
+    "combat",
   ]
 
   for (const suffix of UNSTRESSED_SUFFIXES) {
