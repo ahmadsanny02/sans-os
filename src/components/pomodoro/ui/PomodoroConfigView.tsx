@@ -19,6 +19,7 @@ import { IntegrationMode } from "@/store/pomodoroStore"
 import { TimetableBlock } from "@/hooks/useDaily"
 import { playPomodoroSound } from "@/lib/pomodoro-sound"
 import { CustomSelect } from "@/components/ui/CustomSelect"
+import { getColorStyle } from "@/lib/categoryUtils"
 
 function timeToMinutes(t: string): number {
   const [h, m] = t.split(":").map(Number)
@@ -174,14 +175,7 @@ function BlockSelector({
           Number(block.endTime.split(":")[1])
         const durationMins = endMin - startMin
         const sessions = Math.floor(durationMins / (focusDuration + breakDuration))
-        const colorDot: Record<string, string> = {
-          blue: "bg-blue-500",
-          violet: "bg-violet-500",
-          emerald: "bg-emerald-500",
-          rose: "bg-rose-500",
-          amber: "bg-amber-500",
-          cyan: "bg-cyan-500",
-        }
+        const dotStyle = getColorStyle(block.color).dotClass
 
         return (
           <button
@@ -194,7 +188,7 @@ function BlockSelector({
               }`}
           >
             <span
-              className={`h-3 w-3 shrink-0 rounded-full ${colorDot[block.color] ?? "bg-primary"}`}
+              className={`h-3 w-3 shrink-0 rounded-full ${dotStyle}`}
             />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
