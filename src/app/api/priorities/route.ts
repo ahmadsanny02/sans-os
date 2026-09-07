@@ -88,7 +88,13 @@ export async function GET(request: Request): Promise<NextResponse> {
                 orderIndex: nextIndex++,
                 rolloverCount: (item.rolloverCount || 0) + 1,
               })
-              .where(and(eq(priorities.id, item.id), eq(priorities.userId, user.id)))
+              .where(
+                and(
+                  eq(priorities.id, item.id),
+                  eq(priorities.userId, user.id),
+                  lt(priorities.date, today)
+                )
+              )
           }
         })
       }
