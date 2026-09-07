@@ -28,19 +28,23 @@ const MODULE_OPTIONS = [
 ]
 
 const COLOR_OPTIONS = [
-  { value: "primary", label: "Primary Indigo", badgeBg: "bg-primary/10 text-primary border-primary/20", dotClass: "bg-primary" },
-  { value: "emerald", label: "Emerald Green", badgeBg: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20", dotClass: "bg-emerald-500" },
-  { value: "blue", label: "Sky Blue", badgeBg: "bg-blue-500/10 text-blue-500 border-blue-500/20", dotClass: "bg-blue-500" },
-  { value: "violet", label: "Violet Purple", badgeBg: "bg-violet-500/10 text-violet-500 border-violet-500/20", dotClass: "bg-violet-500" },
-  { value: "rose", label: "Rose Pink", badgeBg: "bg-rose-500/10 text-rose-500 border-rose-500/20", dotClass: "bg-rose-500" },
-  { value: "amber", label: "Amber Orange", badgeBg: "bg-amber-500/10 text-amber-500 border-amber-500/20", dotClass: "bg-amber-500" },
-  { value: "cyan", label: "Cyan Teal", badgeBg: "bg-cyan-500/10 text-cyan-500 border-cyan-500/20", dotClass: "bg-cyan-500" },
-  { value: "orange", label: "Orange", badgeBg: "bg-orange-500/10 text-orange-500 border-orange-500/20", dotClass: "bg-orange-500" },
-  { value: "pink", label: "Pink", badgeBg: "bg-pink-500/10 text-pink-500 border-pink-500/20", dotClass: "bg-pink-500" },
-  { value: "teal", label: "Teal", badgeBg: "bg-teal-500/10 text-teal-500 border-teal-500/20", dotClass: "bg-teal-500" },
-  { value: "fuchsia", label: "Fuchsia", badgeBg: "bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/20", dotClass: "bg-fuchsia-500" },
-  { value: "slate", label: "Slate", badgeBg: "bg-slate-500/10 text-slate-500 border-slate-500/20", dotClass: "bg-slate-500" },
-]
+  { value: "primary", label: "Primary Indigo" },
+  { value: "emerald", label: "Emerald Green" },
+  { value: "blue", label: "Sky Blue" },
+  { value: "violet", label: "Violet Purple" },
+  { value: "rose", label: "Rose Pink" },
+  { value: "amber", label: "Amber Orange" },
+  { value: "cyan", label: "Cyan Teal" },
+  { value: "orange", label: "Orange" },
+  { value: "pink", label: "Pink" },
+  { value: "teal", label: "Teal" },
+  { value: "fuchsia", label: "Fuchsia" },
+  { value: "slate", label: "Slate" },
+].map((item) => ({
+  ...item,
+  badgeBg: (CATEGORY_COLOR_MAP[item.value] || CATEGORY_COLOR_MAP.primary).badgeBg,
+  dotClass: (CATEGORY_COLOR_MAP[item.value] || CATEGORY_COLOR_MAP.primary).dotClass,
+}))
 
 function getBadgeStyle(color: string) {
   const match = CATEGORY_COLOR_MAP[color]
