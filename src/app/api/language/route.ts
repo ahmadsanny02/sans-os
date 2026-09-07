@@ -195,12 +195,16 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     } = {}
 
     if (masteryLevel !== undefined) updateData.masteryLevel = Number(masteryLevel)
+    if (translation !== undefined) {
+      updateData.translation = String(translation)
+    }
+
     if (memorized !== undefined) {
       const isMemorized = Boolean(memorized)
       updateData.memorized = isMemorized
       updateData.memorizedAt = isMemorized ? new Date() : null
 
-      if (isMemorized) {
+      if (isMemorized && translation === undefined) {
         let autoTrans = existingLog.autoTranslation
         if (!autoTrans) {
           const direction = existingLog.langDirection || "en-id"
@@ -220,10 +224,6 @@ export async function PATCH(request: Request): Promise<NextResponse> {
           updateData.translation = autoTrans
         }
       }
-    }
-
-    if (translation !== undefined && !updateData.translation) {
-      updateData.translation = String(translation)
     }
 
     const [updatedLog] = await db
