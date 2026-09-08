@@ -4,6 +4,7 @@ import { writingLogs, vocabularyLogs, formulas } from "@/types/schema"
 import { eq, and, desc, inArray } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { translateText } from "@/lib/translate"
+import { isValidUUIDArray } from "@/lib/utils"
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -115,7 +116,14 @@ export async function DELETE(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing log ID" }, { status: 400 })
     }
 
-    const ids = id.split(",")
+    const ids = id.split(",").map((s) => s.trim()).filter(Boolean)
+
+    if (!isValidUUIDArray(ids)) {
+      return NextResponse.json(
+        { error: "Format ID log tidak valid. Semua ID harus berformat UUID." },
+        { status: 400 }
+      )
+    }
 
     const deletedLogs = await db
       .delete(writingLogs)
