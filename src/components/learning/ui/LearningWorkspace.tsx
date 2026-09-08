@@ -227,17 +227,17 @@ export function LearningWorkspace() {
                     </div>
 
                     {/* Edit/Delete Actions */}
-                    <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
+                    <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
                       <button
                         onClick={(e) => handleOpenEditSubject(subj, e)}
-                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 cursor-pointer transition-all"
+                        className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/60 cursor-pointer transition-all"
                         title="Edit Subject"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={(e) => handleDeleteSubject(subj.id, subj.name, e)}
-                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer transition-all"
+                        className="p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer transition-all"
                         title="Delete Subject"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
