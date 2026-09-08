@@ -1,8 +1,6 @@
 "use client"
-import { logger } from "@/lib/logger";
-/* eslint-disable react-hooks/set-state-in-effect */
-
-import { useState, useEffect } from "react"
+import { logger } from "@/lib/logger"
+import { useState, useEffect, useMemo } from "react"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 import {
   usePrioritiesQuery,
@@ -20,6 +18,18 @@ import {
 import { showError, showSuccessToast } from "@/lib/sweetalert"
 import { useHabitsQuery, useToggleLogMutation } from "@/hooks/useHabits"
 import { parseISO } from "date-fns"
+
+function getGreeting(hour: number): string {
+  if (hour >= 12 && hour < 17) {
+    return "Good Afternoon"
+  } else if (hour >= 17 && hour < 21) {
+    return "Good Evening"
+  } else if (hour >= 21 || hour < 4) {
+    return "Good Night"
+  } else {
+    return "Good Morning"
+  }
+}
 
 export function useDashboardPage() {
   const activeDate = useWorkspaceStore((state) => state.activeDate)
@@ -75,43 +85,24 @@ export function useDashboardPage() {
   const toggleHabitMutation = useToggleLogMutation()
 
   // 3. Greeting determination (updates in real-time)
-  const [greeting, setGreeting] = useState("Good Morning")
-  
-  const updateGreeting = (hour: number) => {
-    if (hour >= 12 && hour < 17) {
-      setGreeting("Good Afternoon")
-    } else if (hour >= 17 && hour < 21) {
-      setGreeting("Good Evening")
-    } else if (hour >= 21 || hour < 4) {
-      setGreeting("Good Night")
-    } else {
-      setGreeting("Good Morning")
-    }
-  }
+  const [greeting, setGreeting] = useState(() => getGreeting(new Date().getHours()))
 
   useEffect(() => {
-    const d = new Date()
-    updateGreeting(d.getHours())
-
     const timer = setInterval(() => {
-      const now = new Date()
-      updateGreeting(now.getHours())
+      setGreeting(getGreeting(new Date().getHours()))
     }, 60000) // check greeting every minute
     return () => clearInterval(timer)
   }, [])
 
   // 4. Formatted date string
-  const [activeDateStr, setActiveDateStr] = useState("")
-  useEffect(() => {
-    const parsedActiveDate = parseISO(activeDate)
-    setActiveDateStr(
-      parsedActiveDate.toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    )
+  const activeDateStr = useMemo(() => {
+    if (!activeDate) return ""
+    return parseISO(activeDate).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
   }, [activeDate])
 
   // 5. Timetable derived state (real-time updates)
