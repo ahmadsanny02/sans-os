@@ -290,7 +290,7 @@ export function FormulaListView({
                     <button
                       type="button"
                       onClick={() => setExtraFormulaRows(extraFormulaRows.filter((r) => r.id !== row.id))}
-                      className="p-1 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
+                      className="p-1 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
                       title="Remove item"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -459,26 +459,26 @@ export function FormulaListView({
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="Formula Name"
-                      className="w-full text-xs font-bold rounded-lg border border-border/80 bg-background px-3 py-2 outline-none focus:border-primary"
+                      className="w-full text-xs font-bold rounded-xl border border-border/80 bg-background px-3 py-2 outline-none focus:border-primary"
                     />
                     <input
                       type="text"
                       value={editFormulaVal}
                       onChange={(e) => setEditFormulaVal(e.target.value)}
                       placeholder="Formula Pattern"
-                      className="w-full text-xs font-mono rounded-lg border border-border/80 bg-background px-3 py-2 outline-none focus:border-primary"
+                      className="w-full text-xs font-mono rounded-xl border border-border/80 bg-background px-3 py-2 outline-none focus:border-primary"
                     />
                     <textarea
                       value={editDesc}
                       onChange={(e) => setEditDesc(e.target.value)}
                       placeholder="Description"
                       rows={2}
-                      className="w-full text-xs rounded-lg border border-border/80 bg-background px-3 py-2 outline-none focus:border-primary resize-none"
+                      className="w-full text-xs rounded-xl border border-border/80 bg-background px-3 py-2 outline-none focus:border-primary resize-none"
                     />
                     <div className="flex justify-end gap-1.5 pt-2 border-t border-border/30">
                       <button
                         onClick={cancelEdit}
-                        className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 text-muted-foreground transition-all cursor-pointer"
+                        className="p-1.5 rounded-xl bg-secondary hover:bg-secondary/80 text-muted-foreground transition-all cursor-pointer"
                         title="Cancel"
                       >
                         <X className="h-3.5 w-3.5" />
@@ -486,7 +486,7 @@ export function FormulaListView({
                       <button
                         onClick={() => saveEdit(f.id)}
                         disabled={!editName.trim() || !editFormulaVal.trim()}
-                        className="p-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all disabled:opacity-50 cursor-pointer"
+                        className="p-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground transition-all disabled:opacity-50 cursor-pointer"
                         title="Save Changes"
                       >
                         <Check className="h-3.5 w-3.5" />
@@ -503,17 +503,17 @@ export function FormulaListView({
                           FORMULA
                         </span>
                         
-                        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => startEdit(f)}
-                            className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                            className="p-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
                             title="Edit formula"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteFormula(f.id)}
-                            className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all cursor-pointer"
+                            className="p-1.5 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all cursor-pointer"
                             title="Delete formula"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
