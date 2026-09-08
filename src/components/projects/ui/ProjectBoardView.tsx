@@ -660,7 +660,7 @@ export function ProjectBoardView({
                       <button
                         onClick={(e) => handleDeleteProject(project.id, e)}
                         disabled={isPendingProjectDelete}
-                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
+                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
                         aria-label={`Delete project ${project.name}`}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -1068,7 +1068,7 @@ export function ProjectBoardView({
                                           handleDeleteSubTask(st.id)
                                         }}
                                         disabled={isPendingSubTaskDelete}
-                                        className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
+                                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
                                       >
                                         <Trash2 className="h-3 w-3" />
                                       </button>
