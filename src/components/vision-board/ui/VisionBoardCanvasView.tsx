@@ -78,8 +78,8 @@ function VisionBoardImageItem({
         </div>
       )}
 
-      {/* Delete button layer on hover */}
-      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 select-none z-20">
+      {/* Delete button layer */}
+      <div className="absolute top-2 right-2 sm:inset-0 sm:bg-black/40 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 select-none z-20">
         <button
           onClick={onDelete}
           disabled={isPendingDelete}
@@ -231,7 +231,7 @@ export function VisionBoardCanvasView({
                       ? "e.g., Code daily to build mastery! 🚀"
                       : "e.g., https://unsplash.com/..."
                   }
-                  className="w-full rounded-lg border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                  className="w-full rounded-xl border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
 
@@ -246,7 +246,7 @@ export function VisionBoardCanvasView({
                     onChange={(e) => setWidth(Number(e.target.value))}
                     min={120}
                     max={400}
-                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -258,7 +258,7 @@ export function VisionBoardCanvasView({
                     onChange={(e) => setHeight(Number(e.target.value))}
                     min={100}
                     max={400}
-                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </div>
@@ -275,14 +275,14 @@ export function VisionBoardCanvasView({
               <button
                 type="button"
                 onClick={() => setShowAddMenu(false)}
-                className="rounded-lg border border-border/40 px-3 py-1.5 text-xs font-semibold hover:bg-muted cursor-pointer"
+                className="rounded-xl border border-border/40 px-3 py-1.5 text-xs font-semibold hover:bg-muted cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPendingCreate}
-                className="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1 cursor-pointer active:scale-95"
+                className="rounded-xl bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1 cursor-pointer active:scale-95"
               >
                 {isPendingCreate ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -381,7 +381,7 @@ export function VisionBoardCanvasView({
                       <button
                         onClick={(e) => handleDeleteItem(item.id, e)}
                         disabled={isPendingDelete}
-                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded hover:bg-yellow-500/20 transition-all text-yellow-800 dark:text-yellow-300 shrink-0"
+                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1 rounded-xl hover:bg-yellow-500/20 transition-all text-yellow-800 dark:text-yellow-300 shrink-0"
                         aria-label="Delete note"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
