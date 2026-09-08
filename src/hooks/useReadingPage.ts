@@ -10,6 +10,7 @@ import {
 } from "@/hooks/useReading"
 import { format } from "date-fns"
 import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
+import { getTodayDateString } from "@/store/workspaceStore"
 
 export function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return ""
@@ -33,7 +34,7 @@ export function useReadingPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedStatusFilter, setSelectedStatusFilter] = useState("All")
 
-  const todayStr = new Date().toISOString().split("T")[0]
+  const todayStr = getTodayDateString()
 
   // Form states (Add)
   const [addTitle, setAddTitle] = useState("")
@@ -127,7 +128,7 @@ export function useReadingPage() {
     setEditStatus(book.status)
     setEditRating(book.rating || 3)
     setEditReview(book.review || "")
-    setEditFinishedAt(book.finishedAt ? new Date(book.finishedAt).toISOString().split("T")[0] : todayStr)
+    setEditFinishedAt(book.finishedAt ? format(new Date(book.finishedAt), "yyyy-MM-dd") : todayStr)
     setEditProgress(book.currentProgress || "")
     setEditError(null)
   }
@@ -198,7 +199,7 @@ export function useReadingPage() {
     setEditStatus("Completed")
     setEditRating(book.rating || 5)
     setEditReview(book.review || "")
-    setEditFinishedAt(book.finishedAt ? new Date(book.finishedAt).toISOString().split("T")[0] : todayStr)
+    setEditFinishedAt(book.finishedAt ? format(new Date(book.finishedAt), "yyyy-MM-dd") : todayStr)
     setEditProgress("")
     setEditError(null)
   }
