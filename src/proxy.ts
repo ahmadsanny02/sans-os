@@ -8,15 +8,14 @@ export async function proxy(request: NextRequest) {
 
   // Paths that do not require auth or are system-level
   const isLoginPage = url.pathname === "/login"
-  const isAuthCallback = url.pathname.startsWith("/auth")
-  
   // Allow static asset requests, next image loader, favicon to bypass redirects
+  const STATIC_EXTENSIONS_REGEX = /\.(svg|png|jpg|jpeg|gif|webp|ico|css|js|woff2?|map|json)$/i
   const isStatic =
     url.pathname.startsWith("/_next") ||
-    url.pathname.includes(".") ||
-    url.pathname === "/favicon.ico"
+    url.pathname === "/favicon.ico" ||
+    STATIC_EXTENSIONS_REGEX.test(url.pathname)
 
-  if (isStatic || isAuthCallback) {
+  if (isStatic) {
     return supabaseResponse
   }
 
