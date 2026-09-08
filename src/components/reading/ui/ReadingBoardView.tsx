@@ -564,17 +564,17 @@ export function ReadingBoardView({
                       {book.status}
                     </Badge>
 
-                    <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                       <button
                         onClick={() => setSelectedProgressBook(book)}
-                        className="p-1 rounded hover:bg-blue-500/10 text-muted-foreground hover:text-blue-500 transition-all"
+                        className="p-1 rounded-xl hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all"
                         title="View Progress History & Log"
                       >
                         <History className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={() => handleOpenEdit(book)}
-                        className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-all"
+                        className="p-1 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all"
                         title="Edit Book Details"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
@@ -582,7 +582,7 @@ export function ReadingBoardView({
                       <button
                         onClick={() => handleDeleteBook(book.id, book.title)}
                         disabled={isPendingDelete}
-                        className="p-1 rounded hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-all"
+                        className="p-1 rounded-xl hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-all"
                         title="Delete Book"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -696,7 +696,7 @@ export function ReadingBoardView({
                       <button
                         onClick={() => handleQuickStartReading(book.id)}
                         disabled={isPendingUpdate}
-                        className="flex items-center justify-center gap-1.5 rounded-xl border border-blue-500/30 hover:border-blue-500 bg-blue-500/10 hover:bg-blue-500/20 py-2 text-xs font-bold text-blue-500 transition-all active:scale-[0.98] cursor-pointer"
+                        className="flex items-center justify-center gap-1.5 rounded-xl border border-primary/30 hover:border-primary bg-primary/10 hover:bg-primary/20 py-2 text-xs font-bold text-primary transition-all active:scale-[0.98] cursor-pointer"
                       >
                         <Clock className="h-3.5 w-3.5" />
                         Start Reading
