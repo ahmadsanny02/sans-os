@@ -166,7 +166,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
                     placeholder="Sub-schedule title..."
-                    className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 outline-none text-xs focus:border-primary"
+                    className="w-full rounded-xl border border-border bg-background px-3 py-1.5 outline-none text-xs focus:border-primary focus:ring-2 focus:ring-primary/20"
                     autoFocus
                   />
                   <div className="flex items-center gap-2">
@@ -273,7 +273,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             placeholder="Sub-schedule title..."
-            className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 outline-none text-xs focus:border-primary"
+            className="w-full rounded-xl border border-border bg-background px-3 py-1.5 outline-none text-xs focus:border-primary focus:ring-2 focus:ring-primary/20"
             autoFocus
             required
           />
@@ -282,7 +282,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
               value={newStart}
               onChange={(val) => setNewStart(val)}
               showIcon={false}
-              inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-xs"
+              inputClassName="rounded-xl border border-border bg-background px-2.5 py-1 outline-none text-xs"
               className="w-20"
               placeholder="--:--"
             />
@@ -741,17 +741,17 @@ export function Timetable({
                           )}
                         </div>
 
-                        <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-1 transition-all shrink-0">
+                        <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-1 transition-all shrink-0">
                           <button
                             onClick={() => handleStartEdit(block)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                            className="p-1.5 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                             aria-label="Edit schedule block"
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteBlock(block.id)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                            className="p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
                             aria-label="Delete schedule block"
                           >
                             <Trash2 className="h-4 w-4" />
