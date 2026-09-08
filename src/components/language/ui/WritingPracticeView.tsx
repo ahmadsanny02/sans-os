@@ -247,7 +247,7 @@ export function WritingPracticeView({
                 setActiveHistoryTab("vocab")
                 setSearchQueryWriting("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
                 activeHistoryTab === "vocab"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
@@ -260,7 +260,7 @@ export function WritingPracticeView({
                 setActiveHistoryTab("formula")
                 setSearchQueryWriting("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
                 activeHistoryTab === "formula"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
@@ -273,7 +273,7 @@ export function WritingPracticeView({
                 setActiveHistoryTab("free")
                 setSearchQueryWriting("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
                 activeHistoryTab === "free"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
@@ -307,7 +307,7 @@ export function WritingPracticeView({
             <button
               type="button"
               onClick={() => setPracticeMode("free")}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
                 practiceMode === "free"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
                   : "text-muted-foreground hover:text-foreground"
@@ -322,7 +322,7 @@ export function WritingPracticeView({
                 setSelectedVocabId("")
                 setSearchVocabQuery("")
               }}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
                 practiceMode === "vocab"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
                   : "text-muted-foreground hover:text-foreground"
@@ -335,7 +335,7 @@ export function WritingPracticeView({
               onClick={() => {
                 setPracticeMode("formula")
               }}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
                 practiceMode === "formula"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
                   : "text-muted-foreground hover:text-foreground"
@@ -356,7 +356,7 @@ export function WritingPracticeView({
                       Search & Select Formula *
                     </label>
                     {filteredWritingFormulaList.length === 0 && searchWritingFormulaQuery === "" ? (
-                      <div className="text-xs border border-destructive/25 bg-destructive/5 text-destructive rounded-lg p-2.5 flex items-center gap-1.5">
+                      <div className="text-xs border border-destructive/25 bg-destructive/5 text-destructive rounded-xl p-2.5 flex items-center gap-1.5">
                         <AlertCircle className="h-4 w-4 shrink-0" />
                         No formulas found. Add formulas in the Formula List tab first.
                       </div>
@@ -373,7 +373,7 @@ export function WritingPracticeView({
                               setShowWritingFormulaDropdown(true)
                             }}
                             placeholder="Search registered formulas..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                           {selectedWritingFormulaId && (
                             <span 
@@ -384,7 +384,7 @@ export function WritingPracticeView({
                         </div>
 
                         {showWritingFormulaDropdown && (
-                          <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
+                          <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-xl border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
                             {filteredWritingFormulaList.length === 0 ? (
                               <div className="px-3 py-2 text-xs text-muted-foreground">
                                 No matching formulas found
@@ -436,7 +436,7 @@ export function WritingPracticeView({
                       )}
                     </div>
                     {vocabList.length === 0 ? (
-                      <div className="text-xs border border-border/40 bg-muted/20 text-muted-foreground rounded-lg p-2.5 flex items-center gap-1.5">
+                      <div className="text-xs border border-border/40 bg-muted/20 text-muted-foreground rounded-xl p-2.5 flex items-center gap-1.5">
                         <AlertCircle className="h-4 w-4 shrink-0" />
                         No vocabulary found. You can still save practice with just the formula.
                       </div>
@@ -453,7 +453,7 @@ export function WritingPracticeView({
                               setShowVocabDropdown(true)
                             }}
                             placeholder="Type to filter vocabulary..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                           {selectedVocabId && (
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="Word Linked" />
@@ -461,7 +461,7 @@ export function WritingPracticeView({
                         </div>
 
                         {showVocabDropdown && (
-                          <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
+                          <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-xl border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
                             {filteredVocabList.length === 0 ? (
                               <div className="px-3 py-2 text-xs text-muted-foreground">
                                 No matching vocabulary found
@@ -499,7 +499,7 @@ export function WritingPracticeView({
                     Search & Select Word *
                   </label>
                   {vocabList.length === 0 ? (
-                    <div className="text-xs border border-destructive/25 bg-destructive/5 text-destructive rounded-lg p-2.5 flex items-center gap-1.5">
+                    <div className="text-xs border border-destructive/25 bg-destructive/5 text-destructive rounded-xl p-2.5 flex items-center gap-1.5">
                       <AlertCircle className="h-4 w-4 shrink-0" />
                       No vocabulary found. Add vocabulary in the first tab first.
                     </div>
@@ -516,7 +516,7 @@ export function WritingPracticeView({
                             setShowVocabDropdown(true)
                           }}
                           placeholder="Type to search vocabulary..."
-                          className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                          className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                         />
                         {selectedVocabId && (
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="Valid Word Selected" />
@@ -524,7 +524,7 @@ export function WritingPracticeView({
                       </div>
 
                       {showVocabDropdown && (
-                        <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
+                        <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-xl border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
                           {filteredVocabList.length === 0 ? (
                             <div className="px-3 py-2 text-xs text-muted-foreground">
                               No matching vocabulary found
@@ -608,7 +608,7 @@ export function WritingPracticeView({
                       value={localVocabEngPos}
                       onChange={(e) => setLocalVocabEngPos(e.target.value)}
                       placeholder="English positive sentence..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
@@ -616,7 +616,7 @@ export function WritingPracticeView({
                       value={localVocabTransPos}
                       onChange={(e) => setLocalVocabTransPos(e.target.value)}
                       placeholder="Indonesian translation..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
                 </div>
@@ -636,7 +636,7 @@ export function WritingPracticeView({
                       value={localVocabEngNeg}
                       onChange={(e) => setLocalVocabEngNeg(e.target.value)}
                       placeholder="English negative sentence..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
@@ -644,16 +644,16 @@ export function WritingPracticeView({
                       value={localVocabTransNeg}
                       onChange={(e) => setLocalVocabTransNeg(e.target.value)}
                       placeholder="Indonesian translation..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
                 </div>
 
                 {/* Interrogative (?) Sentence Pair */}
-                <div className="space-y-2.5 border-l-2 border-blue-500 pl-3">
+                <div className="space-y-2.5 border-l-2 border-primary pl-3">
                   <div className="flex items-center gap-1">
-                    <span className="h-3.5 w-3.5 text-blue-500 font-extrabold text-xs">?</span>
-                    <span className="text-xs font-extrabold uppercase tracking-wide text-blue-500">
+                    <span className="h-3.5 w-3.5 text-primary font-extrabold text-xs">?</span>
+                    <span className="text-xs font-extrabold uppercase tracking-wide text-primary">
                       3. Interrogative Sentence (?)
                     </span>
                   </div>
@@ -664,7 +664,7 @@ export function WritingPracticeView({
                       value={localVocabEngInt}
                       onChange={(e) => setLocalVocabEngInt(e.target.value)}
                       placeholder="English question sentence..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
@@ -672,7 +672,7 @@ export function WritingPracticeView({
                       value={localVocabTransInt}
                       onChange={(e) => setLocalVocabTransInt(e.target.value)}
                       placeholder="Indonesian translation..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
                 </div>
@@ -690,7 +690,7 @@ export function WritingPracticeView({
                   <button
                     type="button"
                     onClick={() => setExtraWritingRows(extraWritingRows.filter((r) => r.id !== row.id))}
-                    className="p-1 rounded-lg border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer text-xs flex items-center gap-1"
+                    className="p-1 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer text-xs flex items-center gap-1"
                     title="Remove practice row"
                   >
                     <Plus className="h-3.5 w-3.5 rotate-45" /> Remove
@@ -737,7 +737,7 @@ export function WritingPracticeView({
                             setExtraWritingRows(updated)
                           }}
                           placeholder="Type to search word (defaults to main selected word)..."
-                          className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                          className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                         />
                         {row.vocabId && (
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="Word Selected" />
@@ -745,7 +745,7 @@ export function WritingPracticeView({
                       </div>
 
                       {row.showDropdown && (
-                        <div className="absolute z-30 w-full mt-1 max-h-40 overflow-y-auto rounded-lg border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in duration-150">
+                        <div className="absolute z-30 w-full mt-1 max-h-40 overflow-y-auto rounded-xl border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in duration-150">
                           {vocabList.filter(v => 
                             !row.vocabQuery.trim() || 
                             v.word.toLowerCase().includes(row.vocabQuery.toLowerCase()) || 
@@ -801,7 +801,7 @@ export function WritingPracticeView({
                               setExtraWritingRows(updated)
                             }}
                             placeholder="English positive sentence..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                           <input
                             type="text"
@@ -813,7 +813,7 @@ export function WritingPracticeView({
                               setExtraWritingRows(updated)
                             }}
                             placeholder="Indonesian translation..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                         </div>
                       </div>
@@ -837,7 +837,7 @@ export function WritingPracticeView({
                               setExtraWritingRows(updated)
                             }}
                             placeholder="English negative sentence..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                           <input
                             type="text"
@@ -849,16 +849,16 @@ export function WritingPracticeView({
                               setExtraWritingRows(updated)
                             }}
                             placeholder="Indonesian translation..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                         </div>
                       </div>
 
                       {/* Interrogative (?) Sentence Pair */}
-                      <div className="space-y-2.5 border-l-2 border-blue-500 pl-3">
+                      <div className="space-y-2.5 border-l-2 border-primary pl-3">
                         <div className="flex items-center gap-1">
-                          <span className="h-3.5 w-3.5 text-blue-500 font-extrabold text-xs">?</span>
-                          <span className="text-xs font-extrabold uppercase tracking-wide text-blue-500">
+                          <span className="h-3.5 w-3.5 text-primary font-extrabold text-xs">?</span>
+                          <span className="text-xs font-extrabold uppercase tracking-wide text-primary">
                             3. Interrogative Sentence (?)
                           </span>
                         </div>
@@ -873,7 +873,7 @@ export function WritingPracticeView({
                               setExtraWritingRows(updated)
                             }}
                             placeholder="English question sentence..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                           <input
                             type="text"
@@ -885,7 +885,7 @@ export function WritingPracticeView({
                               setExtraWritingRows(updated)
                             }}
                             placeholder="Indonesian translation..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                         </div>
                       </div>
@@ -973,7 +973,7 @@ export function WritingPracticeView({
               <button
                 type="button"
                 onClick={() => setShowWritingForm(false)}
-                className="rounded-lg border border-border/40 px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-all cursor-pointer"
+                className="rounded-xl border border-border/40 px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -984,7 +984,7 @@ export function WritingPracticeView({
                   (practiceMode === "vocab" && (!selectedVocabId || vocabList.length === 0)) ||
                   (practiceMode === "formula" && !selectedWritingFormulaId)
                 }
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 active:scale-95 disabled:opacity-50 cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 active:scale-95 disabled:opacity-50 cursor-pointer"
               >
                 {writingCreatePending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -1040,7 +1040,7 @@ export function WritingPracticeView({
                         <button
                           onClick={() => handleDeleteWriting(group.allIds.join(","))}
                           disabled={writingDeletePending}
-                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete sentence group"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -1051,7 +1051,7 @@ export function WritingPracticeView({
                       {group.positive && (
                         <div className="space-y-1">
                           <div className="flex items-center">
-                            <span className="px-2 py-1 rounded text-micro font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/20">
+                            <span className="px-2 py-1 rounded-xl text-micro font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/20">
                               Positive
                             </span>
                           </div>
@@ -1071,7 +1071,7 @@ export function WritingPracticeView({
                       {group.negative && (
                         <div className="space-y-1">
                           <div className="flex items-center">
-                            <span className="px-2 py-1 rounded text-micro font-black uppercase tracking-wider bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20">
+                            <span className="px-2 py-1 rounded-xl text-micro font-black uppercase tracking-wider bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20">
                               Negative
                             </span>
                           </div>
@@ -1091,14 +1091,14 @@ export function WritingPracticeView({
                       {group.interrogative && (
                         <div className="space-y-1">
                           <div className="flex items-center">
-                            <span className="px-2 py-1 rounded text-micro font-black uppercase tracking-wider bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/20">
+                            <span className="px-2 py-1 rounded-xl text-micro font-black uppercase tracking-wider bg-primary/10 text-primary dark:text-primary border border-primary/20">
                               Interrogative
                             </span>
                           </div>
                           <p className="text-sm font-semibold tracking-tight text-foreground leading-relaxed">
                             {group.interrogative.englishSentence}
                           </p>
-                          <div className="text-xs text-muted-foreground/80 leading-relaxed italic space-y-0.5 pl-2 border-l border-blue-500/30">
+                          <div className="text-xs text-muted-foreground/80 leading-relaxed italic space-y-0.5 pl-2 border-l border-primary/30">
                             <p className="font-semibold text-muted-foreground/90">{group.interrogative.indonesianTranslation}</p>
                             {group.interrogative.autoTranslation && (
                               <p className="text-muted-foreground/50 text-xs not-italic">Google: {group.interrogative.autoTranslation}</p>
@@ -1156,7 +1156,7 @@ export function WritingPracticeView({
                         <button
                           onClick={() => handleDeleteWriting(log.id)}
                           disabled={writingDeletePending}
-                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete sentence log"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -1232,7 +1232,7 @@ export function WritingPracticeView({
                         <button
                           onClick={() => handleDeleteWriting(log.id)}
                           disabled={writingDeletePending}
-                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete sentence log"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
