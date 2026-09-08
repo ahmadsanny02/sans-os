@@ -240,6 +240,30 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   // Profile menu popup state
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
 
+  // Current authenticated user state
+  const [currentUser, setCurrentUser] = useState<{ email: string; name: string; initials: string }>({
+    name: "Ahmad Sanny",
+    email: "sanny@sansos.workspace",
+    initials: "AS",
+  })
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        const email = user.email || "sanny@sansos.workspace"
+        const name = (user.user_metadata?.full_name as string) || (user.user_metadata?.name as string) || email.split("@")[0]
+        const initials = name
+          .split(" ")
+          .filter(Boolean)
+          .map((n) => n[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase() || "AS"
+        setCurrentUser({ email, name, initials })
+      }
+    })
+  }, [supabase])
+
   // Sub-menu expansion states
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({})
 
@@ -402,11 +426,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 {/* User info details */}
                 <div className="flex items-center gap-2.5 px-2.5 py-2 border-b border-border/40 mb-1 select-none">
                   <div className="h-8.5 w-8.5 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-sm shrink-0">
-                    AS
+                    {currentUser.initials}
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-xs font-black text-foreground truncate">Ahmad Sanny</span>
-                    <span className="text-xs text-muted-foreground truncate">sanny@sansos.workspace</span>
+                    <span className="text-xs font-black text-foreground truncate">{currentUser.name}</span>
+                    <span className="text-xs text-muted-foreground truncate">{currentUser.email}</span>
                   </div>
                 </div>
 
@@ -454,12 +478,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           >
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
-                AS
+                {currentUser.initials}
               </div>
               {sidebarOpen ? (
                 <div className="flex flex-col text-left min-w-0">
-                  <span className="text-xs font-black text-foreground truncate leading-none mb-0.5">Ahmad Sanny</span>
-                  <span className="text-micro text-muted-foreground truncate leading-none">sanny@sansos.workspace</span>
+                  <span className="text-xs font-black text-foreground truncate leading-none mb-0.5">{currentUser.name}</span>
+                  <span className="text-micro text-muted-foreground truncate leading-none">{currentUser.email}</span>
                 </div>
               ) : null}
             </div>
@@ -501,11 +525,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <div className="absolute bottom-full left-3 right-3 mb-2 bg-card border border-border shadow-lg rounded-xl p-1.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
                     <div className="flex items-center gap-2.5 px-2.5 py-2 border-b border-border/40 mb-1 select-none">
                       <div className="h-8.5 w-8.5 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-sm shrink-0">
-                        AS
+                        {currentUser.initials}
                       </div>
                       <div className="flex flex-col min-w-0">
-                        <span className="text-xs font-black text-foreground truncate">Ahmad Sanny</span>
-                        <span className="text-xs text-muted-foreground truncate">sanny@sansos.workspace</span>
+                        <span className="text-xs font-black text-foreground truncate">{currentUser.name}</span>
+                        <span className="text-xs text-muted-foreground truncate">{currentUser.email}</span>
                       </div>
                     </div>
                     <div className="space-y-0.5">
@@ -552,11 +576,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
-                    AS
+                    {currentUser.initials}
                   </div>
                   <div className="flex flex-col text-left min-w-0">
-                    <span className="text-xs font-black text-foreground truncate leading-none mb-0.5">Ahmad Sanny</span>
-                    <span className="text-micro text-muted-foreground truncate leading-none">sanny@sansos.workspace</span>
+                    <span className="text-xs font-black text-foreground truncate leading-none mb-0.5">{currentUser.name}</span>
+                    <span className="text-micro text-muted-foreground truncate leading-none">{currentUser.email}</span>
                   </div>
                 </div>
                 <ChevronsUpDown className="h-4 w-4 text-muted-foreground shrink-0" />
