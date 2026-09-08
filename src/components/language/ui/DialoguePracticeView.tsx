@@ -215,7 +215,7 @@ export function DialoguePracticeView({
                 setDialogueActiveHistoryTab("vocab")
                 setSearchQueryDialogue("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 dialogueActiveHistoryTab === "vocab"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
@@ -228,7 +228,7 @@ export function DialoguePracticeView({
                 setDialogueActiveHistoryTab("formula")
                 setSearchQueryDialogue("")
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 dialogueActiveHistoryTab === "formula"
                   ? "bg-primary text-primary-foreground shadow-glass shadow-glow font-extrabold"
                   : "text-muted-foreground hover:text-foreground"
@@ -242,14 +242,14 @@ export function DialoguePracticeView({
           <div className="flex items-center gap-1.5 bg-secondary/35 border border-border/30 p-1 rounded-xl shrink-0 self-start md:self-auto select-none">
             <button
               onClick={revealAllDialogueTranslations}
-              className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
               title="Reveal all dialogue translations"
             >
               <Eye className="h-3.5 w-3.5" /> Reveal All
             </button>
             <button
               onClick={hideAllDialogueTranslations}
-              className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-background text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer"
               title="Hide all dialogue translations"
             >
               <EyeOff className="h-3.5 w-3.5" /> Hide All
@@ -260,7 +260,7 @@ export function DialoguePracticeView({
         {/* Toggle Dialogue Form Button */}
         <button
           onClick={() => setShowDialogueForm(!showDialogueForm)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 self-start lg:self-auto"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 self-start lg:self-auto"
         >
           <Plus className="h-4 w-4" />
           {showDialogueForm ? "Cancel Add" : "Add Dialogue"}
@@ -281,7 +281,7 @@ export function DialoguePracticeView({
               <button
                 type="button"
                 onClick={() => setDialoguePracticeMode("vocab")}
-                className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                className={`py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
                   dialoguePracticeMode === "vocab"
                     ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
                     : "text-muted-foreground hover:text-foreground"
@@ -292,7 +292,7 @@ export function DialoguePracticeView({
               <button
                 type="button"
                 onClick={() => setDialoguePracticeMode("formula")}
-                className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                className={`py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
                   dialoguePracticeMode === "formula"
                     ? "bg-primary text-primary-foreground shadow-glass shadow-glow"
                     : "text-muted-foreground hover:text-foreground"
@@ -312,7 +312,7 @@ export function DialoguePracticeView({
                       Search & Select Formula *
                     </label>
                     {filteredDialogueFormulaList.length === 0 && searchDialogueFormulaQuery === "" ? (
-                      <div className="text-xs border border-destructive/25 bg-destructive/5 text-destructive rounded-lg p-2.5 flex items-center gap-1.5">
+                      <div className="text-xs border border-destructive/25 bg-destructive/5 text-destructive rounded-xl p-2.5 flex items-center gap-1.5">
                         <AlertCircle className="h-4 w-4 shrink-0" />
                         No formulas found. Add formulas in the Formula List tab first.
                       </div>
@@ -329,7 +329,7 @@ export function DialoguePracticeView({
                               setShowDialogueFormulaDropdown(true)
                             }}
                             placeholder="Search registered formulas..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                           {selectedDialogueFormulaId && (
                             <span 
@@ -340,7 +340,7 @@ export function DialoguePracticeView({
                         </div>
 
                         {showDialogueFormulaDropdown && (
-                          <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
+                          <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-xl border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
                             {filteredDialogueFormulaList.length === 0 ? (
                               <div className="px-3 py-2 text-xs text-muted-foreground">
                                 No matching formulas found
@@ -392,7 +392,7 @@ export function DialoguePracticeView({
                       )}
                     </div>
                     {vocabList.length === 0 ? (
-                      <div className="text-xs border border-border/40 bg-muted/20 text-muted-foreground rounded-lg p-2.5 flex items-center gap-1.5">
+                      <div className="text-xs border border-border/40 bg-muted/20 text-muted-foreground rounded-xl p-2.5 flex items-center gap-1.5">
                         <AlertCircle className="h-4 w-4 shrink-0" />
                         No vocabulary found. You can still save dialogue with just the formula.
                       </div>
@@ -409,7 +409,7 @@ export function DialoguePracticeView({
                               setShowDialogueVocabDropdown(true)
                             }}
                             placeholder="Type to filter vocabulary..."
-                            className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                           />
                           {selectedDialogueVocabId && (
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="Word Linked" />
@@ -417,7 +417,7 @@ export function DialoguePracticeView({
                         </div>
 
                         {showDialogueVocabDropdown && (
-                          <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
+                          <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-xl border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
                             {filteredDialogueVocabList.length === 0 ? (
                               <div className="px-3 py-2 text-xs text-muted-foreground">
                                 No matching vocabulary found
@@ -453,7 +453,7 @@ export function DialoguePracticeView({
                   Search & Select Vocabulary Word *
                 </label>
                 {vocabList.length === 0 ? (
-                  <div className="text-xs border border-destructive/25 bg-destructive/5 text-destructive rounded-lg p-2.5 flex items-center gap-1.5">
+                  <div className="text-xs border border-destructive/25 bg-destructive/5 text-destructive rounded-xl p-2.5 flex items-center gap-1.5">
                     <AlertCircle className="h-4 w-4 shrink-0" />
                     No vocabulary found. Please register vocabulary logs first.
                   </div>
@@ -470,7 +470,7 @@ export function DialoguePracticeView({
                           setShowDialogueVocabDropdown(true)
                         }}
                         placeholder="Search vocabulary logs..."
-                        className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                       />
                       {selectedDialogueVocabId && (
                         <span 
@@ -481,7 +481,7 @@ export function DialoguePracticeView({
                     </div>
 
                     {showDialogueVocabDropdown && (
-                      <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-lg border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
+                      <div className="absolute z-30 w-full mt-1.5 max-h-48 overflow-y-auto rounded-xl border border-border/40 bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in slide-in-from-top-1 duration-150">
                         {filteredDialogueVocabList.length === 0 ? (
                           <div className="px-3 py-2 text-xs text-muted-foreground">
                             No matching vocabulary found
@@ -531,7 +531,7 @@ export function DialoguePracticeView({
                     value={localDialogueEngQ}
                     onChange={(e) => setLocalDialogueEngQ(e.target.value)}
                     placeholder="English question (e.g., What are you doing?)"
-                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                   <input
                     type="text"
@@ -539,7 +539,7 @@ export function DialoguePracticeView({
                     value={localDialogueTransQ}
                     onChange={(e) => setLocalDialogueTransQ(e.target.value)}
                     placeholder="Indonesian translation (e.g., Apa yang sedang kamu lakukan?)"
-                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </div>
@@ -562,7 +562,7 @@ export function DialoguePracticeView({
                     value={localDialogueEngA}
                     onChange={(e) => setLocalDialogueEngA(e.target.value)}
                     placeholder="English answer (e.g., I am reading a book.)"
-                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                   <input
                     type="text"
@@ -570,7 +570,7 @@ export function DialoguePracticeView({
                     value={localDialogueTransA}
                     onChange={(e) => setLocalDialogueTransA(e.target.value)}
                     placeholder="Indonesian translation (e.g., Saya sedang membaca buku.)"
-                    className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </div>
@@ -587,7 +587,7 @@ export function DialoguePracticeView({
                   <button
                     type="button"
                     onClick={() => setExtraDialogueRows(extraDialogueRows.filter((r) => r.id !== row.id))}
-                    className="p-1 rounded-lg border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer text-xs flex items-center gap-1"
+                    className="p-1 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer text-xs flex items-center gap-1"
                     title="Remove conversation row"
                   >
                     <Plus className="h-3.5 w-3.5 rotate-45" /> Remove
@@ -607,7 +607,7 @@ export function DialoguePracticeView({
                         setExtraDialogueRows(updated)
                       }}
                       placeholder="English question..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
@@ -619,7 +619,7 @@ export function DialoguePracticeView({
                         setExtraDialogueRows(updated)
                       }}
                       placeholder="Indonesian translation..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
 
@@ -635,7 +635,7 @@ export function DialoguePracticeView({
                         setExtraDialogueRows(updated)
                       }}
                       placeholder="English answer..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                     <input
                       type="text"
@@ -647,7 +647,7 @@ export function DialoguePracticeView({
                         setExtraDialogueRows(updated)
                       }}
                       placeholder="Indonesian translation..."
-                      className="w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      className="w-full rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
                 </div>
@@ -682,7 +682,7 @@ export function DialoguePracticeView({
               <button
                 type="button"
                 onClick={() => setShowDialogueForm(false)}
-                className="rounded-lg border border-border/40 px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-all cursor-pointer"
+                className="rounded-xl border border-border/40 px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -693,7 +693,7 @@ export function DialoguePracticeView({
                   (dialoguePracticeMode === "vocab" && (!selectedDialogueVocabId || vocabList.length === 0)) ||
                   (dialoguePracticeMode === "formula" && !selectedDialogueFormulaId)
                 }
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 active:scale-95 disabled:opacity-50 cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 active:scale-95 disabled:opacity-50 cursor-pointer"
               >
                 {dialogueCreatePending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -757,7 +757,7 @@ export function DialoguePracticeView({
                     {/* Log Header Actions */}
                     <div className="flex items-center justify-between mb-4 border-b border-border/40 pb-2.5">
                       <div className="flex items-center gap-2">
-                        <span className="bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-bold flex items-center gap-1.5">
+                        <span className="bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 rounded-xl px-2.5 py-1 text-xs font-bold flex items-center gap-1.5">
                           <BookOpen className="h-3.5 w-3.5" />
                           Word: {log.vocabWord}
                         </span>
@@ -766,7 +766,7 @@ export function DialoguePracticeView({
                         <button
                           onClick={() => toggleDialogueTranslation(log.id)}
                           title={isRevealed ? "Hide translations" : "Reveal translations"}
-                          className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                          className="p-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
                         >
                           {isRevealed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                         </button>
@@ -774,7 +774,7 @@ export function DialoguePracticeView({
                           onClick={() => handleDeleteDialogue(log.id, log.vocabWord || "")}
                           disabled={dialogueDeletePending}
                           title="Delete dialogue log"
-                          className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all disabled:opacity-50 cursor-pointer"
+                          className="p-1.5 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all disabled:opacity-50 cursor-pointer"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
@@ -894,12 +894,12 @@ export function DialoguePracticeView({
                     {/* Log Header Actions */}
                     <div className="flex items-center justify-between mb-4 border-b border-border/40 pb-2.5">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="bg-primary/10 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-bold flex items-center gap-1.5">
+                        <span className="bg-primary/10 text-primary border border-primary/20 rounded-xl px-2.5 py-1 text-xs font-bold flex items-center gap-1.5">
                           <MessageSquare className="h-3.5 w-3.5" />
                           Formula: {log.formula}
                         </span>
                         {log.vocabWord && (
-                          <span className="bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-bold flex items-center gap-1.5">
+                          <span className="bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 rounded-xl px-2.5 py-1 text-xs font-bold flex items-center gap-1.5">
                             <BookOpen className="h-3.5 w-3.5" />
                             Word: {log.vocabWord}
                           </span>
@@ -909,7 +909,7 @@ export function DialoguePracticeView({
                         <button
                           onClick={() => toggleDialogueTranslation(log.id)}
                           title={isRevealed ? "Hide translations" : "Reveal translations"}
-                          className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                          className="p-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
                         >
                           {isRevealed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                         </button>
@@ -917,7 +917,7 @@ export function DialoguePracticeView({
                           onClick={() => handleDeleteDialogue(log.id, log.formula || "")}
                           disabled={dialogueDeletePending}
                           title="Delete dialogue log"
-                          className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all disabled:opacity-50 cursor-pointer"
+                          className="p-1.5 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all disabled:opacity-50 cursor-pointer"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
