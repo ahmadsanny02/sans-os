@@ -1,5 +1,6 @@
 "use client"
 import { logger } from "@/lib/logger";
+import { showError } from "@/lib/sweetalert";
 
 import React, { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
@@ -22,7 +23,7 @@ export async function startPip(
   setIsPipExpanded: (expanded: boolean) => void
 ) {
   if (typeof window === "undefined" || !("documentPictureInPicture" in window)) {
-    alert("Picture-in-Picture is not supported or not enabled in your browser.")
+    await showError("Fitur Tidak Didukung", "Picture-in-Picture is not supported or not enabled in your browser.")
     return
   }
 
