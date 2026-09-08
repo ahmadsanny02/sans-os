@@ -506,8 +506,8 @@ export function CalendarView({
             </span>
             <p className="text-xl font-black text-foreground">{totalPrioritiesCount}</p>
           </div>
-          <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 space-y-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-500 flex items-center gap-1">
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 space-y-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1">
               <Clock className="h-3 w-3" /> Timetable
             </span>
             <p className="text-xl font-black text-foreground">{totalTimetableCount}</p>
