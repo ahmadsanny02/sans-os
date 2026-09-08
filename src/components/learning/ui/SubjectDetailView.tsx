@@ -390,11 +390,11 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                       </div>
 
                       {/* Hover action buttons (Edit & Delete) */}
-                      <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                         <button
                           type="button"
                           onClick={() => handleOpenEditMaterial(mat)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all cursor-pointer"
+                          className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all cursor-pointer"
                           title="Edit Material"
                         >
                           <Edit2 className="h-3.5 w-3.5" />
@@ -402,7 +402,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                         <button
                           type="button"
                           onClick={() => handleDeleteMaterial(mat.id)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete material"
                           title="Delete Material"
                         >
@@ -510,11 +510,11 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                         </div>
 
                         {/* Hover action buttons (Edit & Delete) */}
-                        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                           <button
                             type="button"
                             onClick={() => handleOpenEditTask(task)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all cursor-pointer"
+                            className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all cursor-pointer"
                             title="Edit Task"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
@@ -522,7 +522,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                           <button
                             type="button"
                             onClick={() => handleDeleteTask(task.id)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                            className="p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                             aria-label="Delete task"
                             title="Delete Task"
                           >
