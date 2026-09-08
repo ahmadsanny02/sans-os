@@ -432,10 +432,10 @@ export function BucketListBoardView({
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent z-10 pointer-events-none" />
 
                 {/* Card Header overlay elements */}
-                <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                   <button
                     onClick={() => handleOpenEdit(item)}
-                    className="p-1.5 rounded-lg bg-black/60 border border-white/20 text-white hover:bg-black/80 transition-all active:scale-95 cursor-pointer"
+                    className="p-1.5 rounded-xl bg-black/60 border border-white/20 text-white hover:bg-black/80 transition-all active:scale-95 cursor-pointer"
                     title="Edit Item"
                   >
                     <Edit2 className="h-3.5 w-3.5" />
@@ -443,7 +443,7 @@ export function BucketListBoardView({
                   <button
                     onClick={() => handleDeleteItem(item.id, item.title)}
                     disabled={isPendingDelete}
-                    className="p-1.5 rounded-lg bg-black/60 border border-white/20 text-rose-400 hover:bg-rose-500/30 transition-all active:scale-95 cursor-pointer"
+                    className="p-1.5 rounded-xl bg-black/60 border border-white/20 text-rose-400 hover:bg-rose-500/30 transition-all active:scale-95 cursor-pointer"
                     title="Delete Item"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
