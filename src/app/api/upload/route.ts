@@ -33,6 +33,15 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing file or date parameter" }, { status: 400 })
     }
 
+    // Validate date format strictly to prevent path traversal
+    const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+    if (!DATE_REGEX.test(date)) {
+      return NextResponse.json(
+        { error: "Parameter tanggal tidak valid. Format harus YYYY-MM-DD." },
+        { status: 400 }
+      )
+    }
+
     // Validate type against strict whitelist (prevent SVG XSS)
     const fileExt = ALLOWED_MIME_MAP[file.type]
     if (!fileExt) {
@@ -81,8 +90,9 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     // 5. Upload File
-    // Use user ID and date to keep it organized and unique
-    const fileName = `${user.id}/${date}_${Date.now()}.${fileExt}`
+    // Use user ID and sanitized date to keep it organized and unique
+    const sanitizedDate = date.replace(/[^0-9-]/g, "")
+    const fileName = `${user.id}/${sanitizedDate}_${Date.now()}.${fileExt}`
 
     const { error: uploadError } = await supabaseAdmin.storage
       .from("daily-pics")
