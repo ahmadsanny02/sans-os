@@ -96,6 +96,8 @@ export function useDailyPage() {
     try {
       const promises: Promise<unknown>[] = []
 
+      let addedPrioritiesCount = 0
+
       const addEntry = (title: string, link: string, orderIdx?: number) => {
         if (targetTimetable) {
           if (timetableStartTime >= timetableEndTime) {
@@ -145,14 +147,18 @@ export function useDailyPage() {
         }
 
         if (targetPriority) {
-          if (chooseDate === activeDate && listPriorities.length + promises.length >= 5) {
+          if (chooseDate === activeDate && (listPriorities.length + addedPrioritiesCount) >= 5) {
             throw new Error("You can only have a maximum of 5 priorities per day.")
           }
+          const finalOrderIdx = orderIdx !== undefined
+            ? orderIdx
+            : (chooseDate === activeDate ? listPriorities.length + addedPrioritiesCount : undefined)
+          addedPrioritiesCount++
           promises.push(
             createPriorityMutation.mutateAsync({
               date: chooseDate,
               text: title,
-              orderIndex: orderIdx !== undefined ? orderIdx : (chooseDate === activeDate ? listPriorities.length : undefined),
+              orderIndex: finalOrderIdx,
               link: link || undefined,
               category: priorityCategory,
               subCategory: prioritySubCategory || null,
