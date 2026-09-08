@@ -13,6 +13,7 @@ import {
   LearningTask,
 } from "./useLearning"
 import { confirmDestructive, showSuccessToast, showErrorToast } from "@/lib/sweetalert"
+import { format } from "date-fns"
 
 export function useLearningSubjectPage(subjectId: string) {
   const { data: subjects = [], isLoading, isError } = useLearningSubjectsQuery()
@@ -237,7 +238,7 @@ export function useLearningSubjectPage(subjectId: string) {
     setEditingTask(task)
     setEditTaskTitle(task.title)
     setEditTaskDueDate(
-      task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : ""
+      task.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd") : ""
     )
     setShowEditTaskModal(true)
   }
