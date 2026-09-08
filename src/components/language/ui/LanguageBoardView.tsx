@@ -338,7 +338,7 @@ export function LanguageBoardView({
                         key={opt.id}
                         type="button"
                         onClick={() => setDirFilter(opt.id)}
-                        className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:bg-secondary/40 text-left cursor-pointer ${
+                        className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-semibold transition-all hover:bg-secondary/40 text-left cursor-pointer ${
                           dirFilter === opt.id ? "text-primary bg-primary/10 font-bold" : "text-foreground"
                         }`}
                       >
@@ -369,7 +369,7 @@ export function LanguageBoardView({
                         key={opt.id}
                         type="button"
                         onClick={() => setMemorizedFilter(opt.id)}
-                        className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:bg-secondary/40 text-left cursor-pointer ${
+                        className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-semibold transition-all hover:bg-secondary/40 text-left cursor-pointer ${
                           memorizedFilter === opt.id ? "text-primary bg-primary/10 font-bold" : "text-foreground"
                         }`}
                       >
@@ -395,7 +395,7 @@ export function LanguageBoardView({
                         revealAllTranslations()
                         setIsFilterOpen(false)
                       }}
-                      className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg border border-border hover:bg-secondary/40 text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl border border-border hover:bg-secondary/40 text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <Eye className="h-3.5 w-3.5" /> Reveal All
                     </button>
@@ -405,7 +405,7 @@ export function LanguageBoardView({
                         hideAllTranslations()
                         setIsFilterOpen(false)
                       }}
-                      className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg border border-border hover:bg-secondary/40 text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl border border-border hover:bg-secondary/40 text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <EyeOff className="h-3.5 w-3.5" /> Hide All
                     </button>
@@ -437,7 +437,7 @@ export function LanguageBoardView({
               <button
                 type="button"
                 onClick={() => setAddMode("dictionary")}
-                className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
                   addMode === "dictionary"
                     ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -448,7 +448,7 @@ export function LanguageBoardView({
               <button
                 type="button"
                 onClick={() => setAddMode("manual")}
-                className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
                   addMode === "manual"
                     ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -680,7 +680,7 @@ export function LanguageBoardView({
                           className="w-full flex items-center justify-between p-3 bg-secondary/20 hover:bg-secondary/45 dark:bg-card/40 dark:hover:bg-card/60 border border-border/80 rounded-xl transition-all duration-200 select-none cursor-pointer text-left shadow-sm active:scale-[0.995]"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="inline-flex h-8 w-8 items-center justify-center text-xs font-extrabold bg-sidebar-primary text-sidebar-primary-foreground rounded-lg shadow-sm border border-white/5 uppercase select-none">
+                            <div className="inline-flex h-8 w-8 items-center justify-center text-xs font-extrabold bg-sidebar-primary text-sidebar-primary-foreground rounded-xl shadow-sm border border-white/5 uppercase select-none">
                               {letter}
                             </div>
                             <span className="text-xs font-bold text-muted-foreground">
@@ -815,7 +815,7 @@ const VocabCard = React.memo(function VocabCard({
 
             <button
               onClick={() => handleDeleteVocabulary(vocab.id, vocab.word)}
-              className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
               aria-label={`Delete word ${vocab.word}`}
             >
               <Trash2 className="h-3.5 w-3.5" />
