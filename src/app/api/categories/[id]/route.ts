@@ -124,6 +124,14 @@ export async function DELETE(
       return NextResponse.json({ error: "Category not found" }, { status: 404 })
     }
 
+    // Prevent deletion of default system categories
+    if (existing.isSystemDefault || existing.name.toLowerCase() === "general") {
+      return NextResponse.json(
+        { error: "Kategori bawaan sistem (General) tidak dapat dihapus." },
+        { status: 400 }
+      )
+    }
+
     await db.transaction(async (tx) => {
       // 2. Delete the category
       await tx
