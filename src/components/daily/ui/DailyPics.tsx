@@ -59,8 +59,8 @@ export function DailyPics({
                 if (picUrl) setImageErrorUrl(picUrl)
               }}
             />
-            {/* Overlay Gradient on Hover */}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-10">
+            {/* Overlay Gradient on Hover / Mobile Visible */}
+            <div className="absolute inset-0 bg-black/40 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-10">
               <button
                 onClick={triggerFileInput}
                 disabled={isUploading || isPendingSave}
