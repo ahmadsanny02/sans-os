@@ -239,7 +239,7 @@ export function ReadingProgressModal({ book, onClose }: ReadingProgressModalProp
                     <button
                       onClick={() => handleDeleteLog(log.id)}
                       disabled={deleteProgressMutation.isPending}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-all shrink-0 cursor-pointer"
+                      className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 rounded-xl hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-all shrink-0 cursor-pointer"
                       title="Delete log entry"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
