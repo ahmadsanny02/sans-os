@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, useMutationState } from "@tanstack/react-query"
 
 export interface Habit {
   id: string
@@ -123,6 +123,7 @@ export function useToggleLogMutation() {
     { habitId: string; date: string; status?: string },
     { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
   >({
+    mutationKey: ["toggle-habit-log"],
     mutationFn: toggleHabitLog,
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: ["habits"] })
@@ -174,11 +175,25 @@ export function useToggleLogMutation() {
           queryClient.setQueryData(q.queryKey, q.data)
         })
       }
-    },
-    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] })
     },
+    onSettled: () => {
+      if (queryClient.isMutating({ mutationKey: ["toggle-habit-log"] }) <= 1) {
+        queryClient.invalidateQueries({ queryKey: ["habits"] })
+      }
+    },
   })
+}
+
+export function usePendingHabitIds(): string[] {
+  const pending = useMutationState({
+    filters: { mutationKey: ["toggle-habit-log"], status: "pending" },
+    select: (mutation) => {
+      const vars = mutation.state.variables as { habitId?: string } | undefined
+      return vars?.habitId
+    },
+  })
+  return pending.filter((id): id is string => typeof id === "string")
 }
 
 // 5. Delete habit mutation
