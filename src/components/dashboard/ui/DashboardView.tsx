@@ -29,6 +29,7 @@ interface DashboardViewProps {
   prioritiesError: boolean
   handleTogglePriority: (id: string, completed: boolean) => void
   isPendingTogglePriority: boolean
+  pendingPriorityIds?: string[]
   // Checklist/Todos
   todos: DailyTodo[]
   todosLoading: boolean
@@ -36,12 +37,14 @@ interface DashboardViewProps {
   handleToggleTodo: (id: string, completed: boolean) => void
   handlePromoteTodoToPriority?: (todo: DailyTodo) => Promise<void>
   isPendingToggleTodo: boolean
+  pendingTodoIds?: string[]
   // Habits
   habits: { id: string; name: string; completed: boolean; isHabit: true }[]
   habitsLoading: boolean
   habitsError: boolean
   handleToggleHabit: (id: string) => void
   isPendingToggleHabit: boolean
+  pendingHabitIds?: string[]
   // Timetable
   activeDayBlocks: TimetableBlock[]
   timetableLoading: boolean
@@ -59,17 +62,20 @@ export function DashboardView({
   prioritiesError,
   handleTogglePriority,
   isPendingTogglePriority,
+  pendingPriorityIds = [],
   todos,
   todosLoading,
   todosError,
   handleToggleTodo,
   handlePromoteTodoToPriority,
   isPendingToggleTodo,
+  pendingTodoIds = [],
   habits,
   habitsLoading,
   habitsError,
   handleToggleHabit,
   isPendingToggleHabit,
+  pendingHabitIds = [],
   activeDayBlocks,
   timetableLoading,
   timetableError,
@@ -146,6 +152,7 @@ export function DashboardView({
             isError={prioritiesError}
             handleToggle={handleTogglePriority}
             isPendingToggle={isPendingTogglePriority}
+            pendingPriorityIds={pendingPriorityIds}
           />
           <TodosWidget
             todos={todos}
@@ -154,9 +161,11 @@ export function DashboardView({
             handleToggle={handleToggleTodo}
             handlePromoteTodoToPriority={handlePromoteTodoToPriority}
             isPendingToggle={isPendingToggleTodo}
+            pendingTodoIds={pendingTodoIds}
             habits={habits}
             handleToggleHabit={handleToggleHabit}
             isPendingToggleHabit={isPendingToggleHabit}
+            pendingHabitIds={pendingHabitIds}
           />
 
           <MemoryBoxWidget
