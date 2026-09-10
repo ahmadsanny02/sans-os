@@ -41,9 +41,11 @@ interface DailyTodosProps {
   ) => Promise<void>;
   handlePromoteTodoToPriority?: (todo: DailyTodo) => Promise<void>;
   isPendingToggleTodo?: boolean;
+  pendingTodoIds?: string[];
   habits?: HabitItem[];
   handleToggleHabit?: (id: string) => void;
   isPendingToggleHabit?: boolean;
+  pendingHabitIds?: string[];
 }
 
 export function DailyTodos({
@@ -54,10 +56,10 @@ export function DailyTodos({
   handleDeleteTodo,
   handleUpdateTodo,
   handlePromoteTodoToPriority,
-  isPendingToggleTodo = false,
+  pendingTodoIds = [],
   habits = [],
   handleToggleHabit,
-  isPendingToggleHabit = false,
+  pendingHabitIds = [],
 }: DailyTodosProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
@@ -130,50 +132,68 @@ export function DailyTodos({
                   Habits
                 </div>
                 <div className="space-y-2">
-                  {sortedHabits.map((habit) => (
-                    <div
-                      key={habit.id}
-                      onClick={() =>
-                        !isPendingToggleHabit && handleToggleHabit?.(habit.id)
-                      }
-                      className={`flex items-center justify-between rounded-xl border p-3.5 cursor-pointer transition-all duration-200 ${habit.completed
-                        ? "border-border/40 bg-secondary/20 opacity-70"
-                        : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
-                        }`}
-                    >
-                      <div className="flex items-center flex-1 min-w-0 gap-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleHabit?.(habit.id);
-                          }}
-                          // disabled={isPendingToggleHabit}
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 ${habit.completed
-                            ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                            : "border-border/60 hover:border-primary/50 bg-card"
-                            } disabled:opacity-50`}
-                          aria-label="Toggle habit check-in"
-                        >
-                          {habit.completed ? (
-                            <Check className="h-3.5 w-3.5 stroke-[3]" />
-                          ) : isPendingToggleHabit ? (
-                            habit.id && (
-                              <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin text-primary" />
-                            )
-                          ) : null}
-                        </button>
+                  {sortedHabits.map((habit) => {
+                    const isHabitPending = pendingHabitIds.includes(habit.id);
 
-                        <span
-                          className={`text-sm font-medium break-words whitespace-normal pr-2 ${habit.completed
-                            ? "line-through text-muted-foreground font-normal"
-                            : "text-foreground"
+                    return (
+                      <div
+                        key={habit.id}
+                        onClick={() => {
+                          if (!isHabitPending) {
+                            handleToggleHabit?.(habit.id);
+                          }
+                        }}
+                        className={`flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 ${
+                          isHabitPending ? "cursor-wait" : "cursor-pointer"
+                        } ${
+                          habit.completed
+                            ? "border-border/40 bg-secondary/20 opacity-70"
+                            : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
+                        }`}
+                      >
+                        <div className="flex items-center flex-1 min-w-0 gap-3">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!isHabitPending) {
+                                handleToggleHabit?.(habit.id);
+                              }
+                            }}
+                            disabled={isHabitPending}
+                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 ${
+                              habit.completed
+                                ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                                : "border-border/60 hover:border-primary/50 bg-card"
+                            } ${isHabitPending ? "cursor-wait opacity-80" : "cursor-pointer"}`}
+                            aria-label="Toggle habit check-in"
+                          >
+                            {isHabitPending ? (
+                              <Loader2
+                                className={`h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin ${
+                                  habit.completed
+                                    ? "text-primary-foreground"
+                                    : "text-primary"
+                                }`}
+                              />
+                            ) : habit.completed ? (
+                              <Check className="h-3.5 w-3.5 stroke-[3]" />
+                            ) : null}
+                          </button>
+
+                          <span
+                            className={`text-sm font-medium break-words whitespace-normal pr-2 ${
+                              habit.completed
+                                ? "line-through text-muted-foreground font-normal"
+                                : "text-foreground"
                             }`}
-                        >
-                          {habit.name}
-                        </span>
+                          >
+                            {habit.name}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -185,39 +205,64 @@ export function DailyTodos({
                   Tasks
                 </div>
                 <div className="space-y-2">
-                  {sortedTodos.map((todo) => (
-                    <div
-                      key={todo.id}
-                      onClick={() => {
-                        if (!isPendingToggleTodo && editingId !== todo.id) {
-                          handleToggleCompleted(todo.id, todo.completed);
-                        }
-                      }}
-                      className={`flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 ${editingId === todo.id ? "" : "cursor-pointer"
-                        } ${todo.completed
-                          ? "border-border/40 bg-secondary/20 opacity-70"
-                          : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
-                        }`}
-                    >
-                      <div className="flex items-start flex-1 min-w-0 gap-3">
-                        <button
-                          disabled={
-                            isPendingToggleTodo || editingId === todo.id
-                          }
-                          onClick={(e) => {
-                            e.stopPropagation();
+                  {sortedTodos.map((todo) => {
+                    const isTodoPending = pendingTodoIds.includes(todo.id);
+
+                    return (
+                      <div
+                        key={todo.id}
+                        onClick={() => {
+                          if (!isTodoPending && editingId !== todo.id) {
                             handleToggleCompleted(todo.id, todo.completed);
-                          }}
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-0.5 ${todo.completed
-                            ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                            : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
-                            } ${isPendingToggleTodo || editingId === todo.id ? "cursor-not-allowed" : "cursor-pointer"}`}
-                          aria-label="Toggle task completion"
-                        >
-                          {todo.completed && (
-                            <Check className="h-3.5 w-3.5 stroke-[3]" />
-                          )}
-                        </button>
+                          }
+                        }}
+                        className={`flex items-center justify-between rounded-xl border p-3.5 transition-all duration-200 ${
+                          editingId === todo.id
+                            ? ""
+                            : isTodoPending
+                            ? "cursor-wait"
+                            : "cursor-pointer"
+                        } ${
+                          todo.completed
+                            ? "border-border/40 bg-secondary/20 opacity-70"
+                            : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
+                        }`}
+                      >
+                        <div className="flex items-start flex-1 min-w-0 gap-3">
+                          <button
+                            type="button"
+                            disabled={isTodoPending || editingId === todo.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!isTodoPending && editingId !== todo.id) {
+                                handleToggleCompleted(todo.id, todo.completed);
+                              }
+                            }}
+                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 mt-0.5 ${
+                              todo.completed
+                                ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                                : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
+                            } ${
+                              isTodoPending
+                                ? "cursor-wait opacity-80"
+                                : editingId === todo.id
+                                ? "cursor-not-allowed"
+                                : "cursor-pointer"
+                            }`}
+                            aria-label="Toggle task completion"
+                          >
+                            {isTodoPending ? (
+                              <Loader2
+                                className={`h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin ${
+                                  todo.completed
+                                    ? "text-primary-foreground"
+                                    : "text-primary"
+                                }`}
+                              />
+                            ) : todo.completed ? (
+                              <Check className="h-3.5 w-3.5 stroke-[3]" />
+                            ) : null}
+                          </button>
 
                         <div className="flex flex-col flex-1 min-w-0 gap-1">
                           {editingId === todo.id ? (
@@ -439,7 +484,8 @@ export function DailyTodos({
                         )}
                       </div>
                     </div>
-                  ))}
+                  );
+                })}
                 </div>
               </div>
             )}
