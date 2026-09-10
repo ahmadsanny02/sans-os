@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, useMutationState } from "@tanstack/react-query"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 
 export interface DailyTodo {
@@ -102,6 +102,7 @@ export function useToggleDailyTodoMutation(date: string) {
     { id: string; completed: boolean },
     { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
   >({
+    mutationKey: ["toggle-daily-todo"],
     mutationFn: toggleDailyTodo,
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: ["daily-todos", date] })
@@ -132,11 +133,25 @@ export function useToggleDailyTodoMutation(date: string) {
           queryClient.setQueryData(q.queryKey, q.data)
         })
       }
-    },
-    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["daily-todos"] })
     },
+    onSettled: () => {
+      if (queryClient.isMutating({ mutationKey: ["toggle-daily-todo"] }) <= 1) {
+        queryClient.invalidateQueries({ queryKey: ["daily-todos"] })
+      }
+    },
   })
+}
+
+export function usePendingDailyTodoIds(): string[] {
+  const pending = useMutationState({
+    filters: { mutationKey: ["toggle-daily-todo"], status: "pending" },
+    select: (mutation) => {
+      const vars = mutation.state.variables as { id?: string } | undefined
+      return vars?.id
+    },
+  })
+  return pending.filter((id): id is string => typeof id === "string")
 }
 
 // Delete Daily Todo
