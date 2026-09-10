@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Priority } from "@/hooks/useDaily"
-import { Award, Check } from "lucide-react"
+import { Award, Check, Loader2 } from "lucide-react"
 
 interface PrioritiesWidgetProps {
   priorities: Priority[]
@@ -10,6 +10,7 @@ interface PrioritiesWidgetProps {
   isError: boolean
   handleToggle: (id: string, completed: boolean) => void
   isPendingToggle: boolean
+  pendingPriorityIds?: string[]
 }
 
 export function PrioritiesWidget({
@@ -17,7 +18,7 @@ export function PrioritiesWidget({
   isLoading,
   isError,
   handleToggle,
-  isPendingToggle,
+  pendingPriorityIds = [],
 }: PrioritiesWidgetProps) {
   const sortedPriorities = [...priorities].sort((a, b) => {
     if (a.completed === b.completed) {
@@ -58,37 +59,61 @@ export function PrioritiesWidget({
           </div>
         ) : (
           <div className="space-y-2">
-            {sortedPriorities.map((priority) => (
-              <div
-                key={priority.id}
-                onClick={() => !isPendingToggle && handleToggle(priority.id, priority.completed)}
-                className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
-                  priority.completed 
-                    ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65" 
-                    : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
-                }`}
-              >
-                <button
-                  type="button"
-                  disabled={isPendingToggle}
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${
-                    priority.completed
-                      ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                      : "border-border hover:border-primary/50 bg-card"
-                  }`}
-                  aria-label="Toggle completed"
-                >
-                  {priority.completed ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
-                </button>
-                <span
-                  className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
-                    priority.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
+            {sortedPriorities.map((priority) => {
+              const isPriorityPending = pendingPriorityIds.includes(priority.id)
+
+              return (
+                <div
+                  key={priority.id}
+                  onClick={() => {
+                    if (!isPriorityPending) {
+                      handleToggle(priority.id, priority.completed)
+                    }
+                  }}
+                  className={`flex items-center gap-3 rounded-xl border p-3 transition-all duration-200 ${
+                    isPriorityPending ? "cursor-wait" : "cursor-pointer"
+                  } ${
+                    priority.completed 
+                      ? "opacity-70 border-border/40 bg-secondary/20 hover:border-border/65" 
+                      : "border-border/60 bg-card/40 hover:border-primary/30 hover:shadow-sm hover:bg-card/70"
                   }`}
                 >
-                  {priority.text}
-                </span>
-              </div>
-            ))}
+                  <button
+                    type="button"
+                    disabled={isPriorityPending}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (!isPriorityPending) {
+                        handleToggle(priority.id, priority.completed)
+                      }
+                    }}
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${
+                      priority.completed
+                        ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                        : "border-border hover:border-primary/50 bg-card"
+                    } ${isPriorityPending ? "cursor-wait opacity-80" : "cursor-pointer"}`}
+                    aria-label="Toggle completed"
+                  >
+                    {isPriorityPending ? (
+                      <Loader2
+                        className={`h-3.5 w-3.5 animate-spin ${
+                          priority.completed ? "text-primary-foreground" : "text-primary"
+                        }`}
+                      />
+                    ) : priority.completed ? (
+                      <Check className="h-3.5 w-3.5 stroke-[3]" />
+                    ) : null}
+                  </button>
+                  <span
+                    className={`text-xs font-semibold break-words whitespace-normal leading-tight ${
+                      priority.completed ? "line-through text-muted-foreground font-normal" : "text-foreground"
+                    }`}
+                  >
+                    {priority.text}
+                  </span>
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
