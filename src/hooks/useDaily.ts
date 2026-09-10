@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, useMutationState } from "@tanstack/react-query"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 
 export interface Priority {
@@ -139,6 +139,7 @@ export function useTogglePriorityMutation(date: string) {
     { id: string; completed: boolean },
     { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
   >({
+    mutationKey: ["toggle-priority"],
     mutationFn: togglePriority,
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: ["priorities", date] })
@@ -169,12 +170,27 @@ export function useTogglePriorityMutation(date: string) {
           queryClient.setQueryData(q.queryKey, q.data)
         })
       }
-    },
-    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["priorities"] })
       queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
     },
+    onSettled: () => {
+      if (queryClient.isMutating({ mutationKey: ["toggle-priority"] }) <= 1) {
+        queryClient.invalidateQueries({ queryKey: ["priorities"] })
+        queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
+      }
+    },
   })
+}
+
+export function usePendingPriorityIds(): string[] {
+  const pending = useMutationState({
+    filters: { mutationKey: ["toggle-priority"], status: "pending" },
+    select: (mutation) => {
+      const vars = mutation.state.variables as { id?: string } | undefined
+      return vars?.id
+    },
+  })
+  return pending.filter((id): id is string => typeof id === "string")
 }
 
 async function deletePriority(id: string): Promise<{ success: boolean }> {
