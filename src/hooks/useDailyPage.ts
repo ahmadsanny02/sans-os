@@ -13,6 +13,7 @@ import {
   useCreateTimetableBlockMutation,
   useDeleteTimetableBlockMutation,
   useUpdateTimetableBlockMutation,
+  usePendingPriorityIds,
 } from "@/hooks/useDaily"
 import {
   DailyTodo,
@@ -23,10 +24,12 @@ import {
   useUpdateDailyTodoMutation,
   useDailyLogQuery,
   useSaveDailyLogMutation,
+  usePendingDailyTodoIds,
 } from "@/hooks/useDailyLogs"
 import {
   useHabitsQuery,
   useToggleLogMutation,
+  usePendingHabitIds,
 } from "@/hooks/useHabits"
 import { format, parseISO, addDays, subDays } from "date-fns"
 import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
@@ -209,8 +212,10 @@ export function useDailyPage() {
   const createPriorityMutation = useCreatePriorityMutation()
   const togglePriorityMutation = useTogglePriorityMutation(activeDate)
   const deletePriorityMutation = useDeletePriorityMutation()
+  const pendingPriorityIds = usePendingPriorityIds()
 
   const handleTogglePriority = (id: string, completed: boolean): void => {
+    if (pendingPriorityIds.includes(id)) return
     togglePriorityMutation.mutate({ id, completed: !completed })
   }
 
@@ -247,8 +252,10 @@ export function useDailyPage() {
   const createTodoMutation = useCreateDailyTodoMutation()
   const toggleTodoMutation = useToggleDailyTodoMutation(activeDate)
   const deleteTodoMutation = useDeleteDailyTodoMutation(activeDate)
+  const pendingTodoIds = usePendingDailyTodoIds()
 
   const handleToggleTodo = (id: string, completed: boolean): void => {
+    if (pendingTodoIds.includes(id)) return
     toggleTodoMutation.mutate({ id, completed: !completed })
   }
 
@@ -317,6 +324,7 @@ export function useDailyPage() {
   // ==========================================
   const { data: habitsData, isLoading: habitsLoading, isError: habitsError } = useHabitsQuery(activeDate, activeDate)
   const toggleHabitMutation = useToggleLogMutation()
+  const pendingHabitIds = usePendingHabitIds()
 
   const todayHabits = (habitsData?.habits || []).map((habit) => {
     const isCompleted = (habitsData?.logs || []).some(
@@ -331,6 +339,7 @@ export function useDailyPage() {
   })
 
   const handleToggleHabit = (habitId: string): void => {
+    if (pendingHabitIds.includes(habitId)) return
     toggleHabitMutation.mutate({ habitId, date: activeDate })
   }
 
@@ -571,6 +580,7 @@ export function useDailyPage() {
     handleUpdatePriority,
     priorityCreatePending: createPriorityMutation.isPending,
     priorityTogglePending: togglePriorityMutation.isPending,
+    pendingPriorityIds,
 
     // Todos
     todos,
@@ -581,6 +591,7 @@ export function useDailyPage() {
     handleUpdateTodo,
     todoCreatePending: createTodoMutation.isPending,
     todoTogglePending: toggleTodoMutation.isPending,
+    pendingTodoIds,
     handlePromoteTodoToPriority,
 
     // Timetable
@@ -641,6 +652,7 @@ export function useDailyPage() {
     habitsError,
     handleToggleHabit,
     isPendingToggleHabit: toggleHabitMutation.isPending,
+    pendingHabitIds,
   }
 }
 
