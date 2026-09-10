@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Priority } from "@/hooks/useDaily"
-import { Trash2, Check, RotateCcw, Link2, Pencil, Tag } from "lucide-react"
+import { Trash2, Check, RotateCcw, Link2, Pencil, Tag, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { useCategories } from "@/hooks/useCategories"
 import { CustomSelect } from "@/components/ui/CustomSelect"
@@ -16,6 +16,7 @@ interface PrioritiesListProps {
   handleDeletePriority: (id: string) => Promise<void>
   handleUpdatePriority: (id: string, text: string, link: string, category: string, subCategory: string | null, date?: string) => Promise<void>
   isPendingToggle?: boolean
+  pendingPriorityIds?: string[]
 }
 
 export function PrioritiesList({
@@ -25,7 +26,7 @@ export function PrioritiesList({
   handleToggleCompleted,
   handleDeletePriority,
   handleUpdatePriority,
-  isPendingToggle = false,
+  pendingPriorityIds = [],
 }: PrioritiesListProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState("")
@@ -84,38 +85,62 @@ export function PrioritiesList({
           </div>
         ) : (
           <div className="space-y-2.5">
-            {sortedPriorities.map((priority) => (
-              <div
-                key={priority.id}
-                onClick={() => {
-                  if (!isPendingToggle && editingId !== priority.id) {
-                    handleToggleCompleted(priority.id, priority.completed)
-                  }
-                }}
-                className={`flex items-center justify-between rounded-xl border p-4 transition-all duration-200 ${
-                  editingId === priority.id ? "" : "cursor-pointer"
-                } ${
-                  priority.completed
-                    ? "border-border/40 bg-secondary/20 opacity-70"
-                    : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
-                }`}
-              >
-                <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                  <button
-                    disabled={isPendingToggle || editingId === priority.id}
-                    onClick={(e) => {
-                      e.stopPropagation()
+            {sortedPriorities.map((priority) => {
+              const isPriorityPending = pendingPriorityIds.includes(priority.id)
+
+              return (
+                <div
+                  key={priority.id}
+                  onClick={() => {
+                    if (!isPriorityPending && editingId !== priority.id) {
                       handleToggleCompleted(priority.id, priority.completed)
-                    }}
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-0.5 ${
-                      priority.completed
-                        ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                        : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
-                    } ${isPendingToggle || editingId === priority.id ? "cursor-not-allowed" : "cursor-pointer"}`}
-                    aria-label="Toggle task completed"
-                  >
-                    {priority.completed && <Check className="h-3.5 w-3.5 stroke-[3]" />}
-                  </button>
+                    }
+                  }}
+                  className={`flex items-center justify-between rounded-xl border p-4 transition-all duration-200 ${
+                    editingId === priority.id
+                      ? ""
+                      : isPriorityPending
+                      ? "cursor-wait"
+                      : "cursor-pointer"
+                  } ${
+                    priority.completed
+                      ? "border-border/40 bg-secondary/20 opacity-70"
+                      : "border-border/60 bg-card/40 shadow-sm hover:border-primary/30 hover:bg-card/70"
+                  }`}
+                >
+                  <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                    <button
+                      type="button"
+                      disabled={isPriorityPending || editingId === priority.id}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (!isPriorityPending && editingId !== priority.id) {
+                          handleToggleCompleted(priority.id, priority.completed)
+                        }
+                      }}
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 mt-0.5 ${
+                        priority.completed
+                          ? "bg-primary border-primary text-primary-foreground shadow-glow"
+                          : "border-border/60 hover:border-primary/50 hover:bg-primary/10 bg-card"
+                      } ${
+                        isPriorityPending
+                          ? "cursor-wait opacity-80"
+                          : editingId === priority.id
+                          ? "cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
+                      aria-label="Toggle task completed"
+                    >
+                      {isPriorityPending ? (
+                        <Loader2
+                          className={`h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin ${
+                            priority.completed ? "text-primary-foreground" : "text-primary"
+                          }`}
+                        />
+                      ) : priority.completed ? (
+                        <Check className="h-3.5 w-3.5 stroke-[3]" />
+                      ) : null}
+                    </button>
 
                   <div className="flex flex-col min-w-0 pr-2 flex-1">
                     {editingId === priority.id ? (
@@ -315,7 +340,8 @@ export function PrioritiesList({
                   </div>
                 )}
               </div>
-            ))}
+            );
+          })}
           </div>
         )}
       </div>
