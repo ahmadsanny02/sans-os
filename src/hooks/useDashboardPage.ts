@@ -7,6 +7,7 @@ import {
   useTogglePriorityMutation,
   useCreatePriorityMutation,
   useTimetableQuery,
+  usePendingPriorityIds,
 } from "@/hooks/useDaily"
 import {
   DailyTodo,
@@ -14,9 +15,10 @@ import {
   useToggleDailyTodoMutation,
   useDeleteDailyTodoMutation,
   useDailyLogQuery,
+  usePendingDailyTodoIds,
 } from "@/hooks/useDailyLogs"
 import { showError, showSuccessToast } from "@/lib/sweetalert"
-import { useHabitsQuery, useToggleLogMutation } from "@/hooks/useHabits"
+import { useHabitsQuery, useToggleLogMutation, usePendingHabitIds } from "@/hooks/useHabits"
 import { parseISO } from "date-fns"
 
 function getGreeting(hour: number): string {
@@ -139,16 +141,23 @@ export function useDashboardPage() {
     })
     .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
+  const pendingPriorityIds = usePendingPriorityIds()
+  const pendingTodoIds = usePendingDailyTodoIds()
+  const pendingHabitIds = usePendingHabitIds()
+
   // 6. Action handlers
   const handleTogglePriority = (id: string, completed: boolean): void => {
+    if (pendingPriorityIds.includes(id)) return
     togglePriorityMutation.mutate({ id, completed: !completed })
   }
 
   const handleToggleTodo = (id: string, completed: boolean): void => {
+    if (pendingTodoIds.includes(id)) return
     toggleTodoMutation.mutate({ id, completed: !completed })
   }
 
   const handleToggleHabit = (habitId: string): void => {
+    if (pendingHabitIds.includes(habitId)) return
     toggleHabitMutation.mutate({ habitId, date: activeDate })
   }
 
@@ -185,6 +194,7 @@ export function useDashboardPage() {
     prioritiesError,
     handleTogglePriority,
     isPendingTogglePriority: togglePriorityMutation.isPending,
+    pendingPriorityIds,
     // Checklist/Todos
     todos,
     todosLoading,
@@ -192,12 +202,14 @@ export function useDashboardPage() {
     handleToggleTodo,
     handlePromoteTodoToPriority,
     isPendingToggleTodo: toggleTodoMutation.isPending,
+    pendingTodoIds,
     // Habits
     habits: todayHabits,
     habitsLoading,
     habitsError,
     handleToggleHabit,
     isPendingToggleHabit: toggleHabitMutation.isPending,
+    pendingHabitIds,
     // Timetable
     activeDayBlocks,
     timetableLoading,
