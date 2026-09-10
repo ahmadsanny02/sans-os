@@ -111,6 +111,7 @@ export default function DailyComponent() {
             handleDeletePriority={dailyData.handleDeletePriority}
             handleUpdatePriority={dailyData.handleUpdatePriority}
             isPendingToggle={dailyData.priorityTogglePending}
+            pendingPriorityIds={dailyData.pendingPriorityIds}
           />
         </div>
 
@@ -125,9 +126,11 @@ export default function DailyComponent() {
             handleUpdateTodo={dailyData.handleUpdateTodo}
             handlePromoteTodoToPriority={dailyData.handlePromoteTodoToPriority}
             isPendingToggleTodo={dailyData.todoTogglePending}
+            pendingTodoIds={dailyData.pendingTodoIds}
             habits={dailyData.habits}
             handleToggleHabit={dailyData.handleToggleHabit}
             isPendingToggleHabit={dailyData.isPendingToggleHabit}
+            pendingHabitIds={dailyData.pendingHabitIds}
           />
         </div>
       </div>
