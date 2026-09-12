@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { subCategories, habits, timetableBlocks, priorities, learningSubjects, projects, dailyTodos } from "@/types/schema"
+import { subCategories, categories, habits, timetableBlocks, priorities, learningSubjects, projects, dailyTodos } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -26,10 +26,16 @@ export async function PUT(
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
-    // 1. Get existing subcategory to check name change
+    // 1. Get existing subcategory along with its parent category name
     const [existing] = await db
-      .select()
+      .select({
+        id: subCategories.id,
+        name: subCategories.name,
+        categoryId: subCategories.categoryId,
+        parentCategoryName: categories.name,
+      })
       .from(subCategories)
+      .innerJoin(categories, eq(subCategories.categoryId, categories.id))
       .where(and(eq(subCategories.id, id), eq(subCategories.userId, user.id)))
       .limit(1)
 
@@ -46,37 +52,73 @@ export async function PUT(
         .returning()
       updatedSub = res
 
-      // 2. If name changed, rename references in other tables
-      if (name !== existing.name) {
+      // 2. If name changed, rename references in other tables scoping to the parent category
+      if (name !== existing.name && existing.parentCategoryName) {
         await tx
           .update(habits)
           .set({ subCategory: name })
-          .where(and(eq(habits.userId, user.id), eq(habits.subCategory, existing.name)))
+          .where(
+            and(
+              eq(habits.userId, user.id),
+              eq(habits.category, existing.parentCategoryName),
+              eq(habits.subCategory, existing.name)
+            )
+          )
 
         await tx
           .update(timetableBlocks)
           .set({ subCategory: name })
-          .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.subCategory, existing.name)))
+          .where(
+            and(
+              eq(timetableBlocks.userId, user.id),
+              eq(timetableBlocks.category, existing.parentCategoryName),
+              eq(timetableBlocks.subCategory, existing.name)
+            )
+          )
 
         await tx
           .update(priorities)
           .set({ subCategory: name })
-          .where(and(eq(priorities.userId, user.id), eq(priorities.subCategory, existing.name)))
+          .where(
+            and(
+              eq(priorities.userId, user.id),
+              eq(priorities.category, existing.parentCategoryName),
+              eq(priorities.subCategory, existing.name)
+            )
+          )
 
         await tx
           .update(learningSubjects)
           .set({ subCategory: name })
-          .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.subCategory, existing.name)))
+          .where(
+            and(
+              eq(learningSubjects.userId, user.id),
+              eq(learningSubjects.category, existing.parentCategoryName),
+              eq(learningSubjects.subCategory, existing.name)
+            )
+          )
 
         await tx
           .update(projects)
           .set({ subCategory: name })
-          .where(and(eq(projects.userId, user.id), eq(projects.subCategory, existing.name)))
+          .where(
+            and(
+              eq(projects.userId, user.id),
+              eq(projects.category, existing.parentCategoryName),
+              eq(projects.subCategory, existing.name)
+            )
+          )
 
         await tx
           .update(dailyTodos)
           .set({ subCategory: name })
-          .where(and(eq(dailyTodos.userId, user.id), eq(dailyTodos.subCategory, existing.name)))
+          .where(
+            and(
+              eq(dailyTodos.userId, user.id),
+              eq(dailyTodos.category, existing.parentCategoryName),
+              eq(dailyTodos.subCategory, existing.name)
+            )
+          )
       }
     })
 
@@ -103,10 +145,16 @@ export async function DELETE(
 
     const { id } = await params
 
-    // 1. Get existing subcategory to check name before deleting
+    // 1. Get existing subcategory along with its parent category name before deleting
     const [existing] = await db
-      .select()
+      .select({
+        id: subCategories.id,
+        name: subCategories.name,
+        categoryId: subCategories.categoryId,
+        parentCategoryName: categories.name,
+      })
       .from(subCategories)
+      .innerJoin(categories, eq(subCategories.categoryId, categories.id))
       .where(and(eq(subCategories.id, id), eq(subCategories.userId, user.id)))
       .limit(1)
 
@@ -114,41 +162,79 @@ export async function DELETE(
       return NextResponse.json({ error: "Sub-category not found" }, { status: 404 })
     }
 
-    // 2. Delete sub-category and clear references atomically
+    // 2. Delete sub-category and clear references scoped to parent category atomically
     await db.transaction(async (tx) => {
       await tx
         .delete(subCategories)
         .where(and(eq(subCategories.id, id), eq(subCategories.userId, user.id)))
 
-      await tx
-        .update(habits)
-        .set({ subCategory: null })
-        .where(and(eq(habits.userId, user.id), eq(habits.subCategory, existing.name)))
+      if (existing.parentCategoryName) {
+        await tx
+          .update(habits)
+          .set({ subCategory: null })
+          .where(
+            and(
+              eq(habits.userId, user.id),
+              eq(habits.category, existing.parentCategoryName),
+              eq(habits.subCategory, existing.name)
+            )
+          )
 
-      await tx
-        .update(timetableBlocks)
-        .set({ subCategory: null })
-        .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.subCategory, existing.name)))
+        await tx
+          .update(timetableBlocks)
+          .set({ subCategory: null })
+          .where(
+            and(
+              eq(timetableBlocks.userId, user.id),
+              eq(timetableBlocks.category, existing.parentCategoryName),
+              eq(timetableBlocks.subCategory, existing.name)
+            )
+          )
 
-      await tx
-        .update(priorities)
-        .set({ subCategory: null })
-        .where(and(eq(priorities.userId, user.id), eq(priorities.subCategory, existing.name)))
+        await tx
+          .update(priorities)
+          .set({ subCategory: null })
+          .where(
+            and(
+              eq(priorities.userId, user.id),
+              eq(priorities.category, existing.parentCategoryName),
+              eq(priorities.subCategory, existing.name)
+            )
+          )
 
-      await tx
-        .update(learningSubjects)
-        .set({ subCategory: null })
-        .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.subCategory, existing.name)))
+        await tx
+          .update(learningSubjects)
+          .set({ subCategory: null })
+          .where(
+            and(
+              eq(learningSubjects.userId, user.id),
+              eq(learningSubjects.category, existing.parentCategoryName),
+              eq(learningSubjects.subCategory, existing.name)
+            )
+          )
 
-      await tx
-        .update(projects)
-        .set({ subCategory: null })
-        .where(and(eq(projects.userId, user.id), eq(projects.subCategory, existing.name)))
+        await tx
+          .update(projects)
+          .set({ subCategory: null })
+          .where(
+            and(
+              eq(projects.userId, user.id),
+              eq(projects.category, existing.parentCategoryName),
+              eq(projects.subCategory, existing.name)
+            )
+          )
 
-      await tx
-        .update(dailyTodos)
-        .set({ subCategory: null })
-        .where(and(eq(dailyTodos.userId, user.id), eq(dailyTodos.subCategory, existing.name)))
+        await tx
+          .update(dailyTodos)
+          .set({ subCategory: null })
+          .where(
+            and(
+              eq(dailyTodos.userId, user.id),
+              eq(dailyTodos.category, existing.parentCategoryName),
+              eq(dailyTodos.subCategory, existing.name)
+            )
+          )
+      }
     })
 
     return NextResponse.json({ success: true })
