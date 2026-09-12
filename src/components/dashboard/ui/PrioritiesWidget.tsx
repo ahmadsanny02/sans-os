@@ -87,7 +87,7 @@ export function PrioritiesWidget({
                         handleToggle(priority.id, priority.completed)
                       }
                     }}
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-xl border transition-all ${
                       priority.completed
                         ? "bg-primary border-primary text-primary-foreground shadow-glow"
                         : "border-border hover:border-primary/50 bg-card"
