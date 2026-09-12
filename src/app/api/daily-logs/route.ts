@@ -5,6 +5,8 @@ import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger";
 
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const supabase = await createServerSupabaseClient()
@@ -19,8 +21,8 @@ export async function GET(request: Request): Promise<NextResponse> {
     const { searchParams } = new URL(request.url)
     const dateParam = searchParams.get("date") // format "YYYY-MM-DD"
 
-    if (!dateParam) {
-      return NextResponse.json({ error: "Date parameter is required" }, { status: 400 })
+    if (!dateParam || !DATE_REGEX.test(dateParam)) {
+      return NextResponse.json({ error: "Valid date parameter (YYYY-MM-DD) is required" }, { status: 400 })
     }
 
     const [log] = await db
@@ -51,50 +53,35 @@ export async function POST(request: Request): Promise<NextResponse> {
     const body = await request.json()
     const { date, journal, notes, gratitude, picUrl } = body
 
-    if (!date) {
-      return NextResponse.json({ error: "Date parameter is required" }, { status: 400 })
+    if (!date || !DATE_REGEX.test(date)) {
+      return NextResponse.json({ error: "Valid date parameter (YYYY-MM-DD) is required" }, { status: 400 })
     }
 
-    // Check if a log already exists for this date
-    const [existingLog] = await db
-      .select()
-      .from(dailyLogs)
-      .where(and(eq(dailyLogs.userId, user.id), eq(dailyLogs.date, date)))
-      .limit(1)
+    const updateSet: Partial<typeof dailyLogs.$inferInsert> = {}
+    if (journal !== undefined) updateSet.journal = journal
+    if (notes !== undefined) updateSet.notes = notes
+    if (gratitude !== undefined) updateSet.gratitude = gratitude
+    if (picUrl !== undefined) updateSet.picUrl = picUrl
 
-    let resultLog
-
-    if (existingLog) {
-      // Perform update
-      const updateData: Partial<typeof dailyLogs.$inferInsert> = {}
-      if (journal !== undefined) updateData.journal = journal
-      if (notes !== undefined) updateData.notes = notes
-      if (gratitude !== undefined) updateData.gratitude = gratitude
-      if (picUrl !== undefined) updateData.picUrl = picUrl
-
-      const [updatedLog] = await db
-        .update(dailyLogs)
-        .set(updateData)
-        .where(and(eq(dailyLogs.id, existingLog.id), eq(dailyLogs.userId, user.id)))
-        .returning()
-      
-      resultLog = updatedLog
-    } else {
-      // Perform insert
-      const [newLog] = await db
-        .insert(dailyLogs)
-        .values({
-          userId: user.id,
-          date,
-          journal: journal || "",
-          notes: notes || "",
-          gratitude: gratitude || "",
-          picUrl: picUrl || "",
-        })
-        .returning()
-      
-      resultLog = newLog
+    if (Object.keys(updateSet).length === 0) {
+      updateSet.date = date
     }
+
+    const [resultLog] = await db
+      .insert(dailyLogs)
+      .values({
+        userId: user.id,
+        date,
+        journal: journal || "",
+        notes: notes || "",
+        gratitude: gratitude || "",
+        picUrl: picUrl || "",
+      })
+      .onConflictDoUpdate({
+        target: [dailyLogs.userId, dailyLogs.date],
+        set: updateSet,
+      })
+      .returning()
 
     return NextResponse.json(resultLog)
   } catch (error) {
