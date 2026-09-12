@@ -117,7 +117,7 @@ export function TodosWidget({
                             handleToggleHabit?.(habit.id);
                           }
                         }}
-                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all ${
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-xl border transition-all ${
                           habit.completed
                             ? "bg-primary border-primary text-primary-foreground shadow-glow"
                             : "border-border hover:border-primary/50 bg-card"
@@ -187,7 +187,7 @@ export function TodosWidget({
                             handleToggle(todo.id, todo.completed);
                           }
                         }}
-                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all mt-0.5 ${
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-xl border transition-all mt-0.5 ${
                           todo.completed
                             ? "bg-primary border-primary text-primary-foreground shadow-glow"
                             : "border-border hover:border-primary/50 bg-card"
@@ -239,7 +239,7 @@ export function TodosWidget({
                           e.stopPropagation();
                           handlePromoteTodoToPriority(todo);
                         }}
-                        className="p-1 transition-colors rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 shrink-0"
+                        className="p-1 transition-colors rounded-xl text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 shrink-0"
                         title="Move to Top 5 Priorities"
                         aria-label={`Move ${todo.text} to Top 5 Priorities`}
                       >
