@@ -121,7 +121,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="rounded-3xl border border-border/70 bg-card/60 dark:bg-card/25 p-7 sm:p-9 shadow-2xl backdrop-blur-xl space-y-6"
+            className="rounded-2xl border border-border/60 bg-card/45 dark:bg-card/15 p-7 sm:p-9 shadow-sm backdrop-blur-md space-y-6"
           >
             {/* Form Header */}
             <div className="text-center space-y-2">
