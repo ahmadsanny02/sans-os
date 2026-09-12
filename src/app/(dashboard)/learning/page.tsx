@@ -1,2 +1,6 @@
-import LearningComponent from "@/components/learning/page"
-export default LearningComponent
+import React from "react"
+import { LearningView } from "@/components/learning/LearningView"
+
+export default function LearningPage(): React.JSX.Element {
+  return <LearningView />
+}
