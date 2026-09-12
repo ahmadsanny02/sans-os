@@ -4,6 +4,8 @@ import { dailyTodos } from "@/types/schema"
 import { eq, and, asc, lt } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const supabase = await createServerSupabaseClient()
@@ -19,8 +21,12 @@ export async function GET(request: Request): Promise<NextResponse> {
     const dateParam = searchParams.get("date") // format "YYYY-MM-DD"
     let today = searchParams.get("today")
 
-    if (!dateParam) {
-      return NextResponse.json({ error: "Date parameter is required" }, { status: 400 })
+    if (!dateParam || !DATE_REGEX.test(dateParam)) {
+      return NextResponse.json({ error: "Format parameter date harus YYYY-MM-DD" }, { status: 400 })
+    }
+
+    if (today && !DATE_REGEX.test(today)) {
+      return NextResponse.json({ error: "Format parameter today harus YYYY-MM-DD" }, { status: 400 })
     }
 
     if (!today) {
@@ -93,6 +99,10 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     if (!date || !text) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    if (!DATE_REGEX.test(date)) {
+      return NextResponse.json({ error: "Format parameter date harus YYYY-MM-DD" }, { status: 400 })
     }
 
     const [newTodo] = await db
