@@ -200,7 +200,7 @@ export function HabitGrid({
             <button
               type="button"
               onClick={handleScrollLeft}
-              className="p-1.5 rounded-lg bg-secondary/80 hover:bg-secondary text-muted-foreground hover:text-foreground active:scale-95 transition-all border border-border/40"
+              className="p-1.5 rounded-xl bg-secondary/80 hover:bg-secondary text-muted-foreground hover:text-foreground active:scale-95 transition-all border border-border/40"
               title="Scroll left"
               aria-label="Scroll dates left"
             >
@@ -209,7 +209,7 @@ export function HabitGrid({
             <button
               type="button"
               onClick={handleScrollToActive}
-              className="px-2 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold tracking-wide active:scale-95 transition-all border border-primary/20"
+              className="px-2 py-1 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold tracking-wide active:scale-95 transition-all border border-primary/20"
               title="Go to active date"
             >
               Today
@@ -217,7 +217,7 @@ export function HabitGrid({
             <button
               type="button"
               onClick={handleScrollRight}
-              className="p-1.5 rounded-lg bg-secondary/80 hover:bg-secondary text-muted-foreground hover:text-foreground active:scale-95 transition-all border border-border/40"
+              className="p-1.5 rounded-xl bg-secondary/80 hover:bg-secondary text-muted-foreground hover:text-foreground active:scale-95 transition-all border border-border/40"
               title="Scroll right"
               aria-label="Scroll dates right"
             >
@@ -226,7 +226,7 @@ export function HabitGrid({
           </div>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95"
           >
             <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             {showAddForm ? "Cancel" : "Add Habit"}
@@ -252,7 +252,7 @@ export function HabitGrid({
                 value={newHabitName}
                 onChange={(e) => setNewHabitName(e.target.value)}
                 placeholder="e.g. Workout, Read books 15 mins..."
-                className="w-full rounded-lg border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                className="w-full rounded-xl border border-border/60 bg-background px-3.5 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
 
@@ -264,8 +264,8 @@ export function HabitGrid({
                 id="habitCategory"
                 value={newHabitCategory || ""}
                 onChange={(val) => {
-                  if (setNewHabitCategory) setNewHabitCategory(val)
-                  if (setNewHabitSubCategory) setNewHabitSubCategory("")
+                  setNewHabitCategory?.(String(val))
+                  setNewHabitSubCategory?.("")
                 }}
                 options={
                   habitCategories.length > 0
@@ -284,7 +284,7 @@ export function HabitGrid({
                 <CustomSelect
                   id="habitSubCategory"
                   value={newHabitSubCategory || ""}
-                  onChange={(val) => setNewHabitSubCategory && setNewHabitSubCategory(val)}
+                  onChange={(val) => setNewHabitSubCategory?.(String(val))}
                   options={[
                     { value: "", label: "None (No sub-category)" },
                     ...availableSubs.map((sc) => ({ value: sc.name, label: sc.name }))
@@ -299,14 +299,14 @@ export function HabitGrid({
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="rounded-lg border border-border/40 px-3 py-1.5 text-xs font-semibold hover:bg-muted"
+              className="rounded-xl border border-border/40 px-3 py-1.5 text-xs font-semibold hover:bg-muted"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPendingCreate}
-              className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1"
+              className="rounded-xl bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1"
             >
               {isPendingCreate ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -447,14 +447,14 @@ export function HabitGrid({
                         <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 shrink-0">
                           <button
                             onClick={() => handleOpenEdit(habit)}
-                            className="p-1 sm:p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                            className="p-1 sm:p-1.5 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all cursor-pointer"
                             aria-label={`Edit ${habit.name}`}
                           >
                             <Edit2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteHabit(habit.id)}
-                            className="p-1 sm:p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer"
+                            className="p-1 sm:p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer"
                             aria-label={`Delete ${habit.name}`}
                           >
                             <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -483,7 +483,7 @@ export function HabitGrid({
                             <button
                               onClick={() => handleToggleLog(habit.id, dayStr)}
                               disabled={isPending}
-                              className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg border text-transparent transition-all hover:scale-105 active:scale-95 disabled:opacity-50 ${
+                              className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-xl border text-transparent transition-all hover:scale-105 active:scale-95 disabled:opacity-50 ${
                                 checked
                                   ? `${CHECKED_THEME.bg} ${CHECKED_THEME.color} ${CHECKED_THEME.border} border-2 !text-current`
                                   : "border-border/60 hover:border-primary/50 dark:hover:bg-slate-800"
@@ -531,7 +531,7 @@ export function HabitGrid({
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 placeholder="e.g. Workout, Read books..."
-                className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+                className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
               />
             </div>
 
@@ -581,14 +581,14 @@ export function HabitGrid({
                 setIsEditOpen(false)
                 setEditingHabit(null)
               }}
-              className="rounded-lg border border-border/40 px-3.5 py-2 text-xs font-semibold hover:bg-muted"
+              className="rounded-xl border border-border/40 px-3.5 py-2 text-xs font-semibold hover:bg-muted"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPendingUpdate}
-              className="rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1.5"
+              className="rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/95 flex items-center gap-1.5"
             >
               {isPendingUpdate ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
