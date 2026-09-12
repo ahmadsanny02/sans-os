@@ -21,20 +21,28 @@ export async function GET(): Promise<NextResponse> {
       .where(eq(categories.userId, user.id))
       .orderBy(asc(categories.createdAt))
 
-    // Prepend General if it is not present in the DB
+    // Seed General if it is not present in the DB
     const hasGeneral = items.some((c) => c.name.toLowerCase() === "general")
     if (!hasGeneral) {
-      const generalItem: typeof categories.$inferSelect = {
-        id: "00000000-0000-0000-0000-000000000001",
-        userId: user.id,
-        name: "General",
-        module: "general",
-        color: "primary",
-        description: "General or unclassified tasks",
-        isSystemDefault: true,
-        createdAt: new Date(),
+      try {
+        const [createdGeneral] = await db
+          .insert(categories)
+          .values({
+            userId: user.id,
+            name: "General",
+            module: "general",
+            color: "primary",
+            description: "General or unclassified tasks",
+            isSystemDefault: true,
+          })
+          .returning()
+
+        if (createdGeneral) {
+          items.unshift(createdGeneral)
+        }
+      } catch {
+        // If concurrent request inserted General, continue with existing items
       }
-      items.unshift(generalItem)
     }
 
     return NextResponse.json(items)
