@@ -440,7 +440,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       toggleTheme()
                       setProfileMenuOpen(false)
                     }}
-                    className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold hover:bg-sidebar-accent/50 hover:text-foreground text-muted-foreground transition-all duration-150 cursor-pointer"
+                    className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold hover:bg-sidebar-accent/50 hover:text-foreground text-muted-foreground transition-all duration-150 cursor-pointer"
                   >
                     {userConfig.theme === "dark" ? (
                       <>
@@ -459,7 +459,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       handleLogout()
                       setProfileMenuOpen(false)
                     }}
-                    className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition-all duration-150 cursor-pointer"
+                    className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-all duration-150 cursor-pointer"
                   >
                     <LogOut className="h-4 w-4 shrink-0" />
                     <span>Log out</span>
@@ -538,7 +538,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                           toggleTheme()
                           setProfileMenuOpen(false)
                         }}
-                        className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold hover:bg-sidebar-accent/50 hover:text-foreground text-muted-foreground transition-all duration-150 cursor-pointer"
+                        className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold hover:bg-sidebar-accent/50 hover:text-foreground text-muted-foreground transition-all duration-150 cursor-pointer"
                       >
                         {userConfig.theme === "dark" ? (
                           <>
@@ -558,7 +558,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                           setProfileMenuOpen(false)
                           setMobileMenuOpen(false)
                         }}
-                        className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition-all duration-150 cursor-pointer"
+                        className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-all duration-150 cursor-pointer"
                       >
                         <LogOut className="h-4 w-4 shrink-0" />
                         <span>Log out</span>
