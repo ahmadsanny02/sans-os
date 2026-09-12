@@ -1,3 +1,6 @@
-import PomodoroComponent from "@/components/pomodoro/page"
+import React from "react"
+import { PomodoroView } from "@/components/pomodoro/PomodoroView"
 
-export default PomodoroComponent
+export default function PomodoroPage(): React.JSX.Element {
+  return <PomodoroView />
+}
