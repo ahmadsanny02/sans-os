@@ -61,7 +61,7 @@ export function DailyReflections({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-all ${isActive
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-xl transition-all ${isActive
                 ? "bg-card text-foreground shadow-sm border border-border/40"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
