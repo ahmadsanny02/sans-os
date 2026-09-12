@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, timestamp, integer, boolean, index } from "drizzle-orm/pg-core"
+import { pgTable, text, uuid, timestamp, integer, boolean, index, uniqueIndex } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // 1. Profiles (user info linked to Supabase Auth.users)
@@ -62,7 +62,9 @@ export const readingJournal = pgTable("reading_journal", {
   currentProgress: text("current_progress"), // progress when status is Reading
   finishedAt: timestamp("finished_at"), // set when status goes to Completed
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_reading_journal_user").on(t.userId),
+])
 
 // 4.1 Reading Progress Logs (History of reading progress updates)
 export const readingProgressLogs = pgTable("reading_progress_logs", {
@@ -74,7 +76,10 @@ export const readingProgressLogs = pgTable("reading_progress_logs", {
   progress: text("progress").notNull(), // e.g. "Hal. 150" or "+30 Hal"
   notes: text("notes"), // optional note or key takeaways for this session
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_reading_progress_book").on(t.bookId),
+  index("idx_reading_progress_user").on(t.userId),
+])
 
 // Relations for Reading Journal & Progress Logs
 export const readingJournalRelations = relations(readingJournal, ({ many }) => ({
@@ -99,7 +104,9 @@ export const visionBoardItems = pgTable("vision_board_items", {
   width: integer("width").default(200),
   height: integer("height").default(200),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_vision_board_user").on(t.userId),
+])
 
 // 6. Timetable Blocks (Daily schedule timeline with custom duration bounds)
 export const timetableBlocks = pgTable("timetable_blocks", {
@@ -190,7 +197,10 @@ export const vocabularyLogs = pgTable("vocabulary_logs", {
   langDirection: text("lang_direction").default("en-id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   memorizedAt: timestamp("memorized_at"),
-})
+}, (t) => [
+  index("idx_vocab_user").on(t.userId),
+  index("idx_vocab_user_word").on(t.userId, t.word),
+])
 
 // 8.1 Formulas (Master data untuk rumus tata bahasa)
 export const formulas = pgTable("formulas", {
@@ -200,7 +210,9 @@ export const formulas = pgTable("formulas", {
   description: text("description"),
   formula: text("formula").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_formulas_user").on(t.userId),
+])
 
 // 8.2 Writing Logs (Sentence practice logs)
 export const writingLogs = pgTable("writing_logs", {
@@ -215,7 +227,10 @@ export const writingLogs = pgTable("writing_logs", {
   formulaId: uuid("formula_id").references(() => formulas.id, { onDelete: "set null" }),
   formula: text("formula"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_writing_logs_user").on(t.userId),
+  index("idx_writing_logs_vocab").on(t.vocabId),
+])
 
 // 8.3 Dialogue Logs (Q&A Dialogue practice logs)
 export const dialogueLogs = pgTable("dialogue_logs", {
@@ -232,7 +247,10 @@ export const dialogueLogs = pgTable("dialogue_logs", {
   formulaId: uuid("formula_id").references(() => formulas.id, { onDelete: "set null" }),
   formula: text("formula"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_dialogue_logs_user").on(t.userId),
+  index("idx_dialogue_logs_vocab").on(t.vocabId),
+])
 
 // 9. Projects (Hierarchical project tracking)
 export const projects = pgTable("projects", {
@@ -262,7 +280,10 @@ export const projectTasks = pgTable("project_tasks", {
   priority: text("priority").default("Medium").notNull(), // Low, Medium, High
   deadline: timestamp("deadline"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_project_tasks_project").on(t.projectId),
+  index("idx_project_tasks_user").on(t.userId),
+])
 
 // 10.5 Project Sub-Tasks
 export const projectSubTasks = pgTable("project_sub_tasks", {
@@ -274,7 +295,10 @@ export const projectSubTasks = pgTable("project_sub_tasks", {
   name: text("name").notNull(),
   completed: boolean("completed").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_project_sub_tasks_task").on(t.taskId),
+  index("idx_project_sub_tasks_user").on(t.userId),
+])
 
 // Relations for Projects & Tasks
 export const projectsRelations = relations(projects, ({ many }) => ({
@@ -305,7 +329,9 @@ export const bucketList = pgTable("bucket_list", {
   completed: boolean("completed").default(false).notNull(),
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_bucket_list_user").on(t.userId),
+])
 
 // 12. Daily To-Dos
 export const dailyTodos = pgTable("daily_todos", {
@@ -333,7 +359,9 @@ export const dailyLogs = pgTable("daily_logs", {
   gratitude: text("gratitude"),
   picUrl: text("pic_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  uniqueIndex("idx_daily_logs_user_date").on(t.userId, t.date),
+])
 
 // 14. Learning Hub
 export const learningSubjects = pgTable("learning_subjects", {
@@ -360,7 +388,9 @@ export const learningMaterials = pgTable("learning_materials", {
   notes: text("notes"),
   linkUrl: text("link_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_learning_materials_subject").on(t.subjectId),
+])
 
 export const learningTasks = pgTable("learning_tasks", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -371,7 +401,9 @@ export const learningTasks = pgTable("learning_tasks", {
   completed: boolean("completed").default(false).notNull(),
   dueDate: timestamp("due_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+  index("idx_learning_tasks_subject").on(t.subjectId),
+])
 
 // Relations for Learning Subjects, Materials, and Tasks
 export const learningSubjectsRelations = relations(learningSubjects, ({ many }) => ({
