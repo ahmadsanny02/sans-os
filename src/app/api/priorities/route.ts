@@ -5,6 +5,8 @@ import { eq, and, lt, asc, gte, lte } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger";
 
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const supabase = await createServerSupabaseClient()
@@ -22,7 +24,11 @@ export async function GET(request: Request): Promise<NextResponse> {
     const endDateParam = searchParams.get("endDate")
     let today = searchParams.get("today")
 
-    if (startDateParam && endDateParam) {
+    if (startDateParam || endDateParam) {
+      if (!startDateParam || !endDateParam || !DATE_REGEX.test(startDateParam) || !DATE_REGEX.test(endDateParam)) {
+        return NextResponse.json({ error: "Format parameter startDate dan endDate harus YYYY-MM-DD" }, { status: 400 })
+      }
+
       const rangePriorities = await db
         .select()
         .from(priorities)
@@ -38,8 +44,12 @@ export async function GET(request: Request): Promise<NextResponse> {
       return NextResponse.json(rangePriorities)
     }
 
-    if (!dateParam) {
-      return NextResponse.json({ error: "Date parameter is required" }, { status: 400 })
+    if (!dateParam || !DATE_REGEX.test(dateParam)) {
+      return NextResponse.json({ error: "Format parameter date harus YYYY-MM-DD" }, { status: 400 })
+    }
+
+    if (today && !DATE_REGEX.test(today)) {
+      return NextResponse.json({ error: "Format parameter today harus YYYY-MM-DD" }, { status: 400 })
     }
 
     if (!today) {
@@ -174,6 +184,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    if (!DATE_REGEX.test(date)) {
+      return NextResponse.json({ error: "Format parameter date harus YYYY-MM-DD" }, { status: 400 })
+    }
+
     // Check how many priorities exist for this date
     const currentPriorities = await db
       .select()
@@ -223,7 +237,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, text, link, category, subCategory, date } = body
+    const { id, text, link, category, subCategory, date, completed } = body
 
     if (!id) {
       return NextResponse.json({ error: "Missing priority ID" }, { status: 400 })
@@ -239,6 +253,9 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const updateData: Partial<typeof priorities.$inferInsert> = {}
+    if (completed !== undefined) {
+      updateData.completed = completed
+    }
     if (text !== undefined) {
       updateData.text = text
     }
@@ -252,6 +269,10 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       updateData.subCategory = subCategory || null
     }
     if (date !== undefined && date !== existing.date) {
+      if (!DATE_REGEX.test(date)) {
+        return NextResponse.json({ error: "Format parameter date harus YYYY-MM-DD" }, { status: 400 })
+      }
+
       const targetPriorities = await db
         .select()
         .from(priorities)
@@ -274,6 +295,77 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       .returning()
 
     return NextResponse.json(updatedPriority)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Server Error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request): Promise<NextResponse> {
+  try {
+    const supabase = await createServerSupabaseClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get("id")
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing priority ID" }, { status: 400 })
+    }
+
+    const [deletedPriority] = await db
+      .delete(priorities)
+      .where(and(eq(priorities.id, id), eq(priorities.userId, user.id)))
+      .returning()
+
+    if (!deletedPriority) {
+      return NextResponse.json({ error: "Priority not found" }, { status: 404 })
+    }
+
+    // Re-index remaining priorities for this date to maintain contiguous orderIndex
+    try {
+      const remaining = await db
+        .select({ id: priorities.id })
+        .from(priorities)
+        .where(and(eq(priorities.userId, user.id), eq(priorities.date, deletedPriority.date)))
+        .orderBy(asc(priorities.orderIndex), asc(priorities.createdAt))
+
+      if (remaining.length > 0) {
+        await db.transaction(async (tx) => {
+          for (let i = 0; i < remaining.length; i++) {
+            await tx
+              .update(priorities)
+              .set({ orderIndex: i })
+              .where(and(eq(priorities.id, remaining[i].id), eq(priorities.userId, user.id)))
+          }
+        })
+      }
+    } catch (err) {
+      logger.error("Failed to re-index priorities after delete:", err)
+    }
+
+    // Automatically remove matching custom timetable block if it exists to keep in sync
+    try {
+      await db
+        .delete(timetableBlocks)
+        .where(
+          and(
+            eq(timetableBlocks.userId, user.id),
+            eq(timetableBlocks.date, deletedPriority.date),
+            eq(timetableBlocks.title, deletedPriority.text)
+          )
+        )
+    } catch (err) {
+      logger.error("Failed to auto-delete timetable block matching priority:", err)
+    }
+
+    return NextResponse.json({ success: true })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
