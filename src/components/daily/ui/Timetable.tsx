@@ -175,7 +175,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                       value={editStart}
                       onChange={(val) => setEditStart(val)}
                       showIcon={false}
-                      inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-xs"
+                      inputClassName="rounded-xl border border-border bg-background px-2 py-1 outline-none text-xs"
                       className="w-20"
                     />
                     <span className="text-muted-foreground text-xs">to</span>
@@ -184,7 +184,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                       value={editEnd}
                       onChange={(val) => setEditEnd(val)}
                       showIcon={false}
-                      inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-xs"
+                      inputClassName="rounded-xl border border-border bg-background px-2 py-1 outline-none text-xs"
                       className="w-20"
                     />
                     <div className="flex items-center gap-1 ml-auto">
@@ -192,14 +192,14 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                         type="button"
                         onClick={() => handleSaveEditSub(sub.id)}
                         disabled={!editTitle.trim() || updateSubMutation.isPending}
-                        className="p-1 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer disabled:opacity-50"
+                        className="p-1 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer disabled:opacity-50"
                       >
                         <Check className="h-3.5 w-3.5" />
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditingSubId(null)}
-                        className="p-1 rounded-md bg-secondary text-muted-foreground hover:text-foreground cursor-pointer"
+                        className="p-1 rounded-xl bg-secondary text-muted-foreground hover:text-foreground cursor-pointer"
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
@@ -235,7 +235,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                     {sub.title}
                   </span>
                   {(sub.startTime || sub.endTime) && (
-                    <span className="shrink-0 text-xs font-semibold text-muted-foreground bg-secondary/60 px-2 py-1 rounded-md">
+                    <span className="shrink-0 text-xs font-semibold text-muted-foreground bg-secondary/60 px-2 py-1 rounded-xl">
                       {sub.startTime || "..."} - {sub.endTime || "..."}
                     </span>
                   )}
@@ -245,7 +245,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                   <button
                     type="button"
                     onClick={() => handleStartEditSub(sub)}
-                    className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                    className="p-1 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
                     title="Edit sub-schedule"
                   >
                     <Pencil className="h-3 w-3" />
@@ -253,7 +253,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                   <button
                     type="button"
                     onClick={() => deleteSubMutation.mutate({ id: sub.id, timetableBlockId: block.id })}
-                    className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+                    className="p-1 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
                     title="Delete sub-schedule"
                   >
                     <Trash2 className="h-3 w-3" />
@@ -291,7 +291,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
               value={newEnd}
               onChange={(val) => setNewEnd(val)}
               showIcon={false}
-              inputClassName="rounded-lg border border-border bg-background px-2 py-1 outline-none text-xs"
+              inputClassName="rounded-xl border border-border bg-background px-2 py-1 outline-none text-xs"
               className="w-20"
               placeholder="--:--"
             />
@@ -299,7 +299,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
               <button
                 type="submit"
                 disabled={!newTitle.trim() || createSubMutation.isPending}
-                className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 cursor-pointer"
+                className="inline-flex items-center gap-1 rounded-xl bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 cursor-pointer"
               >
                 <Plus className="h-3 w-3" />
                 Add
@@ -310,7 +310,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                   setIsAdding(false)
                   setNewTitle("")
                 }}
-                className="p-1 rounded-lg border border-border bg-secondary text-muted-foreground hover:text-foreground cursor-pointer"
+                className="p-1 rounded-xl border border-border bg-secondary text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -478,7 +478,7 @@ export function Timetable({
                             type="text"
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
-                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                             required
                           />
                         </div>
@@ -490,7 +490,7 @@ export function Timetable({
                             type="url"
                             value={editLink}
                             onChange={(e) => setEditLink(e.target.value)}
-                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                             placeholder="https://..."
                           />
                         </div>
@@ -548,7 +548,7 @@ export function Timetable({
                             type="number"
                             value={editDuration}
                             onChange={(e) => handleDurationChange(e.target.value)}
-                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                             required
                           />
                         </div>
@@ -586,7 +586,7 @@ export function Timetable({
                               type="date"
                               value={editDate}
                               onChange={(e) => setEditDate(e.target.value)}
-                              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                               required
                             />
                           </div>
