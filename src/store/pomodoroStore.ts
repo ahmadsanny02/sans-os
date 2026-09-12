@@ -499,7 +499,6 @@ export const usePomodoroStore = create<PomodoroState>()(
         phase: state.phase,
         remainingSeconds: state.remainingSeconds,
         sessionCount: state.sessionCount,
-        isModalOpen: state.isModalOpen,
         lastActiveTimestamp: state.lastActiveTimestamp,
       }),
     }
