@@ -69,31 +69,8 @@ export function PomodoroWidget({ activeDayBlocks }: PomodoroWidgetProps) {
   const pauseTimer = usePomodoroStore((s) => s.pauseTimer)
   const stopTimer = usePomodoroStore((s) => s.stopTimer)
   const openModal = usePomodoroStore((s) => s.openModal)
-  const tick = usePomodoroStore((s) => s.tick)
-  const adjustForElapsedTime = usePomodoroStore((s) => s.adjustForElapsedTime)
-
-  // Real-time ticking logic while running
-  useEffect(() => {
-    if (!isRunning) return
-    const interval = setInterval(() => {
-      tick(activeDayBlocks)
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [isRunning, tick, activeDayBlocks])
-
-  // Sync elapsed time on mount and focus changes
-  useEffect(() => {
-    adjustForElapsedTime(activeDayBlocks)
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible") {
-        adjustForElapsedTime(activeDayBlocks)
-      }
-    }
-    document.addEventListener("visibilitychange", handleVisibility)
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibility)
-    }
-  }, [adjustForElapsedTime, activeDayBlocks])
+  // Note: Countdown ticker and elapsed time sync are managed globally by PomodoroModal in AppLayout.
+  // PomodoroWidget strictly subscribes to the Zustand store state to prevent dual-ticking race conditions.
 
   // Format MM:SS helper
   const displayTime = useMemo(() => {
