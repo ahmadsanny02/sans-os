@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import {
   TimetableBlock,
   TimetableSubSchedule,
+  useCreateTimetableBlockMutation,
   useCreateTimetableSubScheduleMutation,
   useUpdateTimetableSubScheduleMutation,
   useToggleTimetableSubScheduleMutation,
@@ -15,6 +16,7 @@ import { CustomSelect } from "@/components/ui/CustomSelect"
 import { CustomTimePicker } from "@/components/ui/CustomTimePicker"
 import { isCategoryInModule, getColorStyle } from "@/lib/categoryUtils"
 import { useWorkspaceStore } from "@/store/workspaceStore"
+import { DayOfWeekChecklist } from "./DayOfWeekChecklist"
 
 function calculateDuration(start: string, end: string): string {
   try {
@@ -341,7 +343,8 @@ export function Timetable({
   const [editIsTodo, setEditIsTodo] = useState(false)
   const [editScheduleType, setEditScheduleType] = useState<"custom" | "weekly" | "fixed">("custom")
   const [editDate, setEditDate] = useState("")
-  const [editDayOfWeek, setEditDayOfWeek] = useState(0)
+  const [editDaysOfWeek, setEditDaysOfWeek] = useState<number[]>([0])
+  const createBlockMutation = useCreateTimetableBlockMutation()
   const { categories, subCategories } = useCategories()
   const timetableCategories = categories.filter((c) => isCategoryInModule(c.module, "timetable"))
   const defaultFallbackCategories = ["General"]
@@ -363,15 +366,15 @@ export function Timetable({
     if (block.dayOfWeek === -1) {
       setEditScheduleType("fixed")
       setEditDate("")
-      setEditDayOfWeek(0)
+      setEditDaysOfWeek([0])
     } else if (block.date) {
       setEditScheduleType("custom")
       setEditDate(block.date)
-      setEditDayOfWeek(block.dayOfWeek)
+      setEditDaysOfWeek([block.dayOfWeek])
     } else {
       setEditScheduleType("weekly")
       setEditDate("")
-      setEditDayOfWeek(block.dayOfWeek)
+      setEditDaysOfWeek([block.dayOfWeek])
     }
 
     try {
@@ -571,7 +574,7 @@ export function Timetable({
                             onChange={(val) => setEditScheduleType(val as "custom" | "weekly" | "fixed")}
                             options={[
                               { value: "custom", label: "Specific Date (One-off)" },
-                              { value: "weekly", label: "Specific Day (Weekly)" },
+                              { value: "weekly", label: "Specific Day(s) (Weekly)" },
                               { value: "fixed", label: "Every Day (Fixed)" },
                             ]}
                             fullWidth
@@ -588,27 +591,6 @@ export function Timetable({
                               onChange={(e) => setEditDate(e.target.value)}
                               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                               required
-                            />
-                          </div>
-                        )}
-
-                        {/* Day choice if weekly */}
-                        {editScheduleType === "weekly" && (
-                          <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-muted-foreground">Choose Day</label>
-                            <CustomSelect
-                              value={editDayOfWeek}
-                              onChange={(val) => setEditDayOfWeek(Number(val))}
-                              options={[
-                                { value: 0, label: "Sunday" },
-                                { value: 1, label: "Monday" },
-                                { value: 2, label: "Tuesday" },
-                                { value: 3, label: "Wednesday" },
-                                { value: 4, label: "Thursday" },
-                                { value: 5, label: "Friday" },
-                                { value: 6, label: "Saturday" },
-                              ]}
-                              fullWidth
                             />
                           </div>
                         )}
@@ -640,6 +622,16 @@ export function Timetable({
                             </div>
                           </button>
                         </div>
+
+                        {/* Weekly Day Selection (Checklist) */}
+                        {editScheduleType === "weekly" && (
+                          <div className="sm:col-span-2 md:col-span-3 pt-1 animate-in fade-in duration-200">
+                            <DayOfWeekChecklist
+                              selectedDays={editDaysOfWeek}
+                              onChange={(days) => setEditDaysOfWeek(days)}
+                            />
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex justify-end gap-2 pt-2">
@@ -652,6 +644,7 @@ export function Timetable({
                         <button
                           onClick={async () => {
                             if (!editTitle.trim() || editStartTime >= editEndTime) return
+                            if (editScheduleType === "weekly" && editDaysOfWeek.length === 0) return
                             
                             let finalDayOfWeek = -1
                             let finalDate: string | null = null
@@ -660,7 +653,7 @@ export function Timetable({
                               finalDayOfWeek = -1
                               finalDate = null
                             } else if (editScheduleType === "weekly") {
-                              finalDayOfWeek = editDayOfWeek
+                              finalDayOfWeek = editDaysOfWeek[0]
                               finalDate = null
                             } else {
                               finalDayOfWeek = new Date(editDate).getDay()
@@ -680,9 +673,37 @@ export function Timetable({
                               date: finalDate,
                               subCategory: editSubCategory || null,
                             })
+
+                            if (editScheduleType === "weekly" && editDaysOfWeek.length > 1) {
+                              const additionalDays = editDaysOfWeek.slice(1)
+                              for (const extraDay of additionalDays) {
+                                await createBlockMutation.mutateAsync({
+                                  dayOfWeek: extraDay,
+                                  startTime: editStartTime,
+                                  endTime: editEndTime,
+                                  title: editTitle.trim(),
+                                  category: editCategory,
+                                  subCategory: editSubCategory || null,
+                                  color: editColor,
+                                  date: undefined,
+                                  isTodo: editIsTodo,
+                                  link: editLink.trim() || undefined,
+                                  subSchedules: block.subSchedules?.map((s) => ({
+                                    title: s.title,
+                                    startTime: s.startTime || undefined,
+                                    endTime: s.endTime || undefined,
+                                  })),
+                                })
+                              }
+                            }
+
                             setEditingId(null)
                           }}
-                          disabled={!editTitle.trim() || editStartTime >= editEndTime}
+                          disabled={
+                            !editTitle.trim() ||
+                            editStartTime >= editEndTime ||
+                            (editScheduleType === "weekly" && editDaysOfWeek.length === 0)
+                          }
                           className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
                           Save Changes
