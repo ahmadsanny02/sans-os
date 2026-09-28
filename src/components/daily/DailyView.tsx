@@ -95,6 +95,8 @@ export function DailyView(): React.JSX.Element {
           setChooseDate={dailyData.setChooseDate}
           timetableDayOfWeek={dailyData.timetableDayOfWeek}
           setTimetableDayOfWeek={dailyData.setTimetableDayOfWeek}
+          timetableDaysOfWeek={dailyData.timetableDaysOfWeek}
+          setTimetableDaysOfWeek={dailyData.setTimetableDaysOfWeek}
           onClose={() => setShowAddForm(false)}
         />
       )}
