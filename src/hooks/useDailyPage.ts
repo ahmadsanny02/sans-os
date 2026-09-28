@@ -107,34 +107,61 @@ export function useDailyPage() {
             throw new Error("End time must be after start time.")
           }
 
-          let targetDayOfWeek = -1
-          let targetDate: string | undefined = undefined
-
           if (timetableScheduleType === "fixed") {
-            targetDayOfWeek = -1
-            targetDate = undefined
+            promises.push(
+              createBlockMutation.mutateAsync({
+                dayOfWeek: -1,
+                startTime: timetableStartTime,
+                endTime: timetableEndTime,
+                title: title,
+                category: timetableCategory,
+                subCategory: timetableSubCategory || null,
+                color: categories.find((c) => c.name === timetableCategory)?.color || "blue",
+                date: undefined,
+                isTodo: timetableIsTodo,
+                link: link || undefined,
+              })
+            )
           } else if (timetableScheduleType === "weekly") {
-            targetDayOfWeek = timetableDayOfWeek
-            targetDate = undefined
+            const daysToCreate = timetableDaysOfWeek.length > 0 ? timetableDaysOfWeek : [timetableDayOfWeek]
+            if (daysToCreate.length === 0) {
+              throw new Error("Pilih minimal 1 hari untuk jadwal mingguan.")
+            }
+            for (const day of daysToCreate) {
+              promises.push(
+                createBlockMutation.mutateAsync({
+                  dayOfWeek: day,
+                  startTime: timetableStartTime,
+                  endTime: timetableEndTime,
+                  title: title,
+                  category: timetableCategory,
+                  subCategory: timetableSubCategory || null,
+                  color: categories.find((c) => c.name === timetableCategory)?.color || "blue",
+                  date: undefined,
+                  isTodo: timetableIsTodo,
+                  link: link || undefined,
+                })
+              )
+            }
           } else {
-            targetDayOfWeek = parseISO(chooseDate).getDay()
-            targetDate = chooseDate
-          }
+            const targetDayOfWeek = parseISO(chooseDate).getDay()
+            const targetDate = chooseDate
 
-          promises.push(
-            createBlockMutation.mutateAsync({
-              dayOfWeek: targetDayOfWeek,
-              startTime: timetableStartTime,
-              endTime: timetableEndTime,
-              title: title,
-              category: timetableCategory,
-              subCategory: timetableSubCategory || null,
-              color: categories.find((c) => c.name === timetableCategory)?.color || "blue",
-              date: targetDate,
-              isTodo: timetableIsTodo,
-              link: link || undefined,
-            })
-          )
+            promises.push(
+              createBlockMutation.mutateAsync({
+                dayOfWeek: targetDayOfWeek,
+                startTime: timetableStartTime,
+                endTime: timetableEndTime,
+                title: title,
+                category: timetableCategory,
+                subCategory: timetableSubCategory || null,
+                color: categories.find((c) => c.name === timetableCategory)?.color || "blue",
+                date: targetDate,
+                isTodo: timetableIsTodo,
+                link: link || undefined,
+              })
+            )
+          }
         }
 
         if (targetTodo) {
@@ -362,11 +389,14 @@ export function useDailyPage() {
   const [timetableScheduleType, setTimetableScheduleType] = useState<"custom" | "weekly" | "fixed">("custom")
   const [prevActiveDate, setPrevActiveDate] = useState(activeDate)
   const [timetableDayOfWeek, setTimetableDayOfWeek] = useState(() => parseISO(activeDate).getDay())
+  const [timetableDaysOfWeek, setTimetableDaysOfWeek] = useState<number[]>(() => [parseISO(activeDate).getDay()])
 
   if (activeDate !== prevActiveDate) {
     setPrevActiveDate(activeDate)
     setChooseDate(activeDate)
-    setTimetableDayOfWeek(parseISO(activeDate).getDay())
+    const currentDay = parseISO(activeDate).getDay()
+    setTimetableDayOfWeek(currentDay)
+    setTimetableDaysOfWeek([currentDay])
   }
 
   const setTimetableStartTime = (newVal: string) => {
@@ -620,6 +650,8 @@ export function useDailyPage() {
     setTimetableScheduleType,
     timetableDayOfWeek,
     setTimetableDayOfWeek,
+    timetableDaysOfWeek,
+    setTimetableDaysOfWeek,
     handleDeleteTimetableBlock,
     handleUpdateTimetableBlock,
     activeDayBlocks,
