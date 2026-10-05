@@ -276,6 +276,7 @@ export const projectTasks = pgTable("project_tasks", {
     .references(() => projects.id, { onDelete: "cascade" })
     .notNull(),
   name: text("name").notNull(),
+  status: text("status").default("Planning").notNull(), // Planning, In Progress, On Hold, Completed
   completed: boolean("completed").default(false).notNull(),
   priority: text("priority").default("Medium").notNull(), // Low, Medium, High
   deadline: timestamp("deadline"),
@@ -293,6 +294,7 @@ export const projectSubTasks = pgTable("project_sub_tasks", {
     .references(() => projectTasks.id, { onDelete: "cascade" })
     .notNull(),
   name: text("name").notNull(),
+  status: text("status").default("Planning").notNull(), // Planning, In Progress, On Hold, Completed
   completed: boolean("completed").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
