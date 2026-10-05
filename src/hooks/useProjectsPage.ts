@@ -13,6 +13,7 @@ import {
   useToggleSubTaskMutation,
   useUpdateProjectMutation,
   useUpdateTaskMutation,
+  useUpdateSubTaskMutation,
 } from "@/hooks/useProjects"
 import { format, isPast, isToday } from "date-fns"
 import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
@@ -49,6 +50,7 @@ export function useProjectsPage() {
   const toggleSubTaskMutation = useToggleSubTaskMutation()
   const updateProjectMutation = useUpdateProjectMutation()
   const updateTaskMutation = useUpdateTaskMutation()
+  const updateSubTaskMutation = useUpdateSubTaskMutation()
 
   // Selected project ID
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
@@ -76,6 +78,7 @@ export function useProjectsPage() {
 
   // Task form states
   const [taskName, setTaskName] = useState("")
+  const [taskStatus, setTaskStatus] = useState("Planning")
   const [taskPriority, setTaskPriority] = useState("Medium")
   const [taskDeadline, setTaskDeadline] = useState(getOneWeekFromTodayStr)
   const [taskError, setTaskError] = useState<string | null>(null)
@@ -139,14 +142,16 @@ export function useProjectsPage() {
     e: React.FormEvent,
     overrideData?: {
       name?: string
+      status?: string
       priority?: string
       deadline?: string
-      extraRows?: Array<{ id?: string; name: string; priority: string; deadline: string }>
+      extraRows?: Array<{ id?: string; name: string; status?: string; priority?: string; deadline: string }>
     }
   ): Promise<void> => {
     e.preventDefault()
     setTaskError(null)
     const mainName = (overrideData?.name ?? taskName).trim()
+    const mainStatus = overrideData?.status ?? taskStatus
     const mainPriority = overrideData?.priority ?? taskPriority
     const mainDeadline = overrideData?.deadline ?? taskDeadline
 
@@ -157,6 +162,7 @@ export function useProjectsPage() {
         createTaskMutation.mutateAsync({
           projectId: selectedProjectId,
           name: mainName,
+          status: mainStatus,
           priority: mainPriority,
           deadline: mainDeadline || undefined,
         }),
@@ -169,6 +175,7 @@ export function useProjectsPage() {
               createTaskMutation.mutateAsync({
                 projectId: selectedProjectId,
                 name: extra.name.trim(),
+                status: extra.status || "Planning",
                 priority: extra.priority || "Medium",
                 deadline: extra.deadline || undefined,
               })
@@ -179,6 +186,7 @@ export function useProjectsPage() {
 
       await Promise.all(promises)
       setTaskName("")
+      setTaskStatus("Planning")
       setTaskPriority("Medium")
       setTaskDeadline(getOneWeekFromTodayStr())
       showSuccessToast("Task(s) added to project")
@@ -324,6 +332,42 @@ export function useProjectsPage() {
     }
   }
 
+  const handleUpdateTaskStatus = async (id: string, status: string): Promise<void> => {
+    try {
+      await updateTaskMutation.mutateAsync({
+        id,
+        status,
+        completed: status === "Completed",
+      })
+      showSuccessToast("Task status updated successfully")
+    } catch {
+      await showError("Update Failed", "Failed to update task status.")
+    }
+  }
+
+  const handleUpdateSubTaskStatus = async (id: string, status: string): Promise<void> => {
+    try {
+      await updateSubTaskMutation.mutateAsync({
+        id,
+        status,
+        completed: status === "Completed",
+      })
+      showSuccessToast("Sub-task status updated successfully")
+    } catch {
+      await showError("Update Failed", "Failed to update sub-task status.")
+    }
+  }
+
+  const handleUpdateSubTaskName = async (id: string, name: string): Promise<void> => {
+    if (!name.trim()) return
+    try {
+      await updateSubTaskMutation.mutateAsync({ id, name: name.trim() })
+      showSuccessToast("Sub-task name updated successfully")
+    } catch {
+      await showError("Update Failed", "Failed to update sub-task name.")
+    }
+  }
+
   return {
     projectsList,
     isLoading,
@@ -349,6 +393,8 @@ export function useProjectsPage() {
     projectError,
     taskName,
     setTaskName,
+    taskStatus,
+    setTaskStatus,
     taskPriority,
     setTaskPriority,
     taskDeadline,
@@ -362,6 +408,7 @@ export function useProjectsPage() {
     handleToggleTask,
     handleUpdateProjectStatus,
     handleUpdateProjectPriority,
+    handleUpdateTaskStatus,
     handleUpdateTaskPriority,
     handleUpdateProjectDeadline,
     handleUpdateTaskDeadline,
@@ -377,6 +424,8 @@ export function useProjectsPage() {
     handleAddSubTask,
     handleDeleteSubTask,
     handleToggleSubTask,
+    handleUpdateSubTaskStatus,
+    handleUpdateSubTaskName,
 
     isPendingProjectCreate: createProjectMutation.isPending,
     isPendingProjectDelete: deleteProjectMutation.isPending,
@@ -388,6 +437,7 @@ export function useProjectsPage() {
     isPendingSubTaskToggle: toggleSubTaskMutation.isPending,
     isPendingProjectUpdate: updateProjectMutation.isPending,
     isPendingTaskUpdate: updateTaskMutation.isPending,
+    isPendingSubTaskUpdate: updateSubTaskMutation.isPending,
   }
 }
 
