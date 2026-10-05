@@ -16,7 +16,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { projectId, name, priority, deadline } = body
+    const { projectId, name, status, priority, deadline } = body
 
     if (!projectId || !name) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -33,13 +33,15 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Project not found or unauthorized" }, { status: 404 })
     }
 
+    const taskStatus = status || "Planning"
     const [newTask] = await db
       .insert(projectTasks)
       .values({
         userId: user.id,
         projectId,
         name,
-        completed: false,
+        status: taskStatus,
+        completed: taskStatus === "Completed",
         priority: priority || "Medium",
         deadline: deadline ? new Date(deadline) : null,
       })
@@ -98,7 +100,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, name, completed, priority, deadline } = body
+    const { id, name, status, completed, priority, deadline } = body
 
     if (!id) {
       return NextResponse.json({ error: "Missing task ID" }, { status: 400 })
@@ -106,13 +108,25 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     const updateFields: {
       name?: string
+      status?: string
       completed?: boolean
       priority?: string
       deadline?: Date | null
     } = {}
 
     if (name !== undefined) updateFields.name = name
-    if (completed !== undefined) updateFields.completed = completed
+    if (status !== undefined) {
+      updateFields.status = status
+      if (completed === undefined) {
+        updateFields.completed = status === "Completed"
+      }
+    }
+    if (completed !== undefined) {
+      updateFields.completed = completed
+      if (status === undefined) {
+        updateFields.status = completed ? "Completed" : "In Progress"
+      }
+    }
     if (priority !== undefined) updateFields.priority = priority
     if (deadline !== undefined) {
       updateFields.deadline = deadline ? new Date(deadline) : null
