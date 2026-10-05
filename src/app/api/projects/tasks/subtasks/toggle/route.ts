@@ -24,7 +24,10 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const [updatedSubTask] = await db
       .update(projectSubTasks)
-      .set({ completed })
+      .set({
+        completed,
+        status: completed ? "Completed" : "In Progress",
+      })
       .where(and(eq(projectSubTasks.id, id), eq(projectSubTasks.userId, user.id)))
       .returning()
 
