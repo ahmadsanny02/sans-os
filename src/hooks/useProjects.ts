@@ -5,6 +5,7 @@ export interface ProjectSubTask {
   userId: string
   taskId: string
   name: string
+  status: string
   completed: boolean
   createdAt: string
 }
@@ -14,6 +15,7 @@ export interface ProjectTask {
   userId: string
   projectId: string
   name: string
+  status: string
   completed: boolean
   priority: string
   deadline: string | null
@@ -135,6 +137,7 @@ export function useDeleteProjectMutation() {
 async function createTask(body: {
   projectId: string
   name: string
+  status?: string
   priority?: string
   deadline?: string
 }): Promise<ProjectTask> {
@@ -154,6 +157,7 @@ export function useCreateTaskMutation() {
   return useMutation<ProjectTask, Error, {
     projectId: string
     name: string
+    status?: string
     priority?: string
     deadline?: string
   }>({
@@ -242,7 +246,13 @@ export function useToggleTaskMutation() {
           previous.map((p) => ({
             ...p,
             tasks: p.tasks.map((t) =>
-              t.id === variables.id ? { ...t, completed: variables.completed } : t
+              t.id === variables.id
+                ? {
+                    ...t,
+                    completed: variables.completed,
+                    status: variables.completed ? "Completed" : (t.status === "Completed" ? "In Progress" : (t.status || "Planning")),
+                  }
+                : t
             ),
           }))
         )
@@ -264,6 +274,7 @@ export function useToggleTaskMutation() {
 async function createSubTask(body: {
   taskId: string
   name: string
+  status?: string
 }): Promise<ProjectSubTask> {
   const res = await fetch("/api/projects/tasks/subtasks", {
     method: "POST",
@@ -278,7 +289,7 @@ async function createSubTask(body: {
 
 export function useCreateSubTaskMutation() {
   const queryClient = useQueryClient()
-  return useMutation<ProjectSubTask, Error, { taskId: string; name: string }>({
+  return useMutation<ProjectSubTask, Error, { taskId: string; name: string; status?: string }>({
     mutationFn: createSubTask,
     onSuccess: (newSubTask) => {
       queryClient.setQueryData<Project[]>(["projects"], (old) => {
@@ -372,7 +383,13 @@ export function useToggleSubTaskMutation() {
             tasks: p.tasks.map((t) => ({
               ...t,
               subTasks: (t.subTasks || []).map((st) => 
-                st.id === variables.id ? { ...st, completed: variables.completed } : st
+                st.id === variables.id
+                  ? {
+                      ...st,
+                      completed: variables.completed,
+                      status: variables.completed ? "Completed" : (st.status === "Completed" ? "In Progress" : (st.status || "Planning")),
+                    }
+                  : st
               )
             }))
           }))
@@ -465,6 +482,7 @@ export function useUpdateProjectMutation() {
 async function updateTask(body: {
   id: string
   name?: string
+  status?: string
   completed?: boolean
   priority?: string
   deadline?: string | null
@@ -485,6 +503,7 @@ export function useUpdateTaskMutation() {
   return useMutation<ProjectTask, Error, {
     id: string
     name?: string
+    status?: string
     completed?: boolean
     priority?: string
     deadline?: string | null
@@ -503,7 +522,8 @@ export function useUpdateTaskMutation() {
                 ? {
                     ...t,
                     name: variables.name !== undefined ? variables.name : t.name,
-                    completed: variables.completed !== undefined ? variables.completed : t.completed,
+                    status: variables.status !== undefined ? variables.status : (variables.completed !== undefined ? (variables.completed ? "Completed" : (t.status === "Completed" ? "In Progress" : t.status)) : t.status),
+                    completed: variables.completed !== undefined ? variables.completed : (variables.status !== undefined ? variables.status === "Completed" : t.completed),
                     priority: variables.priority !== undefined ? variables.priority : t.priority,
                     deadline: variables.deadline !== undefined ? variables.deadline : t.deadline,
                   }
@@ -524,4 +544,69 @@ export function useUpdateTaskMutation() {
     },
   })
 }
+
+// 12. Update subtask
+async function updateSubTask(body: {
+  id: string
+  name?: string
+  status?: string
+  completed?: boolean
+}): Promise<ProjectSubTask> {
+  const res = await fetch("/api/projects/tasks/subtasks", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    throw new Error("Failed to update subtask")
+  }
+  return res.json()
+}
+
+export function useUpdateSubTaskMutation() {
+  const queryClient = useQueryClient()
+  return useMutation<ProjectSubTask, Error, {
+    id: string
+    name?: string
+    status?: string
+    completed?: boolean
+  }, { previous: Project[] | undefined }>({
+    mutationFn: updateSubTask,
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ["projects"] })
+      const previous = queryClient.getQueryData<Project[]>(["projects"])
+      if (previous) {
+        queryClient.setQueryData<Project[]>(
+          ["projects"],
+          previous.map((p) => ({
+            ...p,
+            tasks: p.tasks.map((t) => ({
+              ...t,
+              subTasks: (t.subTasks || []).map((st) =>
+                st.id === variables.id
+                  ? {
+                      ...st,
+                      name: variables.name !== undefined ? variables.name : st.name,
+                      status: variables.status !== undefined ? variables.status : (variables.completed !== undefined ? (variables.completed ? "Completed" : (st.status === "Completed" ? "In Progress" : st.status)) : st.status),
+                      completed: variables.completed !== undefined ? variables.completed : (variables.status !== undefined ? variables.status === "Completed" : st.completed),
+                    }
+                  : st
+              ),
+            })),
+          }))
+        )
+      }
+      return { previous }
+    },
+    onError: (err, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["projects"], context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] })
+    },
+  })
+}
+
 
