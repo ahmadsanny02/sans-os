@@ -202,6 +202,8 @@ interface ProjectBoardViewProps {
   projectError: string | null
   taskName: string
   setTaskName: (name: string) => void
+  taskStatus: string
+  setTaskStatus: (status: string) => void
   taskPriority: string
   setTaskPriority: (priority: string) => void
   taskDeadline: string
@@ -214,9 +216,10 @@ interface ProjectBoardViewProps {
     e: React.FormEvent,
     overrideData?: {
       name?: string
+      status?: string
       priority?: string
       deadline?: string
-      extraRows?: Array<{ id?: string; name: string; priority: string; deadline: string }>
+      extraRows?: Array<{ id?: string; name: string; status?: string; priority?: string; deadline: string }>
     }
   ) => Promise<void>
   handleDeleteTask: (id: string) => Promise<void>
@@ -229,7 +232,9 @@ interface ProjectBoardViewProps {
   handleToggleSubTask: (id: string, completed: boolean) => void
   handleUpdateProjectStatus: (id: string, status: string) => Promise<void>
   handleUpdateProjectPriority: (id: string, priority: string) => Promise<void>
+  handleUpdateTaskStatus: (id: string, status: string) => Promise<void>
   handleUpdateTaskPriority: (id: string, priority: string) => Promise<void>
+  handleUpdateSubTaskStatus: (id: string, status: string) => Promise<void>
   handleUpdateProjectDeadline: (id: string, deadline: string) => Promise<void>
   handleUpdateTaskDeadline: (id: string, deadline: string) => Promise<void>
   handleUpdateProjectName: (id: string, name: string) => Promise<void>
@@ -246,6 +251,7 @@ interface ProjectBoardViewProps {
   isPendingSubTaskToggle: boolean
   isPendingProjectUpdate: boolean
   isPendingTaskUpdate: boolean
+  isPendingSubTaskUpdate: boolean
 }
 
 export function ProjectBoardView({
@@ -273,6 +279,8 @@ export function ProjectBoardView({
   projectError,
   taskName,
   setTaskName,
+  taskStatus,
+  setTaskStatus,
   taskPriority,
   setTaskPriority,
   taskDeadline,
@@ -292,7 +300,9 @@ export function ProjectBoardView({
   handleToggleSubTask,
   handleUpdateProjectStatus,
   handleUpdateProjectPriority,
+  handleUpdateTaskStatus,
   handleUpdateTaskPriority,
+  handleUpdateSubTaskStatus,
   handleUpdateProjectDeadline,
   handleUpdateTaskDeadline,
   handleUpdateProjectName,
@@ -309,6 +319,7 @@ export function ProjectBoardView({
   isPendingSubTaskToggle,
   isPendingProjectUpdate,
   isPendingTaskUpdate,
+  isPendingSubTaskUpdate,
 }: ProjectBoardViewProps) {
   const { categories, subCategories } = useCategories()
   const projectCategories = categories.filter((c) => isCategoryInModule(c.module, "projects"))
@@ -336,7 +347,7 @@ export function ProjectBoardView({
   const [tempTaskName, setTempTaskName] = useState("")
 
   // Optional multi-item batch creation state for tasks
-  const [extraProjectTaskRows, setExtraProjectTaskRows] = useState<Array<{ id: string; name: string; priority: string; deadline: string }>>([])
+  const [extraProjectTaskRows, setExtraProjectTaskRows] = useState<Array<{ id: string; name: string; status: string; priority: string; deadline: string }>>([])
 
   const handleTaskBatchSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -344,6 +355,7 @@ export function ProjectBoardView({
 
     await handleAddTask(e, {
       name: taskName,
+      status: taskStatus,
       priority: taskPriority,
       deadline: taskDeadline,
       extraRows: extraProjectTaskRows,
@@ -918,6 +930,8 @@ export function ProjectBoardView({
                     .map((task: ProjectTask) => {
                       const isTaskOver = isOverdue(task.deadline, task.completed)
                       const taskPriorityTheme = PRIORITY_THEMES[task.priority] || PRIORITY_THEMES.Medium
+                      const taskStatus = task.status || (task.completed ? "Completed" : "Planning")
+                      const taskStatusTheme = STATUS_THEMES[taskStatus] || STATUS_THEMES.Planning
 
                       return (
                         <div key={task.id} className="space-y-2">
@@ -970,6 +984,14 @@ export function ProjectBoardView({
                                 )}
 
                                 <div className="flex flex-wrap items-center gap-1.5 mt-1 text-micro font-black uppercase tracking-wider">
+                                  <CustomBadgeDropdown
+                                    value={taskStatus}
+                                    options={PROJECT_STATUS_OPTIONS}
+                                    onChange={(val) => handleUpdateTaskStatus(task.id, val)}
+                                    disabled={isPendingTaskUpdate}
+                                    theme={taskStatusTheme}
+                                    showDot={true}
+                                  />
                                   <CustomBadgeDropdown
                                     value={task.priority}
                                     options={PROJECT_PRIORITY_OPTIONS}
@@ -1035,45 +1057,63 @@ export function ProjectBoardView({
                                     if (a.completed !== b.completed) return a.completed ? 1 : -1
                                     return a.createdAt.localeCompare(b.createdAt)
                                   })
-                                  .map((st) => (
-                                    <div
-                                      key={st.id}
-                                      onClick={() => !isPendingSubTaskToggle && handleToggleSubTask(st.id, st.completed)}
-                                      className="group flex items-center justify-between py-1 px-2 -mx-2 rounded-lg hover:bg-secondary/40 cursor-pointer transition-colors"
-                                    >
-                                      <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleToggleSubTask(st.id, st.completed)
-                                          }}
-                                          disabled={isPendingSubTaskToggle}
-                                          className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[4px] border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${st.completed
-                                            ? "bg-primary border-primary text-primary-foreground"
-                                            : "border-border/65 hover:border-primary/50 bg-card"
-                                            }`}
-                                        >
-                                          {st.completed && <Check className="h-2.5 w-2.5 stroke-[4]" />}
-                                        </button>
-                                        <span
-                                          className={`text-xs min-w-0 break-words ${st.completed ? "line-through text-muted-foreground" : "text-foreground font-medium"
-                                            }`}
-                                        >
-                                          {st.name}
-                                        </span>
-                                      </div>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          handleDeleteSubTask(st.id)
-                                        }}
-                                        disabled={isPendingSubTaskDelete}
-                                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
+                                  .map((st) => {
+                                    const subTaskStatus = st.status || (st.completed ? "Completed" : "Planning")
+                                    const subTaskStatusTheme = STATUS_THEMES[subTaskStatus] || STATUS_THEMES.Planning
+
+                                    return (
+                                      <div
+                                        key={st.id}
+                                        onClick={() => !isPendingSubTaskToggle && handleToggleSubTask(st.id, st.completed)}
+                                        className="group flex items-center justify-between py-1.5 px-2 -mx-2 rounded-lg hover:bg-secondary/40 cursor-pointer transition-colors gap-2"
                                       >
-                                        <Trash2 className="h-3 w-3" />
-                                      </button>
-                                    </div>
-                                  ))}
+                                        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation()
+                                              handleToggleSubTask(st.id, st.completed)
+                                            }}
+                                            disabled={isPendingSubTaskToggle}
+                                            className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[4px] border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${st.completed
+                                              ? "bg-primary border-primary text-primary-foreground"
+                                              : "border-border/65 hover:border-primary/50 bg-card"
+                                              }`}
+                                            aria-label="Toggle subtask completed"
+                                          >
+                                            {st.completed && <Check className="h-2.5 w-2.5 stroke-[4]" />}
+                                          </button>
+                                          <span
+                                            className={`text-xs min-w-0 break-words ${st.completed ? "line-through text-muted-foreground" : "text-foreground font-medium"
+                                              }`}
+                                          >
+                                            {st.name}
+                                          </span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                                          <CustomBadgeDropdown
+                                            value={subTaskStatus}
+                                            options={PROJECT_STATUS_OPTIONS}
+                                            onChange={(val) => handleUpdateSubTaskStatus(st.id, val)}
+                                            disabled={isPendingSubTaskUpdate}
+                                            theme={subTaskStatusTheme}
+                                            showDot={true}
+                                            align="right"
+                                          />
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation()
+                                              handleDeleteSubTask(st.id)
+                                            }}
+                                            disabled={isPendingSubTaskDelete}
+                                            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                                            aria-label="Delete subtask"
+                                          >
+                                            <Trash2 className="h-3 w-3" />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
                               </div>
                             )}
 
@@ -1119,6 +1159,13 @@ export function ProjectBoardView({
                   className="flex-1 rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 min-w-0 shadow-sm"
                 />                <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-2 shrink-0 select-none">
                   <CustomSelect
+                    value={taskStatus}
+                    onChange={(val) => setTaskStatus(val as string)}
+                    options={PROJECT_STATUS_OPTIONS.map((opt) => ({ value: opt.value, label: opt.label }))}
+                    className="col-span-1 sm:w-auto"
+                  />
+
+                  <CustomSelect
                     value={taskPriority}
                     onChange={(val) => setTaskPriority(val as string)}
                     options={[
@@ -1140,7 +1187,7 @@ export function ProjectBoardView({
                   <button
                     type="submit"
                     disabled={isPendingTaskCreate || !taskName.trim()}
-                    className="col-span-2 sm:col-span-1 inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                    className="col-span-1 sm:col-span-1 inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                   >
                     {isPendingTaskCreate ? (
                       <Loader2 className="h-4.5 w-4.5 animate-spin" />
@@ -1168,6 +1215,17 @@ export function ProjectBoardView({
                   />
 
                   <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-2 shrink-0 select-none">
+                    <CustomSelect
+                      value={row.status}
+                      onChange={(val) => {
+                        const updated = [...extraProjectTaskRows]
+                        updated[idx].status = val as string
+                        setExtraProjectTaskRows(updated)
+                      }}
+                      options={PROJECT_STATUS_OPTIONS.map((opt) => ({ value: opt.value, label: opt.label }))}
+                      className="col-span-1 sm:w-auto"
+                    />
+
                     <CustomSelect
                       value={row.priority}
                       onChange={(val) => {
@@ -1197,7 +1255,7 @@ export function ProjectBoardView({
                     <button
                       type="button"
                       onClick={() => setExtraProjectTaskRows(extraProjectTaskRows.filter((r) => r.id !== row.id))}
-                      className="p-2.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer"
+                      className="col-span-1 sm:col-span-1 p-2.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer flex items-center justify-center"
                       title="Remove task"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -1213,7 +1271,7 @@ export function ProjectBoardView({
                   onClick={() =>
                     setExtraProjectTaskRows([
                       ...extraProjectTaskRows,
-                      { id: Math.random().toString(), name: "", priority: "Medium", deadline: "" },
+                      { id: Math.random().toString(), name: "", status: "Planning", priority: "Medium", deadline: "" },
                     ])
                   }
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1 cursor-pointer"
