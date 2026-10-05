@@ -189,6 +189,7 @@ export function CalendarView({
                     projectName: proj.name,
                     deadline: task.deadline,
                     priority: task.priority,
+                    status: task.status,
                     completed: task.completed,
                   })
                 }
@@ -667,9 +668,16 @@ export function CalendarView({
                           <span className="text-micro font-black uppercase tracking-wider text-amber-500 flex items-center gap-1">
                             <Briefcase className="h-3 w-3" /> {item.type === "project" ? "Project Deadline" : "Task Deadline"}
                           </span>
-                          <span className="text-micro font-extrabold uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                            {item.priority}
-                          </span>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {item.status && (
+                              <span className="text-micro font-extrabold uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                                {item.status}
+                              </span>
+                            )}
+                            <span className="text-micro font-extrabold uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                              {item.priority}
+                            </span>
+                          </div>
                         </div>
                         <p className="font-bold text-foreground leading-relaxed break-words">
                           {item.name}
