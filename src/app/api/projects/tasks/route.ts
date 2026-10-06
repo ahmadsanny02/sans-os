@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { projectTasks, projects } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { ensureProjectStatusColumns } from "@/lib/projectsMigration"
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
@@ -34,18 +35,30 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const taskStatus = status || "Planning"
-    const [newTask] = await db
-      .insert(projectTasks)
-      .values({
-        userId: user.id,
-        projectId,
-        name,
-        status: taskStatus,
-        completed: taskStatus === "Completed",
-        priority: priority || "Medium",
-        deadline: deadline ? new Date(deadline) : null,
-      })
-      .returning()
+    const insertTask = async () => {
+      const [inserted] = await db
+        .insert(projectTasks)
+        .values({
+          userId: user.id,
+          projectId,
+          name,
+          status: taskStatus,
+          completed: taskStatus === "Completed",
+          priority: priority || "Medium",
+          deadline: deadline ? new Date(deadline) : null,
+        })
+        .returning()
+      return inserted
+    }
+
+    let newTask
+    try {
+      newTask = await insertTask()
+    } catch (insertError) {
+      console.warn("Insert task failed, ensuring status columns and retrying:", insertError)
+      await ensureProjectStatusColumns()
+      newTask = await insertTask()
+    }
 
     return NextResponse.json(newTask)
   } catch (error) {
@@ -132,11 +145,23 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       updateFields.deadline = deadline ? new Date(deadline) : null
     }
 
-    const [updatedTask] = await db
-      .update(projectTasks)
-      .set(updateFields)
-      .where(and(eq(projectTasks.id, id), eq(projectTasks.userId, user.id)))
-      .returning()
+    const updateTask = async () => {
+      const [updated] = await db
+        .update(projectTasks)
+        .set(updateFields)
+        .where(and(eq(projectTasks.id, id), eq(projectTasks.userId, user.id)))
+        .returning()
+      return updated
+    }
+
+    let updatedTask
+    try {
+      updatedTask = await updateTask()
+    } catch (updateError) {
+      console.warn("Update task failed, ensuring status columns and retrying:", updateError)
+      await ensureProjectStatusColumns()
+      updatedTask = await updateTask()
+    }
 
     if (!updatedTask) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 })
