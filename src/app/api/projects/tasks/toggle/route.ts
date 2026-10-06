@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { projectTasks } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { ensureProjectStatusColumns } from "@/lib/projectsMigration"
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
@@ -22,14 +23,26 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const [updatedTask] = await db
-      .update(projectTasks)
-      .set({
-        completed,
-        status: completed ? "Completed" : "In Progress",
-      })
-      .where(and(eq(projectTasks.id, id), eq(projectTasks.userId, user.id)))
-      .returning()
+    const updateTask = async () => {
+      const [updated] = await db
+        .update(projectTasks)
+        .set({
+          completed,
+          status: completed ? "Completed" : "In Progress",
+        })
+        .where(and(eq(projectTasks.id, id), eq(projectTasks.userId, user.id)))
+        .returning()
+      return updated
+    }
+
+    let updatedTask
+    try {
+      updatedTask = await updateTask()
+    } catch (updateError) {
+      console.warn("Toggle task failed, ensuring status columns and retrying:", updateError)
+      await ensureProjectStatusColumns()
+      updatedTask = await updateTask()
+    }
 
     if (!updatedTask) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 })
