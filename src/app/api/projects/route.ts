@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { projects } from "@/types/schema"
 import { eq, and, desc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { ensureProjectStatusColumns } from "@/lib/projectsMigration"
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -15,18 +16,28 @@ export async function GET(): Promise<NextResponse> {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Retrieve projects with their tasks sorted by creation date
-    const userProjects = await db.query.projects.findMany({
-      where: eq(projects.userId, user.id),
-      with: {
-        tasks: {
-          with: {
-            subTasks: true
-          }
-        }
-      },
-      orderBy: [desc(projects.createdAt)],
-    })
+    const fetchProjects = async () => {
+      return await db.query.projects.findMany({
+        where: eq(projects.userId, user.id),
+        with: {
+          tasks: {
+            with: {
+              subTasks: true,
+            },
+          },
+        },
+        orderBy: [desc(projects.createdAt)],
+      })
+    }
+
+    let userProjects
+    try {
+      userProjects = await fetchProjects()
+    } catch (queryError) {
+      console.warn("fetchProjects failed, ensuring project status columns and retrying:", queryError)
+      await ensureProjectStatusColumns()
+      userProjects = await fetchProjects()
+    }
 
     return NextResponse.json(userProjects)
   } catch (error) {
