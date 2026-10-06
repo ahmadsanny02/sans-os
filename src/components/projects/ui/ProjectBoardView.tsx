@@ -446,7 +446,7 @@ export function ProjectBoardView({
         {showAddProject ? (
           <form
             onSubmit={handleAddProject}
-            className="bento-card p-4 space-y-4 animate-in slide-in-from-top-4 duration-200"
+            className="bento-card !overflow-visible p-4 space-y-4 animate-in slide-in-from-top-4 duration-200"
           >
             <div className="space-y-1.5">
               <label htmlFor="projectName" className="text-xs font-bold text-muted-foreground">
@@ -745,7 +745,7 @@ export function ProjectBoardView({
             }
           />
         ) : (
-          <div className="bento-card p-4 sm:p-6 min-h-[400px] space-y-6">
+          <div className="bento-card !overflow-visible p-4 sm:p-6 min-h-[400px] space-y-6">
             {/* Project Header details */}
             <div className="border-b border-border/40 pb-5 space-y-4">
               <button
@@ -1277,7 +1277,7 @@ export function ProjectBoardView({
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1 cursor-pointer"
                 >
                   <Plus className="h-3.5 w-3.5" />
-                  <span>+ Add Another Task</span>
+                  <span>Add Another Task</span>
                 </button>
               </div>
 
