@@ -23,6 +23,8 @@ interface CustomSelectProps<T = string | number> {
   fullWidth?: boolean
   disabled?: boolean
   id?: string
+  align?: "left" | "right" | "auto"
+  placement?: "auto" | "top" | "bottom"
 }
 
 export function CustomSelect<T extends string | number = string | number>({
@@ -38,8 +40,11 @@ export function CustomSelect<T extends string | number = string | number>({
   fullWidth = false,
   disabled = false,
   id,
+  align = "auto",
+  placement = "auto",
 }: CustomSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false)
+  const [openUpward, setOpenUpward] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const isFullWidth = fullWidth || className.includes("w-full")
@@ -47,6 +52,44 @@ export function CustomSelect<T extends string | number = string | number>({
   const selectedOption = options.find(
     (opt) => String(opt.value) === String(value)
   )
+
+  const handleToggle = () => {
+    if (disabled) return
+    if (!isOpen) {
+      if (placement === "top") {
+        setOpenUpward(true)
+      } else if (placement === "bottom") {
+        setOpenUpward(false)
+      } else if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect()
+        const spaceBelow = window.innerHeight - rect.bottom
+        const spaceAbove = rect.top
+
+        // Check if closest element with scroll/hidden overflow restricts space below
+        let parent = containerRef.current.parentElement
+        let containerSpaceBelow = spaceBelow
+        while (parent && parent !== document.body) {
+          const style = window.getComputedStyle(parent)
+          if (
+            style.overflow !== "visible" ||
+            style.overflowY !== "visible" ||
+            style.overflowX !== "visible"
+          ) {
+            const parentRect = parent.getBoundingClientRect()
+            containerSpaceBelow = Math.min(containerSpaceBelow, parentRect.bottom - rect.bottom)
+            break
+          }
+          parent = parent.parentElement
+        }
+
+        const neededHeight = Math.min(options.length * 40 + 24, 240)
+        setOpenUpward(containerSpaceBelow < neededHeight && spaceAbove > neededHeight)
+      }
+      setIsOpen(true)
+    } else {
+      setIsOpen(false)
+    }
+  }
 
   // Close when clicking outside
   useEffect(() => {
@@ -78,7 +121,7 @@ export function CustomSelect<T extends string | number = string | number>({
   return (
     <div
       ref={containerRef}
-      className={`relative ${
+      className={`relative ${isOpen ? "z-30" : ""} ${
         isFullWidth ? "w-full flex flex-col gap-1.5" : "inline-flex items-center gap-1.5"
       } ${className}`}
     >
@@ -96,7 +139,7 @@ export function CustomSelect<T extends string | number = string | number>({
         id={id}
         type="button"
         disabled={disabled}
-        onClick={() => !disabled && setIsOpen((prev) => !prev)}
+        onClick={handleToggle}
         className={`w-full inline-flex items-center justify-between gap-2 border border-border/80 bg-background/60 dark:bg-card/40 hover:bg-card/90 text-foreground transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary hover:border-primary/40 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses[size]} ${triggerClassName}`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -118,8 +161,16 @@ export function CustomSelect<T extends string | number = string | number>({
       {/* Dropdown Popover */}
       {isOpen && (
         <div
-          className={`absolute top-full left-0 mt-1.5 z-50 max-h-60 overflow-y-auto rounded-xl border border-border/80 bg-card p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
-            isFullWidth ? "w-full min-w-full" : "min-w-[140px] right-0 sm:left-auto"
+          className={`absolute ${
+            openUpward ? "bottom-full mb-1.5 origin-bottom" : "top-full mt-1.5 origin-top"
+          } left-0 z-50 max-h-60 overflow-y-auto rounded-xl border border-border/80 bg-card p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
+            isFullWidth
+              ? "w-full min-w-full"
+              : align === "right"
+              ? "min-w-[140px] right-0 left-auto"
+              : align === "left"
+              ? "min-w-[140px] left-0 right-auto"
+              : "min-w-[140px] right-0 sm:left-auto"
           } ${dropdownClassName}`}
         >
           <div role="listbox" className="space-y-0.5">
