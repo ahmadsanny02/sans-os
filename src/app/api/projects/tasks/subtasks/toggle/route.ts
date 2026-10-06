@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { projectSubTasks } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { ensureProjectStatusColumns } from "@/lib/projectsMigration"
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
@@ -22,14 +23,26 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const [updatedSubTask] = await db
-      .update(projectSubTasks)
-      .set({
-        completed,
-        status: completed ? "Completed" : "In Progress",
-      })
-      .where(and(eq(projectSubTasks.id, id), eq(projectSubTasks.userId, user.id)))
-      .returning()
+    const updateSubTask = async () => {
+      const [updated] = await db
+        .update(projectSubTasks)
+        .set({
+          completed,
+          status: completed ? "Completed" : "In Progress",
+        })
+        .where(and(eq(projectSubTasks.id, id), eq(projectSubTasks.userId, user.id)))
+        .returning()
+      return updated
+    }
+
+    let updatedSubTask
+    try {
+      updatedSubTask = await updateSubTask()
+    } catch (updateError) {
+      console.warn("Toggle subtask failed, ensuring status columns and retrying:", updateError)
+      await ensureProjectStatusColumns()
+      updatedSubTask = await updateSubTask()
+    }
 
     if (!updatedSubTask) {
       return NextResponse.json({ error: "Sub-task not found" }, { status: 404 })
