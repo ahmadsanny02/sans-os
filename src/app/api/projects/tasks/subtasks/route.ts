@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { projectSubTasks, projectTasks } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { ensureProjectStatusColumns } from "@/lib/projectsMigration"
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
@@ -34,16 +35,28 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const subTaskStatus = status || "Planning"
-    const [newSubTask] = await db
-      .insert(projectSubTasks)
-      .values({
-        userId: user.id,
-        taskId,
-        name,
-        status: subTaskStatus,
-        completed: subTaskStatus === "Completed",
-      })
-      .returning()
+    const insertSubTask = async () => {
+      const [inserted] = await db
+        .insert(projectSubTasks)
+        .values({
+          userId: user.id,
+          taskId,
+          name,
+          status: subTaskStatus,
+          completed: subTaskStatus === "Completed",
+        })
+        .returning()
+      return inserted
+    }
+
+    let newSubTask
+    try {
+      newSubTask = await insertSubTask()
+    } catch (insertError) {
+      console.warn("Insert subtask failed, ensuring status columns and retrying:", insertError)
+      await ensureProjectStatusColumns()
+      newSubTask = await insertSubTask()
+    }
 
     return NextResponse.json(newSubTask)
   } catch (error) {
@@ -124,11 +137,23 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       }
     }
 
-    const [updatedSubTask] = await db
-      .update(projectSubTasks)
-      .set(updateFields)
-      .where(and(eq(projectSubTasks.id, id), eq(projectSubTasks.userId, user.id)))
-      .returning()
+    const updateSubTask = async () => {
+      const [updated] = await db
+        .update(projectSubTasks)
+        .set(updateFields)
+        .where(and(eq(projectSubTasks.id, id), eq(projectSubTasks.userId, user.id)))
+        .returning()
+      return updated
+    }
+
+    let updatedSubTask
+    try {
+      updatedSubTask = await updateSubTask()
+    } catch (updateError) {
+      console.warn("Update subtask failed, ensuring status columns and retrying:", updateError)
+      await ensureProjectStatusColumns()
+      updatedSubTask = await updateSubTask()
+    }
 
     if (!updatedSubTask) {
       return NextResponse.json({ error: "Sub-task not found" }, { status: 404 })
