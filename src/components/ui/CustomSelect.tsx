@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react"
+import { createPortal } from "react-dom"
 import { ChevronDown, Check } from "lucide-react"
 
 export interface SelectOption<T = string | number> {
@@ -27,6 +28,10 @@ interface CustomSelectProps<T = string | number> {
   placement?: "auto" | "top" | "bottom"
 }
 
+const subscribe = () => () => {}
+const getSnapshot = () => true
+const getServerSnapshot = () => false
+
 export function CustomSelect<T extends string | number = string | number>({
   value,
   onChange,
@@ -44,8 +49,16 @@ export function CustomSelect<T extends string | number = string | number>({
   placement = "auto",
 }: CustomSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false)
-  const [openUpward, setOpenUpward] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const isMounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  const [coords, setCoords] = useState<{
+    top?: number
+    bottom?: number
+    left: number
+    width?: number
+    minWidth?: number
+  } | null>(null)
 
   const isFullWidth = fullWidth || className.includes("w-full")
 
@@ -53,48 +66,69 @@ export function CustomSelect<T extends string | number = string | number>({
     (opt) => String(opt.value) === String(value)
   )
 
+  const updateCoords = useCallback(() => {
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const spaceBelow = window.innerHeight - rect.bottom
+    const spaceAbove = rect.top
+    const neededHeight = Math.min(options.length * 40 + 24, 240)
+    const shouldOpenUp =
+      placement === "top" ||
+      (placement !== "bottom" && spaceBelow < neededHeight && spaceAbove > neededHeight)
+
+    const minW = Math.max(140, rect.width)
+    let left = rect.left
+    if (isFullWidth) {
+      left = rect.left
+    } else if (align === "right") {
+      left = rect.right - minW
+    } else if (align === "auto" && rect.right > window.innerWidth - 140) {
+      left = rect.right - minW
+    }
+    left = Math.max(8, Math.min(left, window.innerWidth - (isFullWidth ? rect.width : minW) - 8))
+
+    setCoords({
+      top: shouldOpenUp ? undefined : rect.bottom + 6,
+      bottom: shouldOpenUp ? window.innerHeight - rect.top + 6 : undefined,
+      left,
+      width: isFullWidth ? rect.width : undefined,
+      minWidth: isFullWidth ? undefined : minW,
+    })
+  }, [align, isFullWidth, options.length, placement])
+
   const handleToggle = () => {
     if (disabled) return
     if (!isOpen) {
-      if (placement === "top") {
-        setOpenUpward(true)
-      } else if (placement === "bottom") {
-        setOpenUpward(false)
-      } else if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect()
-        const spaceBelow = window.innerHeight - rect.bottom
-        const spaceAbove = rect.top
-
-        // Check if closest element with scroll/hidden overflow restricts space below
-        let parent = containerRef.current.parentElement
-        let containerSpaceBelow = spaceBelow
-        while (parent && parent !== document.body) {
-          const style = window.getComputedStyle(parent)
-          if (
-            style.overflow !== "visible" ||
-            style.overflowY !== "visible" ||
-            style.overflowX !== "visible"
-          ) {
-            const parentRect = parent.getBoundingClientRect()
-            containerSpaceBelow = Math.min(containerSpaceBelow, parentRect.bottom - rect.bottom)
-            break
-          }
-          parent = parent.parentElement
-        }
-
-        const neededHeight = Math.min(options.length * 40 + 24, 240)
-        setOpenUpward(containerSpaceBelow < neededHeight && spaceAbove > neededHeight)
-      }
+      updateCoords()
       setIsOpen(true)
     } else {
       setIsOpen(false)
     }
   }
 
+  useEffect(() => {
+    if (!isOpen) return
+    const handleScrollOrResize = () => {
+      updateCoords()
+    }
+    window.addEventListener("scroll", handleScrollOrResize, true)
+    window.addEventListener("resize", handleScrollOrResize)
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize, true)
+      window.removeEventListener("resize", handleScrollOrResize)
+    }
+  }, [isOpen, updateCoords])
+
   // Close when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
+      ) {
         setIsOpen(false)
       }
     }
@@ -159,19 +193,19 @@ export function CustomSelect<T extends string | number = string | number>({
       </button>
 
       {/* Dropdown Popover */}
-      {isOpen && (
+      {isOpen && isMounted && coords && createPortal(
         <div
-          className={`absolute ${
-            openUpward ? "bottom-full mb-1.5 origin-bottom" : "top-full mt-1.5 origin-top"
-          } left-0 z-50 max-h-60 overflow-y-auto rounded-xl border border-border/80 bg-card p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
-            isFullWidth
-              ? "w-full min-w-full"
-              : align === "right"
-              ? "min-w-[140px] right-0 left-auto"
-              : align === "left"
-              ? "min-w-[140px] left-0 right-auto"
-              : "min-w-[140px] right-0 sm:left-auto"
-          } ${dropdownClassName}`}
+          ref={dropdownRef}
+          style={{
+            position: "fixed",
+            top: coords.top !== undefined ? `${coords.top}px` : "auto",
+            bottom: coords.bottom !== undefined ? `${coords.bottom}px` : "auto",
+            left: `${coords.left}px`,
+            width: coords.width ? `${coords.width}px` : "auto",
+            minWidth: coords.minWidth ? `${coords.minWidth}px` : undefined,
+            zIndex: 9999,
+          }}
+          className={`max-h-60 overflow-y-auto rounded-xl border border-border/80 bg-card p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${dropdownClassName}`}
         >
           <div role="listbox" className="space-y-0.5">
             {options.map((option) => {
@@ -184,7 +218,7 @@ export function CustomSelect<T extends string | number = string | number>({
                     onChange(option.value)
                     setIsOpen(false)
                   }}
-                  className={`w-full flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs sm:text-sm transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-xs sm:text-sm transition-colors cursor-pointer ${
                     isSelected
                       ? "bg-primary/15 text-primary font-bold"
                       : "text-foreground font-medium hover:bg-primary/10 hover:text-primary"
@@ -204,9 +238,9 @@ export function CustomSelect<T extends string | number = string | number>({
               )
             })}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
 }
-
