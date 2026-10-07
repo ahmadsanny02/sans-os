@@ -4,6 +4,7 @@ import { dialogueLogs, vocabularyLogs, formulas } from "@/types/schema"
 import { eq, and, desc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { translateText } from "@/lib/translate"
+import { logger } from "@/lib/logger"
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -90,8 +91,20 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
     }
 
-    const autoTranslationQuestion = await translateText(englishQuestion)
-    const autoTranslationAnswer = await translateText(englishAnswer)
+    let autoTranslationQuestion: string | null = null
+    let autoTranslationAnswer: string | null = null
+
+    try {
+      autoTranslationQuestion = await translateText(englishQuestion)
+    } catch (err) {
+      logger.warn("[Dialogue API] Failed to get auto-translation for question:", err)
+    }
+
+    try {
+      autoTranslationAnswer = await translateText(englishAnswer)
+    } catch (err) {
+      logger.warn("[Dialogue API] Failed to get auto-translation for answer:", err)
+    }
 
     const [newLog] = await db
       .insert(dialogueLogs)
