@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { priorities, timetableBlocks } from "@/types/schema"
-import { eq, and, lt, asc, gte, lte } from "drizzle-orm"
+import { eq, and, asc, gte, lte } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger";
 
@@ -22,7 +22,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     const dateParam = searchParams.get("date") // format "YYYY-MM-DD"
     const startDateParam = searchParams.get("startDate")
     const endDateParam = searchParams.get("endDate")
-    let today = searchParams.get("today")
 
     if (startDateParam || endDateParam) {
       if (!startDateParam || !endDateParam || !DATE_REGEX.test(startDateParam) || !DATE_REGEX.test(endDateParam)) {
@@ -48,118 +47,13 @@ export async function GET(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Format parameter date harus YYYY-MM-DD" }, { status: 400 })
     }
 
-    if (today && !DATE_REGEX.test(today)) {
-      return NextResponse.json({ error: "Format parameter today harus YYYY-MM-DD" }, { status: 400 })
-    }
-
-    if (!today) {
-      const now = new Date()
-      const year = now.getFullYear()
-      const month = String(now.getMonth() + 1).padStart(2, "0")
-      const day = String(now.getDate()).padStart(2, "0")
-      today = `${year}-${month}-${day}`
-    }
-
-    // Auto-rollover: Find incomplete priorities from before the real today's date and move to real today's date, respecting the limit of 5.
-    const oldIncomplete = await db
-      .select()
-      .from(priorities)
-      .where(
-        and(
-          eq(priorities.userId, user.id),
-          eq(priorities.completed, false),
-          lt(priorities.date, today)
-        )
-      )
-      .orderBy(asc(priorities.date), asc(priorities.orderIndex))
-
-    if (oldIncomplete.length > 0) {
-      const todayPriorities = await db
-        .select()
-        .from(priorities)
-        .where(
-          and(
-            eq(priorities.userId, user.id),
-            eq(priorities.date, today)
-          )
-        )
-
-      const availableSlots = 5 - todayPriorities.length
-      if (availableSlots > 0) {
-        const toRollover = oldIncomplete.slice(0, availableSlots)
-        let nextIndex = todayPriorities.length
-
-        await db.transaction(async (tx) => {
-          for (const item of toRollover) {
-            await tx
-              .update(priorities)
-              .set({
-                date: today,
-                orderIndex: nextIndex++,
-                rolloverCount: (item.rolloverCount || 0) + 1,
-              })
-              .where(
-                and(
-                  eq(priorities.id, item.id),
-                  eq(priorities.userId, user.id),
-                  lt(priorities.date, today)
-                )
-              )
-          }
-        })
-      }
-    }
-
-    // Now query all priorities for the target date
     const dailyPriorities = await db
       .select()
       .from(priorities)
       .where(and(eq(priorities.userId, user.id), eq(priorities.date, dateParam)))
       .orderBy(asc(priorities.orderIndex))
 
-    // Self-healing: Find custom timetable blocks for this user and date that are not in priorities
-    const customBlocks = await db
-      .select()
-      .from(timetableBlocks)
-      .where(
-        and(
-          eq(timetableBlocks.userId, user.id),
-          eq(timetableBlocks.date, dateParam)
-        )
-      )
-
-    const currentPriorities = [...dailyPriorities]
-    let hasInsertedNew = false
-
-    for (const block of customBlocks) {
-      const exists = currentPriorities.some((p) => p.text === block.title)
-      if (!exists && currentPriorities.length < 5) {
-        try {
-          const [newPriority] = await db
-            .insert(priorities)
-            .values({
-              userId: user.id,
-              date: dateParam,
-              text: block.title,
-              category: block.category || "General",
-              orderIndex: currentPriorities.length,
-              completed: false,
-              rolloverCount: 0,
-            })
-            .returning()
-          currentPriorities.push(newPriority)
-          hasInsertedNew = true
-        } catch (err) {
-          logger.error("Failed to self-heal auto-insert priority:", err)
-        }
-      }
-    }
-
-    if (hasInsertedNew) {
-      currentPriorities.sort((a, b) => a.orderIndex - b.orderIndex)
-    }
-
-    return NextResponse.json(currentPriorities)
+    return NextResponse.json(dailyPriorities)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
@@ -352,15 +246,26 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     // Automatically remove matching custom timetable block if it exists to keep in sync
     try {
-      await db
-        .delete(timetableBlocks)
-        .where(
-          and(
-            eq(timetableBlocks.userId, user.id),
-            eq(timetableBlocks.date, deletedPriority.date),
-            eq(timetableBlocks.title, deletedPriority.text)
+      if (deletedPriority.timetableBlockId) {
+        await db
+          .delete(timetableBlocks)
+          .where(
+            and(
+              eq(timetableBlocks.userId, user.id),
+              eq(timetableBlocks.id, deletedPriority.timetableBlockId)
+            )
           )
-        )
+      } else {
+        await db
+          .delete(timetableBlocks)
+          .where(
+            and(
+              eq(timetableBlocks.userId, user.id),
+              eq(timetableBlocks.date, deletedPriority.date),
+              eq(timetableBlocks.title, deletedPriority.text)
+            )
+          )
+      }
     } catch (err) {
       logger.error("Failed to auto-delete timetable block matching priority:", err)
     }
