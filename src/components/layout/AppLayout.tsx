@@ -5,7 +5,8 @@ import React, { useState, useEffect, useRef, Suspense } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useWorkspaceStore } from "@/store/workspaceStore"
+import { useQueryClient } from "@tanstack/react-query"
+import { useWorkspaceStore, getTodayDateString } from "@/store/workspaceStore"
 import { usePomodoroStore } from "@/store/pomodoroStore"
 import { PomodoroModal } from "@/components/pomodoro/ui/PomodoroModal"
 import { PomodoroPipController } from "@/components/pomodoro/ui/PomodoroPipController"
@@ -221,6 +222,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createBrowserSupabaseClient()
+  const queryClient = useQueryClient()
 
   // Store variables
   const sidebarOpen = useWorkspaceStore((state) => state.sidebarOpen)
@@ -312,12 +314,38 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Synchronize date and check for day rollover in real-time
   useEffect(() => {
-    const handleSync = () => {
-      useWorkspaceStore.getState().checkRollover()
+    const executeRollover = async () => {
+      try {
+        const today = getTodayDateString()
+        await Promise.allSettled([
+          fetch("/api/priorities/rollover", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ today }),
+          }),
+          fetch("/api/daily-todos/rollover", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ today }),
+          }),
+        ])
+        queryClient.invalidateQueries({ queryKey: ["priorities"] })
+        queryClient.invalidateQueries({ queryKey: ["dailyTodos"] })
+      } catch (err) {
+        logger.error("Failed to execute day rollover:", err)
+      }
     }
 
-    // 1. Initial client-side sync
+    const handleSync = () => {
+      const rolledOver = useWorkspaceStore.getState().checkRollover()
+      if (rolledOver) {
+        executeRollover()
+      }
+    }
+
+    // 1. Initial client-side sync and rollover
     handleSync()
+    executeRollover()
 
     // 2. Event listeners for tab focus, visibility change, and page show
     window.addEventListener("focus", handleSync)
@@ -333,7 +361,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       window.removeEventListener("pageshow", handleSync)
       clearInterval(interval)
     }
-  }, [])
+  }, [queryClient])
 
   // Measure floating Pomodoro button coordinates when opening the modal or on resize
   useEffect(() => {
@@ -542,12 +570,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       >
                         {userConfig.theme === "dark" ? (
                           <>
-                            <Sun className="h-4 w-4 text-amber-500 shrink-0" />
+                            <Sun className="h-4 w-4 text-primary shrink-0" />
                             <span>Light Mode</span>
                           </>
                         ) : (
                           <>
-                            <Moon className="h-4 w-4 text-slate-700 shrink-0" />
+                            <Moon className="h-4 w-4 text-muted-foreground shrink-0" />
                             <span>Dark Mode</span>
                           </>
                         )}
@@ -575,7 +603,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                  <div className="h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
                     {currentUser.initials}
                   </div>
                   <div className="flex flex-col text-left min-w-0">
@@ -598,7 +626,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="rounded-lg p-1 hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              className="rounded-xl p-1 hover:bg-accent hover:text-accent-foreground cursor-pointer"
               aria-label="Open menu"
             >
               <Menu className="h-6 w-6" />
@@ -609,13 +637,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <button
             onClick={toggleTheme}
-            className="rounded-lg p-1.5 hover:bg-accent hover:text-accent-foreground cursor-pointer"
+            className="rounded-xl p-1.5 hover:bg-accent hover:text-accent-foreground cursor-pointer"
             aria-label="Toggle Theme"
           >
             {userConfig.theme === "dark" ? (
-              <Sun className="h-5 w-5 text-amber-500" />
+              <Sun className="h-5 w-5 text-primary" />
             ) : (
-              <Moon className="h-5 w-5 text-slate-700" />
+              <Moon className="h-5 w-5 text-muted-foreground" />
             )}
           </button>
         </header>
@@ -705,7 +733,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           scale: isModalOpen ? 0 : 1,
         }}
         transition={{ duration: 0.2 }}
-        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full flex items-center justify-center border bg-card/90 text-foreground backdrop-blur-md transition-all duration-300 shadow-glass cursor-pointer ${
+        className={`fixed bottom-20 sm:bottom-6 right-6 z-40 h-10 w-10 rounded-full flex items-center justify-center border bg-card/90 text-foreground backdrop-blur-md transition-all duration-300 shadow-glass cursor-pointer ${
           isModalOpen ? "pointer-events-none" : "pointer-events-auto"
         } ${
           pomodoroIsRunning
