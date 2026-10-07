@@ -28,6 +28,16 @@ export function formatDate(dateStr: string | null | undefined): string {
   }
 }
 
+export function formatInputDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return ""
+  try {
+    const d = new Date(dateStr)
+    return format(d, "yyyy-MM-dd")
+  } catch {
+    return ""
+  }
+}
+
 export function isOverdue(dateStr: string | null | undefined, completed: boolean = false): boolean {
   if (!dateStr || completed) return false
   try {
