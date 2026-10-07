@@ -1,4 +1,11 @@
-import { useQuery, useMutation, useQueryClient, useMutationState } from "@tanstack/react-query"
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useMutationState,
+  type UseQueryResult,
+  type UseMutationResult,
+} from "@tanstack/react-query"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 
 export interface DailyTodo {
@@ -25,6 +32,40 @@ export interface DailyLog {
   createdAt: string
 }
 
+export interface CreateDailyTodoInput {
+  date: string
+  text: string
+  link?: string
+  category?: string
+  subCategory?: string | null
+}
+
+export interface ToggleDailyTodoInput {
+  id: string
+  completed: boolean
+}
+
+export interface UpdateDailyTodoInput {
+  id: string
+  text?: string
+  link?: string
+  completed?: boolean
+  category?: string
+  subCategory?: string | null
+}
+
+export interface SaveDailyLogInput {
+  date: string
+  journal?: string | null
+  notes?: string | null
+  gratitude?: string | null
+  picUrl?: string | null
+}
+
+export interface DailyTodosCacheContext {
+  previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[]
+}
+
 // Fetch Daily Todos
 async function fetchDailyTodos(date: string): Promise<DailyTodo[]> {
   const today = useWorkspaceStore.getState().realTodayDate
@@ -36,7 +77,7 @@ async function fetchDailyTodos(date: string): Promise<DailyTodo[]> {
   return res.json()
 }
 
-export function useDailyTodosQuery(date: string) {
+export function useDailyTodosQuery(date: string): UseQueryResult<DailyTodo[], Error> {
   const realTodayDate = useWorkspaceStore((state) => state.realTodayDate)
   return useQuery<DailyTodo[]>({
     queryKey: ["daily-todos", date, realTodayDate],
@@ -46,7 +87,7 @@ export function useDailyTodosQuery(date: string) {
 }
 
 // Create Daily Todo
-async function createDailyTodo(body: { date: string; text: string; link?: string; category?: string; subCategory?: string | null }): Promise<DailyTodo> {
+async function createDailyTodo(body: CreateDailyTodoInput): Promise<DailyTodo> {
   const res = await fetch("/api/daily-todos", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -59,9 +100,13 @@ async function createDailyTodo(body: { date: string; text: string; link?: string
   return res.json()
 }
 
-export function useCreateDailyTodoMutation() {
+export function useCreateDailyTodoMutation(): UseMutationResult<
+  DailyTodo,
+  Error,
+  CreateDailyTodoInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<DailyTodo, Error, { date: string; text: string; link?: string; category?: string; subCategory?: string | null }>({
+  return useMutation<DailyTodo, Error, CreateDailyTodoInput>({
     mutationFn: createDailyTodo,
     onSuccess: (newTodo, variables) => {
       const queryCache = queryClient.getQueryCache()
@@ -81,7 +126,7 @@ export function useCreateDailyTodoMutation() {
 }
 
 // Toggle Daily Todo
-async function toggleDailyTodo(body: { id: string; completed: boolean }): Promise<DailyTodo> {
+async function toggleDailyTodo(body: ToggleDailyTodoInput): Promise<DailyTodo> {
   const res = await fetch("/api/daily-todos", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -94,13 +139,18 @@ async function toggleDailyTodo(body: { id: string; completed: boolean }): Promis
   return res.json()
 }
 
-export function useToggleDailyTodoMutation(date: string) {
+export function useToggleDailyTodoMutation(date: string): UseMutationResult<
+  DailyTodo,
+  Error,
+  ToggleDailyTodoInput,
+  DailyTodosCacheContext
+> {
   const queryClient = useQueryClient()
   return useMutation<
     DailyTodo,
     Error,
-    { id: string; completed: boolean },
-    { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
+    ToggleDailyTodoInput,
+    DailyTodosCacheContext
   >({
     mutationKey: ["toggle-daily-todo"],
     mutationFn: toggleDailyTodo,
@@ -166,13 +216,18 @@ async function deleteDailyTodo(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteDailyTodoMutation(date: string) {
+export function useDeleteDailyTodoMutation(date: string): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  DailyTodosCacheContext
+> {
   const queryClient = useQueryClient()
   return useMutation<
     { success: boolean },
     Error,
     string,
-    { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
+    DailyTodosCacheContext
   >({
     mutationFn: deleteDailyTodo,
     onMutate: async (id) => {
@@ -219,7 +274,7 @@ async function fetchDailyLog(date: string): Promise<DailyLog | null> {
   return res.json()
 }
 
-export function useDailyLogQuery(date: string) {
+export function useDailyLogQuery(date: string): UseQueryResult<DailyLog | null, Error> {
   return useQuery<DailyLog | null>({
     queryKey: ["daily-log", date],
     queryFn: () => fetchDailyLog(date),
@@ -228,13 +283,7 @@ export function useDailyLogQuery(date: string) {
 }
 
 // Save Daily Log
-async function saveDailyLog(body: {
-  date: string
-  journal?: string | null
-  notes?: string | null
-  gratitude?: string | null
-  picUrl?: string | null
-}): Promise<DailyLog> {
+async function saveDailyLog(body: SaveDailyLogInput): Promise<DailyLog> {
   const res = await fetch("/api/daily-logs", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -247,19 +296,13 @@ async function saveDailyLog(body: {
   return res.json()
 }
 
-export function useSaveDailyLogMutation() {
+export function useSaveDailyLogMutation(): UseMutationResult<
+  DailyLog,
+  Error,
+  SaveDailyLogInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<
-    DailyLog,
-    Error,
-    {
-      date: string
-      journal?: string | null
-      notes?: string | null
-      gratitude?: string | null
-      picUrl?: string | null
-    }
-  >({
+  return useMutation<DailyLog, Error, SaveDailyLogInput>({
     mutationFn: saveDailyLog,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["daily-log"] })
@@ -267,14 +310,7 @@ export function useSaveDailyLogMutation() {
   })
 }
 
-async function updateDailyTodo(body: {
-  id: string
-  text?: string
-  link?: string
-  completed?: boolean
-  category?: string
-  subCategory?: string | null
-}): Promise<DailyTodo> {
+async function updateDailyTodo(body: UpdateDailyTodoInput): Promise<DailyTodo> {
   const res = await fetch("/api/daily-todos", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -287,20 +323,13 @@ async function updateDailyTodo(body: {
   return res.json()
 }
 
-export function useUpdateDailyTodoMutation(date: string) {
+export function useUpdateDailyTodoMutation(date: string): UseMutationResult<
+  DailyTodo,
+  Error,
+  UpdateDailyTodoInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<
-    DailyTodo,
-    Error,
-    {
-      id: string
-      text?: string
-      link?: string
-      completed?: boolean
-      category?: string
-      subCategory?: string | null
-    }
-  >({
+  return useMutation<DailyTodo, Error, UpdateDailyTodoInput>({
     mutationFn: updateDailyTodo,
     onSuccess: (updatedTodo) => {
       const queryCache = queryClient.getQueryCache()
