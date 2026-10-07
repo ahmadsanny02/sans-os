@@ -104,7 +104,20 @@ async function deleteSubCategoryApi(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useCategories() {
+export interface UseCategoriesReturn {
+  categories: CategoryItem[]
+  subCategories: SubCategoryItem[]
+  isLoaded: boolean
+  addCategory: (newItem: Omit<CategoryItem, "id" | "isSystemDefault">) => void
+  updateCategory: (id: string, patch: Partial<Omit<CategoryItem, "id" | "isSystemDefault">>) => Promise<void>
+  deleteCategory: (id: string) => Promise<void>
+  addSubCategory: (categoryId: string, name: string) => void
+  updateSubCategory: (id: string, name: string) => void
+  deleteSubCategory: (id: string) => void
+  resetToDefault: () => void
+}
+
+export function useCategories(): UseCategoriesReturn {
   const queryClient = useQueryClient()
 
   // Categories Queries & Mutations
