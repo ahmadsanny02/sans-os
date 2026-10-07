@@ -64,7 +64,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { id, title, startTime, endTime } = body
+    const { id, title, startTime, endTime, completed, date } = body
 
     if (!id) {
       return NextResponse.json({ error: "Missing sub-schedule ID" }, { status: 400 })
@@ -74,6 +74,12 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     if (title !== undefined) updateData.title = title.trim()
     if (startTime !== undefined) updateData.startTime = startTime || null
     if (endTime !== undefined) updateData.endTime = endTime || null
+    if (completed !== undefined) {
+      updateData.completed = completed
+      const now = new Date()
+      const defaultDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+      updateData.completedDate = completed ? (date || defaultDate) : null
+    }
 
     const [updated] = await db
       .update(timetableSubSchedules)
