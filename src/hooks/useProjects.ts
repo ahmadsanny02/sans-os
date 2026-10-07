@@ -1,4 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type UseQueryResult,
+  type UseMutationResult,
+} from "@tanstack/react-query"
 
 export interface ProjectSubTask {
   id: string
@@ -37,6 +43,57 @@ export interface Project {
   tasks: ProjectTask[]
 }
 
+export interface CreateProjectInput {
+  name: string
+  description?: string
+  status?: string
+  priority?: string
+  deadline?: string
+  category?: string
+  subCategory?: string | null
+}
+
+export interface CreateTaskInput {
+  projectId: string
+  name: string
+  status?: string
+  priority?: string
+  deadline?: string
+}
+
+export interface CreateSubTaskInput {
+  taskId: string
+  name: string
+  status?: string
+}
+
+export interface UpdateProjectInput {
+  id: string
+  name?: string
+  description?: string | null
+  status?: string
+  priority?: string
+  deadline?: string | null
+  category?: string
+  subCategory?: string | null
+}
+
+export interface UpdateTaskInput {
+  id: string
+  name?: string
+  status?: string
+  completed?: boolean
+  priority?: string
+  deadline?: string | null
+}
+
+export interface UpdateSubTaskInput {
+  id: string
+  name?: string
+  status?: string
+  completed?: boolean
+}
+
 // 1. Fetch user projects (includes nested tasks)
 async function fetchProjects(): Promise<Project[]> {
   const res = await fetch("/api/projects")
@@ -46,7 +103,7 @@ async function fetchProjects(): Promise<Project[]> {
   return res.json()
 }
 
-export function useProjectsQuery() {
+export function useProjectsQuery(): UseQueryResult<Project[], Error> {
   return useQuery<Project[]>({
     queryKey: ["projects"],
     queryFn: fetchProjects,
@@ -74,17 +131,9 @@ async function createProject(body: {
   return res.json()
 }
 
-export function useCreateProjectMutation() {
+export function useCreateProjectMutation(): UseMutationResult<Project, Error, CreateProjectInput> {
   const queryClient = useQueryClient()
-  return useMutation<Project, Error, {
-    name: string
-    description?: string
-    status?: string
-    priority?: string
-    deadline?: string
-    category?: string
-    subCategory?: string | null
-  }>({
+  return useMutation<Project, Error, CreateProjectInput>({
     mutationFn: createProject,
     onSuccess: (newProject) => {
       queryClient.setQueryData<Project[]>(["projects"], (old) => {
@@ -107,7 +156,7 @@ async function deleteProject(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteProjectMutation() {
+export function useDeleteProjectMutation(): UseMutationResult<{ success: boolean }, Error, string, { previous: Project[] | undefined }> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: Project[] | undefined }>({
     mutationFn: deleteProject,
@@ -152,15 +201,9 @@ async function createTask(body: {
   return res.json()
 }
 
-export function useCreateTaskMutation() {
+export function useCreateTaskMutation(): UseMutationResult<ProjectTask, Error, CreateTaskInput> {
   const queryClient = useQueryClient()
-  return useMutation<ProjectTask, Error, {
-    projectId: string
-    name: string
-    status?: string
-    priority?: string
-    deadline?: string
-  }>({
+  return useMutation<ProjectTask, Error, CreateTaskInput>({
     mutationFn: createTask,
     onSuccess: (newTask) => {
       queryClient.setQueryData<Project[]>(["projects"], (old) => {
@@ -191,7 +234,7 @@ async function deleteTask(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteTaskMutation() {
+export function useDeleteTaskMutation(): UseMutationResult<{ success: boolean }, Error, string, { previous: Project[] | undefined }> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: Project[] | undefined }>({
     mutationFn: deleteTask,
@@ -222,8 +265,8 @@ export function useDeleteTaskMutation() {
 
 // 6. Toggle task completed status
 async function toggleTask(body: { id: string; completed: boolean }): Promise<ProjectTask> {
-  const res = await fetch("/api/projects/tasks/toggle", {
-    method: "POST",
+  const res = await fetch("/api/projects/tasks", {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   })
@@ -233,7 +276,7 @@ async function toggleTask(body: { id: string; completed: boolean }): Promise<Pro
   return res.json()
 }
 
-export function useToggleTaskMutation() {
+export function useToggleTaskMutation(): UseMutationResult<ProjectTask, Error, { id: string; completed: boolean }, { previous: Project[] | undefined }> {
   const queryClient = useQueryClient()
   return useMutation<ProjectTask, Error, { id: string; completed: boolean }, { previous: Project[] | undefined }>({
     mutationFn: toggleTask,
@@ -287,9 +330,9 @@ async function createSubTask(body: {
   return res.json()
 }
 
-export function useCreateSubTaskMutation() {
+export function useCreateSubTaskMutation(): UseMutationResult<ProjectSubTask, Error, CreateSubTaskInput> {
   const queryClient = useQueryClient()
-  return useMutation<ProjectSubTask, Error, { taskId: string; name: string; status?: string }>({
+  return useMutation<ProjectSubTask, Error, CreateSubTaskInput>({
     mutationFn: createSubTask,
     onSuccess: (newSubTask) => {
       queryClient.setQueryData<Project[]>(["projects"], (old) => {
@@ -323,7 +366,7 @@ async function deleteSubTask(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteSubTaskMutation() {
+export function useDeleteSubTaskMutation(): UseMutationResult<{ success: boolean }, Error, string, { previous: Project[] | undefined }> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: Project[] | undefined }>({
     mutationFn: deleteSubTask,
@@ -357,8 +400,8 @@ export function useDeleteSubTaskMutation() {
 
 // 9. Toggle subtask
 async function toggleSubTask(body: { id: string; completed: boolean }): Promise<ProjectSubTask> {
-  const res = await fetch("/api/projects/tasks/subtasks/toggle", {
-    method: "POST",
+  const res = await fetch("/api/projects/tasks/subtasks", {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   })
@@ -368,7 +411,7 @@ async function toggleSubTask(body: { id: string; completed: boolean }): Promise<
   return res.json()
 }
 
-export function useToggleSubTaskMutation() {
+export function useToggleSubTaskMutation(): UseMutationResult<ProjectSubTask, Error, { id: string; completed: boolean }, { previous: Project[] | undefined }> {
   const queryClient = useQueryClient()
   return useMutation<ProjectSubTask, Error, { id: string; completed: boolean }, { previous: Project[] | undefined }>({
     mutationFn: toggleSubTask,
@@ -409,16 +452,7 @@ export function useToggleSubTaskMutation() {
 }
 
 // 10. Update project
-async function updateProject(body: {
-  id: string
-  name?: string
-  description?: string | null
-  status?: string
-  priority?: string
-  deadline?: string | null
-  category?: string
-  subCategory?: string | null
-}): Promise<Project> {
+async function updateProject(body: UpdateProjectInput): Promise<Project> {
   const res = await fetch("/api/projects", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -430,7 +464,7 @@ async function updateProject(body: {
   return res.json()
 }
 
-export function useUpdateProjectMutation() {
+export function useUpdateProjectMutation(): UseMutationResult<Project, Error, UpdateProjectInput, { previous: Project[] | undefined }> {
   const queryClient = useQueryClient()
   return useMutation<Project, Error, {
     id: string
@@ -479,14 +513,7 @@ export function useUpdateProjectMutation() {
 }
 
 // 11. Update task
-async function updateTask(body: {
-  id: string
-  name?: string
-  status?: string
-  completed?: boolean
-  priority?: string
-  deadline?: string | null
-}): Promise<ProjectTask> {
+async function updateTask(body: UpdateTaskInput): Promise<ProjectTask> {
   const res = await fetch("/api/projects/tasks", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -498,16 +525,9 @@ async function updateTask(body: {
   return res.json()
 }
 
-export function useUpdateTaskMutation() {
+export function useUpdateTaskMutation(): UseMutationResult<ProjectTask, Error, UpdateTaskInput, { previous: Project[] | undefined }> {
   const queryClient = useQueryClient()
-  return useMutation<ProjectTask, Error, {
-    id: string
-    name?: string
-    status?: string
-    completed?: boolean
-    priority?: string
-    deadline?: string | null
-  }, { previous: Project[] | undefined }>({
+  return useMutation<ProjectTask, Error, UpdateTaskInput, { previous: Project[] | undefined }>({
     mutationFn: updateTask,
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: ["projects"] })
@@ -546,12 +566,7 @@ export function useUpdateTaskMutation() {
 }
 
 // 12. Update subtask
-async function updateSubTask(body: {
-  id: string
-  name?: string
-  status?: string
-  completed?: boolean
-}): Promise<ProjectSubTask> {
+async function updateSubTask(body: UpdateSubTaskInput): Promise<ProjectSubTask> {
   const res = await fetch("/api/projects/tasks/subtasks", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -563,14 +578,9 @@ async function updateSubTask(body: {
   return res.json()
 }
 
-export function useUpdateSubTaskMutation() {
+export function useUpdateSubTaskMutation(): UseMutationResult<ProjectSubTask, Error, UpdateSubTaskInput, { previous: Project[] | undefined }> {
   const queryClient = useQueryClient()
-  return useMutation<ProjectSubTask, Error, {
-    id: string
-    name?: string
-    status?: string
-    completed?: boolean
-  }, { previous: Project[] | undefined }>({
+  return useMutation<ProjectSubTask, Error, UpdateSubTaskInput, { previous: Project[] | undefined }>({
     mutationFn: updateSubTask,
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: ["projects"] })
