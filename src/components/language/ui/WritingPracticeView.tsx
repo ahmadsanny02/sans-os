@@ -1033,7 +1033,7 @@ export function WritingPracticeView({
                     <div className="space-y-4">
                       {/* Top Row: Vocab Word & Delete */}
                       <div className="flex items-center justify-between gap-2 border-b border-border/30 pb-2 mb-1">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-micro font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-micro font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
                           Word: {group.vocabWord}
                         </span>
 
@@ -1143,11 +1143,11 @@ export function WritingPracticeView({
                       {/* Top Badges Row */}
                       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/30 pb-2 mb-2">
                         <div className="flex flex-wrap gap-1.5 items-center">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-micro font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-micro font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
                             Formula: {log.formula}
                           </span>
                           {log.vocabWord && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-micro font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-micro font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-sm">
                               Word: {log.vocabWord}
                             </span>
                           )}
@@ -1225,7 +1225,7 @@ export function WritingPracticeView({
                     <div className="space-y-2">
                       {/* Top Badges Row */}
                       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/30 pb-2 mb-2">
-                        <span className="px-2 py-1 rounded-md text-micro font-extrabold uppercase tracking-wider bg-secondary/40 text-muted-foreground border border-border/55">
+                        <span className="px-2 py-1 rounded-xl text-micro font-extrabold uppercase tracking-wider bg-secondary/40 text-muted-foreground border border-border/55">
                           Free Writing
                         </span>
 
