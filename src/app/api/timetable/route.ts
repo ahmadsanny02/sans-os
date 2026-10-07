@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { timetableBlocks, priorities, timetableSubSchedules } from "@/types/schema"
-import { eq, and, asc } from "drizzle-orm"
+import { eq, and, asc, or } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger";
 
@@ -96,7 +96,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           .where(and(eq(priorities.userId, user.id), eq(priorities.date, date)))
 
         if (existing.length < 5) {
-          const alreadyExists = existing.some((p) => p.text === title)
+          const alreadyExists = existing.some((p) => p.timetableBlockId === newBlock.id || p.text === title)
           if (!alreadyExists) {
             await tx.insert(priorities).values({
               userId: user.id,
@@ -105,6 +105,7 @@ export async function POST(request: Request): Promise<NextResponse> {
               orderIndex: existing.length,
               completed: false,
               link: link || null,
+              timetableBlockId: newBlock.id,
             })
           }
         }
@@ -166,8 +167,13 @@ export async function DELETE(request: Request): Promise<NextResponse> {
           .where(
             and(
               eq(priorities.userId, user.id),
-              eq(priorities.date, deletedBlock.date),
-              eq(priorities.text, deletedBlock.title)
+              or(
+                eq(priorities.timetableBlockId, deletedBlock.id),
+                and(
+                  eq(priorities.date, deletedBlock.date),
+                  eq(priorities.text, deletedBlock.title)
+                )
+              )
             )
           )
       }
@@ -247,12 +253,18 @@ export async function PATCH(request: Request): Promise<NextResponse> {
               text: newTitle,
               link: newLink,
               date: newDate,
+              timetableBlockId: id,
             })
             .where(
               and(
                 eq(priorities.userId, user.id),
-                eq(priorities.date, existingBlock.date),
-                eq(priorities.text, existingBlock.title)
+                or(
+                  eq(priorities.timetableBlockId, id),
+                  and(
+                    eq(priorities.date, existingBlock.date),
+                    eq(priorities.text, existingBlock.title)
+                  )
+                )
               )
             )
         } else {
@@ -262,8 +274,13 @@ export async function PATCH(request: Request): Promise<NextResponse> {
             .where(
               and(
                 eq(priorities.userId, user.id),
-                eq(priorities.date, existingBlock.date),
-                eq(priorities.text, existingBlock.title)
+                or(
+                  eq(priorities.timetableBlockId, id),
+                  and(
+                    eq(priorities.date, existingBlock.date),
+                    eq(priorities.text, existingBlock.title)
+                  )
+                )
               )
             )
         }
@@ -277,7 +294,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
         if (existing.length < 5) {
           const newTitle = title !== undefined ? title : existingBlock.title
           const newLink = link !== undefined ? (link || null) : existingBlock.link
-          const alreadyExists = existing.some((p) => p.text === newTitle)
+          const alreadyExists = existing.some((p) => p.timetableBlockId === id || p.text === newTitle)
           if (!alreadyExists) {
             await tx.insert(priorities).values({
               userId: user.id,
@@ -286,6 +303,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
               orderIndex: existing.length,
               completed: false,
               link: newLink,
+              timetableBlockId: id,
             })
           }
         }
