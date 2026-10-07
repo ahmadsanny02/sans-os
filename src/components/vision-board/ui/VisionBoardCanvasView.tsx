@@ -83,7 +83,7 @@ function VisionBoardImageItem({
         <button
           onClick={onDelete}
           disabled={isPendingDelete}
-          className="p-2 rounded-xl bg-rose-500/90 text-white hover:bg-rose-600 transition-all shadow-md active:scale-95 shrink-0 cursor-pointer"
+          className="p-2 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all shadow-md active:scale-95 shrink-0 cursor-pointer"
           aria-label="Delete image card"
         >
           <Trash2 className="h-4.5 w-4.5" />
