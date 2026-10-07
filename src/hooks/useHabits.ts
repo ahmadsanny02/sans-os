@@ -1,4 +1,11 @@
-import { useQuery, useMutation, useQueryClient, useMutationState } from "@tanstack/react-query"
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useMutationState,
+  type UseQueryResult,
+  type UseMutationResult,
+} from "@tanstack/react-query"
 
 export interface Habit {
   id: string
@@ -32,6 +39,36 @@ export interface HabitStatsResponse {
   logs: HabitLog[]
 }
 
+export interface CreateHabitInput {
+  name: string
+  category?: string
+  subCategory?: string | null
+  frequency?: string
+}
+
+export interface UpdateHabitInput {
+  id: string
+  name: string
+  category?: string
+  subCategory?: string | null
+  frequency?: string
+}
+
+export interface ToggleHabitLogInput {
+  habitId: string
+  date: string
+  status?: string
+}
+
+export interface ToggleHabitLogResponse {
+  toggled: boolean
+  log?: HabitLog
+}
+
+export interface HabitsCacheContext {
+  previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[]
+}
+
 // 1. Fetch habits and logs for date range
 async function fetchHabits(startDate: string, endDate: string): Promise<HabitsResponse> {
   const res = await fetch(`/api/habits?startDate=${startDate}&endDate=${endDate}`)
@@ -41,7 +78,10 @@ async function fetchHabits(startDate: string, endDate: string): Promise<HabitsRe
   return res.json()
 }
 
-export function useHabitsQuery(startDate: string, endDate: string) {
+export function useHabitsQuery(
+  startDate: string,
+  endDate: string
+): UseQueryResult<HabitsResponse, Error> {
   return useQuery<HabitsResponse>({
     queryKey: ["habits", startDate, endDate],
     queryFn: () => fetchHabits(startDate, endDate),
@@ -58,7 +98,7 @@ async function fetchHabitStats(month: string): Promise<HabitStatsResponse> {
   return res.json()
 }
 
-export function useHabitStatsQuery(month: string) {
+export function useHabitStatsQuery(month: string): UseQueryResult<HabitStatsResponse, Error> {
   return useQuery<HabitStatsResponse>({
     queryKey: ["habits", "stats", month],
     queryFn: () => fetchHabitStats(month),
@@ -67,7 +107,7 @@ export function useHabitStatsQuery(month: string) {
 }
 
 // 3. Create habit mutation
-async function createHabit(body: { name: string; category?: string; subCategory?: string | null; frequency?: string }): Promise<Habit> {
+async function createHabit(body: CreateHabitInput): Promise<Habit> {
   const res = await fetch("/api/habits", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -79,9 +119,13 @@ async function createHabit(body: { name: string; category?: string; subCategory?
   return res.json()
 }
 
-export function useCreateHabitMutation() {
+export function useCreateHabitMutation(): UseMutationResult<
+  Habit,
+  Error,
+  CreateHabitInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<Habit, Error, { name: string; category?: string; subCategory?: string | null; frequency?: string }>({
+  return useMutation<Habit, Error, CreateHabitInput>({
     mutationFn: createHabit,
     onSuccess: (newHabit) => {
       const queryCache = queryClient.getQueryCache()
@@ -103,7 +147,7 @@ export function useCreateHabitMutation() {
 }
 
 // 4. Toggle check-in log mutation
-async function toggleHabitLog(body: { habitId: string; date: string; status?: string }): Promise<{ toggled: boolean; log?: HabitLog }> {
+async function toggleHabitLog(body: ToggleHabitLogInput): Promise<ToggleHabitLogResponse> {
   const res = await fetch("/api/habits/log", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -115,13 +159,18 @@ async function toggleHabitLog(body: { habitId: string; date: string; status?: st
   return res.json()
 }
 
-export function useToggleLogMutation() {
+export function useToggleLogMutation(): UseMutationResult<
+  ToggleHabitLogResponse,
+  Error,
+  ToggleHabitLogInput,
+  HabitsCacheContext
+> {
   const queryClient = useQueryClient()
   return useMutation<
-    { toggled: boolean; log?: HabitLog },
+    ToggleHabitLogResponse,
     Error,
-    { habitId: string; date: string; status?: string },
-    { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
+    ToggleHabitLogInput,
+    HabitsCacheContext
   >({
     mutationKey: ["toggle-habit-log"],
     mutationFn: toggleHabitLog,
@@ -207,13 +256,18 @@ async function deleteHabit(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteHabitMutation() {
+export function useDeleteHabitMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  HabitsCacheContext
+> {
   const queryClient = useQueryClient()
   return useMutation<
     { success: boolean },
     Error,
     string,
-    { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
+    HabitsCacheContext
   >({
     mutationFn: deleteHabit,
     onMutate: async (id) => {
@@ -270,13 +324,18 @@ async function reorderHabits(orderedIds: string[]): Promise<{ success: boolean }
   return res.json()
 }
 
-export function useReorderHabitsMutation() {
+export function useReorderHabitsMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string[],
+  HabitsCacheContext
+> {
   const queryClient = useQueryClient()
   return useMutation<
     { success: boolean },
     Error,
     string[],
-    { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
+    HabitsCacheContext
   >({
     mutationFn: reorderHabits,
     onMutate: async (orderedIds) => {
@@ -326,7 +385,7 @@ export function useReorderHabitsMutation() {
 }
 
 // 7. Update habit mutation
-async function updateHabit(body: { id: string; name: string; category?: string; subCategory?: string | null; frequency?: string }): Promise<Habit> {
+async function updateHabit(body: UpdateHabitInput): Promise<Habit> {
   const res = await fetch("/api/habits", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -338,9 +397,13 @@ async function updateHabit(body: { id: string; name: string; category?: string; 
   return res.json()
 }
 
-export function useUpdateHabitMutation() {
+export function useUpdateHabitMutation(): UseMutationResult<
+  Habit,
+  Error,
+  UpdateHabitInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<Habit, Error, { id: string; name: string; category?: string; subCategory?: string | null; frequency?: string }>({
+  return useMutation<Habit, Error, UpdateHabitInput>({
     mutationFn: updateHabit,
     onSuccess: (updatedHabit) => {
       const queryCache = queryClient.getQueryCache()
@@ -351,7 +414,7 @@ export function useUpdateHabitMutation() {
           if (oldData) {
             queryClient.setQueryData(q.queryKey, {
               ...oldData,
-              habits: oldData.habits.map((h) => h.id === updatedHabit.id ? updatedHabit : h),
+              habits: oldData.habits.map((h) => (h.id === updatedHabit.id ? updatedHabit : h)),
             })
           }
         }
