@@ -1,4 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type UseQueryResult,
+  type UseMutationResult,
+} from "@tanstack/react-query"
 
 export interface BucketItem {
   id: string
@@ -10,6 +16,18 @@ export interface BucketItem {
   createdAt: string
 }
 
+export interface CreateBucketItemInput {
+  title: string
+  imageUrl?: string | null
+}
+
+export interface UpdateBucketItemInput {
+  id: string
+  title?: string
+  imageUrl?: string | null
+  completed?: boolean
+}
+
 // 1. Fetch all bucket items
 async function fetchBucketList(): Promise<BucketItem[]> {
   const res = await fetch("/api/bucket-list")
@@ -19,7 +37,7 @@ async function fetchBucketList(): Promise<BucketItem[]> {
   return res.json()
 }
 
-export function useBucketListQuery() {
+export function useBucketListQuery(): UseQueryResult<BucketItem[], Error> {
   return useQuery<BucketItem[]>({
     queryKey: ["bucket-list"],
     queryFn: fetchBucketList,
@@ -27,10 +45,7 @@ export function useBucketListQuery() {
 }
 
 // 2. Create bucket item
-async function createBucketItem(body: {
-  title: string
-  imageUrl?: string | null
-}): Promise<BucketItem> {
+async function createBucketItem(body: CreateBucketItemInput): Promise<BucketItem> {
   const res = await fetch("/api/bucket-list", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -42,9 +57,13 @@ async function createBucketItem(body: {
   return res.json()
 }
 
-export function useCreateBucketItemMutation() {
+export function useCreateBucketItemMutation(): UseMutationResult<
+  BucketItem,
+  Error,
+  CreateBucketItemInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<BucketItem, Error, { title: string; imageUrl?: string | null }>({
+  return useMutation<BucketItem, Error, CreateBucketItemInput>({
     mutationFn: createBucketItem,
     onSuccess: (newItem) => {
       queryClient.setQueryData<BucketItem[]>(["bucket-list"], (old) => {
@@ -57,12 +76,7 @@ export function useCreateBucketItemMutation() {
 }
 
 // 3. Update bucket item (title, completed, imageUrl)
-async function updateBucketItem(body: {
-  id: string
-  title?: string
-  imageUrl?: string | null
-  completed?: boolean
-}): Promise<BucketItem> {
+async function updateBucketItem(body: UpdateBucketItemInput): Promise<BucketItem> {
   const res = await fetch("/api/bucket-list", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -74,17 +88,17 @@ async function updateBucketItem(body: {
   return res.json()
 }
 
-export function useUpdateBucketItemMutation() {
+export function useUpdateBucketItemMutation(): UseMutationResult<
+  BucketItem,
+  Error,
+  UpdateBucketItemInput,
+  { previous: BucketItem[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     BucketItem,
     Error,
-    {
-      id: string
-      title?: string
-      imageUrl?: string | null
-      completed?: boolean
-    },
+    UpdateBucketItemInput,
     { previous: BucketItem[] | undefined }
   >({
     mutationFn: updateBucketItem,
@@ -123,7 +137,12 @@ async function deleteBucketItem(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteBucketItemMutation() {
+export function useDeleteBucketItemMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previous: BucketItem[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     { success: boolean },
