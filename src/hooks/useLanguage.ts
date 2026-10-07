@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, type UseQueryResult, type UseMutationResult } from "@tanstack/react-query"
 
 export interface VocabularyLog {
   id: string
@@ -22,6 +22,23 @@ export interface VocabularyLog {
   langDirection: string
   createdAt: string
   memorizedAt: string | null
+}
+
+export interface CreateVocabularyInput {
+  word: string
+  partOfSpeech?: string
+  definition?: string
+  translation: string
+  exampleSentence?: string
+  masteryLevel?: number
+  langDirection?: string
+}
+
+export interface UpdateVocabularyInput {
+  id: string
+  masteryLevel?: number
+  memorized?: boolean
+  translation?: string
 }
 
 export interface WritingLog {
@@ -77,7 +94,7 @@ async function fetchVocabulary(): Promise<VocabularyLog[]> {
   return res.json()
 }
 
-export function useVocabularyQuery() {
+export function useVocabularyQuery(): UseQueryResult<VocabularyLog[], Error> {
   return useQuery<VocabularyLog[]>({
     queryKey: ["vocabulary"],
     queryFn: fetchVocabulary,
@@ -85,15 +102,7 @@ export function useVocabularyQuery() {
 }
 
 // 2. Create vocabulary log
-async function createVocabulary(body: {
-  word: string
-  partOfSpeech?: string
-  definition?: string
-  translation: string
-  exampleSentence?: string
-  masteryLevel?: number
-  langDirection?: string
-}): Promise<VocabularyLog> {
+async function createVocabulary(body: CreateVocabularyInput): Promise<VocabularyLog> {
   const res = await fetch("/api/language", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -106,21 +115,13 @@ async function createVocabulary(body: {
   return res.json()
 }
 
-export function useCreateVocabularyMutation() {
+export function useCreateVocabularyMutation(): UseMutationResult<
+  VocabularyLog,
+  Error,
+  CreateVocabularyInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<
-    VocabularyLog,
-    Error,
-    {
-      word: string
-      partOfSpeech?: string
-      definition?: string
-      translation: string
-      exampleSentence?: string
-      masteryLevel?: number
-      langDirection?: string
-    }
-  >({
+  return useMutation<VocabularyLog, Error, CreateVocabularyInput>({
     mutationFn: createVocabulary,
     onSuccess: (newVocab) => {
       queryClient.setQueryData<VocabularyLog[]>(["vocabulary"], (old) => {
@@ -133,12 +134,7 @@ export function useCreateVocabularyMutation() {
 }
 
 // 3. Update word mastery level or memorized state
-async function updateVocabulary(body: {
-  id: string
-  masteryLevel?: number
-  memorized?: boolean
-  translation?: string
-}): Promise<VocabularyLog> {
+async function updateVocabulary(body: UpdateVocabularyInput): Promise<VocabularyLog> {
   const res = await fetch("/api/language", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -150,12 +146,17 @@ async function updateVocabulary(body: {
   return res.json()
 }
 
-export function useUpdateVocabularyMutation() {
+export function useUpdateVocabularyMutation(): UseMutationResult<
+  VocabularyLog,
+  Error,
+  UpdateVocabularyInput,
+  { previous: VocabularyLog[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     VocabularyLog,
     Error,
-    { id: string; masteryLevel?: number; memorized?: boolean; translation?: string },
+    UpdateVocabularyInput,
     { previous: VocabularyLog[] | undefined }
   >({
     mutationFn: updateVocabulary,
@@ -205,7 +206,12 @@ async function deleteVocabulary(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteVocabularyMutation() {
+export function useDeleteVocabularyMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previous: VocabularyLog[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: VocabularyLog[] | undefined }>({
     mutationFn: deleteVocabulary,
@@ -240,15 +246,7 @@ async function fetchWritingLogs(): Promise<WritingLog[]> {
   return res.json()
 }
 
-export function useWritingQuery() {
-  return useQuery<WritingLog[]>({
-    queryKey: ["writingLogs"],
-    queryFn: fetchWritingLogs,
-  })
-}
-
-// 6. Create writing log
-async function createWritingLog(body: {
+export interface CreateWritingInput {
   vocabId?: string | null
   vocabWord?: string | null
   sentenceType?: "Positive" | "Negative" | "Interrogative" | null
@@ -256,7 +254,17 @@ async function createWritingLog(body: {
   indonesianTranslation: string
   formulaId?: string | null
   formula?: string | null
-}): Promise<WritingLog> {
+}
+
+export function useWritingQuery(): UseQueryResult<WritingLog[], Error> {
+  return useQuery<WritingLog[]>({
+    queryKey: ["writingLogs"],
+    queryFn: fetchWritingLogs,
+  })
+}
+
+// 6. Create writing log
+async function createWritingLog(body: CreateWritingInput): Promise<WritingLog> {
   const res = await fetch("/api/language/writing", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -268,21 +276,13 @@ async function createWritingLog(body: {
   return res.json()
 }
 
-export function useCreateWritingMutation() {
+export function useCreateWritingMutation(): UseMutationResult<
+  WritingLog,
+  Error,
+  CreateWritingInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<
-    WritingLog,
-    Error,
-    {
-      vocabId?: string | null
-      vocabWord?: string | null
-      sentenceType?: "Positive" | "Negative" | "Interrogative" | null
-      englishSentence: string
-      indonesianTranslation: string
-      formulaId?: string | null
-      formula?: string | null
-    }
-  >({
+  return useMutation<WritingLog, Error, CreateWritingInput>({
     mutationFn: createWritingLog,
     onSuccess: (newLog) => {
       queryClient.setQueryData<WritingLog[]>(["writingLogs"], (old) => {
@@ -305,7 +305,12 @@ async function deleteWritingLog(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteWritingMutation() {
+export function useDeleteWritingMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previous: WritingLog[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: WritingLog[] | undefined }>({
     mutationFn: deleteWritingLog,
@@ -341,15 +346,7 @@ async function fetchDialogues(): Promise<DialogueLog[]> {
   return res.json()
 }
 
-export function useDialogueQuery() {
-  return useQuery<DialogueLog[]>({
-    queryKey: ["dialogues"],
-    queryFn: fetchDialogues,
-  })
-}
-
-// 9. Create dialogue
-async function createDialogue(body: {
+export interface CreateDialogueInput {
   vocabId: string | null
   vocabWord: string | null
   englishQuestion: string
@@ -358,7 +355,17 @@ async function createDialogue(body: {
   indonesianAnswer: string
   formulaId?: string | null
   formula?: string | null
-}): Promise<DialogueLog> {
+}
+
+export function useDialogueQuery(): UseQueryResult<DialogueLog[], Error> {
+  return useQuery<DialogueLog[]>({
+    queryKey: ["dialogues"],
+    queryFn: fetchDialogues,
+  })
+}
+
+// 9. Create dialogue
+async function createDialogue(body: CreateDialogueInput): Promise<DialogueLog> {
   const res = await fetch("/api/language/dialogue", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -371,22 +378,13 @@ async function createDialogue(body: {
   return res.json()
 }
 
-export function useCreateDialogueMutation() {
+export function useCreateDialogueMutation(): UseMutationResult<
+  DialogueLog,
+  Error,
+  CreateDialogueInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<
-    DialogueLog,
-    Error,
-    {
-      vocabId: string | null
-      vocabWord: string | null
-      englishQuestion: string
-      indonesianQuestion: string
-      englishAnswer: string
-      indonesianAnswer: string
-      formulaId?: string | null
-      formula?: string | null
-    }
-  >({
+  return useMutation<DialogueLog, Error, CreateDialogueInput>({
     mutationFn: createDialogue,
     onSuccess: (newLog) => {
       queryClient.setQueryData<DialogueLog[]>(["dialogues"], (old) => {
@@ -409,7 +407,12 @@ async function deleteDialogue(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteDialogueMutation() {
+export function useDeleteDialogueMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previous: DialogueLog[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: DialogueLog[] | undefined }>({
     mutationFn: deleteDialogue,
@@ -454,18 +457,27 @@ async function fetchFormulas(): Promise<Formula[]> {
   return res.json()
 }
 
-export function useFormulasQuery() {
+export interface CreateFormulaInput {
+  name: string
+  formula: string
+  description?: string
+}
+
+export interface UpdateFormulaInput {
+  id: string
+  name: string
+  formula: string
+  description?: string | null
+}
+
+export function useFormulasQuery(): UseQueryResult<Formula[], Error> {
   return useQuery<Formula[]>({
     queryKey: ["formulas"],
     queryFn: fetchFormulas,
   })
 }
 
-async function createFormula(body: {
-  name: string
-  formula: string
-  description?: string
-}): Promise<Formula> {
+async function createFormula(body: CreateFormulaInput): Promise<Formula> {
   const res = await fetch("/api/language/formulas", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -478,9 +490,13 @@ async function createFormula(body: {
   return res.json()
 }
 
-export function useCreateFormulaMutation() {
+export function useCreateFormulaMutation(): UseMutationResult<
+  Formula,
+  Error,
+  CreateFormulaInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<Formula, Error, { name: string; formula: string; description?: string }>({
+  return useMutation<Formula, Error, CreateFormulaInput>({
     mutationFn: createFormula,
     onSuccess: (newFormula) => {
       queryClient.setQueryData<Formula[]>(["formulas"], (old) => {
@@ -492,12 +508,7 @@ export function useCreateFormulaMutation() {
   })
 }
 
-async function updateFormula(body: {
-  id: string
-  name: string
-  formula: string
-  description?: string | null
-}): Promise<Formula> {
+async function updateFormula(body: UpdateFormulaInput): Promise<Formula> {
   const res = await fetch("/api/language/formulas", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -510,9 +521,13 @@ async function updateFormula(body: {
   return res.json()
 }
 
-export function useUpdateFormulaMutation() {
+export function useUpdateFormulaMutation(): UseMutationResult<
+  Formula,
+  Error,
+  UpdateFormulaInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<Formula, Error, { id: string; name: string; formula: string; description?: string | null }>({
+  return useMutation<Formula, Error, UpdateFormulaInput>({
     mutationFn: updateFormula,
     onSuccess: (updatedFormula) => {
       queryClient.setQueryData<Formula[]>(["formulas"], (old) => {
@@ -534,7 +549,12 @@ async function deleteFormula(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteFormulaMutation() {
+export function useDeleteFormulaMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previous: Formula[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: Formula[] | undefined }>({
     mutationFn: deleteFormula,
@@ -580,7 +600,10 @@ async function fetchDictionaryByLetter(letter: string): Promise<DictionaryWord[]
   return res.json()
 }
 
-export function useDictionaryByLetterQuery(letter: string, enabled: boolean) {
+export function useDictionaryByLetterQuery(
+  letter: string,
+  enabled: boolean
+): UseQueryResult<DictionaryWord[], Error> {
   return useQuery<DictionaryWord[]>({
     queryKey: ["dictionary", "letter", letter.toLowerCase()],
     queryFn: () => fetchDictionaryByLetter(letter),
@@ -595,7 +618,10 @@ async function fetchDictionarySearch(q: string): Promise<DictionaryWord[]> {
   return res.json()
 }
 
-export function useDictionarySearchQuery(q: string, enabled: boolean) {
+export function useDictionarySearchQuery(
+  q: string,
+  enabled: boolean
+): UseQueryResult<DictionaryWord[], Error> {
   return useQuery<DictionaryWord[]>({
     queryKey: ["dictionary", "search", q.trim()],
     queryFn: () => fetchDictionarySearch(q),
@@ -610,7 +636,10 @@ async function fetchDictionaryWordDetails(word: string): Promise<WordDetails> {
   return res.json()
 }
 
-export function useDictionaryWordDetailsQuery(word: string | null, enabled: boolean) {
+export function useDictionaryWordDetailsQuery(
+  word: string | null,
+  enabled: boolean
+): UseQueryResult<WordDetails, Error> {
   return useQuery<WordDetails>({
     queryKey: ["dictionary", "details", word],
     queryFn: () => fetchDictionaryWordDetails(word || ""),
