@@ -1,4 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type UseQueryResult,
+  type UseMutationResult,
+} from "@tanstack/react-query"
 
 export interface LearningMaterial {
   id: string
@@ -33,6 +39,53 @@ export interface LearningSubject {
   tasks: LearningTask[]
 }
 
+export interface CreateSubjectInput {
+  name: string
+  description?: string | null
+  status?: "Planned" | "Learning" | "Completed"
+  color?: string
+  category?: string
+  subCategory?: string | null
+}
+
+export interface UpdateSubjectInput {
+  id: string
+  name?: string
+  description?: string | null
+  status?: "Planned" | "Learning" | "Completed"
+  color?: string
+  category?: string
+  subCategory?: string | null
+}
+
+export interface CreateMaterialInput {
+  subjectId: string
+  title: string
+  notes?: string | null
+  linkUrl?: string | null
+}
+
+export interface UpdateMaterialInput {
+  id: string
+  title?: string
+  status?: "Not Started" | "In Progress" | "Completed"
+  notes?: string | null
+  linkUrl?: string | null
+}
+
+export interface CreateLearningTaskInput {
+  subjectId: string
+  title: string
+  dueDate?: string | null
+}
+
+export interface UpdateLearningTaskInput {
+  id: string
+  title?: string
+  completed?: boolean
+  dueDate?: string | null
+}
+
 // ==========================================
 // 1. Learning Subjects Queries & Mutations
 // ==========================================
@@ -44,7 +97,7 @@ async function fetchLearningSubjects(): Promise<LearningSubject[]> {
   return res.json()
 }
 
-export function useLearningSubjectsQuery() {
+export function useLearningSubjectsQuery(): UseQueryResult<LearningSubject[], Error> {
   return useQuery<LearningSubject[]>({
     queryKey: ["learningSubjects"],
     queryFn: fetchLearningSubjects,
@@ -52,14 +105,7 @@ export function useLearningSubjectsQuery() {
 }
 
 // Create Subject
-async function createSubject(body: {
-  name: string
-  description?: string | null
-  status?: "Planned" | "Learning" | "Completed"
-  color?: string
-  category?: string
-  subCategory?: string | null
-}): Promise<LearningSubject> {
+async function createSubject(body: CreateSubjectInput): Promise<LearningSubject> {
   const res = await fetch("/api/learning/subjects", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -72,16 +118,13 @@ async function createSubject(body: {
   return { ...data, materials: [], tasks: [] }
 }
 
-export function useCreateSubjectMutation() {
+export function useCreateSubjectMutation(): UseMutationResult<
+  LearningSubject,
+  Error,
+  CreateSubjectInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<LearningSubject, Error, {
-    name: string
-    description?: string | null
-    status?: "Planned" | "Learning" | "Completed"
-    color?: string
-    category?: string
-    subCategory?: string | null
-  }>({
+  return useMutation<LearningSubject, Error, CreateSubjectInput>({
     mutationFn: createSubject,
     onSuccess: (newSubject) => {
       queryClient.setQueryData<LearningSubject[]>(["learningSubjects"], (old) => {
@@ -94,15 +137,7 @@ export function useCreateSubjectMutation() {
 }
 
 // Update Subject
-async function updateSubject(body: {
-  id: string
-  name?: string
-  description?: string | null
-  status?: "Planned" | "Learning" | "Completed"
-  color?: string
-  category?: string
-  subCategory?: string | null
-}): Promise<LearningSubject> {
+async function updateSubject(body: UpdateSubjectInput): Promise<LearningSubject> {
   const res = await fetch("/api/learning/subjects", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -114,20 +149,17 @@ async function updateSubject(body: {
   return res.json()
 }
 
-export function useUpdateSubjectMutation() {
+export function useUpdateSubjectMutation(): UseMutationResult<
+  LearningSubject,
+  Error,
+  UpdateSubjectInput,
+  { previous: LearningSubject[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     LearningSubject,
     Error,
-    {
-      id: string
-      name?: string
-      description?: string | null
-      status?: "Planned" | "Learning" | "Completed"
-      color?: string
-      category?: string
-      subCategory?: string | null
-    },
+    UpdateSubjectInput,
     { previous: LearningSubject[] | undefined }
   >({
     mutationFn: updateSubject,
@@ -166,7 +198,12 @@ async function deleteSubject(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteSubjectMutation() {
+export function useDeleteSubjectMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previous: LearningSubject[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: LearningSubject[] | undefined }>({
     mutationFn: deleteSubject,
@@ -195,12 +232,7 @@ export function useDeleteSubjectMutation() {
 // ==========================================
 // 2. Learning Materials Mutations
 // ==========================================
-async function createMaterial(body: {
-  subjectId: string
-  title: string
-  notes?: string | null
-  linkUrl?: string | null
-}): Promise<LearningMaterial> {
+async function createMaterial(body: CreateMaterialInput): Promise<LearningMaterial> {
   const res = await fetch("/api/learning/materials", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -212,14 +244,13 @@ async function createMaterial(body: {
   return res.json()
 }
 
-export function useCreateMaterialMutation() {
+export function useCreateMaterialMutation(): UseMutationResult<
+  LearningMaterial,
+  Error,
+  CreateMaterialInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<LearningMaterial, Error, {
-    subjectId: string
-    title: string
-    notes?: string | null
-    linkUrl?: string | null
-  }>({
+  return useMutation<LearningMaterial, Error, CreateMaterialInput>({
     mutationFn: createMaterial,
     onSuccess: (newMat) => {
       queryClient.setQueryData<LearningSubject[]>(["learningSubjects"], (old) => {
@@ -235,13 +266,7 @@ export function useCreateMaterialMutation() {
   })
 }
 
-async function updateMaterial(body: {
-  id: string
-  title?: string
-  status?: "Not Started" | "In Progress" | "Completed"
-  notes?: string | null
-  linkUrl?: string | null
-}): Promise<LearningMaterial> {
+async function updateMaterial(body: UpdateMaterialInput): Promise<LearningMaterial> {
   const res = await fetch("/api/learning/materials", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -253,18 +278,17 @@ async function updateMaterial(body: {
   return res.json()
 }
 
-export function useUpdateMaterialMutation() {
+export function useUpdateMaterialMutation(): UseMutationResult<
+  LearningMaterial,
+  Error,
+  UpdateMaterialInput,
+  { previous: LearningSubject[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     LearningMaterial,
     Error,
-    {
-      id: string
-      title?: string
-      status?: "Not Started" | "In Progress" | "Completed"
-      notes?: string | null
-      linkUrl?: string | null
-    },
+    UpdateMaterialInput,
     { previous: LearningSubject[] | undefined }
   >({
     mutationFn: updateMaterial,
@@ -305,7 +329,12 @@ async function deleteMaterial(id: string): Promise<LearningMaterial> {
   return res.json()
 }
 
-export function useDeleteMaterialMutation() {
+export function useDeleteMaterialMutation(): UseMutationResult<
+  LearningMaterial,
+  Error,
+  string,
+  { previous: LearningSubject[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<LearningMaterial, Error, string, { previous: LearningSubject[] | undefined }>({
     mutationFn: deleteMaterial,
@@ -337,11 +366,7 @@ export function useDeleteMaterialMutation() {
 // ==========================================
 // 3. Learning Tasks Mutations
 // ==========================================
-async function createLearningTask(body: {
-  subjectId: string
-  title: string
-  dueDate?: string | null
-}): Promise<LearningTask> {
+async function createLearningTask(body: CreateLearningTaskInput): Promise<LearningTask> {
   const res = await fetch("/api/learning/tasks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -353,13 +378,13 @@ async function createLearningTask(body: {
   return res.json()
 }
 
-export function useCreateLearningTaskMutation() {
+export function useCreateLearningTaskMutation(): UseMutationResult<
+  LearningTask,
+  Error,
+  CreateLearningTaskInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<LearningTask, Error, {
-    subjectId: string
-    title: string
-    dueDate?: string | null
-  }>({
+  return useMutation<LearningTask, Error, CreateLearningTaskInput>({
     mutationFn: createLearningTask,
     onSuccess: (newTask) => {
       queryClient.setQueryData<LearningSubject[]>(["learningSubjects"], (old) => {
@@ -375,12 +400,7 @@ export function useCreateLearningTaskMutation() {
   })
 }
 
-async function updateLearningTask(body: {
-  id: string
-  title?: string
-  completed?: boolean
-  dueDate?: string | null
-}): Promise<LearningTask> {
+async function updateLearningTask(body: UpdateLearningTaskInput): Promise<LearningTask> {
   const res = await fetch("/api/learning/tasks", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -392,17 +412,17 @@ async function updateLearningTask(body: {
   return res.json()
 }
 
-export function useUpdateLearningTaskMutation() {
+export function useUpdateLearningTaskMutation(): UseMutationResult<
+  LearningTask,
+  Error,
+  UpdateLearningTaskInput,
+  { previous: LearningSubject[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     LearningTask,
     Error,
-    {
-      id: string
-      title?: string
-      completed?: boolean
-      dueDate?: string | null
-    },
+    UpdateLearningTaskInput,
     { previous: LearningSubject[] | undefined }
   >({
     mutationFn: updateLearningTask,
@@ -443,7 +463,12 @@ async function deleteLearningTask(id: string): Promise<LearningTask> {
   return res.json()
 }
 
-export function useDeleteLearningTaskMutation() {
+export function useDeleteLearningTaskMutation(): UseMutationResult<
+  LearningTask,
+  Error,
+  string,
+  { previous: LearningSubject[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<LearningTask, Error, string, { previous: LearningSubject[] | undefined }>({
     mutationFn: deleteLearningTask,
