@@ -1,4 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type UseQueryResult,
+  type UseMutationResult,
+} from "@tanstack/react-query"
 
 export interface VisionBoardItem {
   id: string
@@ -12,6 +18,23 @@ export interface VisionBoardItem {
   createdAt: string
 }
 
+export interface CreateVisionBoardItemInput {
+  type: string
+  content: string
+  xOffset?: number
+  yOffset?: number
+  width?: number
+  height?: number
+}
+
+export interface UpdateVisionBoardItemInput {
+  id: string
+  xOffset?: number
+  yOffset?: number
+  width?: number
+  height?: number
+}
+
 // 1. Fetch vision board items
 async function fetchVisionBoardItems(): Promise<VisionBoardItem[]> {
   const res = await fetch("/api/vision-board")
@@ -21,7 +44,7 @@ async function fetchVisionBoardItems(): Promise<VisionBoardItem[]> {
   return res.json()
 }
 
-export function useVisionBoardQuery() {
+export function useVisionBoardQuery(): UseQueryResult<VisionBoardItem[], Error> {
   return useQuery<VisionBoardItem[]>({
     queryKey: ["vision-board"],
     queryFn: fetchVisionBoardItems,
@@ -29,14 +52,7 @@ export function useVisionBoardQuery() {
 }
 
 // 2. Create vision board item
-async function createVisionBoardItem(body: {
-  type: string
-  content: string
-  xOffset?: number
-  yOffset?: number
-  width?: number
-  height?: number
-}): Promise<VisionBoardItem> {
+async function createVisionBoardItem(body: CreateVisionBoardItemInput): Promise<VisionBoardItem> {
   const res = await fetch("/api/vision-board", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -48,16 +64,13 @@ async function createVisionBoardItem(body: {
   return res.json()
 }
 
-export function useCreateVisionBoardItemMutation() {
+export function useCreateVisionBoardItemMutation(): UseMutationResult<
+  VisionBoardItem,
+  Error,
+  CreateVisionBoardItemInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<VisionBoardItem, Error, {
-    type: string
-    content: string
-    xOffset?: number
-    yOffset?: number
-    width?: number
-    height?: number
-  }>({
+  return useMutation<VisionBoardItem, Error, CreateVisionBoardItemInput>({
     mutationFn: createVisionBoardItem,
     onSuccess: (newItem) => {
       queryClient.setQueryData<VisionBoardItem[]>(["vision-board"], (old) => {
@@ -70,13 +83,7 @@ export function useCreateVisionBoardItemMutation() {
 }
 
 // 3. Update coordinates and sizes of a vision board item
-async function updateVisionBoardItem(body: {
-  id: string
-  xOffset?: number
-  yOffset?: number
-  width?: number
-  height?: number
-}): Promise<VisionBoardItem> {
+async function updateVisionBoardItem(body: UpdateVisionBoardItemInput): Promise<VisionBoardItem> {
   const res = await fetch("/api/vision-board", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -88,18 +95,17 @@ async function updateVisionBoardItem(body: {
   return res.json()
 }
 
-export function useUpdateVisionBoardItemMutation() {
+export function useUpdateVisionBoardItemMutation(): UseMutationResult<
+  VisionBoardItem,
+  Error,
+  UpdateVisionBoardItemInput,
+  { previous: VisionBoardItem[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     VisionBoardItem,
     Error,
-    {
-      id: string
-      xOffset?: number
-      yOffset?: number
-      width?: number
-      height?: number
-    },
+    UpdateVisionBoardItemInput,
     { previous: VisionBoardItem[] | undefined }
   >({
     mutationFn: updateVisionBoardItem,
@@ -138,7 +144,12 @@ async function deleteVisionBoardItem(id: string): Promise<{ success: boolean }> 
   return res.json()
 }
 
-export function useDeleteVisionBoardItemMutation() {
+export function useDeleteVisionBoardItemMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previous: VisionBoardItem[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     { success: boolean },
