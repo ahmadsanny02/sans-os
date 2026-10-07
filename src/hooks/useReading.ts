@@ -1,4 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type UseQueryResult,
+  type UseMutationResult,
+} from "@tanstack/react-query"
 
 export interface ReadingItem {
   id: string
@@ -11,6 +17,33 @@ export interface ReadingItem {
   currentProgress: string | null
   finishedAt: string | null
   createdAt: string
+  category?: string | null
+  notes?: string | null
+}
+
+export interface CreateReadingInput {
+  title: string
+  author: string
+  status: string
+  rating?: number | null
+  review?: string | null
+  finishedAt?: string | null
+  currentProgress?: string | null
+  category?: string | null
+  notes?: string | null
+}
+
+export interface UpdateReadingInput {
+  id: string
+  title?: string
+  author?: string
+  status?: string
+  rating?: number | null
+  review?: string | null
+  finishedAt?: string | null
+  currentProgress?: string | null
+  category?: string | null
+  notes?: string | null
 }
 
 // 1. Fetch reading items list
@@ -22,7 +55,7 @@ async function fetchReadingItems(): Promise<ReadingItem[]> {
   return res.json()
 }
 
-export function useReadingQuery() {
+export function useReadingQuery(): UseQueryResult<ReadingItem[], Error> {
   return useQuery<ReadingItem[]>({
     queryKey: ["reading"],
     queryFn: fetchReadingItems,
@@ -30,15 +63,7 @@ export function useReadingQuery() {
 }
 
 // 2. Create reading item
-async function createReadingItem(body: {
-  title: string
-  author: string
-  status: string
-  rating?: number | null
-  review?: string | null
-  finishedAt?: string | null
-  currentProgress?: string | null
-}): Promise<ReadingItem> {
+async function createReadingItem(body: CreateReadingInput): Promise<ReadingItem> {
   const res = await fetch("/api/reading", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -50,17 +75,9 @@ async function createReadingItem(body: {
   return res.json()
 }
 
-export function useCreateReadingMutation() {
+export function useCreateReadingMutation(): UseMutationResult<ReadingItem, Error, CreateReadingInput> {
   const queryClient = useQueryClient()
-  return useMutation<ReadingItem, Error, {
-    title: string
-    author: string
-    status: string
-    rating?: number | null
-    review?: string | null
-    finishedAt?: string | null
-    currentProgress?: string | null
-  }>({
+  return useMutation<ReadingItem, Error, CreateReadingInput>({
     mutationFn: createReadingItem,
     onSuccess: (newItem) => {
       queryClient.setQueryData<ReadingItem[]>(["reading"], (old) => {
@@ -73,16 +90,7 @@ export function useCreateReadingMutation() {
 }
 
 // 3. Update reading item
-async function updateReadingItem(body: {
-  id: string
-  title?: string
-  author?: string
-  status?: string
-  rating?: number | null
-  review?: string | null
-  finishedAt?: string | null
-  currentProgress?: string | null
-}): Promise<ReadingItem> {
+async function updateReadingItem(body: UpdateReadingInput): Promise<ReadingItem> {
   const res = await fetch("/api/reading", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -94,21 +102,17 @@ async function updateReadingItem(body: {
   return res.json()
 }
 
-export function useUpdateReadingMutation() {
+export function useUpdateReadingMutation(): UseMutationResult<
+  ReadingItem,
+  Error,
+  UpdateReadingInput,
+  { previous: ReadingItem[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     ReadingItem,
     Error,
-    {
-      id: string
-      title?: string
-      author?: string
-      status?: string
-      rating?: number | null
-      review?: string | null
-      finishedAt?: string | null
-      currentProgress?: string | null
-    },
+    UpdateReadingInput,
     { previous: ReadingItem[] | undefined }
   >({
     mutationFn: updateReadingItem,
@@ -147,7 +151,12 @@ async function deleteReadingItem(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteReadingMutation() {
+export function useDeleteReadingMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previous: ReadingItem[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: ReadingItem[] | undefined }>({
     mutationFn: deleteReadingItem,
@@ -183,6 +192,12 @@ export interface ReadingProgressLog {
   createdAt: string
 }
 
+export interface AddReadingProgressInput {
+  bookId: string
+  progress: string
+  notes?: string | null
+}
+
 async function fetchReadingProgressLogs(bookId: string): Promise<ReadingProgressLog[]> {
   const res = await fetch(`/api/reading/progress?bookId=${bookId}`)
   if (!res.ok) {
@@ -191,7 +206,7 @@ async function fetchReadingProgressLogs(bookId: string): Promise<ReadingProgress
   return res.json()
 }
 
-export function useReadingProgressLogsQuery(bookId: string | null) {
+export function useReadingProgressLogsQuery(bookId: string | null): UseQueryResult<ReadingProgressLog[], Error> {
   return useQuery<ReadingProgressLog[]>({
     queryKey: ["readingProgress", bookId],
     queryFn: () => fetchReadingProgressLogs(bookId!),
@@ -199,11 +214,7 @@ export function useReadingProgressLogsQuery(bookId: string | null) {
   })
 }
 
-async function addReadingProgressLog(body: {
-  bookId: string
-  progress: string
-  notes?: string | null
-}): Promise<ReadingProgressLog> {
+async function addReadingProgressLog(body: AddReadingProgressInput): Promise<ReadingProgressLog> {
   const res = await fetch("/api/reading/progress", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -215,9 +226,13 @@ async function addReadingProgressLog(body: {
   return res.json()
 }
 
-export function useAddReadingProgressMutation() {
+export function useAddReadingProgressMutation(): UseMutationResult<
+  ReadingProgressLog,
+  Error,
+  AddReadingProgressInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<ReadingProgressLog, Error, { bookId: string; progress: string; notes?: string | null }>({
+  return useMutation<ReadingProgressLog, Error, AddReadingProgressInput>({
     mutationFn: addReadingProgressLog,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["readingProgress", data.bookId] })
@@ -236,7 +251,11 @@ async function deleteReadingProgressLog(id: string): Promise<{ success: boolean 
   return res.json()
 }
 
-export function useDeleteReadingProgressMutation(bookId: string | null) {
+export function useDeleteReadingProgressMutation(bookId: string | null): UseMutationResult<
+  { success: boolean },
+  Error,
+  string
+> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string>({
     mutationFn: deleteReadingProgressLog,
