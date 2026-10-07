@@ -1,4 +1,11 @@
-import { useQuery, useMutation, useQueryClient, useMutationState } from "@tanstack/react-query"
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useMutationState,
+  type UseQueryResult,
+  type UseMutationResult,
+} from "@tanstack/react-query"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 
 export interface Priority {
@@ -44,12 +51,70 @@ export interface TimetableBlock {
   subSchedules?: TimetableSubSchedule[]
 }
 
+export interface CreatePriorityInput {
+  date: string
+  text: string
+  orderIndex?: number
+  link?: string
+  category?: string
+  subCategory?: string | null
+}
+
+export interface UpdatePriorityInput {
+  id: string
+  text?: string
+  link?: string
+  category?: string
+  subCategory?: string | null
+  date?: string
+}
+
+export interface CreateTimetableBlockInput {
+  dayOfWeek: number
+  startTime: string
+  endTime: string
+  title: string
+  category?: string
+  color?: string
+  date?: string
+  isTodo?: boolean
+  link?: string
+  subCategory?: string | null
+  subSchedules?: Array<{ title: string; startTime?: string; endTime?: string }>
+}
+
+export interface UpdateTimetableBlockInput {
+  id: string
+  dayOfWeek?: number
+  startTime?: string
+  endTime?: string
+  title?: string
+  category?: string
+  color?: string
+  date?: string | null
+  isTodo?: boolean
+  link?: string
+  subCategory?: string | null
+}
+
+export interface CreateTimetableSubScheduleInput {
+  timetableBlockId: string
+  title: string
+  startTime?: string | null
+  endTime?: string | null
+}
+
+export interface UpdateTimetableSubScheduleInput {
+  id: string
+  title?: string
+  startTime?: string | null
+  endTime?: string | null
+}
+
 // --- PRIORITIES ---
 
 async function fetchPriorities(date: string): Promise<Priority[]> {
-  const today = useWorkspaceStore.getState().realTodayDate
-
-  const res = await fetch(`/api/priorities?date=${date}&today=${today}`)
+  const res = await fetch(`/api/priorities?date=${date}`)
   if (!res.ok) {
     const errorData = await res.json()
     throw new Error(errorData.error || "Failed to fetch priorities")
@@ -57,8 +122,7 @@ async function fetchPriorities(date: string): Promise<Priority[]> {
   return res.json()
 }
 
-
-export function usePrioritiesQuery(date: string) {
+export function usePrioritiesQuery(date: string): UseQueryResult<Priority[], Error> {
   const realTodayDate = useWorkspaceStore((state) => state.realTodayDate)
   return useQuery<Priority[]>({
     queryKey: ["priorities", date, realTodayDate],
@@ -76,7 +140,7 @@ async function fetchPrioritiesRange(startDate: string, endDate: string): Promise
   return res.json()
 }
 
-export function usePrioritiesRangeQuery(startDate: string, endDate: string) {
+export function usePrioritiesRangeQuery(startDate: string, endDate: string): UseQueryResult<Priority[], Error> {
   return useQuery<Priority[]>({
     queryKey: ["priorities-range", startDate, endDate],
     queryFn: () => fetchPrioritiesRange(startDate, endDate),
@@ -84,7 +148,7 @@ export function usePrioritiesRangeQuery(startDate: string, endDate: string) {
   })
 }
 
-async function createPriority(body: { date: string; text: string; orderIndex?: number; link?: string; category?: string; subCategory?: string | null }): Promise<Priority> {
+async function createPriority(body: CreatePriorityInput): Promise<Priority> {
   const res = await fetch("/api/priorities", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -97,9 +161,9 @@ async function createPriority(body: { date: string; text: string; orderIndex?: n
   return res.json()
 }
 
-export function useCreatePriorityMutation() {
+export function useCreatePriorityMutation(): UseMutationResult<Priority, Error, CreatePriorityInput> {
   const queryClient = useQueryClient()
-  return useMutation<Priority, Error, { date: string; text: string; orderIndex?: number; link?: string; category?: string; subCategory?: string | null }>({
+  return useMutation<Priority, Error, CreatePriorityInput>({
     mutationFn: createPriority,
     onSuccess: (newPriority, variables) => {
       const queryCache = queryClient.getQueryCache()
@@ -120,8 +184,8 @@ export function useCreatePriorityMutation() {
 }
 
 async function togglePriority(body: { id: string; completed: boolean }): Promise<Priority> {
-  const res = await fetch("/api/priorities/toggle", {
-    method: "POST",
+  const res = await fetch("/api/priorities", {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   })
@@ -131,7 +195,12 @@ async function togglePriority(body: { id: string; completed: boolean }): Promise
   return res.json()
 }
 
-export function useTogglePriorityMutation(date: string) {
+export function useTogglePriorityMutation(date: string): UseMutationResult<
+  Priority,
+  Error,
+  { id: string; completed: boolean },
+  { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     Priority,
@@ -162,6 +231,7 @@ export function useTogglePriorityMutation(date: string) {
           )
         }
       })
+
       return { previousQueriesData }
     },
     onError: (err, variables, context) => {
@@ -170,14 +240,10 @@ export function useTogglePriorityMutation(date: string) {
           queryClient.setQueryData(q.queryKey, q.data)
         })
       }
-      queryClient.invalidateQueries({ queryKey: ["priorities"] })
-      queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
     },
     onSettled: () => {
-      if (queryClient.isMutating({ mutationKey: ["toggle-priority"] }) <= 1) {
-        queryClient.invalidateQueries({ queryKey: ["priorities"] })
-        queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
-      }
+      queryClient.invalidateQueries({ queryKey: ["priorities"] })
+      queryClient.invalidateQueries({ queryKey: ["priorities-range"] })
     },
   })
 }
@@ -194,7 +260,7 @@ export function usePendingPriorityIds(): string[] {
 }
 
 async function deletePriority(id: string): Promise<{ success: boolean }> {
-  const res = await fetch(`/api/priorities/delete?id=${id}`, {
+  const res = await fetch(`/api/priorities?id=${id}`, {
     method: "DELETE",
   })
   if (!res.ok) {
@@ -203,7 +269,12 @@ async function deletePriority(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeletePriorityMutation() {
+export function useDeletePriorityMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previousQueriesData: { queryKey: readonly unknown[]; data: unknown }[] }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     { success: boolean },
@@ -256,26 +327,14 @@ async function fetchTimetable(): Promise<TimetableBlock[]> {
   return res.json()
 }
 
-export function useTimetableQuery() {
+export function useTimetableQuery(): UseQueryResult<TimetableBlock[], Error> {
   return useQuery<TimetableBlock[]>({
     queryKey: ["timetable"],
     queryFn: fetchTimetable,
   })
 }
 
-async function createTimetableBlock(body: {
-  dayOfWeek: number
-  startTime: string
-  endTime: string
-  title: string
-  category?: string
-  color?: string
-  date?: string
-  isTodo?: boolean
-  link?: string
-  subCategory?: string | null
-  subSchedules?: Array<{ title: string; startTime?: string; endTime?: string }>
-}): Promise<TimetableBlock> {
+async function createTimetableBlock(body: CreateTimetableBlockInput): Promise<TimetableBlock> {
   const res = await fetch("/api/timetable", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -287,25 +346,13 @@ async function createTimetableBlock(body: {
   return res.json()
 }
 
-export function useCreateTimetableBlockMutation() {
+export function useCreateTimetableBlockMutation(): UseMutationResult<
+  TimetableBlock,
+  Error,
+  CreateTimetableBlockInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<
-    TimetableBlock,
-    Error,
-    {
-      dayOfWeek: number
-      startTime: string
-      endTime: string
-      title: string
-      category?: string
-      color?: string
-      date?: string
-      isTodo?: boolean
-      link?: string
-      subCategory?: string | null
-      subSchedules?: Array<{ title: string; startTime?: string; endTime?: string }>
-    }
-  >({
+  return useMutation<TimetableBlock, Error, CreateTimetableBlockInput>({
     mutationFn: createTimetableBlock,
     onSuccess: (newBlock) => {
       queryClient.setQueryData<TimetableBlock[]>(["timetable"], (old) => {
@@ -331,7 +378,12 @@ async function deleteTimetableBlock(id: string): Promise<{ success: boolean }> {
   return res.json()
 }
 
-export function useDeleteTimetableBlockMutation() {
+export function useDeleteTimetableBlockMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  string,
+  { previous: TimetableBlock[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<{ success: boolean }, Error, string, { previous: TimetableBlock[] | undefined }>({
     mutationFn: deleteTimetableBlock,
@@ -359,7 +411,7 @@ export function useDeleteTimetableBlockMutation() {
   })
 }
 
-async function updatePriority(body: { id: string; text?: string; link?: string; category?: string; subCategory?: string | null; date?: string }): Promise<Priority> {
+async function updatePriority(body: UpdatePriorityInput): Promise<Priority> {
   const res = await fetch("/api/priorities", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -372,9 +424,9 @@ async function updatePriority(body: { id: string; text?: string; link?: string; 
   return res.json()
 }
 
-export function useUpdatePriorityMutation(date: string) {
+export function useUpdatePriorityMutation(date: string): UseMutationResult<Priority, Error, UpdatePriorityInput> {
   const queryClient = useQueryClient()
-  return useMutation<Priority, Error, { id: string; text?: string; link?: string; category?: string; subCategory?: string | null; date?: string }>({
+  return useMutation<Priority, Error, UpdatePriorityInput>({
     mutationFn: updatePriority,
     onSuccess: (updatedPriority) => {
       queryClient.setQueryData<Priority[]>(["priorities", date], (old) => {
@@ -390,19 +442,7 @@ export function useUpdatePriorityMutation(date: string) {
   })
 }
 
-async function updateTimetableBlock(body: {
-  id: string
-  dayOfWeek?: number
-  startTime?: string
-  endTime?: string
-  title?: string
-  category?: string
-  color?: string
-  date?: string | null
-  isTodo?: boolean
-  link?: string
-  subCategory?: string | null
-}): Promise<TimetableBlock> {
+async function updateTimetableBlock(body: UpdateTimetableBlockInput): Promise<TimetableBlock> {
   const res = await fetch("/api/timetable", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -415,25 +455,13 @@ async function updateTimetableBlock(body: {
   return res.json()
 }
 
-export function useUpdateTimetableBlockMutation() {
+export function useUpdateTimetableBlockMutation(): UseMutationResult<
+  TimetableBlock,
+  Error,
+  UpdateTimetableBlockInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<
-    TimetableBlock,
-    Error,
-    {
-      id: string
-      dayOfWeek?: number
-      startTime?: string
-      endTime?: string
-      title?: string
-      category?: string
-      color?: string
-      date?: string | null
-      isTodo?: boolean
-      link?: string
-      subCategory?: string | null
-    }
-  >({
+  return useMutation<TimetableBlock, Error, UpdateTimetableBlockInput>({
     mutationFn: updateTimetableBlock,
     onSuccess: (updatedBlock) => {
       queryClient.setQueryData<TimetableBlock[]>(["timetable"], (old) => {
@@ -449,12 +477,7 @@ export function useUpdateTimetableBlockMutation() {
 
 // --- TIMETABLE SUB-SCHEDULES ---
 
-async function createTimetableSubSchedule(body: {
-  timetableBlockId: string
-  title: string
-  startTime?: string | null
-  endTime?: string | null
-}): Promise<TimetableSubSchedule> {
+async function createTimetableSubSchedule(body: CreateTimetableSubScheduleInput): Promise<TimetableSubSchedule> {
   const res = await fetch("/api/timetable/sub", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -467,13 +490,13 @@ async function createTimetableSubSchedule(body: {
   return res.json()
 }
 
-export function useCreateTimetableSubScheduleMutation() {
+export function useCreateTimetableSubScheduleMutation(): UseMutationResult<
+  TimetableSubSchedule,
+  Error,
+  CreateTimetableSubScheduleInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<
-    TimetableSubSchedule,
-    Error,
-    { timetableBlockId: string; title: string; startTime?: string | null; endTime?: string | null }
-  >({
+  return useMutation<TimetableSubSchedule, Error, CreateTimetableSubScheduleInput>({
     mutationFn: createTimetableSubSchedule,
     onSuccess: (newSub) => {
       queryClient.setQueryData<TimetableBlock[]>(["timetable"], (old) => {
@@ -491,12 +514,7 @@ export function useCreateTimetableSubScheduleMutation() {
   })
 }
 
-async function updateTimetableSubSchedule(body: {
-  id: string
-  title?: string
-  startTime?: string | null
-  endTime?: string | null
-}): Promise<TimetableSubSchedule> {
+async function updateTimetableSubSchedule(body: UpdateTimetableSubScheduleInput): Promise<TimetableSubSchedule> {
   const res = await fetch("/api/timetable/sub", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -509,13 +527,13 @@ async function updateTimetableSubSchedule(body: {
   return res.json()
 }
 
-export function useUpdateTimetableSubScheduleMutation() {
+export function useUpdateTimetableSubScheduleMutation(): UseMutationResult<
+  TimetableSubSchedule,
+  Error,
+  UpdateTimetableSubScheduleInput
+> {
   const queryClient = useQueryClient()
-  return useMutation<
-    TimetableSubSchedule,
-    Error,
-    { id: string; title?: string; startTime?: string | null; endTime?: string | null }
-  >({
+  return useMutation<TimetableSubSchedule, Error, UpdateTimetableSubScheduleInput>({
     mutationFn: updateTimetableSubSchedule,
     onSuccess: (updatedSub) => {
       queryClient.setQueryData<TimetableBlock[]>(["timetable"], (old) => {
@@ -538,8 +556,8 @@ async function toggleTimetableSubSchedule(body: {
   completed: boolean
   date?: string
 }): Promise<TimetableSubSchedule> {
-  const res = await fetch("/api/timetable/sub/toggle", {
-    method: "POST",
+  const res = await fetch("/api/timetable/sub", {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   })
@@ -550,7 +568,12 @@ async function toggleTimetableSubSchedule(body: {
   return res.json()
 }
 
-export function useToggleTimetableSubScheduleMutation() {
+export function useToggleTimetableSubScheduleMutation(): UseMutationResult<
+  TimetableSubSchedule,
+  Error,
+  { id: string; completed: boolean; date?: string },
+  { previous: TimetableBlock[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     TimetableSubSchedule,
@@ -603,7 +626,12 @@ async function deleteTimetableSubSchedule(id: string): Promise<{ success: boolea
   return res.json()
 }
 
-export function useDeleteTimetableSubScheduleMutation() {
+export function useDeleteTimetableSubScheduleMutation(): UseMutationResult<
+  { success: boolean },
+  Error,
+  { id: string; timetableBlockId: string },
+  { previous: TimetableBlock[] | undefined }
+> {
   const queryClient = useQueryClient()
   return useMutation<
     { success: boolean },
