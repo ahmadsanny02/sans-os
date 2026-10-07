@@ -3,7 +3,7 @@ import { logger } from "@/lib/logger";
 
 import React, { useState, useRef, useEffect } from "react"
 import { Project, ProjectTask } from "@/hooks/useProjects"
-import { formatDate, isOverdue } from "@/hooks/useProjectsPage"
+import { formatDate, formatInputDate, isOverdue } from "@/hooks/useProjectsPage"
 import { useCategories } from "@/hooks/useCategories"
 import {
   Plus,
@@ -138,9 +138,9 @@ function CustomBadgeDropdown({
 
 const PRIORITY_THEMES: Record<string, { bg: string; text: string; border: string }> = {
   High: {
-    bg: "bg-rose-500/10",
-    text: "text-rose-500 dark:text-rose-400",
-    border: "border-rose-500/20",
+    bg: "bg-destructive/10",
+    text: "text-destructive",
+    border: "border-destructive/20",
   },
   Medium: {
     bg: "bg-primary/10",
@@ -148,22 +148,22 @@ const PRIORITY_THEMES: Record<string, { bg: string; text: string; border: string
     border: "border-primary/20",
   },
   Low: {
-    bg: "bg-slate-500/10",
-    text: "text-slate-500 dark:text-slate-400",
-    border: "border-slate-500/20",
+    bg: "bg-secondary",
+    text: "text-muted-foreground",
+    border: "border-border/60",
   },
 }
 
 const STATUS_THEMES: Record<string, { bg: string; text: string; border: string }> = {
   Planning: {
-    bg: "bg-slate-500/10",
-    text: "text-slate-500 dark:text-slate-400",
-    border: "border-slate-500/20",
+    bg: "bg-secondary",
+    text: "text-muted-foreground",
+    border: "border-border/60",
   },
   "In Progress": {
-    bg: "bg-blue-500/10",
-    text: "text-blue-500 dark:text-blue-400",
-    border: "border-blue-500/20",
+    bg: "bg-primary/10",
+    text: "text-primary",
+    border: "border-primary/20",
   },
   "On Hold": {
     bg: "bg-amber-500/10",
@@ -875,13 +875,7 @@ export function ProjectBoardView({
                     {activeProject.deadline ? formatDate(activeProject.deadline) : "No deadline"}
                     <input
                       type="date"
-                      value={activeProject.deadline ? (() => {
-                        try {
-                          return new Date(activeProject.deadline).toISOString().split('T')[0]
-                        } catch {
-                          return ""
-                        }
-                      })() : ""}
+                      value={formatInputDate(activeProject.deadline)}
                       onChange={(e) => handleUpdateProjectDeadline(activeProject.id, e.target.value)}
                       onClick={(e) => {
                         try {
@@ -945,7 +939,7 @@ export function ProjectBoardView({
                               <button
                                 onClick={() => handleToggleTask(task.id, task.completed)}
                                 disabled={isPendingTaskToggle}
-                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${task.completed
+                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-xl border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${task.completed
                                   ? "bg-primary border-primary text-primary-foreground shadow-glow"
                                   : "border-border/65 hover:border-primary/50 bg-card"
                                   }`}
@@ -965,7 +959,7 @@ export function ProjectBoardView({
                                       if (e.key === "Enter") handleSaveTaskName(task.id)
                                       if (e.key === "Escape") setEditingTaskId(null)
                                     }}
-                                    className="bg-secondary/35 border border-border/40 text-xs font-semibold text-foreground rounded-lg px-2.5 py-1 w-full focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
+                                    className="bg-secondary/35 border border-border/40 text-xs font-semibold text-foreground rounded-xl px-2.5 py-1 w-full focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
                                     autoFocus
                                   />
                                 ) : (
@@ -1002,13 +996,7 @@ export function ProjectBoardView({
                                   <div className="relative inline-flex items-center group/deadline">
                                     <input
                                       type="date"
-                                      value={task.deadline ? (() => {
-                                        try {
-                                          return new Date(task.deadline).toISOString().split('T')[0]
-                                        } catch {
-                                          return ""
-                                        }
-                                      })() : ""}
+                                      value={formatInputDate(task.deadline)}
                                       onChange={(e) => handleUpdateTaskDeadline(task.id, e.target.value)}
                                       onClick={(e) => {
                                         try {
@@ -1023,8 +1011,8 @@ export function ProjectBoardView({
                                     <span className={`px-2 py-1 rounded-full border flex items-center gap-1 transition-all ${
                                       task.deadline 
                                         ? isTaskOver
-                                          ? "bg-rose-500/10 text-rose-500 border-rose-500/20 hover:bg-rose-500/20"
-                                          : "bg-slate-500/10 text-slate-500 border-slate-500/20 hover:bg-slate-500/20"
+                                          ? "bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20"
+                                          : "bg-secondary text-muted-foreground border-border/60 hover:bg-secondary/80"
                                         : "bg-secondary/30 text-muted-foreground border-border/30 hover:bg-secondary/60 hover:text-foreground hover:border-border/60"
                                     }`}>
                                       <Calendar className="h-2.5 w-2.5 shrink-0" />
@@ -1041,7 +1029,7 @@ export function ProjectBoardView({
                             <button
                               onClick={() => handleDeleteTask(task.id)}
                               disabled={isPendingTaskDelete}
-                              className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                              className="p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
                               aria-label="Delete task"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -1255,7 +1243,7 @@ export function ProjectBoardView({
                     <button
                       type="button"
                       onClick={() => setExtraProjectTaskRows(extraProjectTaskRows.filter((r) => r.id !== row.id))}
-                      className="col-span-1 sm:col-span-1 p-2.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer flex items-center justify-center"
+                      className="col-span-1 sm:col-span-1 p-2.5 rounded-xl border border-destructive/30 text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer flex items-center justify-center"
                       title="Remove task"
                     >
                       <Trash2 className="h-4 w-4" />
