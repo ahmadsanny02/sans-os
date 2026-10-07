@@ -36,6 +36,7 @@ export const habitLogs = pgTable("habit_logs", {
   loggedAt: timestamp("logged_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_habit_logs_user_date").on(t.userId, t.date),
+  uniqueIndex("idx_habit_logs_user_habit_date").on(t.userId, t.habitId, t.date),
 ])
 
 // Relations for Habits & Logs
@@ -169,9 +170,11 @@ export const priorities = pgTable("priorities", {
   completed: boolean("completed").default(false).notNull(),
   rolloverCount: integer("rollover_count").default(0).notNull(), // keeps track of rollovers
   link: text("link"),
+  timetableBlockId: uuid("timetable_block_id").references(() => timetableBlocks.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_priorities_user_date").on(t.userId, t.date),
+  index("idx_priorities_timetable_block").on(t.timetableBlockId),
 ])
 
 // 8. Vocabulary Logs (Language learning)
