@@ -5,6 +5,7 @@ import { eq, and, desc, inArray } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { translateText } from "@/lib/translate"
 import { isValidUUIDArray } from "@/lib/utils"
+import { logger } from "@/lib/logger"
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -74,7 +75,12 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
     }
 
-    const autoTranslation = await translateText(englishSentence)
+    let autoTranslation: string | null = null
+    try {
+      autoTranslation = await translateText(englishSentence)
+    } catch (err) {
+      logger.warn("[Writing API] Failed to get auto-translation:", err)
+    }
 
     const [newLog] = await db
       .insert(writingLogs)
