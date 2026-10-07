@@ -220,7 +220,7 @@ export function CategoryManagementView() {
                       onClick={() => {
                         setEditingSubModeCategoryId(editingSubModeCategoryId === cat.id ? null : cat.id)
                       }}
-                      className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                      className={`p-1.5 rounded-xl transition-all cursor-pointer ${
                         editingSubModeCategoryId === cat.id
                           ? "bg-primary/15 text-primary border border-primary/20"
                           : "hover:bg-secondary border border-transparent text-muted-foreground hover:text-foreground"
@@ -234,7 +234,7 @@ export function CategoryManagementView() {
                         setAddingSubCategoryId(addingSubCategoryId === cat.id ? null : cat.id)
                         setNewSubName("")
                       }}
-                      className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                      className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
                         addingSubCategoryId === cat.id
                           ? "bg-primary/15 text-primary border-primary/20"
                           : "hover:bg-secondary border-transparent text-primary hover:text-primary/80"
@@ -316,18 +316,18 @@ export function CategoryManagementView() {
                                 autoFocus
                                 value={editSubName}
                                 onChange={(e) => setEditSubName(e.target.value)}
-                                className="w-28 rounded-lg border border-border/80 bg-background px-2 py-1 text-xs outline-none focus:border-primary text-foreground"
+                                className="w-28 rounded-xl border border-border/80 bg-background px-2 py-1 text-xs outline-none focus:border-primary text-foreground"
                               />
                               <button
                                 type="submit"
-                                className="p-1 text-primary hover:bg-primary/10 rounded cursor-pointer"
+                                className="p-1 text-primary hover:bg-primary/10 rounded-xl cursor-pointer"
                               >
                                 <Check className="h-3 w-3 stroke-[3]" />
                               </button>
                               <button
                                 type="button"
                                 onClick={() => setEditingSubId(null)}
-                                className="p-1 text-muted-foreground hover:bg-secondary rounded cursor-pointer"
+                                className="p-1 text-muted-foreground hover:bg-secondary rounded-xl cursor-pointer"
                               >
                                 <X className="h-3 w-3" />
                               </button>
@@ -339,7 +339,7 @@ export function CategoryManagementView() {
                         return (
                           <div
                             key={sc.id}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${badgeClass}`}
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border transition-all ${badgeClass}`}
                           >
                             <span>{sc.name}</span>
                             {isEditModeActive && (
@@ -349,14 +349,14 @@ export function CategoryManagementView() {
                                     setEditingSubId(sc.id)
                                     setEditSubName(sc.name)
                                   }}
-                                  className="transition-colors text-muted-foreground hover:text-foreground p-0.5 rounded cursor-pointer"
+                                  className="transition-colors text-muted-foreground hover:text-foreground p-0.5 rounded-xl cursor-pointer"
                                   title="Rename sub-category"
                                 >
                                   <Edit2 className="h-2.5 w-2.5" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteSub(sc.id, sc.name)}
-                                  className="transition-colors text-muted-foreground hover:text-destructive p-0.5 rounded cursor-pointer"
+                                  className="transition-colors text-muted-foreground hover:text-destructive p-0.5 rounded-xl cursor-pointer"
                                   title="Delete sub-category"
                                 >
                                   <Trash2 className="h-2.5 w-2.5" />
@@ -382,7 +382,7 @@ export function CategoryManagementView() {
                       general: "General",
                     }
                     return (
-                      <span key={modName} className="text-micro uppercase font-bold text-muted-foreground tracking-wider bg-secondary/60 dark:bg-card/60 px-2 py-1 rounded-md border border-border/40">
+                      <span key={modName} className="text-micro uppercase font-bold text-muted-foreground tracking-wider bg-secondary/60 dark:bg-card/60 px-2 py-1 rounded-xl border border-border/40">
                         {labelMap[modName] || modName}
                       </span>
                     )
@@ -392,7 +392,7 @@ export function CategoryManagementView() {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleOpenEditModal(cat)}
-                    className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                    className="p-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
                     title="Edit category"
                   >
                     <Edit2 className="h-3.5 w-3.5" />
@@ -400,7 +400,7 @@ export function CategoryManagementView() {
                   {!cat.isSystemDefault && (
                     <button
                       onClick={() => handleDelete(cat.id, cat.name)}
-                      className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all cursor-pointer"
+                      className="p-1.5 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all cursor-pointer"
                       title="Delete category"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -482,7 +482,7 @@ export function CategoryManagementView() {
                             : "bg-background/50 dark:bg-background/30 border-border/60 text-muted-foreground hover:bg-card hover:text-foreground"
                         }`}
                       >
-                        <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                        <div className={`h-4 w-4 rounded-xl border flex items-center justify-center shrink-0 transition-all ${
                           isChecked ? "bg-primary border-primary text-primary-foreground" : "border-border/80 bg-background/80"
                         }`}>
                           {isChecked && <Check className="h-3 w-3 stroke-[3]" />}
@@ -512,7 +512,7 @@ export function CategoryManagementView() {
                             : "bg-background/50 dark:bg-background/30 border-border/60 text-muted-foreground hover:bg-card hover:text-foreground"
                         }`}
                       >
-                        <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                        <div className={`h-4 w-4 rounded-xl border flex items-center justify-center shrink-0 transition-all ${
                           isGeneralChecked ? "bg-primary border-primary text-primary-foreground" : "border-border/80 bg-background/80"
                         }`}>
                           {isGeneralChecked && <Check className="h-3 w-3 stroke-[3]" />}
