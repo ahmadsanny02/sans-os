@@ -395,7 +395,7 @@ export function ReadingBoardView({
                 <button
                   type="button"
                   onClick={() => setExtraBookRows(extraBookRows.filter((r) => r.id !== row.id))}
-                  className="p-1 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
+                  className="p-1 rounded-xl text-destructive hover:bg-destructive/10 transition-all cursor-pointer"
                   title="Remove book"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -582,7 +582,7 @@ export function ReadingBoardView({
                       <button
                         onClick={() => handleDeleteBook(book.id, book.title)}
                         disabled={isPendingDelete}
-                        className="p-1 rounded-xl hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-all"
+                        className="p-1 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all cursor-pointer"
                         title="Delete Book"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -647,7 +647,7 @@ export function ReadingBoardView({
                                 [book.id]: !prev[book.id],
                               }))
                             }}
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-all cursor-pointer select-none py-1 px-2 rounded-lg bg-secondary/10 hover:bg-secondary/20 border border-border/20 active:scale-95"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-all cursor-pointer select-none py-1 px-2 rounded-xl bg-secondary/10 hover:bg-secondary/20 border border-border/20 active:scale-95"
                           >
                             <MessageSquare className="h-3.5 w-3.5" />
                             <span>{expandedReviews[book.id] ? "Hide Review" : "Show Review"}</span>
@@ -659,7 +659,7 @@ export function ReadingBoardView({
                           </button>
 
                           {expandedReviews[book.id] && (
-                            <div className="rounded-lg bg-secondary/20 border border-border/40 p-3 relative group-hover:bg-secondary/40 transition-colors animate-in fade-in slide-in-from-top-1 duration-150">
+                            <div className="rounded-xl bg-secondary/20 border border-border/40 p-3 relative group-hover:bg-secondary/40 transition-colors animate-in fade-in slide-in-from-top-1 duration-150">
                               <MessageSquare className="absolute right-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground/20" />
                               <p className="text-xs text-muted-foreground leading-relaxed pr-6 select-text whitespace-pre-wrap">
                                 {book.review}
