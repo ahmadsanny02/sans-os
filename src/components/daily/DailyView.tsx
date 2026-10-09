@@ -171,6 +171,7 @@ export function DailyView(): React.JSX.Element {
             isLoading={dailyData.logLoading}
             isUploading={dailyData.isUploadingPic}
             errorMsg={dailyData.picErrorMsg}
+            picUrls={dailyData.picUrls}
             picUrl={dailyData.picUrl}
             handleFileChange={dailyData.handleFileChange}
             handleDelete={dailyData.handleDeletePic}
