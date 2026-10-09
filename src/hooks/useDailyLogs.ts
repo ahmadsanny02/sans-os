@@ -304,7 +304,10 @@ export function useSaveDailyLogMutation(): UseMutationResult<
   const queryClient = useQueryClient()
   return useMutation<DailyLog, Error, SaveDailyLogInput>({
     mutationFn: saveDailyLog,
-    onSuccess: () => {
+    onSuccess: (savedLog) => {
+      if (savedLog?.date) {
+        queryClient.setQueryData(["daily-log", savedLog.date], savedLog)
+      }
       queryClient.invalidateQueries({ queryKey: ["daily-log"] })
     },
   })
