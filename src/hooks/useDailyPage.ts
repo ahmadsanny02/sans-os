@@ -1,7 +1,8 @@
 "use client"
 import { logger } from "@/lib/logger";
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
+import { parsePicUrls, serializePicUrls } from "@/lib/utils"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 import {
   usePrioritiesQuery,
@@ -514,18 +515,23 @@ export function useDailyPage() {
   const [isUploadingPic, setIsUploadingPic] = useState(false)
   const [picErrorMsg, setPicErrorMsg] = useState<string | null>(null)
 
-  const picUrl = log?.picUrl || undefined
+  const picUrls = useMemo(() => parsePicUrls(log?.picUrl), [log?.picUrl])
+  const picUrl = picUrls[0] || undefined
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const fileList = e.target.files
+    if (!fileList || fileList.length === 0) return
+
+    const selectedFiles = Array.from(fileList)
 
     setIsUploadingPic(true)
     setPicErrorMsg(null)
 
     try {
       const formData = new FormData()
-      formData.append("file", file)
+      selectedFiles.forEach((file) => {
+        formData.append("files", file)
+      })
       formData.append("date", activeDate)
 
       const res = await fetch("/api/upload", {
@@ -539,30 +545,65 @@ export function useDailyPage() {
       }
 
       const data = await res.json()
+      const newUrls: string[] = Array.isArray(data.urls)
+        ? data.urls
+        : data.url
+          ? [data.url]
+          : []
+
+      const updatedUrls = [...picUrls, ...newUrls]
 
       await saveLogMutation.mutateAsync({
         date: activeDate,
-        picUrl: data.url,
+        picUrl: serializePicUrls(updatedUrls),
       })
-      showSuccessToast("Photo uploaded successfully")
+      showSuccessToast(
+        newUrls.length > 1
+          ? `${newUrls.length} photos uploaded successfully`
+          : "Photo uploaded successfully"
+      )
     } catch (err) {
       setPicErrorMsg(err instanceof Error ? err.message : "Failed to upload image")
     } finally {
       setIsUploadingPic(false)
+      if (e.target) {
+        e.target.value = ""
+      }
     }
   }
 
-  const handleDeletePic = async (): Promise<void> => {
-    const isConfirmed = await confirmDestructive(
-      "Remove Photo",
-      "Are you sure you want to remove today's photo?"
-    )
+  const handleDeletePic = async (indexToDelete?: number): Promise<void> => {
+    if (picUrls.length === 0) return
+
+    const isMultiple = picUrls.length > 1
+    const confirmTitle =
+      isMultiple && indexToDelete !== undefined
+        ? `Remove Photo #${indexToDelete + 1}`
+        : "Remove Photo"
+    const confirmText =
+      isMultiple && indexToDelete !== undefined
+        ? `Are you sure you want to remove photo #${indexToDelete + 1}?`
+        : "Are you sure you want to remove today's photo?"
+
+    const isConfirmed = await confirmDestructive(confirmTitle, confirmText)
     if (!isConfirmed) return
+
     setPicErrorMsg(null)
     try {
+      let updatedUrls: string[] = []
+      if (
+        typeof indexToDelete === "number" &&
+        indexToDelete >= 0 &&
+        indexToDelete < picUrls.length
+      ) {
+        updatedUrls = picUrls.filter((_, idx) => idx !== indexToDelete)
+      } else {
+        updatedUrls = []
+      }
+
       await saveLogMutation.mutateAsync({
         date: activeDate,
-        picUrl: "",
+        picUrl: serializePicUrls(updatedUrls),
       })
       showSuccessToast("Photo removed successfully")
     } catch (err) {
@@ -674,6 +715,7 @@ export function useDailyPage() {
     isUploadingPic,
     picErrorMsg,
     picUrl,
+    picUrls,
     handleFileChange,
     handleDeletePic,
     picSavePending: saveLogMutation.isPending,
