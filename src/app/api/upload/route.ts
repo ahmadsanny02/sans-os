@@ -26,10 +26,11 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     // 2. Parse FormData
     const formData = await request.formData()
-    const file = formData.get("file") as File | null
+    const rawFiles = formData.getAll("files").concat(formData.getAll("file"))
+    const files = rawFiles.filter((item): item is File => item instanceof File && item.size > 0)
     const date = formData.get("date") as string | null
 
-    if (!file || !date) {
+    if (files.length === 0 || !date) {
       return NextResponse.json({ error: "Missing file or date parameter" }, { status: 400 })
     }
 
@@ -42,19 +43,19 @@ export async function POST(request: Request): Promise<NextResponse> {
       )
     }
 
-    // Validate type against strict whitelist (prevent SVG XSS)
-    const fileExt = ALLOWED_MIME_MAP[file.type]
-    if (!fileExt) {
-      return NextResponse.json(
-        { error: "Format file tidak didukung. Harap unggah format JPEG, PNG, WEBP, atau GIF." },
-        { status: 400 }
-      )
-    }
-
-    // Pre-check file size limit before buffer memory allocation (10MB Limit)
-    const MAX_FILE_SIZE = 10 * 1024 * 1024
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: "File size exceeds 10MB limit" }, { status: 400 })
+    // Validate type and size against strict whitelist for all files
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB Limit
+    for (const f of files) {
+      const fileExt = ALLOWED_MIME_MAP[f.type]
+      if (!fileExt) {
+        return NextResponse.json(
+          { error: `Format file ${f.name} tidak didukung. Harap unggah format JPEG, PNG, WEBP, atau GIF.` },
+          { status: 400 }
+        )
+      }
+      if (f.size > MAX_FILE_SIZE) {
+        return NextResponse.json({ error: `File size exceeds 10MB limit: ${f.name}` }, { status: 400 })
+      }
     }
 
     // 3. Initialize Supabase Admin Client
@@ -89,29 +90,40 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
     }
 
-    // 5. Upload File
-    // Use user ID and sanitized date to keep it organized and unique
+    // 5. Upload Files
+    // Use user ID, sanitized date, timestamp, and index to keep it organized and unique
     const sanitizedDate = date.replace(/[^0-9-]/g, "")
-    const fileName = `${user.id}/${sanitizedDate}_${Date.now()}.${fileExt}`
+    const uploadedUrls: string[] = []
 
-    const { error: uploadError } = await supabaseAdmin.storage
-      .from("daily-pics")
-      .upload(fileName, file, {
-        contentType: file.type,
-        upsert: true,
-      })
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i]
+      const fileExt = ALLOWED_MIME_MAP[currentFile.type]
+      const fileName = `${user.id}/${sanitizedDate}_${Date.now()}_${i}.${fileExt}`
 
-    if (uploadError) {
-      throw uploadError
+      const { error: uploadError } = await supabaseAdmin.storage
+        .from("daily-pics")
+        .upload(fileName, currentFile, {
+          contentType: currentFile.type,
+          upsert: true,
+        })
+
+      if (uploadError) {
+        throw uploadError
+      }
+
+      // 6. Get Public URL
+      const { data: urlData } = supabaseAdmin.storage.from("daily-pics").getPublicUrl(fileName)
+      if (!urlData?.publicUrl) {
+        throw new Error("Failed to generate public URL")
+      }
+
+      uploadedUrls.push(urlData.publicUrl)
     }
 
-    // 6. Get Public URL
-    const { data: urlData } = supabaseAdmin.storage.from("daily-pics").getPublicUrl(fileName)
-    if (!urlData?.publicUrl) {
-      throw new Error("Failed to generate public URL")
-    }
-
-    return NextResponse.json({ url: urlData.publicUrl })
+    return NextResponse.json({
+      url: uploadedUrls[0],
+      urls: uploadedUrls,
+    })
   } catch (error) {
     logger.error("[Upload API Error]", error)
     const errorMessage = error instanceof Error ? error.message : "Server Error"
