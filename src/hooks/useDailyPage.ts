@@ -1,7 +1,7 @@
 "use client"
 import { logger } from "@/lib/logger";
 
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useState, useEffect, useMemo, useRef } from "react"
 import { parsePicUrls, serializePicUrls } from "@/lib/utils"
 import { useWorkspaceStore } from "@/store/workspaceStore"
 import {
@@ -480,23 +480,27 @@ export function useDailyPage() {
   // Reflections State & Handlers
   // ==========================================
   const { data: log, isLoading: logLoading } = useDailyLogQuery(activeDate)
-  const saveLogMutation = useSaveDailyLogMutation()
+  const saveReflectionsMutation = useSaveDailyLogMutation()
 
   const [activeReflectionTab, setActiveReflectionTab] = useState<TabType>("journal")
   const [journal, setJournal] = useState("")
   const [notes, setNotes] = useState("")
   const [gratitude, setGratitude] = useState("")
 
+  const loadedLogDateRef = useRef<string | null>(null)
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setJournal(log?.journal || "")
-    setNotes(log?.notes || "")
-    setGratitude(log?.gratitude || "")
-  }, [log])
+    if (loadedLogDateRef.current !== activeDate && log !== undefined) {
+      loadedLogDateRef.current = activeDate
+      setJournal(log?.journal || "")
+      setNotes(log?.notes || "")
+      setGratitude(log?.gratitude || "")
+    }
+  }, [log, activeDate])
 
   const handleSaveReflections = async (): Promise<void> => {
     try {
-      await saveLogMutation.mutateAsync({
+      await saveReflectionsMutation.mutateAsync({
         date: activeDate,
         journal,
         notes,
@@ -512,7 +516,9 @@ export function useDailyPage() {
   // ==========================================
   // Pic of the Day State & Handlers
   // ==========================================
+  const savePicMutation = useSaveDailyLogMutation()
   const [isUploadingPic, setIsUploadingPic] = useState(false)
+  const [isDeletingPic, setIsDeletingPic] = useState(false)
   const [picErrorMsg, setPicErrorMsg] = useState<string | null>(null)
 
   const picUrls = useMemo(() => parsePicUrls(log?.picUrl), [log?.picUrl])
@@ -553,7 +559,7 @@ export function useDailyPage() {
 
       const updatedUrls = [...picUrls, ...newUrls]
 
-      await saveLogMutation.mutateAsync({
+      await savePicMutation.mutateAsync({
         date: activeDate,
         picUrl: serializePicUrls(updatedUrls),
       })
@@ -588,6 +594,7 @@ export function useDailyPage() {
     const isConfirmed = await confirmDestructive(confirmTitle, confirmText)
     if (!isConfirmed) return
 
+    setIsDeletingPic(true)
     setPicErrorMsg(null)
     try {
       let updatedUrls: string[] = []
@@ -601,7 +608,7 @@ export function useDailyPage() {
         updatedUrls = []
       }
 
-      await saveLogMutation.mutateAsync({
+      await savePicMutation.mutateAsync({
         date: activeDate,
         picUrl: serializePicUrls(updatedUrls),
       })
@@ -610,6 +617,8 @@ export function useDailyPage() {
       logger.error(err)
       setPicErrorMsg("Failed to remove photo")
       await showError("Error", "Failed to remove photo")
+    } finally {
+      setIsDeletingPic(false)
     }
   }
 
@@ -709,16 +718,17 @@ export function useDailyPage() {
     gratitude,
     setGratitude,
     handleSaveReflections,
-    reflectionsSavePending: saveLogMutation.isPending,
+    reflectionsSavePending: saveReflectionsMutation.isPending,
 
     // Pics
     isUploadingPic,
+    isDeletingPic,
     picErrorMsg,
     picUrl,
     picUrls,
     handleFileChange,
     handleDeletePic,
-    picSavePending: saveLogMutation.isPending,
+    picSavePending: savePicMutation.isPending || isUploadingPic || isDeletingPic,
 
     // Habits Checklist Sync
     habits: todayHabits,
