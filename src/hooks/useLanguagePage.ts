@@ -94,13 +94,13 @@ export function useLanguagePage() {
   const deleteDialogueMutation = useDeleteDialogueMutation()
 
   // Tab switching state
-  const [activeTab, setActiveTab] = useState<"vocab" | "formula" | "writing" | "dialogue" | "dictionary">("vocab")
+  const [activeTab, setActiveTab] = useState<"vocab" | "formula" | "writing" | "dialogue">("vocab")
   
   const searchParams = useSearchParams()
   const tabParam = searchParams?.get("tab")
 
   useEffect(() => {
-    const validTabs = ["vocab", "formula", "writing", "dialogue", "dictionary"] as const
+    const validTabs = ["vocab", "formula", "writing", "dialogue"] as const
     type TabType = typeof validTabs[number]
 
     if (tabParam && validTabs.includes(tabParam as TabType)) {
