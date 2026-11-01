@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo, useRef, useEffect } from "react"
 import { VocabularyLog } from "@/hooks/useLanguage"
-import { DictionaryView } from "./DictionaryView"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Plus,
@@ -104,7 +103,6 @@ export function LanguageBoardView({
   writingCount,
 }: LanguageBoardViewProps) {
   const [dirFilter, setDirFilter] = useState<"all" | "en-id" | "id-en">("all")
-  const [addMode, setAddMode] = useState<"dictionary" | "manual">("dictionary")
   const [collapsedLetters, setCollapsedLetters] = useState<Record<string, boolean>>({})
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -425,211 +423,182 @@ export function LanguageBoardView({
         </button>
       </div>
 
-      {/* 3. Add Vocabulary Form Card / Dictionary Panel */}
+      {/* 3. Add Vocabulary Form Card */}
       {showAddForm && (
         <div className="rounded-2xl border border-border bg-card/60 p-5 shadow-sm backdrop-blur-md space-y-4 animate-in slide-in-from-top-4 duration-200">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/40 pb-3">
             <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5 select-none">
               <Plus className="h-4.5 w-4.5 text-primary" /> Add New Vocabulary
             </h3>
-            {/* Sub-tabs for Add Mode */}
-            <div className="flex gap-1 p-0.5 bg-secondary/60 border border-border/30 rounded-xl select-none text-xs w-fit self-end sm:self-auto">
-              <button
-                type="button"
-                onClick={() => setAddMode("dictionary")}
-                className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-                  addMode === "dictionary"
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Search Dictionary
-              </button>
-              <button
-                type="button"
-                onClick={() => setAddMode("manual")}
-                className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-                  addMode === "manual"
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Add Manually
-              </button>
-            </div>
           </div>
 
-          {addMode === "dictionary" ? (
-            <DictionaryView vocabList={vocabList} />
-          ) : (
-            <form onSubmit={handleBatchSubmit} className="space-y-4 pt-2">
-              <div className="space-y-4">
-                {/* Language Direction Toggle */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider select-none">
-                    Language Direction / Arah Bahasa
-                  </label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setLangDirection("en-id")}
-                      className={`flex-1 py-2 px-3 text-xs font-extrabold rounded-xl border transition-all active:scale-[0.99] cursor-pointer ${
-                        langDirection === "en-id"
-                          ? "bg-primary/10 text-primary border-primary/30"
-                          : "border-border text-muted-foreground hover:bg-secondary/40"
-                      }`}
-                    >
-                      English ➔ Indonesian (EN ➔ ID)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setLangDirection("id-en")}
-                      className={`flex-1 py-2 px-3 text-xs font-extrabold rounded-xl border transition-all active:scale-[0.99] cursor-pointer ${
-                        langDirection === "id-en"
-                          ? "bg-primary/10 text-primary border-primary/30"
-                          : "border-border text-muted-foreground hover:bg-secondary/40"
-                      }`}
-                    >
-                      Indonesian ➔ English (ID ➔ EN)
-                    </button>
-                  </div>
-                </div>
-
-                {/* Primary Input Row */}
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {/* Word Input */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="vocabWord" className="text-xs font-bold text-muted-foreground">
-                      {langDirection === "id-en" ? "Word (Indonesian) *" : "Word (English) *"}
-                    </label>
-                    <input
-                      id="vocabWord"
-                      type="text"
-                      required
-                      value={word}
-                      onChange={(e) => setWord(e.target.value)}
-                      placeholder={langDirection === "id-en" ? "e.g. Belajar" : "e.g. Ephemeral"}
-                      className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
-                    />
-                  </div>
-
-                  {/* Translation */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="vocabTrans" className="text-xs font-bold text-muted-foreground">
-                      {langDirection === "id-en" ? "Translation (English) *" : "Translation (Indonesian) *"}
-                    </label>
-                    <input
-                      id="vocabTrans"
-                      type="text"
-                      required
-                      value={translation}
-                      onChange={(e) => setTranslation(e.target.value)}
-                      placeholder={langDirection === "id-en" ? "e.g. Study, learn" : "e.g. Temporary, brief"}
-                      className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
-                    />
-                  </div>
-                </div>
-
-                {/* Extra Vocabulary Rows (Optional Multi-Item Batch Creation) */}
-                {extraRows.map((row, idx) => (
-                  <div key={row.id} className="grid gap-4 sm:grid-cols-2 pt-3 border-t border-dashed border-border/40 relative">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-muted-foreground">
-                        Word #{idx + 2} *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={row.word}
-                        onChange={(e) => {
-                          const updated = [...extraRows]
-                          updated[idx].word = e.target.value
-                          setExtraRows(updated)
-                        }}
-                        placeholder="Word..."
-                        className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-muted-foreground">
-                        Translation #{idx + 2} *
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          required
-                          value={row.translation}
-                          onChange={(e) => {
-                            const updated = [...extraRows]
-                            updated[idx].translation = e.target.value
-                            setExtraRows(updated)
-                          }}
-                          placeholder="Translation..."
-                          className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setExtraRows(extraRows.filter((r) => r.id !== row.id))
-                          }}
-                          className="p-2.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer"
-                          title="Remove item"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {/* + Add Another Word Button */}
-                <div className="pt-1">
+          <form onSubmit={handleBatchSubmit} className="space-y-4 pt-2">
+            <div className="space-y-4">
+              {/* Language Direction Toggle */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider select-none">
+                  Language Direction / Arah Bahasa
+                </label>
+                <div className="flex flex-col sm:flex-row gap-2">
                   <button
                     type="button"
-                    onClick={() => setExtraRows([...extraRows, { id: Math.random().toString(), word: "", translation: "" }])}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1 cursor-pointer"
+                    onClick={() => setLangDirection("en-id")}
+                    className={`flex-1 py-2 px-3 text-xs font-extrabold rounded-xl border transition-all active:scale-[0.99] cursor-pointer ${
+                      langDirection === "en-id"
+                        ? "bg-primary/10 text-primary border-primary/30"
+                        : "border-border text-muted-foreground hover:bg-secondary/40"
+                    }`}
                   >
-                    <Plus className="h-3.5 w-3.5" />
-                    <span>+ Add Another Word</span>
+                    English ➔ Indonesian (EN ➔ ID)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLangDirection("id-en")}
+                    className={`flex-1 py-2 px-3 text-xs font-extrabold rounded-xl border transition-all active:scale-[0.99] cursor-pointer ${
+                      langDirection === "id-en"
+                        ? "bg-primary/10 text-primary border-primary/30"
+                        : "border-border text-muted-foreground hover:bg-secondary/40"
+                    }`}
+                  >
+                    Indonesian ➔ English (ID ➔ EN)
                   </button>
                 </div>
               </div>
 
-              {formError && (
-                <p className="text-xs text-destructive flex items-center gap-1 font-semibold animate-in slide-in-from-top-1">
-                  <AlertCircle className="h-3.5 w-3.5" />
-                  {formError}
-                </p>
-              )}
+              {/* Primary Input Row */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                {/* Word Input */}
+                <div className="space-y-1.5">
+                  <label htmlFor="vocabWord" className="text-xs font-bold text-muted-foreground">
+                    {langDirection === "id-en" ? "Word (Indonesian) *" : "Word (English) *"}
+                  </label>
+                  <input
+                    id="vocabWord"
+                    type="text"
+                    required
+                    value={word}
+                    onChange={(e) => setWord(e.target.value)}
+                    placeholder={langDirection === "id-en" ? "e.g. Belajar" : "e.g. Ephemeral"}
+                    className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
+                  />
+                </div>
 
-              <div className="flex justify-end gap-2 border-t border-border/40 pt-3">
+                {/* Translation */}
+                <div className="space-y-1.5">
+                  <label htmlFor="vocabTrans" className="text-xs font-bold text-muted-foreground">
+                    {langDirection === "id-en" ? "Translation (English) *" : "Translation (Indonesian) *"}
+                  </label>
+                  <input
+                    id="vocabTrans"
+                    type="text"
+                    required
+                    value={translation}
+                    onChange={(e) => setTranslation(e.target.value)}
+                    placeholder={langDirection === "id-en" ? "e.g. Study, learn" : "e.g. Temporary, brief"}
+                    className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Extra Vocabulary Rows (Optional Multi-Item Batch Creation) */}
+              {extraRows.map((row, idx) => (
+                <div key={row.id} className="grid gap-4 sm:grid-cols-2 pt-3 border-t border-dashed border-border/40 relative">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-muted-foreground">
+                      Word #{idx + 2} *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={row.word}
+                      onChange={(e) => {
+                        const updated = [...extraRows]
+                        updated[idx].word = e.target.value
+                        setExtraRows(updated)
+                      }}
+                      placeholder="Word..."
+                      className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-muted-foreground">
+                      Translation #{idx + 2} *
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        required
+                        value={row.translation}
+                        onChange={(e) => {
+                          const updated = [...extraRows]
+                          updated[idx].translation = e.target.value
+                          setExtraRows(updated)
+                        }}
+                        placeholder="Translation..."
+                        className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setExtraRows(extraRows.filter((r) => r.id !== row.id))
+                        }}
+                        className="p-2.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer"
+                        title="Remove item"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* + Add Another Word Button */}
+              <div className="pt-1">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowAddForm(false)
-                    setExtraRows([])
-                  }}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border bg-secondary/30 px-4 py-2.5 text-xs font-semibold text-muted-foreground shadow-sm transition-all hover:bg-secondary/60 hover:text-foreground hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                  onClick={() => setExtraRows([...extraRows, { id: Math.random().toString(), word: "", translation: "" }])}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1 cursor-pointer"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={vocabCreatePending}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-sidebar-primary px-4 py-2.5 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
-                >
-                  {vocabCreatePending ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : extraRows.length > 0 ? (
-                    `Save ${extraRows.length + 1} Words`
-                  ) : (
-                    "Save Word"
-                  )}
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>+ Add Another Word</span>
                 </button>
               </div>
-            </form>
-          )}
+            </div>
+
+            {formError && (
+              <p className="text-xs text-destructive flex items-center gap-1 font-semibold animate-in slide-in-from-top-1">
+                <AlertCircle className="h-3.5 w-3.5" />
+                {formError}
+              </p>
+            )}
+
+            <div className="flex justify-end gap-2 border-t border-border/40 pt-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddForm(false)
+                  setExtraRows([])
+                }}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border bg-secondary/30 px-4 py-2.5 text-xs font-semibold text-muted-foreground shadow-sm transition-all hover:bg-secondary/60 hover:text-foreground hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={vocabCreatePending}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-sidebar-primary px-4 py-2.5 text-xs font-semibold text-sidebar-primary-foreground shadow-sm transition-all hover:bg-sidebar-primary/90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+              >
+                {vocabCreatePending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : extraRows.length > 0 ? (
+                  `Save ${extraRows.length + 1} Words`
+                ) : (
+                  "Save Word"
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
@@ -759,18 +728,6 @@ const VocabCard = React.memo(function VocabCard({
     .map((t) => t.trim())
     .filter(Boolean)
 
-  const autoMeanings = vocab.autoTranslation
-    ? vocab.autoTranslation
-        .split(/[,;]/)
-        .map((t) => t.trim())
-        .filter(Boolean)
-    : []
-
-  const hasAuto = autoMeanings.length > 0
-  const isDifferent =
-    hasAuto &&
-    vocab.translation.trim().toLowerCase() !== (vocab.autoTranslation || "").trim().toLowerCase()
-
   return (
     <div
       className={`group relative rounded-2xl border p-5 shadow-sm transition-all duration-300 flex flex-col justify-between backdrop-blur-md ${
@@ -784,11 +741,6 @@ const VocabCard = React.memo(function VocabCard({
         <div className="flex items-center justify-between gap-2 border-b border-border/40 pb-2.5">
           <div className="flex items-center gap-1.5 flex-wrap">
             <Badge variant="primary">VOCAB</Badge>
-            {isDifferent && !vocab.memorized && (
-              <span className="text-micro font-extrabold px-2 py-1 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                Auto-translate available
-              </span>
-            )}
           </div>
           <div className="flex items-center gap-2">
             {/* Memorized Checklist Toggle */}
@@ -797,16 +749,12 @@ const VocabCard = React.memo(function VocabCard({
               className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-xl border transition-all active:scale-95 cursor-pointer ${
                 vocab.memorized
                   ? "bg-primary border-primary text-primary-foreground shadow-glow"
-                  : isDifferent
-                  ? "border-amber-500/50 hover:border-primary/50 bg-amber-500/10 text-amber-500 hover:bg-primary/10"
                   : "border-border/80 hover:border-primary/50 hover:bg-primary/10 bg-card"
               }`}
               aria-label="Toggle word memorized"
               title={
                 vocab.memorized
                   ? "Mark as learning"
-                  : isDifferent
-                  ? "Mark as memorized (will sync manual translation to auto-translation)"
                   : "Mark as memorized"
               }
             >
@@ -840,9 +788,6 @@ const VocabCard = React.memo(function VocabCard({
             <span className="flex items-center gap-1">
               <Lightbulb className="h-3 w-3 text-primary" /> Translation
             </span>
-            {isDifferent && !vocab.memorized && (
-              <span className="text-micro font-semibold text-amber-500">Manual ≠ Auto</span>
-            )}
           </div>
 
           <div
@@ -855,54 +800,16 @@ const VocabCard = React.memo(function VocabCard({
           >
             {isRevealed ? (
               <div className="w-full space-y-2.5">
-                {isDifferent ? (
-                  <>
-                    {/* Manual Translation */}
-                    <div className="space-y-1">
-                      <span className="text-micro font-black uppercase tracking-wider text-muted-foreground block">
-                        Manual Translation:
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {meanings.map((meaning, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2.5 py-1 text-xs font-bold rounded-xl border bg-card/65 text-foreground border-border/60 shadow-sm"
-                          >
-                            {capitalizeFirstLetter(meaning)}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Auto Translation */}
-                    <div className="space-y-1 pt-1 border-t border-border/40">
-                      <span className="text-micro font-black uppercase tracking-wider text-primary block">
-                        Auto Translation:
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {autoMeanings.map((meaning, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2.5 py-1 text-xs font-bold rounded-xl border bg-primary/10 text-primary border-primary/20 shadow-sm"
-                          >
-                            {capitalizeFirstLetter(meaning)}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-wrap gap-1.5 justify-center w-full">
-                    {meanings.map((meaning, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2.5 py-1.5 text-xs font-bold rounded-xl border bg-card/65 text-foreground border-border/60 shadow-sm transition-all hover:bg-card hover:scale-[1.02]"
-                      >
-                        {capitalizeFirstLetter(meaning)}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <div className="flex flex-wrap gap-1.5 justify-center w-full">
+                  {meanings.map((meaning, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-1.5 text-xs font-bold rounded-xl border bg-card/65 text-foreground border-border/60 shadow-sm transition-all hover:bg-card hover:scale-[1.02]"
+                    >
+                      {capitalizeFirstLetter(meaning)}
+                    </span>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider transition-colors">
