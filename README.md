@@ -13,7 +13,7 @@ SansOS serves as a single-user personal operating system designed for productivi
 * **Dashboard Bento Grid:** Centralized metrics, pomodoro timer bar, timeline snapshot, top priorities, and active memory box highlights.
 * **Daily Flow & Timetable:** Timeline blocks with custom start/end hour boundaries, daily gratitude logs, emoji mood tracking, and automatic midnight priority rollover.
 * **Habit Check-In Matrix:** Optimistic weekly/monthly habit tracking grid backed by PostgreSQL aggregation and Recharts visualization.
-* **Language Hub:** Smart dictionary search powered by Datamuse & Free Dictionary APIs, automated Google Translate fallbacks, English irregular verb conjugations (V1 ➔ V-Ing), manual vs. auto-translation synchronization, and grammar sentence drills (Writing & Dialogue practices).
+* **Language Hub:** Manual vocabulary logs, English irregular verb conjugations (V1 ➔ V-Ing), and grammar sentence drills (Writing & Dialogue practices).
 * **Project & Task Board:** Multi-tier tracking (Projects ➔ Tasks ➔ Sub-tasks) sorted by deadlines, status, and priority badges (`Low`, `Medium`, `High`).
 * **Learning Hub:** Full-page detail views (`/learning/[id]`), dual progress bars (reference materials vs. tasks done), and standardized status badges (`Planned`, `Learning`, `Completed`).
 * **Pomodoro Timer Engine:** Document Picture-in-Picture (PiP) floating window portal, Web Audio API audio synthesis, and visibility period time calibration.
@@ -113,14 +113,13 @@ npm run start
 1. **No `src/middleware.ts`:** Route guards and authentication checks reside exclusively in [proxy.ts](file:///home/ahmadsanny02/Workspace/02_coding/web/fullstack/projects/sans-os/src/proxy.ts) to prevent crash loops.
 2. **React Query State Isolation:** UI components do not use `useEffect` for data fetching. Data queries, invalidations, and optimistic state mutations route strictly through custom hooks in `src/hooks/`.
 3. **Glassmorphic Token Standardization:** Card containers use `bg-card/45 dark:bg-card/15 border border-border/60 shadow-sm rounded-2xl backdrop-blur-md`.
-4. **Automatic Auto-Translation Sync:** When a user marks a vocabulary word as memorized (`memorized: true`), if the manual translation differs from the AI auto-translation, the system synchronizes `translation` to `autoTranslation` in PostgreSQL and updates UI state optimistically.
-5. **Verb Conjugation Engine:** [verbs.ts](file:///home/ahmadsanny02/Workspace/02_coding/web/fullstack/projects/sans-os/src/lib/verbs.ts) implements syllable stress boundary checks (`shouldDoubleConsonant`) to bypass invalid doubling (e.g. `visit` ➔ `visited`/`visiting`, `listen` ➔ `listened`/`listening`).
+4. **Verb Conjugation Engine:** [verbs.ts](file:///home/ahmadsanny02/Workspace/02_coding/web/fullstack/projects/sans-os/src/lib/verbs.ts) implements syllable stress boundary checks (`shouldDoubleConsonant`) to bypass invalid doubling (e.g. `visit` ➔ `visited`/`visiting`, `listen` ➔ `listened`/`listening`).
 
 ### Primary REST API Routes
 
 | HTTP Method | Route Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` / `POST` / `PATCH` / `DELETE` | `/api/language` | Vocabulary log CRUD & auto-translation sync |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/language` | Vocabulary log CRUD |
 | `GET` / `POST` / `DELETE` | `/api/language/writing` | Writing practice sentence exercises |
 | `GET` / `POST` / `DELETE` | `/api/language/dialogue` | Dialogue practice Q&A logs |
 | `GET` / `POST` / `PATCH` / `DELETE` | `/api/habits` | Habit metadata & ordering |
