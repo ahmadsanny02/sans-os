@@ -168,15 +168,7 @@ export function useUpdateVocabularyMutation(): UseMutationResult<
           ["vocabulary"],
           previous.map((item) => {
             if (item.id === variables.id) {
-              const updatedItem = { ...item, ...variables }
-              if (
-                variables.memorized === true &&
-                item.autoTranslation &&
-                item.translation.trim().toLowerCase() !== item.autoTranslation.trim().toLowerCase()
-              ) {
-                updatedItem.translation = item.autoTranslation
-              }
-              return updatedItem
+              return { ...item, ...variables }
             }
             return item
           })
@@ -579,72 +571,3 @@ export function useDeleteFormulaMutation(): UseMutationResult<
     },
   })
 }
-
-// --- DICTIONARY ---
-
-export interface DictionaryWord {
-  word: string
-}
-
-export interface WordDetails {
-  word: string
-  partOfSpeech: string
-  definition: string
-  translation: string
-  alternativeTranslations: { partOfSpeech: string; translations: string[] }[]
-}
-
-async function fetchDictionaryByLetter(letter: string): Promise<DictionaryWord[]> {
-  const res = await fetch(`/api/language/dictionary?letter=${letter.toLowerCase()}`)
-  if (!res.ok) throw new Error("Failed to fetch words by letter")
-  return res.json()
-}
-
-export function useDictionaryByLetterQuery(
-  letter: string,
-  enabled: boolean
-): UseQueryResult<DictionaryWord[], Error> {
-  return useQuery<DictionaryWord[]>({
-    queryKey: ["dictionary", "letter", letter.toLowerCase()],
-    queryFn: () => fetchDictionaryByLetter(letter),
-    enabled,
-    staleTime: 10 * 60 * 1000,
-  })
-}
-
-async function fetchDictionarySearch(q: string): Promise<DictionaryWord[]> {
-  const res = await fetch(`/api/language/dictionary?q=${encodeURIComponent(q.trim())}`)
-  if (!res.ok) throw new Error("Failed to search dictionary words")
-  return res.json()
-}
-
-export function useDictionarySearchQuery(
-  q: string,
-  enabled: boolean
-): UseQueryResult<DictionaryWord[], Error> {
-  return useQuery<DictionaryWord[]>({
-    queryKey: ["dictionary", "search", q.trim()],
-    queryFn: () => fetchDictionarySearch(q),
-    enabled,
-    staleTime: 5 * 60 * 1000,
-  })
-}
-
-async function fetchDictionaryWordDetails(word: string): Promise<WordDetails> {
-  const res = await fetch(`/api/language/dictionary?word=${encodeURIComponent(word)}`)
-  if (!res.ok) throw new Error("Failed to load details for word")
-  return res.json()
-}
-
-export function useDictionaryWordDetailsQuery(
-  word: string | null,
-  enabled: boolean
-): UseQueryResult<WordDetails, Error> {
-  return useQuery<WordDetails>({
-    queryKey: ["dictionary", "details", word],
-    queryFn: () => fetchDictionaryWordDetails(word || ""),
-    enabled: enabled && !!word,
-    staleTime: 30 * 60 * 1000,
-  })
-}
-
