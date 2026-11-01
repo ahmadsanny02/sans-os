@@ -3,9 +3,7 @@ import { db } from "@/lib/db"
 import { vocabularyLogs } from "@/types/schema"
 import { eq, and, asc, sql } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { translateText } from "@/lib/translate"
 import { conjugateVerb } from "@/lib/verbs"
-import { logger } from "@/lib/logger";
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -72,57 +70,18 @@ export async function POST(request: Request): Promise<NextResponse> {
     const capitalizedWord = word.trim().charAt(0).toUpperCase() + word.trim().slice(1)
     const capitalizedTranslation = translation.trim().charAt(0).toUpperCase() + translation.trim().slice(1)
 
-    // Calculate auto-translation
-    let autoTranslationVal: string | null = null
-    let translationDegraded = false
-    const fromLang = direction.split("-")[0] || "en"
-    const toLang = direction.split("-")[1] || "id"
-    try {
-      autoTranslationVal = await translateText(word, fromLang, toLang, false)
-    } catch (err) {
-      translationDegraded = true
-      console.warn(`[Language API] Auto translation service unavailable for word "${word}":`, err instanceof Error ? err.message : err)
-    }
-
     // Verb conjugation
     let v1Val: string | null = null
     let v2Val: string | null = null
     let v3Val: string | null = null
     let vIngVal: string | null = null
-    let v1Trans: string | null = null
-    let v2Trans: string | null = null
-    let v3Trans: string | null = null
-    let vIngTrans: string | null = null
 
     if (pos.toLowerCase() === "verb") {
       const conjugated = conjugateVerb(word)
-      const v1 = word.trim()
-      const v2 = conjugated.v2
-      const v3 = conjugated.v3
-      const vIng = conjugated.vIng
-
-      v1Val = v1
-      v2Val = v2
-      v3Val = v3
-      vIngVal = vIng
-
-      if (fromLang === "en") {
-        try {
-          const [t1Result, t2Result, t3Result, tIngResult] = await Promise.allSettled([
-            translateText(v1, "en", "id", false),
-            translateText(v2, "en", "id", false),
-            translateText(v3, "en", "id", false),
-            translateText(vIng, "en", "id", false),
-          ])
-
-          v1Trans = t1Result.status === "fulfilled" && t1Result.value ? t1Result.value : null
-          v2Trans = t2Result.status === "fulfilled" && t2Result.value ? t2Result.value : null
-          v3Trans = t3Result.status === "fulfilled" && t3Result.value ? t3Result.value : null
-          vIngTrans = tIngResult.status === "fulfilled" && tIngResult.value ? tIngResult.value : null
-        } catch (err) {
-          logger.error("Conjugation translation error:", err)
-        }
-      }
+      v1Val = word.trim()
+      v2Val = conjugated.v2
+      v3Val = conjugated.v3
+      vIngVal = conjugated.vIng
     }
 
     const [newLog] = await db
@@ -136,20 +95,15 @@ export async function POST(request: Request): Promise<NextResponse> {
         exampleSentence: null,
         masteryLevel: masteryLevel !== undefined ? Number(masteryLevel) : 3,
         memorized: false,
-        autoTranslation: autoTranslationVal,
         v1: v1Val,
         v2: v2Val,
         v3: v3Val,
         vIng: vIngVal,
-        v1Translation: v1Trans,
-        v2Translation: v2Trans,
-        v3Translation: v3Trans,
-        vIngTranslation: vIngTrans,
         langDirection: direction,
       })
       .returning()
 
-    return NextResponse.json({ ...newLog, _meta: { translationDegraded } })
+    return NextResponse.json(newLog)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Server Error"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
@@ -191,7 +145,6 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       memorized?: boolean
       memorizedAt?: Date | null
       translation?: string
-      autoTranslation?: string | null
     } = {}
 
     if (masteryLevel !== undefined) updateData.masteryLevel = Number(masteryLevel)
@@ -203,27 +156,6 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       const isMemorized = Boolean(memorized)
       updateData.memorized = isMemorized
       updateData.memorizedAt = isMemorized ? new Date() : null
-
-      if (isMemorized && translation === undefined) {
-        let autoTrans = existingLog.autoTranslation
-        if (!autoTrans) {
-          const direction = existingLog.langDirection || "en-id"
-          const fromLang = direction.split("-")[0] || "en"
-          const toLang = direction.split("-")[1] || "id"
-          try {
-            autoTrans = await translateText(existingLog.word, fromLang, toLang, false)
-            if (autoTrans) {
-              updateData.autoTranslation = autoTrans
-            }
-          } catch (err) {
-            logger.error("Auto translation error during patch:", err)
-          }
-        }
-
-        if (autoTrans && existingLog.translation.trim().toLowerCase() !== autoTrans.trim().toLowerCase()) {
-          updateData.translation = autoTrans
-        }
-      }
     }
 
     const [updatedLog] = await db
