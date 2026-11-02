@@ -221,7 +221,7 @@ interface ProjectBoardViewProps {
       deadline?: string
       extraRows?: Array<{ id?: string; name: string; status?: string; priority?: string; deadline: string }>
     }
-  ) => Promise<void>
+  ) => Promise<boolean>
   handleDeleteTask: (id: string) => Promise<void>
   handleToggleTask: (id: string, completed: boolean) => void
   subTaskInputs: Record<string, string>
@@ -353,14 +353,14 @@ export function ProjectBoardView({
     e.preventDefault()
     if (!taskName.trim()) return
 
-    await handleAddTask(e, {
+    const saved = await handleAddTask(e, {
       name: taskName,
       status: taskStatus,
       priority: taskPriority,
       deadline: taskDeadline,
       extraRows: extraProjectTaskRows,
     })
-    setExtraProjectTaskRows([])
+    if (saved) setExtraProjectTaskRows([])
   }
 
   const handleSaveProjectName = () => {
@@ -628,7 +628,17 @@ export function ProjectBoardView({
                 <div
                   key={project.id}
                   onClick={() => setSelectedProjectId(project.id)}
-                  className={`group relative rounded-2xl border p-5 transition-all duration-300 cursor-pointer select-none overflow-hidden min-w-0 ${isSelected
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={isSelected}
+                  onKeyDown={(e) => {
+                    // Ignore keys bubbling from the card's own edit/delete buttons
+                    if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+                      e.preventDefault()
+                      setSelectedProjectId(project.id)
+                    }
+                  }}
+                  className={`outline-none focus-visible:ring-2 focus-visible:ring-primary group relative rounded-2xl border p-5 transition-all duration-300 cursor-pointer select-none overflow-hidden min-w-0 ${isSelected
                     ? "border-primary/50 bg-gradient-to-br from-primary/10 via-card to-card shadow-[0_0_30px_-5px_rgba(var(--primary),0.3)]"
                     : "border-border/40 bg-card/40 hover:bg-card/80 shadow-sm hover:border-primary/30 hover:shadow-glow"
                     }`}
@@ -672,7 +682,7 @@ export function ProjectBoardView({
                       <button
                         onClick={(e) => handleDeleteProject(project.id, e)}
                         disabled={isPendingProjectDelete}
-                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
+                        className="opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
                         aria-label={`Delete project ${project.name}`}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -1040,7 +1050,7 @@ export function ProjectBoardView({
                           <div className="pl-11 pr-2 space-y-2 pb-3 pt-1">
                             {task.subTasks && task.subTasks.length > 0 && (
                               <div className="space-y-1.5">
-                                {task.subTasks
+                                {[...task.subTasks]
                                   .sort((a, b) => {
                                     if (a.completed !== b.completed) return a.completed ? 1 : -1
                                     return a.createdAt.localeCompare(b.createdAt)
@@ -1093,7 +1103,7 @@ export function ProjectBoardView({
                                               handleDeleteSubTask(st.id)
                                             }}
                                             disabled={isPendingSubTaskDelete}
-                                            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                                            className="opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 p-1 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                                             aria-label="Delete subtask"
                                           >
                                             <Trash2 className="h-3 w-3" />
@@ -1112,11 +1122,13 @@ export function ProjectBoardView({
                                 value={subTaskInputs[task.id] || ""}
                                 onChange={(e) => setSubTaskInputs((prev) => ({ ...prev, [task.id]: e.target.value }))}
                                 placeholder="Add a sub-task..."
+                                aria-label="Add a sub-task"
                                 className="flex-1 min-w-0 bg-transparent border-b border-dashed border-border/60 hover:border-primary/40 focus:border-primary px-1 py-1 text-xs outline-none transition-all placeholder:text-muted-foreground/60"
                               />
                               <button
                                 type="submit"
                                 disabled={isPendingSubTaskCreate || !(subTaskInputs[task.id]?.trim())}
+                                aria-label="Add sub-task"
                                 className="shrink-0 rounded p-1 text-muted-foreground hover:text-primary hover:bg-primary/10 disabled:opacity-50 disabled:hover:bg-transparent"
                               >
                                 <Plus className="h-3.5 w-3.5" />
@@ -1195,7 +1207,7 @@ export function ProjectBoardView({
                     value={row.name}
                     onChange={(e) => {
                       const updated = [...extraProjectTaskRows]
-                      updated[idx].name = e.target.value
+                      updated[idx] = { ...updated[idx], name: e.target.value }
                       setExtraProjectTaskRows(updated)
                     }}
                     placeholder={`Deliverable #${idx + 2}...`}
@@ -1207,7 +1219,7 @@ export function ProjectBoardView({
                       value={row.status}
                       onChange={(val) => {
                         const updated = [...extraProjectTaskRows]
-                        updated[idx].status = val as string
+                        updated[idx] = { ...updated[idx], status: val as string }
                         setExtraProjectTaskRows(updated)
                       }}
                       options={PROJECT_STATUS_OPTIONS.map((opt) => ({ value: opt.value, label: opt.label }))}
@@ -1218,7 +1230,7 @@ export function ProjectBoardView({
                       value={row.priority}
                       onChange={(val) => {
                         const updated = [...extraProjectTaskRows]
-                        updated[idx].priority = val as string
+                        updated[idx] = { ...updated[idx], priority: val as string }
                         setExtraProjectTaskRows(updated)
                       }}
                       options={[
@@ -1234,7 +1246,7 @@ export function ProjectBoardView({
                       value={row.deadline}
                       onChange={(e) => {
                         const updated = [...extraProjectTaskRows]
-                        updated[idx].deadline = e.target.value
+                        updated[idx] = { ...updated[idx], deadline: e.target.value }
                         setExtraProjectTaskRows(updated)
                       }}
                       className="col-span-1 w-full sm:w-[130px] rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-xs outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
