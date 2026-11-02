@@ -195,7 +195,8 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
         phase === "focus" ? "focus" : phase === "break" ? "break" : "long-break"
       playPomodoroSound(soundType)
     }
-    prevPhaseRef.current = phase
+    // Read the store, not the render value: the first render predates rehydrate() and must not chime on reload
+    prevPhaseRef.current = usePomodoroStore.getState().phase
   }, [phase])
 
   // --- Browser tab title ---
@@ -321,6 +322,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
     if (bottom !== undefined) style.bottom = `${bottom}px`
     if (left !== undefined) style.left = `${left}px`
     if (right !== undefined) style.right = `${right}px`
+    style.maxHeight = `${viewportHeight - (top ?? bottom ?? 0) - 16}px`
 
     return style
   }, [buttonRect])
@@ -336,7 +338,7 @@ export function PomodoroModal({ buttonRect }: PomodoroModalProps) {
       dragMomentum={false}
       dragElastic={0}
       style={modalStyle}
-      className="fixed z-50 w-72 max-w-[calc(100vw-2rem)] rounded-2xl border border-border/60 bg-card/95 shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom-4 duration-300"
+      className="fixed z-50 w-72 max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-border/60 bg-card/95 shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom-4 duration-300"
       role="dialog"
       aria-label="Pomodoro Timer"
     >
