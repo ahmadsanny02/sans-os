@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { habitLogs, habits } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
@@ -71,7 +72,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
     })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
