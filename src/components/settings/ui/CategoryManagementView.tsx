@@ -316,10 +316,12 @@ export function CategoryManagementView() {
                                 autoFocus
                                 value={editSubName}
                                 onChange={(e) => setEditSubName(e.target.value)}
+                                aria-label="Sub-category name"
                                 className="w-28 rounded-xl border border-border/80 bg-background px-2 py-1 text-xs outline-none focus:border-primary text-foreground"
                               />
                               <button
                                 type="submit"
+                                aria-label="Save sub-category"
                                 className="p-1 text-primary hover:bg-primary/10 rounded-xl cursor-pointer"
                               >
                                 <Check className="h-3 w-3 stroke-[3]" />
@@ -327,6 +329,7 @@ export function CategoryManagementView() {
                               <button
                                 type="button"
                                 onClick={() => setEditingSubId(null)}
+                                aria-label="Cancel editing"
                                 className="p-1 text-muted-foreground hover:bg-secondary rounded-xl cursor-pointer"
                               >
                                 <X className="h-3 w-3" />
