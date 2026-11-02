@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 export interface UserConfig {
   startOfWeek: number // 0 = Sunday, 1 = Monday
@@ -26,42 +27,51 @@ export interface WorkspaceState {
   updateUserConfig: (config: Partial<UserConfig>) => void
 }
 
-export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
-  activeDate: getTodayDateString(),
-  realTodayDate: getTodayDateString(),
-  sidebarOpen: true,
-  userConfig: {
-    startOfWeek: 1, // Default Monday per Indonesia standard
-    theme: "dark",
-  },
-  setActiveDate: (date: string): void => {
-    set({ activeDate: date })
-  },
-  setRealTodayDate: (date: string): void => {
-    set({ realTodayDate: date })
-  },
-  checkRollover: (): boolean => {
-    const today = getTodayDateString()
-    const { realTodayDate, activeDate } = get()
-    if (today !== realTodayDate) {
-      const wasOnToday = activeDate === realTodayDate || activeDate < today
-      set({
-        realTodayDate: today,
-        activeDate: wasOnToday ? today : activeDate,
-      })
-      return true
+export const useWorkspaceStore = create<WorkspaceState>()(
+  persist(
+    (set, get) => ({
+      activeDate: getTodayDateString(),
+      realTodayDate: getTodayDateString(),
+      sidebarOpen: true,
+      userConfig: {
+        startOfWeek: 1, // Default Monday per Indonesia standard
+        theme: "dark",
+      },
+      setActiveDate: (date: string): void => {
+        set({ activeDate: date })
+      },
+      setRealTodayDate: (date: string): void => {
+        set({ realTodayDate: date })
+      },
+      checkRollover: (): boolean => {
+        const today = getTodayDateString()
+        const { realTodayDate, activeDate } = get()
+        if (today !== realTodayDate) {
+          const wasOnToday = activeDate === realTodayDate || activeDate < today
+          set({
+            realTodayDate: today,
+            activeDate: wasOnToday ? today : activeDate,
+          })
+          return true
+        }
+        return false
+      },
+      setSidebarOpen: (open: boolean): void => {
+        set({ sidebarOpen: open })
+      },
+      toggleSidebar: (): void => {
+        set((state) => ({ sidebarOpen: !state.sidebarOpen }))
+      },
+      updateUserConfig: (config: Partial<UserConfig>): void => {
+        set((state) => ({
+          userConfig: { ...state.userConfig, ...config },
+        }))
+      },
+    }),
+    {
+      name: "sans-os-workspace",
+      skipHydration: true,
+      partialize: (state) => ({ userConfig: state.userConfig, sidebarOpen: state.sidebarOpen }),
     }
-    return false
-  },
-  setSidebarOpen: (open: boolean): void => {
-    set({ sidebarOpen: open })
-  },
-  toggleSidebar: (): void => {
-    set((state) => ({ sidebarOpen: !state.sidebarOpen }))
-  },
-  updateUserConfig: (config: Partial<UserConfig>): void => {
-    set((state) => ({
-      userConfig: { ...state.userConfig, ...config },
-    }))
-  },
-}))
+  )
+)
