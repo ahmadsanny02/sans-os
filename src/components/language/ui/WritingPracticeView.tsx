@@ -296,7 +296,7 @@ export function WritingPracticeView({
 
       {/* 2. Form Workspace (Only displays if showWritingForm is true) */}
       {showWritingForm && (
-        <div className="bento-card p-5 animate-in slide-in-from-top-4 duration-200">
+        <div className="bento-card !overflow-visible p-5 animate-in slide-in-from-top-4 duration-200">
           <div className="flex items-center gap-2 mb-4">
             <PencilLine className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-bold text-foreground">New Writing Practice</h3>
@@ -710,8 +710,8 @@ export function WritingPracticeView({
                             type="button"
                             onClick={() => {
                               const updated = [...extraWritingRows]
-                              updated[idx].vocabId = ""
-                              updated[idx].vocabQuery = ""
+                              updated[idx] = { ...updated[idx], vocabId: "" }
+                              updated[idx] = { ...updated[idx], vocabQuery: "" }
                               setExtraWritingRows(updated)
                             }}
                             className="text-xs text-destructive hover:underline font-semibold cursor-pointer"
@@ -726,14 +726,14 @@ export function WritingPracticeView({
                           value={row.vocabQuery}
                           onFocus={() => {
                             const updated = [...extraWritingRows]
-                            updated[idx].showDropdown = true
+                            updated[idx] = { ...updated[idx], showDropdown: true }
                             setExtraWritingRows(updated)
                           }}
                           onChange={(e) => {
                             const updated = [...extraWritingRows]
-                            updated[idx].vocabQuery = e.target.value
-                            updated[idx].vocabId = ""
-                            updated[idx].showDropdown = true
+                            updated[idx] = { ...updated[idx], vocabQuery: e.target.value }
+                            updated[idx] = { ...updated[idx], vocabId: "" }
+                            updated[idx] = { ...updated[idx], showDropdown: true }
                             setExtraWritingRows(updated)
                           }}
                           placeholder="Type to search word (defaults to main selected word)..."
@@ -763,9 +763,9 @@ export function WritingPracticeView({
                                 type="button"
                                 onClick={() => {
                                   const updated = [...extraWritingRows]
-                                  updated[idx].vocabId = v.id
-                                  updated[idx].vocabQuery = v.word
-                                  updated[idx].showDropdown = false
+                                  updated[idx] = { ...updated[idx], vocabId: v.id }
+                                  updated[idx] = { ...updated[idx], vocabQuery: v.word }
+                                  updated[idx] = { ...updated[idx], showDropdown: false }
                                   setExtraWritingRows(updated)
                                 }}
                                 className={`w-full text-left px-3 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground transition-colors flex items-center justify-between cursor-pointer ${
@@ -797,7 +797,7 @@ export function WritingPracticeView({
                             value={row.vocabEngPos}
                             onChange={(e) => {
                               const updated = [...extraWritingRows]
-                              updated[idx].vocabEngPos = e.target.value
+                              updated[idx] = { ...updated[idx], vocabEngPos: e.target.value }
                               setExtraWritingRows(updated)
                             }}
                             placeholder="English positive sentence..."
@@ -809,7 +809,7 @@ export function WritingPracticeView({
                             value={row.vocabTransPos}
                             onChange={(e) => {
                               const updated = [...extraWritingRows]
-                              updated[idx].vocabTransPos = e.target.value
+                              updated[idx] = { ...updated[idx], vocabTransPos: e.target.value }
                               setExtraWritingRows(updated)
                             }}
                             placeholder="Indonesian translation..."
@@ -833,7 +833,7 @@ export function WritingPracticeView({
                             value={row.vocabEngNeg}
                             onChange={(e) => {
                               const updated = [...extraWritingRows]
-                              updated[idx].vocabEngNeg = e.target.value
+                              updated[idx] = { ...updated[idx], vocabEngNeg: e.target.value }
                               setExtraWritingRows(updated)
                             }}
                             placeholder="English negative sentence..."
@@ -845,7 +845,7 @@ export function WritingPracticeView({
                             value={row.vocabTransNeg}
                             onChange={(e) => {
                               const updated = [...extraWritingRows]
-                              updated[idx].vocabTransNeg = e.target.value
+                              updated[idx] = { ...updated[idx], vocabTransNeg: e.target.value }
                               setExtraWritingRows(updated)
                             }}
                             placeholder="Indonesian translation..."
@@ -869,7 +869,7 @@ export function WritingPracticeView({
                             value={row.vocabEngInt}
                             onChange={(e) => {
                               const updated = [...extraWritingRows]
-                              updated[idx].vocabEngInt = e.target.value
+                              updated[idx] = { ...updated[idx], vocabEngInt: e.target.value }
                               setExtraWritingRows(updated)
                             }}
                             placeholder="English question sentence..."
@@ -881,7 +881,7 @@ export function WritingPracticeView({
                             value={row.vocabTransInt}
                             onChange={(e) => {
                               const updated = [...extraWritingRows]
-                              updated[idx].vocabTransInt = e.target.value
+                              updated[idx] = { ...updated[idx], vocabTransInt: e.target.value }
                               setExtraWritingRows(updated)
                             }}
                             placeholder="Indonesian translation..."
@@ -903,7 +903,7 @@ export function WritingPracticeView({
                         value={row.freeEnglish}
                         onChange={(e) => {
                           const updated = [...extraWritingRows]
-                          updated[idx].freeEnglish = e.target.value
+                          updated[idx] = { ...updated[idx], freeEnglish: e.target.value }
                           setExtraWritingRows(updated)
                         }}
                         placeholder="English sentence..."
@@ -921,7 +921,7 @@ export function WritingPracticeView({
                         value={row.freeTranslation}
                         onChange={(e) => {
                           const updated = [...extraWritingRows]
-                          updated[idx].freeTranslation = e.target.value
+                          updated[idx] = { ...updated[idx], freeTranslation: e.target.value }
                           setExtraWritingRows(updated)
                         }}
                         placeholder="Indonesian translation..."
@@ -1040,7 +1040,7 @@ export function WritingPracticeView({
                         <button
                           onClick={() => handleDeleteWriting(group.allIds.join(","))}
                           disabled={writingDeletePending}
-                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete sentence group"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -1156,7 +1156,7 @@ export function WritingPracticeView({
                         <button
                           onClick={() => handleDeleteWriting(log.id)}
                           disabled={writingDeletePending}
-                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete sentence log"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -1232,7 +1232,7 @@ export function WritingPracticeView({
                         <button
                           onClick={() => handleDeleteWriting(log.id)}
                           disabled={writingDeletePending}
-                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+                          className="opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
                           aria-label="Delete sentence log"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
