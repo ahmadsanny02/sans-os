@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { habits, habitLogs } from "@/types/schema"
 import { eq, and, like } from "drizzle-orm"
@@ -18,7 +19,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     const { searchParams } = new URL(request.url)
     const month = searchParams.get("month") // format "YYYY-MM"
 
-    if (!month) {
+    if (!month || !/^\d{4}-\d{2}$/.test(month)) {
       return NextResponse.json({ error: "month parameter (YYYY-MM) is required" }, { status: 400 })
     }
 
@@ -48,7 +49,6 @@ export async function GET(request: Request): Promise<NextResponse> {
       logs: monthlyLogs,
     })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
