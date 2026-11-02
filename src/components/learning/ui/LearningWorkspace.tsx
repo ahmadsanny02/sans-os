@@ -227,7 +227,7 @@ export function LearningWorkspace() {
                     </div>
 
                     {/* Edit/Delete Actions */}
-                    <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+                    <div className="flex items-center gap-1.5 opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 transition-all">
                       <button
                         onClick={(e) => handleOpenEditSubject(subj, e)}
                         className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/60 cursor-pointer transition-all"
