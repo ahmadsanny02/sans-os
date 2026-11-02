@@ -87,12 +87,12 @@ export function useDashboardPage() {
   const toggleHabitMutation = useToggleLogMutation()
 
   // 3. Greeting determination (updates in real-time)
-  const [greeting, setGreeting] = useState(() => getGreeting(new Date().getHours()))
+  const [greeting, setGreeting] = useState("Welcome")
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setGreeting(getGreeting(new Date().getHours()))
-    }, 60000) // check greeting every minute
+    const updateGreeting = () => setGreeting(getGreeting(new Date().getHours()))
+    updateGreeting()
+    const timer = setInterval(updateGreeting, 60000) // check greeting every minute
     return () => clearInterval(timer)
   }, [])
 
