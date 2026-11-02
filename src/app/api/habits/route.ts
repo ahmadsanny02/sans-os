@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { habits, habitLogs } from "@/types/schema"
 import { eq, and, gte, lte, asc, sql, inArray } from "drizzle-orm"
@@ -45,8 +46,7 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ habits: userHabits, logs })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -90,8 +90,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newHabit)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -119,8 +118,7 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -165,8 +163,7 @@ export async function PUT(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -205,7 +202,6 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(updatedHabit)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
