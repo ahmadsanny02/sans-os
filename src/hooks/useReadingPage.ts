@@ -63,7 +63,7 @@ export function useReadingPage() {
       author?: string
       extraRows?: Array<{ id?: string; title: string; author: string }>
     }
-  ): Promise<void> => {
+  ): Promise<boolean> => {
     e.preventDefault()
     setAddError(null)
 
@@ -72,7 +72,7 @@ export function useReadingPage() {
 
     if (!mainTitle || !mainAuthor) {
       setAddError("Please fill out Title and Author fields.")
-      return
+      return false
     }
 
     try {
@@ -116,8 +116,10 @@ export function useReadingPage() {
       setAddProgress("")
       setShowAddForm(false)
       showSuccessToast("Book(s) added to reading journal")
+      return true
     } catch {
       setAddError("Failed to add book to journal.")
+      return false
     }
   }
 
