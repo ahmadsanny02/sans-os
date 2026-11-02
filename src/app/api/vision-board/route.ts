@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
+import { isHttpUrl } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { visionBoardItems } from "@/types/schema"
 import { eq, and, asc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { logger } from "@/lib/logger";
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -25,8 +26,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json(items)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -48,6 +48,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    if ((type !== "text" && type !== "image") || (type === "image" && !isHttpUrl(content))) {
+      return NextResponse.json({ error: "Invalid item type or image URL" }, { status: 400 })
+    }
+
     const [newItem] = await db
       .insert(visionBoardItems)
       .values({
@@ -63,9 +67,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newItem)
   } catch (error) {
-    logger.error("POST /api/vision-board error:", error)
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -105,8 +107,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(updatedItem)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -139,7 +140,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
