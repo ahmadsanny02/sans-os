@@ -17,6 +17,7 @@ import {
   Check,
   Edit2,
 } from "lucide-react"
+import { isPast, isToday } from "date-fns"
 import { useLearningSubjectPage } from "@/hooks/useLearningSubjectPage"
 import { Badge } from "@/components/ui/Badge"
 import { Modal } from "@/components/ui/Modal"
@@ -390,7 +391,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                       </div>
 
                       {/* Hover action buttons (Edit & Delete) */}
-                      <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1.5 opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                         <button
                           type="button"
                           onClick={() => handleOpenEditMaterial(mat)}
@@ -460,7 +461,8 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                     const isOverdue =
                       task.dueDate &&
                       !task.completed &&
-                      new Date(task.dueDate) < new Date()
+                      isPast(new Date(task.dueDate)) &&
+                      !isToday(new Date(task.dueDate))
                     return (
                       <div
                         key={task.id}
@@ -510,7 +512,7 @@ export function SubjectDetailView({ subjectId }: SubjectDetailViewProps) {
                         </div>
 
                         {/* Hover action buttons (Edit & Delete) */}
-                        <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1.5 opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                           <button
                             type="button"
                             onClick={() => handleOpenEditTask(task)}
