@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { dialogueLogs, vocabularyLogs, formulas } from "@/types/schema"
 import { eq, and, desc } from "drizzle-orm"
@@ -25,8 +26,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json(logs)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -91,20 +91,15 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
     }
 
-    let autoTranslationQuestion: string | null = null
-    let autoTranslationAnswer: string | null = null
-
-    try {
-      autoTranslationQuestion = await translateText(englishQuestion)
-    } catch (err) {
-      logger.warn("[Dialogue API] Failed to get auto-translation for question:", err)
-    }
-
-    try {
-      autoTranslationAnswer = await translateText(englishAnswer)
-    } catch (err) {
-      logger.warn("[Dialogue API] Failed to get auto-translation for answer:", err)
-    }
+    // Both run at once so a translate outage delays the save by one attempt chain, not two
+    const [autoTranslationQuestion, autoTranslationAnswer] = await Promise.all(
+      [englishQuestion, englishAnswer].map((text: string) =>
+        translateText(text).catch((err) => {
+          logger.warn("[Dialogue API] Failed to get auto-translation:", err)
+          return null
+        })
+      )
+    )
 
     const [newLog] = await db
       .insert(dialogueLogs)
@@ -125,8 +120,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newLog)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -159,7 +153,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
