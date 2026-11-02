@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { dailyLogs } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { logger } from "@/lib/logger";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
@@ -33,9 +33,7 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(log || null)
   } catch (error) {
-    logger.error("[GET /api/daily-logs] Exception:", error)
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -85,8 +83,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(resultLog)
   } catch (error) {
-    logger.error("[POST /api/daily-logs] Exception:", error)
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
