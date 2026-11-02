@@ -81,7 +81,7 @@ interface ReadingBoardViewProps {
       author?: string
       extraRows?: Array<{ id?: string; title: string; author: string }>
     }
-  ) => Promise<void>
+  ) => Promise<boolean>
   handleOpenEdit: (book: ReadingItem) => void
   handleUpdateBook: (e: React.FormEvent) => Promise<void>
   handleDeleteBook: (id: string, titleStr: string) => Promise<void>
@@ -163,12 +163,12 @@ export function ReadingBoardView({
     e.preventDefault()
     if (!addTitle.trim() || !addAuthor.trim()) return
 
-    await handleAddBook(e, {
+    const saved = await handleAddBook(e, {
       title: addTitle,
       author: addAuthor,
       extraRows: extraBookRows,
     })
-    setExtraBookRows([])
+    if (saved) setExtraBookRows([])
   }
 
   return (
@@ -413,7 +413,7 @@ export function ReadingBoardView({
                     value={row.title}
                     onChange={(e) => {
                       const updated = [...extraBookRows]
-                      updated[idx].title = e.target.value
+                      updated[idx] = { ...updated[idx], title: e.target.value }
                       setExtraBookRows(updated)
                     }}
                     placeholder="Book Title..."
@@ -431,7 +431,7 @@ export function ReadingBoardView({
                     value={row.author}
                     onChange={(e) => {
                       const updated = [...extraBookRows]
-                      updated[idx].author = e.target.value
+                      updated[idx] = { ...updated[idx], author: e.target.value }
                       setExtraBookRows(updated)
                     }}
                     placeholder="Author..."
@@ -447,7 +447,7 @@ export function ReadingBoardView({
                     value={row.status}
                     onChange={(val) => {
                       const updated = [...extraBookRows]
-                      updated[idx].status = val
+                      updated[idx] = { ...updated[idx], status: val }
                       setExtraBookRows(updated)
                     }}
                     options={[
@@ -564,7 +564,7 @@ export function ReadingBoardView({
                       {book.status}
                     </Badge>
 
-                    <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1.5 opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                       <button
                         onClick={() => setSelectedProgressBook(book)}
                         className="p-1 rounded-xl hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all"
