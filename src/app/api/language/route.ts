@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { vocabularyLogs } from "@/types/schema"
 import { eq, and, asc, sql } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { conjugateVerb } from "@/lib/verbs"
+
+function isValidMastery(value: unknown): boolean {
+  const n = Number(value)
+  return Number.isInteger(n) && n >= 1 && n <= 5
+}
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -24,8 +30,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json(logs)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -43,8 +48,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     const body = await request.json()
     const { word, translation, langDirection, masteryLevel, partOfSpeech, definition } = body
 
-    if (!word || !translation) {
+    if (typeof word !== "string" || typeof translation !== "string" || !word.trim() || !translation.trim()) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    if (masteryLevel !== undefined && !isValidMastery(masteryLevel)) {
+      return NextResponse.json({ error: "Invalid mastery level" }, { status: 400 })
     }
 
     const direction = langDirection || "en-id"
@@ -105,8 +114,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newLog)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -147,7 +155,12 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       translation?: string
     } = {}
 
-    if (masteryLevel !== undefined) updateData.masteryLevel = Number(masteryLevel)
+    if (masteryLevel !== undefined) {
+      if (!isValidMastery(masteryLevel)) {
+        return NextResponse.json({ error: "Invalid mastery level" }, { status: 400 })
+      }
+      updateData.masteryLevel = Number(masteryLevel)
+    }
     if (translation !== undefined) {
       updateData.translation = String(translation)
     }
@@ -166,8 +179,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(updatedLog)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -200,7 +212,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
