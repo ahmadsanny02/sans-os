@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { learningMaterials, learningSubjects } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
@@ -45,8 +46,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newMaterial)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -99,8 +99,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(updatedMaterial)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -140,7 +139,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(deletedMaterial)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
