@@ -1,7 +1,7 @@
 "use client"
 import { logger } from "@/lib/logger";
 
-import React, { useState, useEffect, useRef, Suspense } from "react"
+import React, { useState, useEffect, useLayoutEffect, useRef, Suspense } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
@@ -167,6 +167,9 @@ function SidebarNavigation({
               <div key={item.name} className="space-y-1">
                 <button
                   onClick={() => handleParentClick(item)}
+                  aria-label={item.name}
+                  title={sidebarOpen ? undefined : item.name}
+                  aria-current={isParentActive ? "page" : undefined}
                   className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer ${
                     isParentActive
                       ? "bg-primary text-primary-foreground font-semibold shadow-glow-active"
@@ -236,6 +239,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const toggleModal = usePomodoroStore((s) => s.toggleModal)
   const isModalOpen = usePomodoroStore((s) => s.isModalOpen)
 
+  // Layout effect so this runs before any child useEffect (PomodoroModal's elapsed-time catch-up reads persisted state)
+  useLayoutEffect(() => {
+    useWorkspaceStore.persist.rehydrate()
+    usePomodoroStore.persist.rehydrate()
+  }, [])
+
   // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -301,15 +310,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   // Handle dark mode side effects
   useEffect(() => {
     const root = window.document.documentElement
-    if (userConfig.theme === "dark") {
-      root.classList.add("dark")
-    } else {
-      root.classList.remove("dark")
-    }
+    const isDark =
+      userConfig.theme === "dark" ||
+      (userConfig.theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    root.classList.toggle("dark", isDark)
   }, [userConfig.theme])
 
   const toggleTheme = (): void => {
-    updateUserConfig({ theme: userConfig.theme === "dark" ? "light" : "dark" })
+    updateUserConfig({ theme: document.documentElement.classList.contains("dark") ? "light" : "dark" })
   }
 
   // Synchronize date and check for day rollover in real-time
@@ -386,7 +394,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }, [isModalOpen])
 
   return (
-    <div ref={rootRef} className="flex h-screen w-full overflow-hidden bg-background font-sans text-foreground transition-colors duration-300">
+    <div ref={rootRef} className="flex h-dvh w-full overflow-hidden bg-background font-sans text-foreground transition-colors duration-300">
       {/* Desktop Sidebar */}
       <aside
         className={`hidden md:flex flex-col border-r border-sidebar-border/30 bg-sidebar/85 backdrop-blur-lg text-sidebar-foreground transition-all duration-300 ${
@@ -414,6 +422,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               onClick={toggleSidebar}
               className="mx-auto h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-black text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-all duration-200 shadow-sm"
               title="Expand Sidebar"
+              aria-label="Expand Sidebar"
             >
               S
             </button>
@@ -649,12 +658,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Dynamic page view content container */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6 pb-24 sm:pb-6 bg-background scroll-smooth">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6 pb-24 md:pb-6 bg-background scroll-smooth">
           {children}
         </main>
 
         {/* Mobile Bottom Navigation Bar (Quick Navigation) */}
-        <nav className="flex h-16 border-t border-border/40 bg-card/75 backdrop-blur-lg md:hidden items-center justify-around pb-safe shrink-0">
+        <nav className="box-content flex h-16 border-t border-border/40 bg-card/75 backdrop-blur-lg md:hidden items-center justify-around pb-safe shrink-0">
           {FLAT_ITEMS.slice(0, 4).map((item) => {
             const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
             const Icon = item.icon
@@ -733,7 +742,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           scale: isModalOpen ? 0 : 1,
         }}
         transition={{ duration: 0.2 }}
-        className={`fixed bottom-20 sm:bottom-6 right-6 z-40 h-10 w-10 rounded-full flex items-center justify-center border bg-card/90 text-foreground backdrop-blur-md transition-all duration-300 shadow-glass cursor-pointer ${
+        className={`fixed bottom-20 md:bottom-6 right-6 z-40 h-10 w-10 rounded-full flex items-center justify-center border bg-card/90 text-foreground backdrop-blur-md transition-all duration-300 shadow-glass cursor-pointer ${
           isModalOpen ? "pointer-events-none" : "pointer-events-auto"
         } ${
           pomodoroIsRunning
