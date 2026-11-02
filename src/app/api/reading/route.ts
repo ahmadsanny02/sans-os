@@ -1,8 +1,17 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { readingJournal } from "@/types/schema"
 import { eq, and, desc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+
+const READING_STATUSES = ["To Read", "Reading", "Completed"]
+
+function isValidRating(value: unknown): boolean {
+  if (value === undefined || value === null) return true
+  const n = Number(value)
+  return Number.isInteger(n) && n >= 1 && n <= 5
+}
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -23,8 +32,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json(books)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -46,6 +54,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    if (!READING_STATUSES.includes(status) || !isValidRating(rating)) {
+      return NextResponse.json({ error: "Invalid status or rating" }, { status: 400 })
+    }
+
     const isCompleted = status === "Completed"
     const finishedAtVal = isCompleted ? (finishedAt ? new Date(finishedAt) : new Date()) : null
     const currentProgressVal = status === "Reading" ? (currentProgress || null) : null
@@ -57,7 +69,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         title,
         author,
         status,
-        rating: isCompleted && rating !== undefined ? Number(rating) : null,
+        rating: isCompleted && rating !== undefined && rating !== null ? Number(rating) : null,
         review: isCompleted && review !== undefined ? review : null,
         finishedAt: finishedAtVal,
         currentProgress: currentProgressVal,
@@ -66,8 +78,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newBook)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -97,6 +108,10 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     if (!currentBook) {
       return NextResponse.json({ error: "Book not found" }, { status: 404 })
+    }
+
+    if ((status !== undefined && !READING_STATUSES.includes(status)) || !isValidRating(rating)) {
+      return NextResponse.json({ error: "Invalid status or rating" }, { status: 400 })
     }
 
     // Determine finishedAt values
@@ -145,8 +160,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(updatedBook)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -179,7 +193,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
