@@ -11,6 +11,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
+import { isHttpUrl } from "@/lib/utils"
 
 export function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return ""
@@ -53,7 +54,7 @@ export function useBucketListPage() {
       imageUrl?: string
       extraRows?: Array<{ id?: string; title: string; imageUrl: string }>
     }
-  ): Promise<void> => {
+  ): Promise<boolean> => {
     e.preventDefault()
     setAddError(null)
 
@@ -62,7 +63,13 @@ export function useBucketListPage() {
 
     if (!mainTitle) {
       setAddError("Please fill out the Title field.")
-      return
+      return false
+    }
+
+    const imageUrls = [mainImg, ...(overrideData?.extraRows ?? []).filter((r) => r.title.trim()).map((r) => r.imageUrl.trim())]
+    if (imageUrls.some((url) => url && !isHttpUrl(url))) {
+      setAddError("Image URL must start with http:// or https://.")
+      return false
     }
 
     try {
@@ -91,8 +98,10 @@ export function useBucketListPage() {
       setAddImageUrl("")
       setShowAddForm(false)
       showSuccessToast("Dream(s) added to bucket list!")
+      return true
     } catch {
       setAddError("Failed to add item to bucket list.")
+      return false
     }
   }
 
@@ -111,6 +120,10 @@ export function useBucketListPage() {
     if (!editingItem) return
     if (!editTitle.trim()) {
       setEditError("Please fill out the Title field.")
+      return
+    }
+    if (editImageUrl.trim() && !isHttpUrl(editImageUrl.trim())) {
+      setEditError("Image URL must start with http:// or https://.")
       return
     }
 
