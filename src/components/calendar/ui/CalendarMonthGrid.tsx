@@ -111,7 +111,17 @@ export function CalendarMonthGrid({
               <div
                 key={idx}
                 onClick={() => onSelectDate(dateStr)}
-                className={`min-h-[75px] sm:min-h-[110px] md:min-h-[130px] bg-card p-1.5 sm:p-2.5 flex flex-col justify-between hover:bg-muted/40 transition-colors cursor-pointer select-none relative group ${
+                role="button"
+                tabIndex={0}
+                aria-label={format(day, "EEEE, MMMM d, yyyy")}
+                aria-pressed={isSel}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    onSelectDate(dateStr)
+                  }
+                }}
+                className={`outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset min-h-[75px] sm:min-h-[110px] md:min-h-[130px] bg-card p-1.5 sm:p-2.5 flex flex-col justify-between hover:bg-muted/40 transition-colors cursor-pointer select-none relative group ${
                   !isCurrMonth ? "opacity-35 hover:opacity-60 bg-secondary/10" : ""
                 } ${isSel ? "ring-2 ring-primary ring-inset z-10" : ""}`}
               >
