@@ -1,7 +1,6 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Poppins, Geist_Mono } from "next/font/google"
 import { Providers } from "@/components/providers/Providers"
-import "../../node_modules/tw-animate-css/dist/tw-animate.css"
 import "sweetalert2/dist/sweetalert2.min.css"
 import "./globals.css"
 
@@ -19,6 +18,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SansOS Workspace - Personal Life & Work OS",
   description: "A personalized all-in-one life operating system incorporating habit tracking, language learning logs, daily timetable scheduling, and dynamic project management.",
+}
+
+// env(safe-area-inset-*) is always 0 without viewport-fit=cover
+export const viewport: Viewport = {
+  viewportFit: "cover",
 }
 
 export default function RootLayout({
