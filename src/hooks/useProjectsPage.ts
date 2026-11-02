@@ -157,7 +157,7 @@ export function useProjectsPage() {
       deadline?: string
       extraRows?: Array<{ id?: string; name: string; status?: string; priority?: string; deadline: string }>
     }
-  ): Promise<void> => {
+  ): Promise<boolean> => {
     e.preventDefault()
     setTaskError(null)
     const mainName = (overrideData?.name ?? taskName).trim()
@@ -165,7 +165,7 @@ export function useProjectsPage() {
     const mainPriority = overrideData?.priority ?? taskPriority
     const mainDeadline = overrideData?.deadline ?? taskDeadline
 
-    if (!selectedProjectId || !mainName) return
+    if (!selectedProjectId || !mainName) return false
 
     try {
       const promises: Promise<unknown>[] = [
@@ -200,8 +200,10 @@ export function useProjectsPage() {
       setTaskPriority("Medium")
       setTaskDeadline(getOneWeekFromTodayStr())
       showSuccessToast("Task(s) added to project")
+      return true
     } catch {
       setTaskError("Failed to add task.")
+      return false
     }
   }
 
