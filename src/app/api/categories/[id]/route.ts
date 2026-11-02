@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import {
   categories,
@@ -39,6 +40,10 @@ export async function PUT(
 
     if (!existing) {
       return NextResponse.json({ error: "Category not found" }, { status: 404 })
+    }
+
+    if (name !== undefined && (existing.isSystemDefault || !String(name).trim())) {
+      return NextResponse.json({ error: "This category cannot be renamed to that value" }, { status: 400 })
     }
 
     const updateData: Partial<typeof categories.$inferInsert> = {}
@@ -92,8 +97,7 @@ export async function PUT(
 
     return NextResponse.json(updatedCategory)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -141,38 +145,37 @@ export async function DELETE(
       // 3. Fallback deleted category references to 'General'
       await tx
         .update(habits)
-        .set({ category: "General" })
+        .set({ category: "General", subCategory: null })
         .where(and(eq(habits.userId, user.id), eq(habits.category, existing.name)))
 
       await tx
         .update(timetableBlocks)
-        .set({ category: "General", color: "blue" })
+        .set({ category: "General", subCategory: null, color: "blue" })
         .where(and(eq(timetableBlocks.userId, user.id), eq(timetableBlocks.category, existing.name)))
 
       await tx
         .update(priorities)
-        .set({ category: "General" })
+        .set({ category: "General", subCategory: null })
         .where(and(eq(priorities.userId, user.id), eq(priorities.category, existing.name)))
 
       await tx
         .update(learningSubjects)
-        .set({ category: "General" })
+        .set({ category: "General", subCategory: null })
         .where(and(eq(learningSubjects.userId, user.id), eq(learningSubjects.category, existing.name)))
 
       await tx
         .update(projects)
-        .set({ category: "General" })
+        .set({ category: "General", subCategory: null })
         .where(and(eq(projects.userId, user.id), eq(projects.category, existing.name)))
 
       await tx
         .update(dailyTodos)
-        .set({ category: "General" })
+        .set({ category: "General", subCategory: null })
         .where(and(eq(dailyTodos.userId, user.id), eq(dailyTodos.category, existing.name)))
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
