@@ -89,12 +89,12 @@ export function useDailyPage() {
   const handleAddDailyEntry = async (
     e: React.FormEvent,
     overrideData?: { title?: string; link?: string; extraRows?: Array<{ id?: string; title: string; link: string }> }
-  ): Promise<void> => {
+  ): Promise<boolean> => {
     e.preventDefault()
     setCombinedErrorMsg(null)
     const mainTitle = (overrideData?.title ?? entryTitle).trim()
     const mainLink = (overrideData?.link ?? entryLink).trim()
-    if (!mainTitle) return
+    if (!mainTitle) return false
 
     setIsPendingCombined(true)
     try {
@@ -226,8 +226,10 @@ export function useDailyPage() {
       setTargetPriority(false)
       setChooseDate(activeDate)
       showSuccessToast("Daily Flow item added")
+      return true
     } catch (err) {
       setCombinedErrorMsg(err instanceof Error ? err.message : "Failed to add entry")
+      return false
     } finally {
       setIsPendingCombined(false)
     }
