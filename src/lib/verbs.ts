@@ -6,6 +6,17 @@ export interface VerbConjugation {
 }
 
 const IRREGULAR_VERBS: Record<string, { v2: string; v3: string }> = {
+  seek: { v2: "sought", v3: "sought" },
+  beat: { v2: "beat", v3: "beaten" },
+  quit: { v2: "quit", v3: "quit" },
+  spin: { v2: "spun", v3: "spun" },
+  bear: { v2: "bore", v3: "borne" },
+  bleed: { v2: "bled", v3: "bled" },
+  breed: { v2: "bred", v3: "bred" },
+  forbid: { v2: "forbade", v3: "forbidden" },
+  shed: { v2: "shed", v3: "shed" },
+  occur: { v2: "occurred", v3: "occurred" },
+  panic: { v2: "panicked", v3: "panicked" },
   be: { v2: "was/were", v3: "been" },
   become: { v2: "became", v3: "become" },
   begin: { v2: "began", v3: "begun" },
@@ -155,6 +166,7 @@ function shouldDoubleConsonant(word: string): boolean {
 
   // Common unstressed CVC suffixes where the final consonant should NOT double
   const UNSTRESSED_SUFFIXES = [
+    "on",      // abandon, reason, pardon
     "en",      // listen, open, happen, threaten, fasten
     "er",      // remember, whisper, offer, suffer, differ, order, wander, wonder
     "el",      // travel, cancel, model, tunnel, shovel
@@ -203,7 +215,16 @@ function getRegularV2V3(word: string): string {
   return word + "ed"
 }
 
+const IRREGULAR_ING: Record<string, string> = {
+  be: "being",
+  forget: "forgetting",
+  occur: "occurring",
+  quit: "quitting",
+  panic: "panicking",
+}
+
 function getVIng(word: string): string {
+  if (Object.hasOwn(IRREGULAR_ING, word)) return IRREGULAR_ING[word]
   if (word.endsWith("ie")) {
     return word.slice(0, -2) + "ying"
   }
@@ -217,9 +238,19 @@ function getVIng(word: string): string {
   return word + "ing"
 }
 
-export function conjugateVerb(base: string): VerbConjugation {
-  const word = base.trim().toLowerCase()
-  const irregular = IRREGULAR_VERBS[word]
+export function conjugateVerb(input: string): VerbConjugation {
+  const base = input.trim()
+
+  // Phrasal verb: only the first word conjugates ("give up" -> "gave up")
+  const spaceIndex = base.search(/\s/)
+  if (spaceIndex > 0) {
+    const head = conjugateVerb(base.slice(0, spaceIndex))
+    const rest = base.slice(spaceIndex)
+    return { v1: base, v2: head.v2 + rest, v3: head.v3 + rest, vIng: head.vIng + rest }
+  }
+
+  const word = base.toLowerCase()
+  const irregular = Object.hasOwn(IRREGULAR_VERBS, word) ? IRREGULAR_VERBS[word] : undefined
   if (irregular) {
     return {
       v1: base,
