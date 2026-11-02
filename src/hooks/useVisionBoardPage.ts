@@ -11,6 +11,7 @@ import {
 import { PanInfo } from "framer-motion"
 import { useQueryClient } from "@tanstack/react-query"
 import { confirmDestructive, showError, showSuccessToast } from "@/lib/sweetalert"
+import { isHttpUrl } from "@/lib/utils"
 
 export function useVisionBoardPage() {
   const queryClient = useQueryClient()
@@ -36,6 +37,11 @@ export function useVisionBoardPage() {
 
     if (!content.trim()) {
       setErrorMsg("Please enter content or select a preset.")
+      return
+    }
+
+    if (itemType === "image" && !isHttpUrl(content.trim())) {
+      setErrorMsg("Image URL must start with http:// or https://.")
       return
     }
 
