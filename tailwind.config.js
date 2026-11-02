@@ -69,6 +69,10 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      spacing: {
+        4.5: "1.125rem",
+        8.5: "2.125rem",
+      },
       fontSize: {
         label: ["0.5625rem", { letterSpacing: "0.05em" }],
         micro: ["0.625rem", { letterSpacing: "0.025em" }],
@@ -98,5 +102,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }
