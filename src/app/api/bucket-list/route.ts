@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
+import { isHttpUrl } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { bucketList } from "@/types/schema"
 import { eq, and, desc } from "drizzle-orm"
@@ -23,8 +25,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json(items)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -46,6 +47,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    if (imageUrl && !isHttpUrl(imageUrl)) {
+      return NextResponse.json({ error: "Invalid image URL" }, { status: 400 })
+    }
+
     const [newItem] = await db
       .insert(bucketList)
       .values({
@@ -59,8 +64,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newItem)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -80,6 +84,10 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     if (!id) {
       return NextResponse.json({ error: "Missing goal ID" }, { status: 400 })
+    }
+
+    if (imageUrl && !isHttpUrl(imageUrl)) {
+      return NextResponse.json({ error: "Invalid image URL" }, { status: 400 })
     }
 
     // Fetch current goal state to resolve completedAt changes
@@ -113,8 +121,7 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(updatedGoal)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -147,7 +154,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
