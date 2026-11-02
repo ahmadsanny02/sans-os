@@ -206,7 +206,7 @@ export function useLanguagePage() {
       description?: string
       extraRows?: Array<{ id?: string; name: string; formula: string; description?: string }>
     }
-  ): Promise<void> => {
+  ): Promise<boolean> => {
     e.preventDefault()
     setFormulaFormError(null)
 
@@ -216,7 +216,7 @@ export function useLanguagePage() {
 
     if (!trimmedName || !trimmedFormula) {
       setFormulaFormError("Please fill out all required fields.")
-      return
+      return false
     }
 
     try {
@@ -251,9 +251,11 @@ export function useLanguagePage() {
       setFormulaDescription("")
       setShowFormulaForm(false)
       showSuccessToast("Formula(s) added successfully")
+      return true
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : "Failed to add formula."
       setFormulaFormError(errMsg)
+      return false
     }
   }
 
@@ -328,7 +330,7 @@ export function useLanguagePage() {
       translation?: string
       extraRows?: Array<{ id?: string; word: string; translation: string }>
     }
-  ): Promise<void> => {
+  ): Promise<boolean> => {
     e.preventDefault()
     setFormError(null)
 
@@ -337,7 +339,7 @@ export function useLanguagePage() {
 
     if (!trimmedWord || !trimmedTranslation) {
       setFormError("Please fill out all required fields.")
-      return
+      return false
     }
 
     // Client-side uniqueness check (case-insensitive & trimmed)
@@ -348,7 +350,7 @@ export function useLanguagePage() {
 
     if (isDuplicate) {
       setFormError("This vocabulary word is already registered.")
-      return
+      return false
     }
 
     try {
@@ -386,9 +388,11 @@ export function useLanguagePage() {
       setLangDirection("en-id")
       setShowAddForm(false)
       showSuccessToast("Vocabulary added successfully")
+      return true
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : "Failed to add vocabulary log."
       setFormError(errMsg)
+      return false
     }
   }
 
