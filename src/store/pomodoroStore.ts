@@ -474,6 +474,7 @@ export const usePomodoroStore = create<PomodoroState>()(
     }),
     {
       name: "sans-os-pomodoro",
+      skipHydration: true,
       // Custom merge function to safely deep-merge config object (e.g. for backward compatibility)
       merge: (persistedState, currentState) => {
         const persisted = persistedState as Partial<PomodoroState> | null | undefined
