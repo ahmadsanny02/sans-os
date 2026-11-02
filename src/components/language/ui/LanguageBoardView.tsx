@@ -57,7 +57,7 @@ interface LanguageBoardViewProps {
       translation?: string
       extraRows?: Array<{ id?: string; word: string; translation: string }>
     }
-  ) => Promise<void>
+  ) => Promise<boolean>
   handleDeleteVocabulary: (id: string, wordStr: string) => Promise<void>
   handleToggleMemorized: (id: string, currentMemorized: boolean) => void
   toggleRevealTranslation: (id: string) => void
@@ -117,12 +117,12 @@ export function LanguageBoardView({
     const primaryTrans = translation.trim()
     if (!primaryWord || !primaryTrans) return
 
-    await handleAddVocabulary(e, {
+    const saved = await handleAddVocabulary(e, {
       word: primaryWord,
       translation: primaryTrans,
       extraRows: extraRows,
     })
-    setExtraRows([])
+    if (saved) setExtraRows([])
   }
 
   const toggleLetterCollapse = (key: string) => {
@@ -513,7 +513,7 @@ export function LanguageBoardView({
                       value={row.word}
                       onChange={(e) => {
                         const updated = [...extraRows]
-                        updated[idx].word = e.target.value
+                        updated[idx] = { ...updated[idx], word: e.target.value }
                         setExtraRows(updated)
                       }}
                       placeholder="Word..."
@@ -532,7 +532,7 @@ export function LanguageBoardView({
                         value={row.translation}
                         onChange={(e) => {
                           const updated = [...extraRows]
-                          updated[idx].translation = e.target.value
+                          updated[idx] = { ...updated[idx], translation: e.target.value }
                           setExtraRows(updated)
                         }}
                         placeholder="Translation..."
@@ -763,7 +763,7 @@ const VocabCard = React.memo(function VocabCard({
 
             <button
               onClick={() => handleDeleteVocabulary(vocab.id, vocab.word)}
-              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
+              className="opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0 cursor-pointer"
               aria-label={`Delete word ${vocab.word}`}
             >
               <Trash2 className="h-3.5 w-3.5" />
