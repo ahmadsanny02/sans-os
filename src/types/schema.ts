@@ -1,5 +1,5 @@
 import { pgTable, text, uuid, timestamp, integer, boolean, index, uniqueIndex } from "drizzle-orm/pg-core"
-import { relations } from "drizzle-orm"
+import { relations, sql } from "drizzle-orm"
 
 // 1. Profiles (user info linked to Supabase Auth.users)
 export const profiles = pgTable("profiles", {
@@ -7,7 +7,7 @@ export const profiles = pgTable("profiles", {
   fullName: text("full_name"),
   avatarUrl: text("avatar_url"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-})
+}).enableRLS()
 
 // 2. Habits (Metadata for tracked habits)
 export const habits = pgTable("habits", {
@@ -21,7 +21,7 @@ export const habits = pgTable("habits", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_habits_user").on(t.userId),
-])
+]).enableRLS()
 
 // 3. Habit Logs (Individual check-ins)
 export const habitLogs = pgTable("habit_logs", {
@@ -37,7 +37,8 @@ export const habitLogs = pgTable("habit_logs", {
 }, (t) => [
   index("idx_habit_logs_user_date").on(t.userId, t.date),
   uniqueIndex("idx_habit_logs_user_habit_date").on(t.userId, t.habitId, t.date),
-])
+  index("idx_habit_logs_habit").on(t.habitId),
+]).enableRLS()
 
 // Relations for Habits & Logs
 export const habitsRelations = relations(habits, ({ many }) => ({
@@ -65,7 +66,7 @@ export const readingJournal = pgTable("reading_journal", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_reading_journal_user").on(t.userId),
-])
+]).enableRLS()
 
 // 4.1 Reading Progress Logs (History of reading progress updates)
 export const readingProgressLogs = pgTable("reading_progress_logs", {
@@ -80,7 +81,7 @@ export const readingProgressLogs = pgTable("reading_progress_logs", {
 }, (t) => [
   index("idx_reading_progress_book").on(t.bookId),
   index("idx_reading_progress_user").on(t.userId),
-])
+]).enableRLS()
 
 // Relations for Reading Journal & Progress Logs
 export const readingJournalRelations = relations(readingJournal, ({ many }) => ({
@@ -107,7 +108,7 @@ export const visionBoardItems = pgTable("vision_board_items", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_vision_board_user").on(t.userId),
-])
+]).enableRLS()
 
 // 6. Timetable Blocks (Daily schedule timeline with custom duration bounds)
 export const timetableBlocks = pgTable("timetable_blocks", {
@@ -126,7 +127,7 @@ export const timetableBlocks = pgTable("timetable_blocks", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_timetable_user_day").on(t.userId, t.dayOfWeek),
-])
+]).enableRLS()
 
 // 6.5 Timetable Sub-Schedules (Nested breakdown of daily schedule blocks)
 export const timetableSubSchedules = pgTable("timetable_sub_schedules", {
@@ -143,7 +144,7 @@ export const timetableSubSchedules = pgTable("timetable_sub_schedules", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_timetable_sub_block").on(t.timetableBlockId),
-])
+]).enableRLS()
 
 // Relations for Timetable Blocks & Sub-Schedules
 export const timetableBlocksRelations = relations(timetableBlocks, ({ many }) => ({
@@ -175,7 +176,7 @@ export const priorities = pgTable("priorities", {
 }, (t) => [
   index("idx_priorities_user_date").on(t.userId, t.date),
   index("idx_priorities_timetable_block").on(t.timetableBlockId),
-])
+]).enableRLS()
 
 // 8. Vocabulary Logs (Language learning)
 export const vocabularyLogs = pgTable("vocabulary_logs", {
@@ -202,8 +203,8 @@ export const vocabularyLogs = pgTable("vocabulary_logs", {
   memorizedAt: timestamp("memorized_at"),
 }, (t) => [
   index("idx_vocab_user").on(t.userId),
-  index("idx_vocab_user_word").on(t.userId, t.word),
-])
+  uniqueIndex("idx_vocab_user_word").on(t.userId, sql`lower(trim(${t.word}))`),
+]).enableRLS()
 
 // 8.1 Formulas (Master data untuk rumus tata bahasa)
 export const formulas = pgTable("formulas", {
@@ -215,7 +216,7 @@ export const formulas = pgTable("formulas", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_formulas_user").on(t.userId),
-])
+]).enableRLS()
 
 // 8.2 Writing Logs (Sentence practice logs)
 export const writingLogs = pgTable("writing_logs", {
@@ -233,7 +234,7 @@ export const writingLogs = pgTable("writing_logs", {
 }, (t) => [
   index("idx_writing_logs_user").on(t.userId),
   index("idx_writing_logs_vocab").on(t.vocabId),
-])
+]).enableRLS()
 
 // 8.3 Dialogue Logs (Q&A Dialogue practice logs)
 export const dialogueLogs = pgTable("dialogue_logs", {
@@ -253,7 +254,7 @@ export const dialogueLogs = pgTable("dialogue_logs", {
 }, (t) => [
   index("idx_dialogue_logs_user").on(t.userId),
   index("idx_dialogue_logs_vocab").on(t.vocabId),
-])
+]).enableRLS()
 
 // 9. Projects (Hierarchical project tracking)
 export const projects = pgTable("projects", {
@@ -269,7 +270,7 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_projects_user").on(t.userId),
-])
+]).enableRLS()
 
 // 10. Project Tasks (Hierarchical child relation)
 export const projectTasks = pgTable("project_tasks", {
@@ -287,7 +288,7 @@ export const projectTasks = pgTable("project_tasks", {
 }, (t) => [
   index("idx_project_tasks_project").on(t.projectId),
   index("idx_project_tasks_user").on(t.userId),
-])
+]).enableRLS()
 
 // 10.5 Project Sub-Tasks
 export const projectSubTasks = pgTable("project_sub_tasks", {
@@ -303,7 +304,7 @@ export const projectSubTasks = pgTable("project_sub_tasks", {
 }, (t) => [
   index("idx_project_sub_tasks_task").on(t.taskId),
   index("idx_project_sub_tasks_user").on(t.userId),
-])
+]).enableRLS()
 
 // Relations for Projects & Tasks
 export const projectsRelations = relations(projects, ({ many }) => ({
@@ -336,7 +337,7 @@ export const bucketList = pgTable("bucket_list", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_bucket_list_user").on(t.userId),
-])
+]).enableRLS()
 
 // 12. Daily To-Dos
 export const dailyTodos = pgTable("daily_todos", {
@@ -352,7 +353,7 @@ export const dailyTodos = pgTable("daily_todos", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_daily_todos_user_date").on(t.userId, t.date),
-])
+]).enableRLS()
 
 // 13. Daily Logs (Journal, Notes, Gratitude, Pic of the Day)
 export const dailyLogs = pgTable("daily_logs", {
@@ -366,7 +367,7 @@ export const dailyLogs = pgTable("daily_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   uniqueIndex("idx_daily_logs_user_date").on(t.userId, t.date),
-])
+]).enableRLS()
 
 // 14. Learning Hub
 export const learningSubjects = pgTable("learning_subjects", {
@@ -381,7 +382,7 @@ export const learningSubjects = pgTable("learning_subjects", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_learning_subjects_user").on(t.userId),
-])
+]).enableRLS()
 
 export const learningMaterials = pgTable("learning_materials", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -395,7 +396,7 @@ export const learningMaterials = pgTable("learning_materials", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_learning_materials_subject").on(t.subjectId),
-])
+]).enableRLS()
 
 export const learningTasks = pgTable("learning_tasks", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -408,7 +409,7 @@ export const learningTasks = pgTable("learning_tasks", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_learning_tasks_subject").on(t.subjectId),
-])
+]).enableRLS()
 
 // Relations for Learning Subjects, Materials, and Tasks
 export const learningSubjectsRelations = relations(learningSubjects, ({ many }) => ({
@@ -442,7 +443,8 @@ export const categories = pgTable("categories", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_categories_user").on(t.userId),
-])
+  uniqueIndex("idx_categories_user_name").on(t.userId, sql`lower(${t.name})`),
+]).enableRLS()
 
 // 16. Custom Sub-Categories Table
 export const subCategories = pgTable("sub_categories", {
@@ -455,5 +457,6 @@ export const subCategories = pgTable("sub_categories", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("idx_sub_categories_category").on(t.categoryId),
-])
+  index("idx_sub_categories_user").on(t.userId),
+]).enableRLS()
 
