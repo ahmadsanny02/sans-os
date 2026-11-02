@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useMemo } from "react"
 import Image from "next/image"
+import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Camera,
@@ -273,9 +274,10 @@ export function DailyPics({
           </div>
         ) : (
           /* Empty / Upload State */
-          <div
+          <button
+            type="button"
             onClick={triggerFileInput}
-            className="w-full h-full rounded-xl border-2 border-dashed border-border/60 hover:border-primary/40 cursor-pointer flex flex-col items-center justify-center p-6 text-center transition-all bg-secondary/10 hover:bg-secondary/25"
+            className="w-full h-full rounded-xl border-2 border-dashed border-border/60 hover:border-primary/40 cursor-pointer flex flex-col items-center justify-center p-6 text-center transition-all bg-secondary/10 hover:bg-secondary/25 outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             {isUploading || isPendingSave ? (
               <Loader2 className="h-10 w-10 animate-spin text-primary mb-3" />
@@ -286,9 +288,9 @@ export function DailyPics({
               {isUploading ? "Uploading Memories..." : "Upload Daily Pics"}
             </span>
             <span className="text-xs text-muted-foreground mt-1 max-w-[260px]">
-              Drag and drop or click to upload JPEG, PNG, WEBP, or GIF. Multi-photo selection supported (Max 10MB each).
+              Click to upload JPEG, PNG, WEBP, or GIF. Multi-photo selection supported (Max 10MB each).
             </span>
-          </div>
+          </button>
         )}
 
         {/* Hidden File Input */}
@@ -351,7 +353,7 @@ export function DailyPics({
       )}
 
       {/* Fullscreen Lightbox Modal */}
-      {fullscreenImage && (
+      {fullscreenImage && createPortal(
         <div
           role="dialog"
           aria-modal="true"
@@ -416,7 +418,8 @@ export function DailyPics({
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
