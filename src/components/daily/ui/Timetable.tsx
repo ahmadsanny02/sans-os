@@ -194,6 +194,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                         type="button"
                         onClick={() => handleSaveEditSub(sub.id)}
                         disabled={!editTitle.trim() || updateSubMutation.isPending}
+                        aria-label="Save sub-block"
                         className="p-1 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer disabled:opacity-50"
                       >
                         <Check className="h-3.5 w-3.5" />
@@ -201,6 +202,7 @@ function TimetableSubSchedulesSection({ block }: { block: TimetableBlock }) {
                       <button
                         type="button"
                         onClick={() => setEditingSubId(null)}
+                        aria-label="Cancel editing"
                         className="p-1 rounded-xl bg-secondary text-muted-foreground hover:text-foreground cursor-pointer"
                       >
                         <X className="h-3.5 w-3.5" />
@@ -762,7 +764,7 @@ export function Timetable({
                           )}
                         </div>
 
-                        <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-1 transition-all shrink-0">
+                        <div className="opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-1 transition-all shrink-0">
                           <button
                             onClick={() => handleStartEdit(block)}
                             className="p-1.5 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
