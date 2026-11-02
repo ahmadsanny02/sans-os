@@ -29,7 +29,7 @@ interface AddDailyEntryCardProps {
   handleAddDailyEntry: (
     e: React.FormEvent,
     overrideData?: { title?: string; link?: string; extraRows?: Array<{ id?: string; title: string; link: string }> }
-  ) => Promise<void>
+  ) => Promise<boolean>
 
   // Timetable sub-form states
   timetableStartTime: string
@@ -125,12 +125,12 @@ export function AddDailyEntryCard({
     e.preventDefault()
     if (!entryTitle.trim()) return
 
-    await handleAddDailyEntry(e, {
+    const saved = await handleAddDailyEntry(e, {
       title: entryTitle,
       link: entryLink,
       extraRows: extraDailyRows,
     })
-    setExtraDailyRows([])
+    if (saved) setExtraDailyRows([])
   }
 
   return (
@@ -196,7 +196,7 @@ export function AddDailyEntryCard({
                 value={row.title}
                 onChange={(e) => {
                   const updated = [...extraDailyRows]
-                  updated[idx].title = e.target.value
+                  updated[idx] = { ...updated[idx], title: e.target.value }
                   setExtraDailyRows(updated)
                 }}
                 placeholder="Flow title..."
@@ -214,7 +214,7 @@ export function AddDailyEntryCard({
                   value={row.link}
                   onChange={(e) => {
                     const updated = [...extraDailyRows]
-                    updated[idx].link = e.target.value
+                    updated[idx] = { ...updated[idx], link: e.target.value }
                     setExtraDailyRows(updated)
                   }}
                   placeholder="https://..."
