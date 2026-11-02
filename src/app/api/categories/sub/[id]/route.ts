@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { subCategories, categories, habits, timetableBlocks, priorities, learningSubjects, projects, dailyTodos } from "@/types/schema"
 import { eq, and } from "drizzle-orm"
@@ -124,8 +125,7 @@ export async function PUT(
 
     return NextResponse.json(updatedSub)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -239,7 +239,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
