@@ -6,15 +6,17 @@ const connectionString = process.env.DATABASE_URL || ""
 
 // For serverless/dev environments, prevent hot reloading from leaking connections
 let client: postgres.Sql
+// Small per-instance pool: serverless instances multiply this against the database connection limit
+const options = { prepare: false, max: 3, idle_timeout: 20 }
 
 if (process.env.NODE_ENV === "production") {
-  client = postgres(connectionString, { prepare: false })
+  client = postgres(connectionString, options)
 } else {
   const globalRef = global as typeof globalThis & {
     postgresClient?: postgres.Sql
   }
   if (!globalRef.postgresClient) {
-    globalRef.postgresClient = postgres(connectionString, { prepare: false })
+    globalRef.postgresClient = postgres(connectionString, options)
   }
   client = globalRef.postgresClient
 }
