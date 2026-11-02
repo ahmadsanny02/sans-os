@@ -444,7 +444,7 @@ export function HabitGrid({
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 shrink-0">
+                        <div className="flex items-center gap-0.5 opacity-100 sm:[@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 shrink-0">
                           <button
                             onClick={() => handleOpenEdit(habit)}
                             className="p-1 sm:p-1.5 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all cursor-pointer"
