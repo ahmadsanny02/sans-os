@@ -44,7 +44,7 @@ interface FormulaListViewProps {
       description?: string
       extraRows?: Array<{ id?: string; name: string; formula: string; description?: string }>
     }
-  ) => Promise<void>
+  ) => Promise<boolean>
   handleUpdateFormula: (id: string, name: string, formulaVal: string, description: string | null) => Promise<void>
   handleDeleteFormula: (id: string) => Promise<void>
   filteredFormulas: Formula[]
@@ -154,13 +154,13 @@ export function FormulaListView({
     e.preventDefault()
     if (!formulaName.trim() || !formulaString.trim()) return
 
-    await handleAddFormula(e, {
+    const saved = await handleAddFormula(e, {
       name: formulaName,
       formula: formulaString,
       description: formulaDescription,
       extraRows: extraFormulaRows,
     })
-    setExtraFormulaRows([])
+    if (saved) setExtraFormulaRows([])
   }
 
   return (
@@ -308,7 +308,7 @@ export function FormulaListView({
                         value={row.name}
                         onChange={(e) => {
                           const updated = [...extraFormulaRows]
-                          updated[idx].name = e.target.value
+                          updated[idx] = { ...updated[idx], name: e.target.value }
                           setExtraFormulaRows(updated)
                         }}
                         placeholder="Formula Name..."
@@ -326,7 +326,7 @@ export function FormulaListView({
                         value={row.formula}
                         onChange={(e) => {
                           const updated = [...extraFormulaRows]
-                          updated[idx].formula = e.target.value
+                          updated[idx] = { ...updated[idx], formula: e.target.value }
                           setExtraFormulaRows(updated)
                         }}
                         placeholder="Pattern..."
@@ -343,7 +343,7 @@ export function FormulaListView({
                       value={row.description}
                       onChange={(e) => {
                         const updated = [...extraFormulaRows]
-                        updated[idx].description = e.target.value
+                        updated[idx] = { ...updated[idx], description: e.target.value }
                         setExtraFormulaRows(updated)
                       }}
                       placeholder="Description..."
@@ -503,7 +503,7 @@ export function FormulaListView({
                           FORMULA
                         </span>
                         
-                        <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1.5 opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => startEdit(f)}
                             className="p-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
