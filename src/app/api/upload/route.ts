@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@supabase/supabase-js"
 import { logger } from "@/lib/logger"
@@ -10,6 +11,19 @@ const ALLOWED_MIME_MAP: Record<string, string> = {
   "image/png": "png",
   "image/webp": "webp",
   "image/gif": "gif",
+}
+
+const MAX_FILES = 10
+
+// The browser-declared MIME type is client input, so check the file's real signature
+async function hasImageSignature(file: File): Promise<boolean> {
+  const hex = Buffer.from(await file.slice(0, 12).arrayBuffer()).toString("hex")
+  return (
+    hex.startsWith("ffd8ff") || // JPEG
+    hex.startsWith("89504e47") || // PNG
+    hex.startsWith("47494638") || // GIF
+    (hex.startsWith("52494646") && hex.slice(16, 24) === "57454250") // WEBP
+  )
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -43,6 +57,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       )
     }
 
+    if (files.length > MAX_FILES) {
+      return NextResponse.json({ error: `Maksimal ${MAX_FILES} file sekali unggah.` }, { status: 400 })
+    }
+
     // Validate type and size against strict whitelist for all files
     const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB Limit
     for (const f of files) {
@@ -55,6 +73,9 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
       if (f.size > MAX_FILE_SIZE) {
         return NextResponse.json({ error: `File size exceeds 10MB limit: ${f.name}` }, { status: 400 })
+      }
+      if (!(await hasImageSignature(f))) {
+        return NextResponse.json({ error: `File ${f.name} bukan gambar yang valid.` }, { status: 400 })
       }
     }
 
@@ -94,6 +115,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     // Use user ID, sanitized date, timestamp, and index to keep it organized and unique
     const sanitizedDate = date.replace(/[^0-9-]/g, "")
     const uploadedUrls: string[] = []
+    const uploadedPaths: string[] = []
 
     for (let i = 0; i < files.length; i++) {
       const currentFile = files[i]
@@ -108,8 +130,12 @@ export async function POST(request: Request): Promise<NextResponse> {
         })
 
       if (uploadError) {
+        if (uploadedPaths.length > 0) {
+          await supabaseAdmin.storage.from("daily-pics").remove(uploadedPaths)
+        }
         throw uploadError
       }
+      uploadedPaths.push(fileName)
 
       // 6. Get Public URL
       const { data: urlData } = supabaseAdmin.storage.from("daily-pics").getPublicUrl(fileName)
@@ -125,8 +151,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       urls: uploadedUrls,
     })
   } catch (error) {
-    logger.error("[Upload API Error]", error)
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
