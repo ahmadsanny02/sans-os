@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { categories } from "@/types/schema"
 import { eq, asc } from "drizzle-orm"
@@ -24,31 +25,28 @@ export async function GET(): Promise<NextResponse> {
     // Seed General if it is not present in the DB
     const hasGeneral = items.some((c) => c.name.toLowerCase() === "general")
     if (!hasGeneral) {
-      try {
-        const [createdGeneral] = await db
-          .insert(categories)
-          .values({
-            userId: user.id,
-            name: "General",
-            module: "general",
-            color: "primary",
-            description: "General or unclassified tasks",
-            isSystemDefault: true,
-          })
-          .returning()
+      // Concurrent first-load requests are resolved by the unique index
+      const [createdGeneral] = await db
+        .insert(categories)
+        .values({
+          userId: user.id,
+          name: "General",
+          module: "general",
+          color: "primary",
+          description: "General or unclassified tasks",
+          isSystemDefault: true,
+        })
+        .onConflictDoNothing()
+        .returning()
 
-        if (createdGeneral) {
-          items.unshift(createdGeneral)
-        }
-      } catch {
-        // If concurrent request inserted General, continue with existing items
+      if (createdGeneral) {
+        items.unshift(createdGeneral)
       }
     }
 
     return NextResponse.json(items)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -84,7 +82,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newCategory)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
