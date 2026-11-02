@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { learningSubjects } from "@/types/schema"
 import { eq, and, desc } from "drizzle-orm"
@@ -30,8 +31,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json(userSubjects)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -68,8 +68,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newSubject)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -102,8 +101,7 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -153,7 +151,6 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(updatedSubject)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
