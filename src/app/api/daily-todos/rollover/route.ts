@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { dailyTodos } from "@/types/schema"
-import { eq, and, lt, asc } from "drizzle-orm"
+import { eq, and, lt, sql } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
@@ -37,45 +38,21 @@ export async function POST(request: Request): Promise<NextResponse> {
       today = `${year}-${month}-${day}`
     }
 
-    const rolledOverCount = await db.transaction(async (tx) => {
-      const oldIncomplete = await tx
-        .select()
-        .from(dailyTodos)
-        .where(
-          and(
-            eq(dailyTodos.userId, user.id),
-            eq(dailyTodos.completed, false),
-            lt(dailyTodos.date, today!)
-          )
+    const rolledOver = await db
+      .update(dailyTodos)
+      .set({ date: today, rolloverCount: sql`coalesce(${dailyTodos.rolloverCount}, 0) + 1` })
+      .where(
+        and(
+          eq(dailyTodos.userId, user.id),
+          eq(dailyTodos.completed, false),
+          lt(dailyTodos.date, today)
         )
-        .orderBy(asc(dailyTodos.date), asc(dailyTodos.createdAt))
-
-      if (oldIncomplete.length === 0) {
-        return 0
-      }
-
-      for (const item of oldIncomplete) {
-        await tx
-          .update(dailyTodos)
-          .set({
-            date: today!,
-            rolloverCount: (item.rolloverCount || 0) + 1,
-          })
-          .where(
-            and(
-              eq(dailyTodos.id, item.id),
-              eq(dailyTodos.userId, user.id),
-              lt(dailyTodos.date, today!)
-            )
-          )
-      }
-
-      return oldIncomplete.length
-    })
+      )
+      .returning({ id: dailyTodos.id })
+    const rolledOverCount = rolledOver.length
 
     return NextResponse.json({ success: true, rolledOverCount })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
