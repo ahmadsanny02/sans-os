@@ -1,6 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { updateSession } from "@/lib/supabase/middleware"
 
+// Keeps a session refreshed by updateSession from being lost on redirect
+function redirectWithCookies(url: URL, source: NextResponse): NextResponse {
+  const response = NextResponse.redirect(url)
+  source.cookies.getAll().forEach((cookie) => response.cookies.set(cookie))
+  return response
+}
+
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { supabaseResponse, user } = await updateSession(request)
 
@@ -25,13 +32,13 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     url.pathname = "/login"
-    return NextResponse.redirect(url)
+    return redirectWithCookies(url, supabaseResponse)
   }
 
   // Redirection: If logged in and browsing to login page -> Send to dashboard home
   if (user && isLoginPage) {
     url.pathname = "/"
-    return NextResponse.redirect(url)
+    return redirectWithCookies(url, supabaseResponse)
   }
 
   return supabaseResponse
