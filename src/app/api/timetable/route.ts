@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { timetableBlocks, priorities, timetableSubSchedules } from "@/types/schema"
-import { eq, and, asc, or } from "drizzle-orm"
+import { eq, and, asc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { logger } from "@/lib/logger";
+
+const TIME_REGEX = /^\d{2}:\d{2}(:\d{2})?$/
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
+// dayOfWeek -1 means a fixed block shown every day
+function isValidBlockInput({ dayOfWeek, startTime, endTime, date }: Record<string, unknown>): boolean {
+  if (dayOfWeek !== undefined && !(Number.isInteger(dayOfWeek) && Number(dayOfWeek) >= -1 && Number(dayOfWeek) <= 7)) return false
+  if (startTime !== undefined && !TIME_REGEX.test(String(startTime))) return false
+  if (endTime !== undefined && !TIME_REGEX.test(String(endTime))) return false
+  return !date || DATE_REGEX.test(String(date))
+}
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -28,9 +39,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json(blocks)
   } catch (error) {
-    logger.error("[Timetable API Error]", error)
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -50,6 +59,10 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     if (dayOfWeek === undefined || !startTime || !endTime || !title) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    if (!isValidBlockInput({ dayOfWeek, startTime, endTime, date })) {
+      return NextResponse.json({ error: "Invalid day, time, or date" }, { status: 400 })
     }
 
     const newBlockId = await db.transaction(async (tx) => {
@@ -126,9 +139,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(fullBlock)
   } catch (error) {
-    logger.error("[Timetable API Error]", error)
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -160,23 +171,9 @@ export async function DELETE(request: Request): Promise<NextResponse> {
         return false
       }
 
-      // Automatically remove matching priority if it was a custom schedule
-      if (deletedBlock.date) {
-        await tx
-          .delete(priorities)
-          .where(
-            and(
-              eq(priorities.userId, user.id),
-              or(
-                eq(priorities.timetableBlockId, deletedBlock.id),
-                and(
-                  eq(priorities.date, deletedBlock.date),
-                  eq(priorities.text, deletedBlock.title)
-                )
-              )
-            )
-          )
-      }
+      await tx
+        .delete(priorities)
+        .where(and(eq(priorities.userId, user.id), eq(priorities.timetableBlockId, deletedBlock.id)))
 
       return true
     })
@@ -187,9 +184,7 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    logger.error("[Timetable API Error]", error)
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -209,6 +204,10 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     if (!id) {
       return NextResponse.json({ error: "Missing block ID" }, { status: 400 })
+    }
+
+    if (!isValidBlockInput({ dayOfWeek, startTime, endTime, date })) {
+      return NextResponse.json({ error: "Invalid day, time, or date" }, { status: 400 })
     }
 
     const updatedBlock = await db.transaction(async (tx) => {
@@ -246,43 +245,25 @@ export async function PATCH(request: Request): Promise<NextResponse> {
         const newLink = link !== undefined ? (link || null) : existingBlock.link
         const newDate = date !== undefined ? (date || null) : existingBlock.date
 
+        const linkedPriority = and(eq(priorities.userId, user.id), eq(priorities.timetableBlockId, id))
+
         if (newDate) {
+          // Only an explicit date change moves the priority: rollover may have moved it since
+          let dateFields: { date?: string; orderIndex?: number } = {}
+          if (newDate !== existingBlock.date) {
+            const target = await tx
+              .select({ id: priorities.id })
+              .from(priorities)
+              .where(and(eq(priorities.userId, user.id), eq(priorities.date, newDate)))
+            if (target.length < 5) dateFields = { date: newDate, orderIndex: target.length }
+          }
           await tx
             .update(priorities)
-            .set({
-              text: newTitle,
-              link: newLink,
-              date: newDate,
-              timetableBlockId: id,
-            })
-            .where(
-              and(
-                eq(priorities.userId, user.id),
-                or(
-                  eq(priorities.timetableBlockId, id),
-                  and(
-                    eq(priorities.date, existingBlock.date),
-                    eq(priorities.text, existingBlock.title)
-                  )
-                )
-              )
-            )
+            .set({ text: newTitle, link: newLink, ...dateFields })
+            .where(linkedPriority)
         } else {
           // Date removed, delete corresponding priority
-          await tx
-            .delete(priorities)
-            .where(
-              and(
-                eq(priorities.userId, user.id),
-                or(
-                  eq(priorities.timetableBlockId, id),
-                  and(
-                    eq(priorities.date, existingBlock.date),
-                    eq(priorities.text, existingBlock.title)
-                  )
-                )
-              )
-            )
+          await tx.delete(priorities).where(linkedPriority)
         }
       } else if (date) {
         // Date added, try to auto-insert priority
@@ -318,8 +299,6 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(updatedBlock)
   } catch (error) {
-    logger.error("[Timetable API Error]", error)
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
