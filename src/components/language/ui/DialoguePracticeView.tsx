@@ -269,7 +269,7 @@ export function DialoguePracticeView({
 
       {/* 2. Dialogue Form Card (Only visible if showDialogueForm is true) */}
       {showDialogueForm && (
-        <div className="bento-card p-5 animate-in slide-in-from-top-4 duration-200">
+        <div className="bento-card !overflow-visible p-5 animate-in slide-in-from-top-4 duration-200">
           <div className="flex items-center gap-2 mb-4">
             <MessageSquare className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-bold text-foreground">Add Conversation</h3>
@@ -603,7 +603,7 @@ export function DialoguePracticeView({
                       value={row.dialogueEngQ}
                       onChange={(e) => {
                         const updated = [...extraDialogueRows]
-                        updated[idx].dialogueEngQ = e.target.value
+                        updated[idx] = { ...updated[idx], dialogueEngQ: e.target.value }
                         setExtraDialogueRows(updated)
                       }}
                       placeholder="English question..."
@@ -615,7 +615,7 @@ export function DialoguePracticeView({
                       value={row.dialogueTransQ}
                       onChange={(e) => {
                         const updated = [...extraDialogueRows]
-                        updated[idx].dialogueTransQ = e.target.value
+                        updated[idx] = { ...updated[idx], dialogueTransQ: e.target.value }
                         setExtraDialogueRows(updated)
                       }}
                       placeholder="Indonesian translation..."
@@ -631,7 +631,7 @@ export function DialoguePracticeView({
                       value={row.dialogueEngA}
                       onChange={(e) => {
                         const updated = [...extraDialogueRows]
-                        updated[idx].dialogueEngA = e.target.value
+                        updated[idx] = { ...updated[idx], dialogueEngA: e.target.value }
                         setExtraDialogueRows(updated)
                       }}
                       placeholder="English answer..."
@@ -643,7 +643,7 @@ export function DialoguePracticeView({
                       value={row.dialogueTransA}
                       onChange={(e) => {
                         const updated = [...extraDialogueRows]
-                        updated[idx].dialogueTransA = e.target.value
+                        updated[idx] = { ...updated[idx], dialogueTransA: e.target.value }
                         setExtraDialogueRows(updated)
                       }}
                       placeholder="Indonesian translation..."
