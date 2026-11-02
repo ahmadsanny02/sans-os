@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { priorities } from "@/types/schema"
 import { eq, and, lt, asc } from "drizzle-orm"
@@ -95,7 +96,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true, rolledOverCount })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
