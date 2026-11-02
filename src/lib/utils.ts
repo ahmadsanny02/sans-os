@@ -34,3 +34,24 @@ export function serializePicUrls(urls: string[]): string {
   return JSON.stringify(clean)
 }
 
+export function isHttpUrl(value: string): boolean {
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol)
+  } catch {
+    return false
+  }
+}
+
+// Must match images.remotePatterns in next.config.ts; next/image throws on anything else unless unoptimized.
+export function isOptimizableImage(src: string): boolean {
+  try {
+    const url = new URL(src)
+    return (
+      url.protocol === "https:" &&
+      url.hostname.endsWith(".supabase.co") &&
+      url.pathname.startsWith("/storage/v1/object/public/")
+    )
+  } catch {
+    return false
+  }
+}
