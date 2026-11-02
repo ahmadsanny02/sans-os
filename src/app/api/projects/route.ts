@@ -1,8 +1,19 @@
 import { NextResponse } from "next/server"
+import { apiError } from "@/lib/apiError"
 import { db } from "@/lib/db"
 import { projects } from "@/types/schema"
 import { eq, and, desc } from "drizzle-orm"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+
+const PROJECT_STATUSES = ["Planning", "In Progress", "On Hold", "Completed"]
+const PROJECT_PRIORITIES = ["Low", "Medium", "High"]
+
+function isValidProjectEnums(status: unknown, priority: unknown): boolean {
+  return (
+    (!status || PROJECT_STATUSES.includes(String(status))) &&
+    (!priority || PROJECT_PRIORITIES.includes(String(priority)))
+  )
+}
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -29,8 +40,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json(userProjects)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -52,6 +62,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    if (!isValidProjectEnums(status, priority)) {
+      return NextResponse.json({ error: "Invalid status or priority" }, { status: 400 })
+    }
+
     const [newProject] = await db
       .insert(projects)
       .values({
@@ -68,8 +82,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(newProject)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -102,8 +115,7 @@ export async function DELETE(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
 
@@ -135,6 +147,10 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       subCategory?: string | null
     } = {}
 
+    if (!isValidProjectEnums(status, priority)) {
+      return NextResponse.json({ error: "Invalid status or priority" }, { status: 400 })
+    }
+
     if (name !== undefined) updateFields.name = name
     if (description !== undefined) updateFields.description = description
     if (status !== undefined) updateFields.status = status
@@ -157,7 +173,6 @@ export async function PATCH(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(updatedProject)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Server Error"
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return apiError(error)
   }
 }
