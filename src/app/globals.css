@@ -345,3 +345,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
 }
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
