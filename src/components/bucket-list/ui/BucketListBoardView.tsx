@@ -23,6 +23,9 @@ import { StatCard } from "@/components/ui/StatCard"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { ErrorState } from "@/components/ui/ErrorState"
 import { Modal } from "@/components/ui/Modal"
+import { ImageUploadButton } from "@/components/ui/ImageUploadButton"
+import { useIsUploadingImage } from "@/hooks/useImageUpload"
+import { isOptimizableImage } from "@/lib/utils"
 
 const BUCKET_PRESETS = [
   { name: "Mount Fuji", url: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&auto=format&fit=crop&q=80" },
@@ -62,7 +65,7 @@ interface BucketListBoardViewProps {
       imageUrl?: string
       extraRows?: Array<{ id?: string; title: string; imageUrl: string }>
     }
-  ) => Promise<void>
+  ) => Promise<boolean>
   handleOpenEdit: (item: BucketItem) => void
   handleUpdateItem: (e: React.FormEvent) => Promise<void>
   handleDeleteItem: (id: string, titleStr: string) => Promise<void>
@@ -114,6 +117,9 @@ export function BucketListBoardView({
   isPendingUpdate,
   isPendingDelete,
 }: BucketListBoardViewProps) {
+  const isUploadingImage = useIsUploadingImage()
+  const [brokenImages, setBrokenImages] = useState<Record<string, boolean>>({})
+
   // Optional multi-item batch creation state
   const [extraBucketRows, setExtraBucketRows] = useState<Array<{ id: string; title: string; imageUrl: string }>>([])
 
@@ -121,12 +127,12 @@ export function BucketListBoardView({
     e.preventDefault()
     if (!addTitle.trim()) return
 
-    await handleAddItem(e, {
+    const saved = await handleAddItem(e, {
       title: addTitle,
       imageUrl: addImageUrl,
       extraRows: extraBucketRows,
     })
-    setExtraBucketRows([])
+    if (saved) setExtraBucketRows([])
   }
 
   return (
@@ -229,14 +235,17 @@ export function BucketListBoardView({
               <label htmlFor="addGoalImg" className="text-xs font-bold text-muted-foreground">
                 Inspirational Photo Image URL
               </label>
-              <input
-                id="addGoalImg"
-                type="text"
-                value={addImageUrl}
-                onChange={(e) => setAddImageUrl(e.target.value)}
-                placeholder="e.g. https://images.unsplash.com/photo-..."
-                className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  id="addGoalImg"
+                  type="text"
+                  value={addImageUrl}
+                  onChange={(e) => setAddImageUrl(e.target.value)}
+                  placeholder="e.g. https://images.unsplash.com/photo-..."
+                  className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+                />
+                <ImageUploadButton onUploaded={setAddImageUrl} />
+              </div>
             </div>
           </div>
 
@@ -289,7 +298,7 @@ export function BucketListBoardView({
                     value={row.title}
                     onChange={(e) => {
                       const updated = [...extraBucketRows]
-                      updated[idx].title = e.target.value
+                      updated[idx] = { ...updated[idx], title: e.target.value }
                       setExtraBucketRows(updated)
                     }}
                     placeholder="Dream title..."
@@ -301,17 +310,22 @@ export function BucketListBoardView({
                   <label className="text-xs font-bold text-muted-foreground">
                     Inspirational Photo Image URL #{idx + 2}
                   </label>
-                  <input
-                    type="text"
-                    value={row.imageUrl}
-                    onChange={(e) => {
-                      const updated = [...extraBucketRows]
-                      updated[idx].imageUrl = e.target.value
-                      setExtraBucketRows(updated)
-                    }}
-                    placeholder="Image URL..."
-                    className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={row.imageUrl}
+                      onChange={(e) => {
+                        const updated = [...extraBucketRows]
+                        updated[idx] = { ...updated[idx], imageUrl: e.target.value }
+                        setExtraBucketRows(updated)
+                      }}
+                      placeholder="Image URL..."
+                      className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+                    />
+                    <ImageUploadButton onUploaded={(url) =>
+                        setExtraBucketRows((rows) => rows.map((r) => (r.id === row.id ? { ...r, imageUrl: url } : r)))
+                      } />
+                  </div>
                 </div>
               </div>
             </div>
@@ -354,7 +368,7 @@ export function BucketListBoardView({
             </button>
             <button
               type="submit"
-              disabled={isPendingCreate}
+              disabled={isPendingCreate || isUploadingImage}
               className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
             >
               {isPendingCreate ? (
@@ -414,11 +428,13 @@ export function BucketListBoardView({
                 className="group relative h-64 rounded-2xl border border-border/60 overflow-hidden shadow-md flex flex-col justify-end p-5 select-none bg-black hover:border-primary/30 transition-all duration-300"
               >
                 {/* Visual Cover Photo */}
-                {item.imageUrl ? (
+                {item.imageUrl && !brokenImages[item.imageUrl] ? (
                   <Image
                     src={item.imageUrl}
                     alt={item.title}
                     fill
+                    unoptimized={!isOptimizableImage(item.imageUrl)}
+                    onError={() => setBrokenImages((prev) => ({ ...prev, [item.imageUrl as string]: true }))}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className={`object-cover transition-all duration-500 group-hover:scale-105 ${
                       item.completed ? "opacity-35 grayscale" : "opacity-60"
@@ -432,7 +448,7 @@ export function BucketListBoardView({
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent z-10 pointer-events-none" />
 
                 {/* Card Header overlay elements */}
-                <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 opacity-100 sm:[@media(hover:hover)]:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                   <button
                     onClick={() => handleOpenEdit(item)}
                     className="p-1.5 rounded-xl bg-black/60 border border-white/20 text-white hover:bg-black/80 transition-all active:scale-95 cursor-pointer"
@@ -456,6 +472,7 @@ export function BucketListBoardView({
                     <button
                       onClick={() => handleToggleCompleted(item)}
                       disabled={isPendingUpdate}
+                      aria-label={item.completed ? "Mark as not completed" : "Mark as completed"}
                       className="text-white hover:scale-105 transition-transform shrink-0 cursor-pointer"
                     >
                       {item.completed ? (
@@ -514,13 +531,16 @@ export function BucketListBoardView({
               {/* Image URL */}
               <div className="space-y-1.5">
                 <label htmlFor="editGoalImg" className="text-xs font-bold text-muted-foreground">Image URL</label>
-                <input
-                  id="editGoalImg"
-                  type="text"
-                  value={editImageUrl}
-                  onChange={(e) => setEditImageUrl(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
-                />
+                <div className="flex items-center gap-2">
+                  <input
+                    id="editGoalImg"
+                    type="text"
+                    value={editImageUrl}
+                    onChange={(e) => setEditImageUrl(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-background/50 px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 shadow-sm"
+                  />
+                  <ImageUploadButton onUploaded={setEditImageUrl} />
+                </div>
               </div>
 
               {/* Completion */}
@@ -553,7 +573,7 @@ export function BucketListBoardView({
               </button>
               <button
                 type="submit"
-                disabled={isPendingUpdate}
+                disabled={isPendingUpdate || isUploadingImage}
                 className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/95 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
                 {isPendingUpdate ? (
