@@ -421,9 +421,9 @@ export function ProjectBoardView({
   })
 
   return (
-    <div className="grid gap-6 md:grid-cols-12 animate-in fade-in duration-200 w-full min-w-0">
-      {/* Left Column: Projects List */}
-      <div className={`md:col-span-5 xl:col-span-4 space-y-6 min-w-0 ${selectedProjectId ? "hidden md:block" : "block"}`}>
+    <div className="grid gap-6 md:grid-cols-12 md:grid-rows-[minmax(0,1fr)] md:flex-1 md:min-h-[28rem] animate-in fade-in duration-200 w-full min-w-0">
+      {/* Left Column: Projects List (p-1 keeps card focus rings from being clipped by the scroll area) */}
+      <div className={`md:col-span-5 xl:col-span-4 space-y-6 min-w-0 md:h-full md:overflow-y-auto md:p-1 ${selectedProjectId ? "hidden md:block" : "block"}`}>
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
@@ -732,7 +732,8 @@ export function ProjectBoardView({
       </div>
 
       {/* Right Column: Project Tasks Detail Workspace */}
-      <div className={`md:col-span-7 xl:col-span-8 ${!selectedProjectId ? "hidden md:block" : "block"}`}>
+      {/* key: a newly selected project starts at the top of its own scroll area */}
+      <div key={selectedProjectId ?? "none"} className={`md:col-span-7 xl:col-span-8 min-w-0 md:h-full md:overflow-y-auto md:p-1 ${!selectedProjectId ? "hidden md:block" : "block"}`}>
         {isLoading ? (
           <div className="bento-card p-6 min-h-[400px] space-y-6">
             <div className="border-b border-border/40 pb-4 space-y-2 animate-pulse">
@@ -1148,7 +1149,8 @@ export function ProjectBoardView({
             </div>
 
             {/* Add task inline form */}
-            <form onSubmit={handleTaskBatchSubmit} className="border-t border-border/40 pt-5 space-y-3">
+            {/* Stays visible on desktop; max-h stops batch rows from covering the task list */}
+            <form onSubmit={handleTaskBatchSubmit} className="border-t border-border/40 pt-5 space-y-3 md:sticky md:bottom-0 md:z-10 md:-mx-6 md:!-mb-6 md:px-6 md:pb-5 md:rounded-b-2xl md:bg-background md:max-h-[50dvh] md:overflow-y-auto">
               <div className="flex flex-col gap-3 lg:flex-row">
                 <input
                   type="text"

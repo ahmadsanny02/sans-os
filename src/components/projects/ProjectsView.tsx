@@ -15,7 +15,7 @@ export function ProjectsView(): React.JSX.Element {
   }, [])
 
   return (
-    <div className="mx-auto max-w-7xl w-full min-w-0 gap-6 flex flex-col py-4 animate-in fade-in duration-200">
+    <div className="mx-auto max-w-7xl w-full min-w-0 md:h-full gap-6 flex flex-col py-4 animate-in fade-in duration-200">
       <HeaderPage
         title="Projects & Tasks"
         icon={<Briefcase className="h-7 w-7 text-primary shrink-0" />}
